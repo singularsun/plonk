@@ -28,6 +28,8 @@ canvas{display:block;background:#000;}
   animation:fadeIn .2s ease;overflow:auto;padding:20px;}
 .screen.active{display:flex;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.round-fade-out{animation:roundFadeOut .34s ease forwards!important;}
+@keyframes roundFadeOut{from{opacity:1;transform:scale(1);}to{opacity:0;transform:scale(1.02);}}
 
 .title-logo{font-size:clamp(44px,9vw,86px);font-weight:900;letter-spacing:4px;margin-bottom:2px;
   color:var(--accent3);text-shadow:3px 3px 0 #000, 0 0 30px rgba(201,121,58,.4);
@@ -184,7 +186,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 <!-- ============ MAIN MENU ============ -->
 <div class="screen active" id="screen-main">
   <div class="title-logo">PLUNK</div>
-  <div class="title-sub">to plunk or to be plunked</div>
+  <div class="title-sub">to plunk, or to be plunked</div>
   <div class="menu-col">
     <button class="btn primary" data-go="create">CREATE GAME</button>
     <button class="btn" data-go="join">JOIN GAME</button>
@@ -193,7 +195,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <button class="btn" data-go="settings">SETTINGS</button>
     <button class="btn ghost" data-go="howto">HOW TO PLAY</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">bonk io clone. exclusively on moonsphere</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">bonk io clone. exclusively on moonsphere (the best mini multiplayer platform)</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -201,7 +203,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   <div class="panel wide-panel" style="width:min(940px,96vw);position:relative;">
     <span class="close-x" data-go="main">✕</span>
     <div class="split-heading">
-      <div><h2>CREATE GAME</h2><div class="subhint">Pick your room letter, then fine-tune the match. You can change these settings again from the lobby.</div></div>
+      <div><h2>CREATE GAME</h2><div class="subhint">Pick your room letter, then fine-tune the match. You can change these settings again in the lobby.</div></div>
     </div>
     <div class="two-col-layout">
       <section class="settings-column">
@@ -628,6 +630,7 @@ class Player{
     this.grounded=false; this.facing=1;
     this.damage=0; this.alive=true;
     this.heavy=false; this.hitFlash=0;
+    this.bounceBoostQueued=false;
     this.dashCd=0; this.dashTime=0;
     this.grappleAnchor=null; this.grappleLen=0; this.grappleRestLen=0;
     this.grappleStamina=PHYS.grappleStaminaMax; this.grappleStaminaMax=PHYS.grappleStaminaMax;
@@ -648,6 +651,15 @@ class Player{
 /* ---------------------------- BUILT-IN MAPS ---------------------------- */
 function makeMap(name,w,h,platforms,spawnPoints,hazards,bg,decor){
   return {name,width:w,height:h,platforms,spawnPoints,hazards:hazards||[],decorations:decor||[],background:bg||'default'};
+}
+function ensureMapSpawn(map){
+  if(!map) return map;
+  if(!Array.isArray(map.spawnPoints)) map.spawnPoints=[];
+  if(map.spawnPoints.length===0){
+    // Safe fallback: top-middle of the map, slightly below the top edge.
+    map.spawnPoints.push({x:Math.max(0,Number(map.width||1600)/2), y:80});
+  }
+  return map;
 }
 const BUILTIN_MAPS = [
   makeMap('Training Grounds',1600,900,[
@@ -801,12 +813,20 @@ const InputManager = {
     chatInput.addEventListener('focus', ()=>this.chatFocused=true);
     chatInput.addEventListener('blur', ()=>this.chatFocused=false);
     chatInput.addEventListener('keydown', e=>{
-      e.stopPropagation();
+      // The first Enter focuses chat via the global handler. Once focused, the
+      // second Enter is handled here only: send, close chat, and do NOT reopen it.
+      e.stopImmediatePropagation();
       if(e.key==='Enter'){
+        e.preventDefault();
         const txt = chatInput.value;
         if(txt.trim()) Chat.send(txt);
-        chatInput.value=''; chatInput.blur();
-      } else if(e.key==='Escape'){ chatInput.value=''; chatInput.blur(); }
+        chatInput.value='';
+        chatInput.blur();
+      } else if(e.key==='Escape'){
+        e.preventDefault();
+        chatInput.value='';
+        chatInput.blur();
+      }
     });
   },
   openChat(){ document.getElementById('chatInput').focus(); },
@@ -1020,7 +1040,7 @@ const Game = {
     window.addEventListener('resize', ()=>this.resize());
     InputManager.bind();
     InputManager.setupMobile();
-    this.map = BUILTIN_MAPS[0];
+    this.map = ensureMapSpawn(BUILTIN_MAPS[0]);
     this.loop = this.loop.bind(this);
     requestAnimationFrame(this.loop);
     NetworkManager.onData = (pid,data)=>this.handleNetData(pid,data);
@@ -1058,7 +1078,18 @@ const Game = {
     },900);
   },
 
+  beginRoundImmediate(){
+    if(this._cdInt){ clearInterval(this._cdInt); this._cdInt=null; }
+    this.state='playing'; this.eliminationOrder=[];
+    UI.showHUD();
+    this.resetPlayers();
+    this.camera.x=0; this.camera.y=0; this.camera.zoom=1; this.camera.targetZoom=1;
+    this.matchTime=0;
+    document.getElementById('msgbanner').textContent='';
+  },
+
   resetPlayers(){
+    ensureMapSpawn(this.map);
     const spawns = this.map.spawnPoints;
     let i=0;
     for(const id in this.players){
@@ -1066,6 +1097,7 @@ const Game = {
       const sp = spawns[i%spawns.length]; i++;
       p.x=sp.x; p.y=sp.y; p.vx=0; p.vy=0; p.damage=0; p.alive=true;
       p.heavy=false; p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0; p.grounded=false; p.grappleStamina=p.grappleStaminaMax; p.lastMoveDir=0; p.turnKick=0;
+      p.bounceBoostQueued=false;
       p.renderX=p.x; p.renderY=p.y; p.netErrorX=0; p.netErrorY=0; p.lastAckSeq=0;
       p.jumpBuffer=0; p.jumpSerial=0; p.netJumpSerial=0; p.lastJumpEventSeq=null;
     }
@@ -1277,7 +1309,15 @@ const Game = {
       if(p.y+p.radius>py1 && p.y-p.radius<py2){
         if(p.vy>=0 && (p.y - p.vy*dt)+p.radius <= py1+4){
           p.y = py1-p.radius;
-          if(plat.type==='bounce'){ p.vy = -Math.abs(p.vy)*1.15 - 500; this.spawnFx(p,'bounce'); }
+          if(plat.type==='bounce'){
+            // Holding W when hitting a bouncy block charges the next bounce.
+            // The boost is consumed by this bounce and makes it dramatically higher.
+            const boosted = !!(p.input && p.input.jump);
+            p.vy = boosted ? Math.min(-900, -Math.abs(p.vy)*0.5 - 420) : (-Math.abs(p.vy)*0.32 - 110);
+            p.bounceBoostQueued = false;
+            this.spawnFx(p,'bounce');
+            if(boosted) this.spawnFx(p,'jump');
+          }
           else { p.vy=0; p.grounded=true; }
         } else if(p.vy<0 && (p.y - p.vy*dt)-p.radius >= py2-4){
           p.y = py2+p.radius; p.vy = Math.abs(p.vy)*PHYS.bounceDamp*0.2;
@@ -1327,7 +1367,7 @@ const Game = {
         const rvx=b.vx-a.vx, rvy=b.vy-a.vy;
         const relSpeed = rvx*nx+rvy*ny;
         if(relSpeed<0){
-          const restitution=1.4;
+          const restitution=0.55;
           const impulse = -(1+restitution)*relSpeed/((1/massA)+(1/massB));
           const ix=impulse*nx, iy=impulse*ny;
           a.vx -= ix/massA*(this.matchSettings.kb||1); a.vy -= iy/massA*(this.matchSettings.kb||1);
@@ -1396,15 +1436,16 @@ const Game = {
         NetworkManager.broadcast({t:'matchend', results:finalResults, scores:this.scores, round:this.roundNumber}, true);
         UI.showResults(finalResults, this.scores, this.roundNumber);
         AudioManager.victory();
-      }, 2300);
+      }, 900);
     }else{
+      // Keep the round leaderboard visible briefly, then fade directly into the next round.
       setTimeout(()=>{
         if(this.state==='roundResults' && this.isHost){
           this.roundNumber++;
           NetworkManager.broadcast({t:'round_start', round:this.roundNumber, scores:this.scores}, true);
-          this.beginCountdown();
+          UI.fadeToNextRound(()=>this.beginRoundImmediate());
         }
-      }, 2300);
+      }, 650);
     }
   },
 
@@ -1613,7 +1654,7 @@ const Game = {
         if(!this.isHost){
           this.scores=data.scores||this.scores;
           this.roundNumber=data.round||this.roundNumber;
-          this.beginCountdown();
+          UI.fadeToNextRound(()=>this.beginRoundImmediate());
         }
         break;
       case 'matchend': if(!this.isHost){ this.scores=data.scores||this.scores; UI.showResults(data.results, data.scores, data.round); } break;
@@ -1811,6 +1852,18 @@ const UI = {
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById('hud').classList.add('active');
   },
+  fadeToNextRound(cb){
+    const screen=document.getElementById('screen-results');
+    const panel=screen?.querySelector('.panel');
+    if(!screen || !panel){ cb?.(); return; }
+    panel.classList.remove('round-fade-out');
+    void panel.offsetWidth;
+    panel.classList.add('round-fade-out');
+    setTimeout(()=>{
+      panel.classList.remove('round-fade-out');
+      cb?.();
+    }, 340);
+  },
   showRoundResult(data){
     const list=document.getElementById('resultsList');
     const sorted=Object.entries(data.scores||{}).map(([id,score])=>({id,score,name:Game.players[id]?.name||id}))
@@ -1956,7 +2009,7 @@ const Lobby = {
   handleJoinAccept(data){
     if(!data.ok){ document.getElementById('joinErr').textContent = data.reason||'Could not join.'; return; }
     document.getElementById('btnLeaveLobby').textContent='LEAVE';
-    Game.map = data.map; Game.mode = data.mode; Game.matchSettings = data.matchSettings;
+    Game.map = ensureMapSpawn(data.map); Game.mode = data.mode; Game.matchSettings = data.matchSettings;
     this.players = data.players;
     this.syncGamePlayers(data.players);
     document.getElementById('lobbyCode').textContent = data.code;
@@ -1996,7 +2049,7 @@ const Lobby = {
   },
   applySettings(data){
     const cfg=data.settings||data;
-    if(cfg.map) Game.map=cfg.map;
+    if(cfg.map) Game.map=ensureMapSpawn(cfg.map);
     if(cfg.mode) Game.mode=cfg.mode;
     if(cfg.matchSettings) Game.matchSettings=Object.assign({},Game.matchSettings,cfg.matchSettings);
     if(cfg.roundConfig) Game.roundConfig=Object.assign({},Game.roundConfig,cfg.roundConfig);
@@ -2028,8 +2081,8 @@ const Lobby = {
     roundCount.value=Game.roundConfig.count??5;
     pointTarget.value=Game.roundConfig.target??3;
     if(Game.map){
-      mapSel.value=String(BUILTIN_MAPS.findIndex(m=>m.name===Game.map.name));
-      if(mapSel.value==='-1') mapSel.value='0';
+      const wanted=selectedMapOptionValue(Game.map);
+      if([...mapSel.options].some(o=>o.value===wanted)) mapSel.value=wanted;
       if(mapPrev) drawMapThumb(mapPrev, Game.map);
     }
     const scoreMode=roundMode.value==='score';
@@ -2047,7 +2100,7 @@ const Lobby = {
     const roomName=document.getElementById('lobbyHostNameInput').value.trim()||'Player';
     Game.myName=roomName.slice(0,14);
     const hostPlayer=Game.players[Game.myId]; if(hostPlayer) hostPlayer.name=Game.myName;
-    Game.map=BUILTIN_MAPS[+document.getElementById('lobbyMapSelect').value]||Game.map;
+    Game.map=selectedMapFromSelect(document.getElementById('lobbyMapSelect'));
     Game.mode=document.getElementById('lobbyModeSelect').value;
     Game.matchSettings={
       gravity:Math.max(0.1,Math.min(3,+document.getElementById('lobbyGravity').value||1)),
@@ -2324,8 +2377,10 @@ const MapEditor = {
     ctx.fillText('Camera: '+Math.round(c.x)+','+Math.round(c.y)+'  Zoom: '+c.zoom.toFixed(2)+'x', 200, 42);
   },
   async save(){
-    const m=EditorState.map; m.name=document.getElementById('edMapName').value||'Custom Map';
-    await Storage.saveMap(m); alert('Map saved locally: '+m.name);
+    const m=ensureMapSpawn(EditorState.map); EditorState.map=m; m.name=document.getElementById('edMapName').value||'Custom Map';
+    await Storage.saveMap(m);
+    await refreshSavedMapSelectors();
+    alert('Map saved locally: '+m.name);
   },
   async load(){
     const maps=await Storage.loadAllMaps();
@@ -2333,7 +2388,7 @@ const MapEditor = {
     const names=maps.map(m=>m.name).join('\\n');
     const pick=prompt('Enter map name to load:\\n'+names);
     const found=maps.find(m=>m.name===pick);
-    if(found){ EditorState.map=found; document.getElementById('edMapName').value=found.name; EditorState.placeStart=null; this.clampCamera(); }
+    if(found){ EditorState.map=ensureMapSpawn(found); document.getElementById('edMapName').value=found.name; EditorState.placeStart=null; this.clampCamera(); }
   },
   export(){
     const data=JSON.stringify(EditorState.map,null,2), blob=new Blob([data],{type:'application/json'});
@@ -2343,7 +2398,7 @@ const MapEditor = {
     const inp=document.createElement('input'); inp.type='file'; inp.accept='.json,application/json';
     inp.onchange=()=>{ const file=inp.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{
       try{ const map=JSON.parse(reader.result); if(!map.platforms||!map.spawnPoints) throw new Error('invalid');
-        EditorState.map=map; EditorState.placeStart=null; document.getElementById('edMapName').value=map.name||'Imported Map'; this.clampCamera();
+        EditorState.map=ensureMapSpawn(map); EditorState.placeStart=null; document.getElementById('edMapName').value=map.name||'Imported Map'; this.clampCamera();
       }catch(e){ alert('Map could not be loaded. The map data appears to be invalid.'); }
     }; reader.readAsText(file); }; inp.click();
   },
@@ -2351,7 +2406,7 @@ const MapEditor = {
   undo(){ if(!EditorState.undo.length) return; EditorState.redo.push(JSON.stringify(EditorState.map)); EditorState.map=JSON.parse(EditorState.undo.pop()); EditorState.placeStart=null; this.clampCamera(); },
   redo(){ if(!EditorState.redo.length) return; EditorState.undo.push(JSON.stringify(EditorState.map)); EditorState.map=JSON.parse(EditorState.redo.pop()); EditorState.placeStart=null; this.clampCamera(); },
   test(){
-    Game.isHost=true; NetworkManager.isHost=false; Game.myId='local'; Game.map=EditorState.map;
+    Game.isHost=true; NetworkManager.isHost=false; Game.myId='local'; Game.map=ensureMapSpawn(EditorState.map);
     Game.players={}; Game.players['local']=new Player('local',Game.myName,Storage.get('customization',{}),Game.map.spawnPoints[0]||{x:400,y:400});
     Game.matchSettings={gravity:1,kb:1,maxPlayers:8}; Game.mode='regular'; EditorState.active=false;
     document.getElementById('editorUI').classList.remove('active'); Game.beginCountdown();
@@ -2360,11 +2415,65 @@ const MapEditor = {
 };
 
 /* ---------------------------- BOOTSTRAP / UI WIRING ---------------------------- */
-function populateMapSelect(){
-  const sel = document.getElementById('hostMap');
-  sel.innerHTML='';
-  BUILTIN_MAPS.forEach((m,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=m.name; sel.appendChild(o); });
+let SAVED_CUSTOM_MAPS = [];
+
+function mapOptionValue(kind, value){
+  return kind + ':' + String(value);
 }
+function findMapByOption(value){
+  const v=String(value||'');
+  if(v.startsWith('builtin:')){
+    const i=Number(v.slice(8));
+    return Number.isInteger(i) ? BUILTIN_MAPS[i] : null;
+  }
+  if(v.startsWith('custom:')){
+    const name=v.slice(7);
+    return SAVED_CUSTOM_MAPS.find(m=>m.name===name) || null;
+  }
+  // Backward compatibility with older saved selector values.
+  const i=Number(v);
+  return Number.isInteger(i) ? (BUILTIN_MAPS[i]||null) : null;
+}
+function selectedMapOptionValue(map){
+  if(!map) return 'builtin:0';
+  const bi=BUILTIN_MAPS.findIndex(m=>m.name===map.name && m.width===map.width && m.height===map.height);
+  if(bi>=0) return mapOptionValue('builtin',bi);
+  const ci=SAVED_CUSTOM_MAPS.findIndex(m=>m.name===map.name);
+  return ci>=0 ? mapOptionValue('custom',SAVED_CUSTOM_MAPS[ci].name) : 'builtin:0';
+}
+function populateMapSelects(){
+  const selects=[document.getElementById('hostMap'), document.getElementById('lobbyMapSelect')].filter(Boolean);
+  selects.forEach(sel=>{
+    const previous=sel.value;
+    sel.innerHTML='';
+    const builtGroup=document.createElement('optgroup');
+    builtGroup.label='BUILT-IN MAPS';
+    BUILTIN_MAPS.forEach((m,i)=>{
+      const o=document.createElement('option'); o.value=mapOptionValue('builtin',i); o.textContent=m.name; builtGroup.appendChild(o);
+    });
+    sel.appendChild(builtGroup);
+    if(SAVED_CUSTOM_MAPS.length){
+      const customGroup=document.createElement('optgroup');
+      customGroup.label='CUSTOM MAPS';
+      SAVED_CUSTOM_MAPS.forEach(m=>{
+        const o=document.createElement('option'); o.value=mapOptionValue('custom',m.name); o.textContent=m.name; customGroup.appendChild(o);
+      });
+      sel.appendChild(customGroup);
+    }
+    if([...sel.options].some(o=>o.value===previous)) sel.value=previous;
+  });
+}
+async function refreshSavedMapSelectors(){
+  try{ SAVED_CUSTOM_MAPS=await Storage.loadAllMaps(); }catch(e){ SAVED_CUSTOM_MAPS=[]; }
+  const currentHost=Game.map;
+  const currentLobby=Game.map;
+  populateMapSelects();
+  const hostSel=document.getElementById('hostMap');
+  const lobbySel=document.getElementById('lobbyMapSelect');
+  if(hostSel && currentHost) hostSel.value=selectedMapOptionValue(currentHost);
+  if(lobbySel && currentLobby) lobbySel.value=selectedMapOptionValue(currentLobby);
+}
+function selectedMapFromSelect(sel){ return ensureMapSpawn(findMapByOption(sel?.value) || Game.map || BUILTIN_MAPS[0]); }
 function drawMapThumb(canvasEl, map){
   const ctx = canvasEl.getContext('2d');
   const W=canvasEl.width, H=canvasEl.height;
@@ -2398,17 +2507,17 @@ function drawCustPreview(){
 
 window.addEventListener('DOMContentLoaded', ()=>{
   Game.init();
-  populateMapSelect();
+  populateMapSelects();
   const hostMapSel = document.getElementById('hostMap');
   const hostMapPreview = document.getElementById('hostMapPreview');
   const lobbyMapSel = document.getElementById('lobbyMapSelect');
   const lobbyMapPreview = document.getElementById('lobbyMapPreview');
-  BUILTIN_MAPS.forEach((m,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=m.name; lobbyMapSel.appendChild(o); });
-  const updateHostPreview = ()=>drawMapThumb(hostMapPreview, BUILTIN_MAPS[+hostMapSel.value||0]);
-  const updateLobbyPreview = ()=>{ const m=BUILTIN_MAPS[+lobbyMapSel.value||0]; if(lobbyMapPreview) drawMapThumb(lobbyMapPreview,m); };
+  const updateHostPreview = ()=>{ const m=selectedMapFromSelect(hostMapSel); if(hostMapPreview) drawMapThumb(hostMapPreview,m); };
+  const updateLobbyPreview = ()=>{ const m=selectedMapFromSelect(lobbyMapSel); if(lobbyMapPreview) drawMapThumb(lobbyMapPreview,m); };
   hostMapSel.addEventListener('change', updateHostPreview);
   lobbyMapSel.addEventListener('change', ()=>{ updateLobbyPreview(); if(Game.isHost) Lobby.commitSettingsFromUI(); });
   updateHostPreview(); updateLobbyPreview();
+  refreshSavedMapSelectors().then(()=>{ updateHostPreview(); updateLobbyPreview(); });
 
   const roundModeSel=document.getElementById('hostRoundMode');
   const roundCountField=document.getElementById('hostRoundCountField');
@@ -2447,7 +2556,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('btnHostCreate').addEventListener('click', ()=>{
     AudioManager.init(); AudioManager.resume();
     Game.myName = document.getElementById('hostName').value.trim()||'Player';
-    Game.map = BUILTIN_MAPS[+document.getElementById('hostMap').value];
+    Game.map = ensureMapSpawn(selectedMapFromSelect(document.getElementById('hostMap')));
     Game.mode = document.getElementById('hostMode').value;
     Game.matchSettings = {
       gravity:+document.getElementById('hostGravity').value,
@@ -2484,7 +2593,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   lobbyChatInput.addEventListener('focus', ()=>{ InputManager.chatFocused=true; });
   lobbyChatInput.addEventListener('blur', ()=>{ InputManager.chatFocused=false; });
   lobbyChatInput.addEventListener('keydown', e=>{
-    e.stopPropagation();
+    e.stopImmediatePropagation();
     if(e.key==='Enter'){
       e.preventDefault();
       document.getElementById('lobbyChatSend').click();
