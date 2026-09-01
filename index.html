@@ -186,7 +186,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 <!-- ============ MAIN MENU ============ -->
 <div class="screen active" id="screen-main">
   <div class="title-logo">PLUNK</div>
-  <div class="title-sub">to plunk, or to be plunked</div>
+  <div class="title-sub">to plunk, or not to plunk?</div>
   <div class="menu-col">
     <button class="btn primary" data-go="create">CREATE GAME</button>
     <button class="btn" data-go="join">JOIN GAME</button>
@@ -195,7 +195,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <button class="btn" data-go="settings">SETTINGS</button>
     <button class="btn ghost" data-go="howto">HOW TO PLAY</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">bonk io clone. exclusively on moonsphere (the best mini multiplayer platform)</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;"bonk io clone. exclusively on moonsphere (the best mini multiplayer games)"</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -203,7 +203,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   <div class="panel wide-panel" style="width:min(940px,96vw);position:relative;">
     <span class="close-x" data-go="main">✕</span>
     <div class="split-heading">
-      <div><h2>CREATE GAME</h2><div class="subhint">Pick your room letter, then fine-tune the match. You can change these settings again in the lobby.</div></div>
+      <div><h2>CREATE GAME</h2><div class="subhint">Pick your room letter, then fine-tune the match. You can change these settings again from the lobby.</div></div>
     </div>
     <div class="two-col-layout">
       <section class="settings-column">
@@ -606,7 +606,7 @@ const PHYS = {
   jumpVel: 645,
   bounceDamp: 0.6,
   wallBounce: 0.55,
-  heavyMass: 1.9,        // density multiplier while Space is held
+  heavyMass: 2.15,        // density multiplier while Space is held
   grappleRange: 700,          // max distance to a platform to latch on
   grappleStaminaMax: 100,
   grappleDrainPerSec: 32,     // ~3.1s of continuous swinging on a full tank
@@ -641,10 +641,12 @@ class Player{
     this.renderX=this.x; this.renderY=this.y;
     this.netErrorX=0; this.netErrorY=0;
     this.lastNetState=0; this.inputSeq=0; this.lastAckSeq=0;
-    // Multiplayer jump state: buffered server-side so packet timing can never
-    // turn a real jump into a tiny late hop. jumpSerial is replicated so every
-    // client can detect the exact authoritative start of a jump.
+    // Deterministic multiplayer action markers. Clients simulate every player
+    // locally and use these serials to reproduce one-shot actions before the
+    // next authoritative host snapshot arrives.
     this.jumpBuffer=0; this.jumpSerial=0; this.netJumpSerial=0; this.lastJumpEventSeq=null;
+    this.dashSerial=0; this.netDashSerial=0;
+    this.grappleSerial=0; this.netGrappleSerial=0;
   }
 }
 
@@ -1025,6 +1027,7 @@ const Game = {
   camera:new Camera(),
   isHost:false,
   accumulator:0, lastTime:0,
+  physicsTick:0, hostPhysicsTick:0, stateSeq:0, lastRecvStateSeq:null,
   matchTime:0,
   eliminationOrder:[],
   roundNumber:1,
@@ -1060,6 +1063,7 @@ const Game = {
   /* ---------- lifecycle ---------- */
   beginCountdown(){
     this.state='countdown'; this.eliminationOrder=[];
+    this.physicsTick=0; this.hostPhysicsTick=0; this.lastRecvStateSeq=null; this.stateSeq=0;
     UI.showHUD();
     this.resetPlayers();
     this.camera.x=0; this.camera.y=0; this.camera.zoom=1; this.camera.targetZoom=1;
@@ -1084,7 +1088,7 @@ const Game = {
     UI.showHUD();
     this.resetPlayers();
     this.camera.x=0; this.camera.y=0; this.camera.zoom=1; this.camera.targetZoom=1;
-    this.matchTime=0;
+    this.matchTime=0; this.physicsTick=0; this.hostPhysicsTick=0;
     document.getElementById('msgbanner').textContent='';
   },
 
@@ -1100,10 +1104,11 @@ const Game = {
       p.bounceBoostQueued=false;
       p.renderX=p.x; p.renderY=p.y; p.netErrorX=0; p.netErrorY=0; p.lastAckSeq=0;
       p.jumpBuffer=0; p.jumpSerial=0; p.netJumpSerial=0; p.lastJumpEventSeq=null;
+      p.dashSerial=0; p.netDashSerial=0; p.grappleSerial=0; p.netGrappleSerial=0;
     }
   },
 
-  /* ---------- input & physics step (host authoritative) ---------- */
+  /* ---------- fixed-step input & physics (host authority + client prediction) ---------- */
   loop(ts){
     if(!this.lastTime) this.lastTime=ts;
     let dt = (ts-this.lastTime)/1000; this.lastTime=ts;
@@ -1150,11 +1155,12 @@ const Game = {
       if(this.state==='playing'){
         if(this.isHost) this.stepHost(PHYS.step);
         else this.stepClientPredict(PHYS.step);
+        this.physicsTick = (this.physicsTick||0) + 1;
       }
       this.accumulator -= PHYS.step;
     }
 
-    if(!this.isHost && this.state==='playing') this.updateClientNetSmoothing(dt);
+    if(!this.isHost && this.state==='playing') this.applyClientCorrections(dt);
 
     if(this.isHost && this.state==='playing'){
       this._snapTimer = (this._snapTimer||0)+dt;
@@ -1181,12 +1187,19 @@ const Game = {
     this.checkModeEnd();
   },
   stepClientPredict(dt){
-    const me = this.players[this.myId];
-    if(me){
-      this.integratePlayer(me, dt, me.input);
-      this.applyGrapple(me, dt);
-      this.collideWithMap(me, dt);
+    // Every client runs the complete fixed-step world simulation locally. The
+    // host is still authoritative, but this means remote balls also collide,
+    // bounce, grapple and receive knockback immediately instead of waiting for
+    // another network snapshot.
+    for(const id in this.players){
+      const p=this.players[id];
+      this.integratePlayer(p, dt, p.input);
+      this.applyGrapple(p, dt);
     }
+    this.resolveCollisions(dt);
+    // Deaths and round completion are host-authoritative. Clients wait for the
+    // authoritative eliminated/round_end messages rather than making decisions
+    // from their prediction.
   },
 
   integratePlayer(p, dt, input){
@@ -1232,6 +1245,8 @@ const Game = {
     }
     if(input.dashPressed && p.dashCd<=0){
       p.vx = p.facing * 900; p.dashCd = 0.55; p.dashTime=8;
+      p.dashSerial = ((p.dashSerial||0) + 1) & 65535;
+      input.dashPressed=false;
       this.spawnFx(p,'dash');
     }
     if(p.dashTime>0){ p.dashTime--; }
@@ -1265,6 +1280,8 @@ const Game = {
         p.grappleAnchor=closest;
         p.grappleLen=Math.max(55,closestDist);
         p.grappleRestLen=p.grappleLen;
+        p.grappleSerial = ((p.grappleSerial||0) + 1) & 65535;
+        p.input.grapplePressed=false;
         this.spawnFx(p,'grapple');
       }
     }
@@ -1367,11 +1384,12 @@ const Game = {
         const rvx=b.vx-a.vx, rvy=b.vy-a.vy;
         const relSpeed = rvx*nx+rvy*ny;
         if(relSpeed<0){
-          const restitution=0.55;
+          const restitution=0.82;
           const impulse = -(1+restitution)*relSpeed/((1/massA)+(1/massB));
           const ix=impulse*nx, iy=impulse*ny;
-          a.vx -= ix/massA*(this.matchSettings.kb||1); a.vy -= iy/massA*(this.matchSettings.kb||1);
-          b.vx += ix/massB*(this.matchSettings.kb||1); b.vy += iy/massB*(this.matchSettings.kb||1);
+          const kb = (this.matchSettings.kb||1) * 1.35;
+          a.vx -= ix/massA*kb; a.vy -= iy/massA*kb;
+          b.vx += ix/massB*kb; b.vy += iy/massB*kb;
           const impact = Math.abs(relSpeed);
           if(impact>50){
             const dmg = impact*0.025;
@@ -1458,10 +1476,10 @@ const Game = {
 
   spawnFx(p, type, fromNetwork=false){
     if(!p) return;
-    // The host is the sole authority for gameplay FX. Clients still predict their
-    // own physics, but authoritative particle events are broadcast with world
-    // coordinates so every player sees the same effect at the same place.
-    if(!this.isHost && !fromNetwork && p.id===this.myId) return;
+    // The host is the sole authority for gameplay FX. Clients predict the whole
+    // physics world, but do not spawn predicted gameplay FX; they receive the
+    // authoritative FX event from the host instead.
+    if(!this.isHost && !fromNetwork) return;
 
     const cust = p.cust||{hue:200};
     const color = `hsl(${cust.hue||200},80%,60%)`;
@@ -1489,104 +1507,100 @@ const Game = {
   /* ---------- networking glue ---------- */
   broadcastState(){
     const snap = {};
+    this.stateSeq = ((this.stateSeq||0) + 1) & 65535;
     for(const id in this.players){
       const p=this.players[id];
       const g = p.grappleAnchor;
-      snap[id]=[Math.round(p.x),Math.round(p.y),Math.round(p.vx),Math.round(p.vy),
+      const i = p.input||{};
+      snap[id]=[
+        Math.round(p.x),Math.round(p.y),Math.round(p.vx),Math.round(p.vy),
         Math.round(p.damage),p.alive?1:0,p.facing,p.heavy?1:0,
-        g?1:0, g?Math.round(g.x):0, g?Math.round(g.y):0, Math.round(p.grappleStamina),
-        p.jumpSerial||0];
+        g?1:0,g?Math.round(g.x):0,g?Math.round(g.y):0,Math.round(p.grappleStamina),
+        p.jumpSerial||0,p.dashSerial||0,p.grappleSerial||0,
+        i.left?1:0,i.right?1:0,i.jump?1:0,i.heavy?1:0,i.dash?1:0,i.grapple?1:0,
+        p.lastInputSeq||0
+      ];
     }
-    NetworkManager.broadcast({t:'state', s:snap}, false);
+    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, s:snap}, false);
     this.lastServerState = Date.now();
   },
   applyServerState(msg){
+    const seq = msg.seq;
+    if(seq!=null){
+      const prev=this.lastRecvStateSeq;
+      const newer = prev===null || (((seq-prev+65536)&65535) < 32768 && seq!==prev);
+      if(!newer) return;
+      this.lastRecvStateSeq=seq;
+    }
     this.lastServerState = Date.now();
+    this.hostPhysicsTick = msg.tick||this.hostPhysicsTick||0;
     for(const id in msg.s){
       const v = msg.s[id];
-      let p = this.players[id];
+      const p = this.players[id];
       if(!p) continue;
-      if(id===this.myId){
-        const dx=v[0]-p.x, dy=v[1]-p.y;
-        const error=Math.hypot(dx,dy);
-        p.netErrorX=dx; p.netErrorY=dy;
-        if(error>140){ p.x=v[0]; p.y=v[1]; p.vx=v[2]; p.vy=v[3]; p.netErrorX=0; p.netErrorY=0; }
-        else { p.vx += dx*2.5; p.vy += dy*2.5; }
-        p.damage=v[4]; p.alive=!!v[5];
-        if(v[11] < p.grappleStamina-1){ p.grappleStamina=Math.max(0,v[11]); }
-        if(!v[8]){ p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0; }
-        else { p.grappleAnchor={x:v[9],y:v[10]}; if(!p.grappleRestLen) p.grappleRestLen=Math.max(55,Math.hypot(p.x-v[9],p.y-v[10])); }
-        p.netJumpSerial=v[12]||p.netJumpSerial||0;
-        continue;
+
+      const serverX=v[0], serverY=v[1], serverVX=v[2], serverVY=v[3];
+      const dx=serverX-p.x, dy=serverY-p.y;
+      const error=Math.hypot(dx,dy);
+      p.netErrorX=dx; p.netErrorY=dy;
+
+      // For both the local player and predicted remote players, let the local
+      // simulation continue, but continuously compare it with the host. Small
+      // errors are corrected over a few frames; large errors snap immediately.
+      if(error>95){
+        p.x=serverX; p.y=serverY;
+        p.vx=serverVX; p.vy=serverVY;
+        p.netErrorX=0; p.netErrorY=0;
+      } else {
+        p.x += dx*0.38; p.y += dy*0.38;
+        p.vx += (serverVX-p.vx)*0.30;
+        p.vy += (serverVY-p.vy)*0.30;
       }
-      const jumpSerial = v[12]||0;
-      const jumpStarted = jumpSerial !== (p.netJumpSerial||0);
-      p.targetX=v[0]; p.targetY=v[1]; p.targetVX=v[2]; p.targetVY=v[3];
-      p.vx=v[2]; p.vy=v[3];
-      p.damage=v[4]; p.alive=!!v[5]; p.facing=v[6]; p.heavy=!!v[7];
-      p.grappleAnchor = v[8] ? {x:v[9],y:v[10]} : null;
-      p.grappleStamina = v[11];
-      if(jumpStarted){
-        // A jump is an authoritative event. Snap once to its server position
-        // instead of easing from a pre-jump position, which is what caused the
-        // visible half-hop/desync on non-host players.
-        p.netJumpSerial=jumpSerial;
-        p.x=v[0]; p.y=v[1];
-        p.targetX=v[0]; p.targetY=v[1];
-        p.vx=v[2]; p.vy=v[3];
-        p.grounded=false;
+
+      p.damage=v[4];
+      p.alive=!!v[5];
+      p.facing=v[6];
+      p.heavy=!!v[7];
+      p.grappleStamina=v[11];
+
+      // Host sends the held input for every remote player so every client can
+      // simulate the complete world, not just its own ball. Keep the local
+      // player's controls untouched because InputManager samples them every frame.
+      if(id!==this.myId){
+        p.input.left=!!v[15];
+        p.input.right=!!v[16];
+        p.input.jump=!!v[17];
+        p.input.heavy=!!v[18];
+        p.input.dash=!!v[19];
+        p.input.grapple=!!v[20];
+
+        // Recreate discrete actions from authoritative serials. This is what makes
+        // remote jumps/dashes/grapples line up with the host instead of appearing a
+        // few frames late or getting lost between snapshots.
+        const js=v[12]||0, ds=v[13]||0, gs=v[14]||0;
+        if(js !== (p.netJumpSerial||0)){ p.netJumpSerial=js; p.input.jumpPressed=true; }
+        if(ds !== (p.netDashSerial||0)){ p.netDashSerial=ds; p.input.dashPressed=true; }
+        if(gs !== (p.netGrappleSerial||0)){ p.netGrappleSerial=gs; p.input.grapplePressed=true; }
+      }
+
+      if(!v[8]){ p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0; }
+      else {
+        p.grappleAnchor={x:v[9],y:v[10]};
+        if(!p.grappleRestLen) p.grappleRestLen=Math.max(55,Math.hypot(p.x-v[9],p.y-v[10]));
       }
     }
   },
 
-  updateClientNetSmoothing(dt){
-    // Dead-reckon remote players between 25 Hz server snapshots, then gently
-    // steer them toward the latest authoritative position. This keeps impacts
-    // and knockback visually continuous instead of making balls teleport.
+  applyClientCorrections(dt){
+    // A second, very small correction pass removes residual packet jitter after
+    // the fixed-step predictor has run. The actual physics stays fully local.
     for(const id in this.players){
       const p=this.players[id];
-      if(id===this.myId) continue;
-      if(p.targetX==null) continue;
-      const lead=0.035;
-      const desiredX=p.targetX + (p.targetVX||0)*lead;
-      const desiredY=p.targetY + (p.targetVY||0)*lead;
-      const dx=desiredX-p.x, dy=desiredY-p.y;
-      const dist=Math.hypot(dx,dy);
-      const response = dist>160 ? 0.72 : 1-Math.pow(0.0008,dt);
-      p.x += dx*response;
-      p.y += dy*response;
-      p.vx += ((p.targetVX||0)-p.vx) * Math.min(1,dt*14);
-      p.vy += ((p.targetVY||0)-p.vy) * Math.min(1,dt*14);
-      if(dist>220){
-        p.x=p.targetX; p.y=p.targetY;
-        p.vx=p.targetVX||0; p.vy=p.targetVY||0;
-      }
-    }
-
-    // Client-side presentation collision pass. The host remains authoritative,
-    // but this makes remote balls visually react to one another immediately.
-    const arr=Object.values(this.players).filter(p=>p.alive);
-    for(let i=0;i<arr.length;i++){
-      for(let j=i+1;j<arr.length;j++){
-        const a=arr[i], b=arr[j];
-        if(a.id===this.myId && b.id===this.myId) continue;
-        const dx=b.x-a.x, dy=b.y-a.y;
-        const dist=Math.hypot(dx,dy)||0.001;
-        const minD=a.radius+b.radius;
-        if(dist>=minD) continue;
-        const nx=dx/dist, ny=dy/dist;
-        const overlap=minD-dist;
-        const share=(a.id===this.myId)?0.32:(b.id===this.myId)?0.32:0.5;
-        a.x-=nx*overlap*share; a.y-=ny*overlap*share;
-        b.x+=nx*overlap*(a.id===this.myId?0.68:0.5); b.y+=ny*overlap*(a.id===this.myId?0.68:0.5);
-        const rvx=b.vx-a.vx, rvy=b.vy-a.vy;
-        const rel=rvx*nx+rvy*ny;
-        if(rel<0){
-          const push=Math.min(260,-rel*0.18);
-          if(a.id!==this.myId) a.vx-=nx*push, a.vy-=ny*push*0.55;
-          if(b.id!==this.myId) b.vx+=nx*push, b.vy+=ny*push*0.55;
-        }
-      }
+      if(!p || p.netErrorX==null) continue;
+      const ax=Math.max(-7,Math.min(7,p.netErrorX*dt*5.0));
+      const ay=Math.max(-7,Math.min(7,p.netErrorY*dt*5.0));
+      p.x += ax; p.y += ay;
+      p.netErrorX -= ax; p.netErrorY -= ay;
     }
   },
 
