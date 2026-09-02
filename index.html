@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>plunk</title>
+<title>PLUNK</title>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
 :root{
@@ -104,7 +104,6 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 #chatlog div{word-break:break-word;}
 #chatInputWrap{pointer-events:auto;display:flex;gap:4px;margin-top:4px;}
 #chatInput{flex:1;font-size:12px;padding:6px 8px;}
-
 
 /* wider left-right UI */
 .wide-panel{max-height:92vh;overflow:auto;}
@@ -397,6 +396,10 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     </div>
   </div>
 </div>
+
+
+</div>
+
 <!-- ============ MAP EDITOR ============ -->
 <div id="editorUI">
   <div id="editorToolbar">
@@ -576,9 +579,9 @@ const PHYS = {
   baseGravity: 1300,
   friction: 0.975,      // grounded friction — high value = very slidey
   airFriction: 0.992,
-  accel: 2050,
-  airAccel: 1250,
-  maxSpeed: 720,
+  accel: 1050,
+  airAccel: 650,
+  maxSpeed: 950,
   jumpVel: 645,
   bounceDamp: 0.6,
   wallBounce: 0.55,
@@ -593,8 +596,6 @@ const PHYS = {
   grappleSlack: 5,
   grappleMaxStretch: 170,
   grappleRebound: 0.42,
-  turnKick: 70,
-  turnMinSpeed: 105,
 };
 
 /* ---------------------------- PLAYER ---------------------------- */
@@ -611,7 +612,7 @@ class Player{
     this.dashCd=0; this.dashTime=0;
     this.grappleAnchor=null; this.grappleLen=0; this.grappleRestLen=0;
     this.grappleStamina=PHYS.grappleStaminaMax; this.grappleStaminaMax=PHYS.grappleStaminaMax;
-    this.lastMoveDir=0; this.turnKick=0;
+    this.lastMoveDir=0;
     this.input={left:false,right:false,jump:false,jumpPressed:false,heavy:false,
       dash:false,dashPressed:false,grapple:false,grapplePressed:false};
     this.trail=[];
@@ -812,16 +813,15 @@ const InputManager = {
   local(){
     const kb=this.keybinds;
     return {
-      left: !!this.keys[kb.left]||!!this.keys['ArrowLeft']||this.mobile.left,
-      right: !!this.keys[kb.right]||!!this.keys['ArrowRight']||this.mobile.right,
-      jump: !!this.keys[kb.jump]||!!this.keys['ArrowUp']||this.mobile.jump,
-      heavy: !!this.keys[kb.heavy]||this.mobile.heavy,
-      dash: !!this.keys[kb.dash]||this.mobile.dash,
-      grapple: !!this.keys[kb.grapple]||this.mobile.grapple,
+      left: !!this.keys[kb.left]||!!this.keys['ArrowLeft'],
+      right: !!this.keys[kb.right]||!!this.keys['ArrowRight'],
+      jump: !!this.keys[kb.jump]||!!this.keys['ArrowUp'],
+      heavy: !!this.keys[kb.heavy],
+      dash: !!this.keys[kb.dash],
+      grapple: !!this.keys[kb.grapple],
     };
   },
-  mobile:{left:false,right:false,jump:false,heavy:false,dash:false,grapple:false},
-  setupMobile(){}
+
 };
 
 /* ---------------------------- NETWORK MANAGER ---------------------------- */
@@ -989,7 +989,6 @@ const Game = {
     this.resize();
     window.addEventListener('resize', ()=>this.resize());
     InputManager.bind();
-    InputManager.setupMobile();
     this.map = ensureMapSpawn(BUILTIN_MAPS[0]);
     this.loop = this.loop.bind(this);
     requestAnimationFrame(this.loop);
@@ -1047,7 +1046,7 @@ const Game = {
       const p = this.players[id];
       const sp = spawns[i%spawns.length]; i++;
       p.x=sp.x; p.y=sp.y; p.vx=0; p.vy=0; p.damage=0; p.alive=true;
-      p.heavy=false; p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0; p.grounded=false; p.grappleStamina=p.grappleStaminaMax; p.lastMoveDir=0; p.turnKick=0;
+      p.heavy=false; p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0; p.grounded=false; p.grappleStamina=p.grappleStaminaMax; p.lastMoveDir=0;
       p.bounceBoostQueued=false;
       p.renderX=p.x; p.renderY=p.y; p.netErrorX=0; p.netErrorY=0; p.lastAckSeq=0;
       p.jumpBuffer=0; p.jumpSerial=0; p.netJumpSerial=0; p.lastJumpEventSeq=null;
@@ -1167,18 +1166,9 @@ const Game = {
 
     const accel = (p.grounded?PHYS.accel:PHYS.airAccel) / (p.heavy?1.4:1);
     const moveDir = input.left && !input.right ? -1 : (input.right && !input.left ? 1 : 0);
-    // Keep the previous non-zero direction so a turn still gives a small burst
-    // even when the player briefly lets go before reversing.
-    if(moveDir && p.lastMoveDir && moveDir !== p.lastMoveDir){
-      const turnKick = PHYS.turnKick * (p.grounded ? 1 : 0.65) * (p.heavy ? 0.75 : 1);
-      p.vx = moveDir * Math.min(PHYS.maxSpeed, Math.max(Math.abs(p.vx), PHYS.turnMinSpeed) + turnKick);
-      p.turnKick = turnKick;
-      this.spawnFx(p,'turn');
-    }
     if(moveDir<0){ p.vx -= accel*dt; p.facing=-1; }
     else if(moveDir>0){ p.vx += accel*dt; p.facing=1; }
     else{ p.vx *= (p.grounded?PHYS.friction:PHYS.airFriction); }
-    if(moveDir) p.lastMoveDir=moveDir;
     const maxS = PHYS.maxSpeed / (p.heavy?1.25:1);
     p.vx = Math.max(-maxS, Math.min(maxS, p.vx));
 
@@ -1348,12 +1338,12 @@ const Game = {
           const verticalApproach=Math.abs(ny);
           const lateralBias=Math.min(1, verticalApproach*1.15);
           const lateralSign=(a.x<=b.x)?1:-1;
-          const restitution=0.8;
+          const restitution=0.9;
           const impulse = -(1+restitution)*relSpeed/((1/massA)+(1/massB));
           const verticalScale=1-lateralBias*0.72;
           const ix=impulse*nx*verticalScale + Math.abs(impulse)*lateralBias*0.52*tangentX*lateralSign;
           const iy=impulse*ny*verticalScale + Math.abs(impulse)*lateralBias*0.10*tangentY*lateralSign;
-          const kb=(this.matchSettings.kb||1)*1.35;
+          const kb=(this.matchSettings.kb||1)*1.65;
           a.vx -= ix/massA*kb; a.vy -= iy/massA*kb;
           b.vx += ix/massB*kb; b.vy += iy/massB*kb;
           const impact = Math.abs(relSpeed);
@@ -1510,17 +1500,20 @@ const Game = {
       const error=Math.hypot(dx,dy);
       p.netErrorX=dx; p.netErrorY=dy;
 
-      // For both the local player and predicted remote players, let the local
-      // simulation continue, but continuously compare it with the host. Small
-      // errors are corrected over a few frames; large errors snap immediately.
-      if(error>95){
+      // Keep a locally predicted jump from being erased by a late host snapshot.
+      // This is intentionally a small reconciliation change: normal corrections
+      // remain unchanged, but a player who is actively jumping is allowed to keep
+      // their predicted trajectory instead of being snapped back onto the ledge.
+      const locallyJumping = !!p.input.jump || (p.vy < -180 && !p.grounded);
+      if(error>95 && !locallyJumping){
         p.x=serverX; p.y=serverY;
         p.vx=serverVX; p.vy=serverVY;
         p.netErrorX=0; p.netErrorY=0;
       } else {
-        p.x += dx*0.38; p.y += dy*0.38;
-        p.vx += (serverVX-p.vx)*0.30;
-        p.vy += (serverVY-p.vy)*0.30;
+        const correction = locallyJumping ? 0.12 : 0.38;
+        p.x += dx*correction; p.y += dy*correction;
+        p.vx += (serverVX-p.vx)*(locallyJumping ? 0.08 : 0.30);
+        p.vy += (serverVY-p.vy)*(locallyJumping ? 0.08 : 0.30);
       }
 
       p.damage=v[4];
@@ -2615,7 +2608,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
       music:+document.getElementById('setMusic').value, sfx:+document.getElementById('setSfx').value,
       shake: document.getElementById('setShake').checked, particles: document.getElementById('setParticles').checked,
       fps: document.getElementById('setFps').checked, ping: document.getElementById('setPing').checked,
-      mobileForce: document.getElementById('setMobile').checked, quality: document.getElementById('setQuality').value,
+quality: document.getElementById('setQuality').value,
       keybinds: Object.assign({}, InputManager.keybinds)
     };
     Storage.set('settings', s);
@@ -2642,14 +2635,13 @@ window.addEventListener('DOMContentLoaded', ()=>{
     drawCustPreview();
   }
   function loadSettingsUI(){
-    const s = Storage.get('settings',{music:40,sfx:70,shake:true,particles:true,fps:false,ping:false,mobileForce:false,quality:'high'});
+    const s = Storage.get('settings',{music:40,sfx:70,shake:true,particles:true,fps:false,ping:false,quality:'high'});
     document.getElementById('setMusic').value=s.music??40;
     document.getElementById('setSfx').value=s.sfx??70;
     document.getElementById('setShake').checked = s.shake!==false;
     document.getElementById('setParticles').checked = s.particles!==false;
     document.getElementById('setFps').checked = !!s.fps;
     document.getElementById('setPing').checked = !!s.ping;
-    document.getElementById('setMobile').checked = !!s.mobileForce;
     document.getElementById('setQuality').value = s.quality||'high';
     renderKeybindUI();
   }
