@@ -105,20 +105,6 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 #chatInputWrap{pointer-events:auto;display:flex;gap:4px;margin-top:4px;}
 #chatInput{flex:1;font-size:12px;padding:6px 8px;}
 
-/* mobile controls */
-#mobileControls{position:absolute;bottom:0;left:0;width:100%;height:100%;pointer-events:none;display:none;z-index:6;}
-#mobileControls.active{display:block;}
-.mc-btn{position:absolute;pointer-events:auto;width:68px;height:68px;border-radius:50%;
-  background:#ffffff18;border:2px solid #ffffff44;color:#fff;font-weight:800;font-size:11px;
-  display:flex;align-items:center;justify-content:center;touch-action:none;}
-#mc-joy{left:24px;bottom:110px;width:120px;height:120px;border-radius:50%;background:#ffffff10;
-  border:2px solid #ffffff2a;pointer-events:auto;touch-action:none;}
-#mc-joy-stick{position:absolute;width:50px;height:50px;border-radius:50%;background:#ffffff44;
-  left:35px;top:35px;pointer-events:none;}
-#mc-jump{right:150px;bottom:110px;}
-#mc-heavy{right:70px;bottom:180px;background:#8a5a3555;border-color:#c9793a;}
-#mc-dash{right:20px;bottom:90px;background:#5df1ff33;border-color:#5df1ff;}
-#mc-grapple{right:150px;bottom:20px;background:#5dff8f33;border-color:#5dff8f;}
 
 /* wider left-right UI */
 .wide-panel{max-height:92vh;overflow:auto;}
@@ -341,7 +327,6 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
       <label class="row" style="gap:6px;"><input type="checkbox" id="setParticles" checked>Particles</label>
       <label class="row" style="gap:6px;"><input type="checkbox" id="setFps">Show FPS</label>
       <label class="row" style="gap:6px;"><input type="checkbox" id="setPing">Show Ping</label>
-      <label class="row" style="gap:6px;"><input type="checkbox" id="setMobile">Force Mobile Controls</label>
     </div>
     <div class="field" style="margin-top:12px;"><label>Graphics Quality</label>
       <select id="setQuality"><option value="high">High</option><option value="med">Medium</option><option value="low">Low</option></select>
@@ -412,15 +397,6 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     </div>
   </div>
 </div>
-
-<div id="mobileControls">
-  <div id="mc-joy"><div id="mc-joy-stick"></div></div>
-  <div class="mc-btn" id="mc-jump">JUMP</div>
-  <div class="mc-btn" id="mc-heavy">HEAVY</div>
-  <div class="mc-btn" id="mc-dash">DASH</div>
-  <div class="mc-btn" id="mc-grapple">GRAPPLE</div>
-</div>
-
 <!-- ============ MAP EDITOR ============ -->
 <div id="editorUI">
   <div id="editorToolbar">
@@ -845,37 +821,7 @@ const InputManager = {
     };
   },
   mobile:{left:false,right:false,jump:false,heavy:false,dash:false,grapple:false},
-  setupMobile(){
-    const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints>0;
-    const forced = Storage.get('settings',{}).mobileForce;
-    if(!isTouch && !forced) return;
-    document.getElementById('mobileControls').classList.add('active');
-    const joy = document.getElementById('mc-joy'), stick = document.getElementById('mc-joy-stick');
-    let joyActive=false, joyId=null, joyCenter={x:0,y:0};
-    const setJoy = (dx,dy)=>{
-      const max=35; const d=Math.hypot(dx,dy); const cl=Math.min(d,max);
-      const ang=Math.atan2(dy,dx);
-      stick.style.left = (35+Math.cos(ang)*cl)+'px';
-      stick.style.top = (35+Math.sin(ang)*cl)+'px';
-      this.mobile.left = dx < -10; this.mobile.right = dx > 10;
-    };
-    const resetJoy = ()=>{ stick.style.left='35px'; stick.style.top='35px'; this.mobile.left=false; this.mobile.right=false; };
-    joy.addEventListener('touchstart', e=>{ e.preventDefault(); const t=e.changedTouches[0]; joyId=t.identifier;
-      const r=joy.getBoundingClientRect(); joyCenter={x:r.left+r.width/2,y:r.top+r.height/2}; joyActive=true; },{passive:false});
-    window.addEventListener('touchmove', e=>{
-      if(!joyActive) return;
-      for(const t of e.changedTouches){ if(t.identifier===joyId){ setJoy(t.clientX-joyCenter.x, t.clientY-joyCenter.y); } }
-    },{passive:false});
-    window.addEventListener('touchend', e=>{
-      for(const t of e.changedTouches){ if(t.identifier===joyId){ joyActive=false; resetJoy(); } }
-    });
-    const bindBtn = (id,key)=>{
-      const el=document.getElementById(id);
-      el.addEventListener('touchstart', e=>{ e.preventDefault(); this.mobile[key]=true; },{passive:false});
-      el.addEventListener('touchend', e=>{ e.preventDefault(); this.mobile[key]=false; },{passive:false});
-    };
-    bindBtn('mc-jump','jump'); bindBtn('mc-heavy','heavy'); bindBtn('mc-dash','dash'); bindBtn('mc-grapple','grapple');
-  }
+  setupMobile(){}
 };
 
 /* ---------------------------- NETWORK MANAGER ---------------------------- */
@@ -1564,20 +1510,17 @@ const Game = {
       const error=Math.hypot(dx,dy);
       p.netErrorX=dx; p.netErrorY=dy;
 
-      // Keep a locally predicted jump from being erased by a late host snapshot.
-      // This is intentionally a small reconciliation change: normal corrections
-      // remain unchanged, but a player who is actively jumping is allowed to keep
-      // their predicted trajectory instead of being snapped back onto the ledge.
-      const locallyJumping = !!p.input.jump || (p.vy < -180 && !p.grounded);
-      if(error>95 && !locallyJumping){
+      // For both the local player and predicted remote players, let the local
+      // simulation continue, but continuously compare it with the host. Small
+      // errors are corrected over a few frames; large errors snap immediately.
+      if(error>95){
         p.x=serverX; p.y=serverY;
         p.vx=serverVX; p.vy=serverVY;
         p.netErrorX=0; p.netErrorY=0;
       } else {
-        const correction = locallyJumping ? 0.12 : 0.38;
-        p.x += dx*correction; p.y += dy*correction;
-        p.vx += (serverVX-p.vx)*(locallyJumping ? 0.08 : 0.30);
-        p.vy += (serverVY-p.vy)*(locallyJumping ? 0.08 : 0.30);
+        p.x += dx*0.38; p.y += dy*0.38;
+        p.vx += (serverVX-p.vx)*0.30;
+        p.vy += (serverVY-p.vy)*0.30;
       }
 
       p.damage=v[4];
