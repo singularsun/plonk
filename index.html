@@ -169,13 +169,13 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .player-actions .btn{flex:1;padding:10px 12px;font-size:12px;}
 .section-header-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
 .host-only-badge{font-size:9px;letter-spacing:1px;font-weight:900;color:var(--accent3);border:1px solid #6d4a2d;padding:4px 6px;border-radius:2px;}
-.lobby-map-editor{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:9px;align-items:stretch;margin-top:8px;padding-top:8px;border-top:1px solid #3a2a1a;min-height:220px;}
+.lobby-map-editor{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:9px;align-items:start;margin-top:8px;padding-top:8px;border-top:1px solid #3a2a1a;min-height:0;}
 .map-preview-wrap{width:180px;flex:0 0 180px;order:2;}
 .lobby-chat-wrap{min-width:0;order:1;}
 .lobby-settings-col .hidden{display:none!important;}
 #btnApplyLobbySettings{margin-top:7px;width:100%;padding:9px 12px;font-size:12px;}
-#lobbyChatPanel{display:flex;flex-direction:column;margin:0;height:100%;min-height:210px;}
-#lobbyChatLog{flex:1;min-height:150px;max-height:none;overflow-y:auto;font-size:11px;line-height:1.35;background:#00000066;border:1px solid #2a1e12;border-radius:2px;padding:6px;white-space:pre-wrap;}
+#lobbyChatPanel{display:flex;flex-direction:column;margin:0;height:250px;min-height:250px;max-height:250px;overflow:hidden;}
+#lobbyChatLog{flex:1;min-height:0;height:auto;max-height:none;overflow-y:auto;font-size:11px;line-height:1.35;background:#00000066;border:1px solid #2a1e12;border-radius:2px;padding:6px;white-space:pre-wrap;}
 #lobbyChatInputWrap{display:flex;gap:5px;margin-top:5px;}
 #lobbyChatInput{flex:1;padding:7px 8px;font-size:12px;min-width:0;}
 #lobbyChatSend{padding:7px 9px;font-size:11px;}
@@ -190,6 +190,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   .lobby-map-editor{grid-template-columns:1fr;}
   .map-preview-wrap{order:1;width:100%;}
   .lobby-chat-wrap{order:2;}
+  #lobbyChatPanel{height:220px;min-height:220px;max-height:220px;}
 }
 
 /* map editor */
@@ -204,25 +205,32 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 ::-webkit-scrollbar-thumb{background:#3a2a1a;border-radius:2px;}
 
 .spherebox-card{background:#0d0906;border:2px solid #3a2a1a;border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:9px;}
+.spherebox-odds-wrap{position:fixed;bottom:12px;left:max(12px,calc(50vw - 448px));z-index:20;}
+.spherebox-odds-btn{font-size:10px!important;padding:6px 9px!important;min-width:0!important;}
+.spherebox-odds-panel{position:absolute;bottom:36px;left:0;width:184px;background:#110c08f5;border:1px solid #503622;border-radius:4px;padding:9px;box-shadow:0 12px 28px #000b;display:none;text-align:left;}
+.spherebox-odds-panel.open{display:block;}
+.spherebox-odds-row{display:flex;justify-content:space-between;gap:10px;font-size:10px;line-height:1.55;}
 .spherebox-card h3{margin:0;color:var(--accent3);font-size:16px;}
 .spherebox-visual{height:92px;border:1px solid #3a2a1a;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900;background:radial-gradient(circle,#3a2a1a,#0a0705 72%);}
 .spherebox-result{margin-top:14px;text-align:center;padding:12px;border:2px solid #3a2a1a;background:#0d0906;border-radius:var(--radius);font-weight:900;}
 .spherebox-item{border:1px solid #3a2a1a;border-radius:var(--radius);padding:7px 9px;background:#151009;cursor:pointer;min-width:120px;}
 .spherebox-item:hover{border-color:var(--accent);background:#241a10;}
 .dash-effect-card{width:155px;background:#0d0906;border:1px solid #3a2a1a;border-radius:var(--radius);padding:8px;cursor:pointer;transition:transform .12s,border-color .12s,box-shadow .12s;}
+.dash-effect-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:8px;align-items:start;}
 .dash-effect-card:hover{transform:translateY(-2px);border-color:var(--accent);}
 .dash-effect-preview{height:82px;border-radius:3px;border:1px solid #2d2117;background:radial-gradient(circle at 50% 50%,#271b10 0%,#0a0705 72%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
-.dash-effect-preview .core{width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 0 16px 6px var(--fx-color),0 0 34px 12px var(--fx-color);}
-.dash-effect-preview .orb{position:absolute;width:7px;height:7px;border-radius:50%;background:var(--fx-color);box-shadow:0 0 7px var(--fx-color);}
-.dash-effect-preview .orb.o1{transform:translate(-27px,-17px)}
-.dash-effect-preview .orb.o2{transform:translate(30px,-3px)}
-.dash-effect-preview .orb.o3{transform:translate(-18px,20px)}
-.dash-effect-preview .ring{position:absolute;width:52px;height:52px;border:2px solid var(--fx-color);border-radius:50%;box-shadow:0 0 15px var(--fx-color);opacity:.75}
-.dash-effect-preview .diamond{width:16px;height:16px;background:var(--fx-color);transform:rotate(45deg);box-shadow:0 0 16px var(--fx-color);}.dash-effect-preview .hex{width:22px;height:22px;background:var(--fx-color);clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);box-shadow:0 0 16px var(--fx-color);}.dash-effect-preview .plus{width:30px;height:30px;position:relative;filter:drop-shadow(0 0 8px var(--fx-color));}.dash-effect-preview .plus:before,.dash-effect-preview .plus:after{content:'';position:absolute;background:var(--fx-color);left:50%;top:50%;transform:translate(-50%,-50%)}.dash-effect-preview .plus:before{width:30px;height:7px}.dash-effect-preview .plus:after{width:7px;height:30px}.dash-effect-preview .spark{width:24px;height:24px;background:var(--fx-color);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);filter:drop-shadow(0 0 8px var(--fx-color));}
-.dash-effect-preview .star{width:28px;height:28px;position:relative;filter:drop-shadow(0 0 7px var(--fx-color));}
+.dash-effect-preview .core{width:32px;height:32px;border-radius:50%;background:#fff;box-shadow:0 0 20px 8px var(--fx-color),0 0 42px 14px var(--fx-color);}
+.dash-effect-preview .orb{position:absolute;width:10px;height:10px;border-radius:50%;background:var(--fx-color);box-shadow:0 0 7px var(--fx-color);}
+.dash-effect-preview .orb.o1{transform:translate(-40px,-25px)}
+.dash-effect-preview .orb.o2{transform:translate(44px,-4px)}
+.dash-effect-preview .orb.o3{transform:translate(-27px,29px)}
+.dash-effect-preview .ring{position:absolute;width:72px;height:72px;border:2px solid var(--fx-color);border-radius:50%;box-shadow:0 0 15px var(--fx-color);opacity:.75}
+.dash-effect-preview .diamond{width:23px;height:23px;background:var(--fx-color);transform:rotate(45deg);box-shadow:0 0 16px var(--fx-color);}.dash-effect-preview .hex{width:32px;height:32px;background:var(--fx-color);clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);box-shadow:0 0 16px var(--fx-color);}.dash-effect-preview .plus{width:42px;height:42px;position:relative;filter:drop-shadow(0 0 8px var(--fx-color));}.dash-effect-preview .plus:before,.dash-effect-preview .plus:after{content:'';position:absolute;background:var(--fx-color);left:50%;top:50%;transform:translate(-50%,-50%)}.dash-effect-preview .plus:before{width:42px;height:10px}.dash-effect-preview .plus:after{width:10px;height:42px}.dash-effect-preview .spark{width:34px;height:34px;background:var(--fx-color);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);filter:drop-shadow(0 0 8px var(--fx-color));}
+.dash-effect-preview .star{width:38px;height:38px;position:relative;filter:drop-shadow(0 0 7px var(--fx-color));}
 .dash-effect-preview .star:before,.dash-effect-preview .star:after{content:'';position:absolute;inset:0;background:var(--fx-color);clip-path:polygon(50% 0,61% 37%,100% 50%,61% 63%,50% 100%,39% 63%,0 50%,39% 37%);}
-.dash-effect-preview .aura{position:absolute;inset:9px;border-radius:50%;border:4px solid var(--fx-color);opacity:.22;box-shadow:0 0 24px 8px var(--fx-color);}
+.dash-effect-preview .aura{position:absolute;inset:4px;border-radius:50%;border:5px solid var(--fx-color);opacity:.22;box-shadow:0 0 24px 8px var(--fx-color);}
 .dash-effect-meta{font-size:9px;color:var(--text-dim);margin-top:4px;line-height:1.35;}
+.rarity-common{color:#d7d7d7}.rarity-uncommon{color:#72e6a1}.rarity-rare{color:#70b7ff}.rarity-epic{color:#c58cff}.rarity-legendary{color:#ffd76a;text-shadow:0 0 8px #ffd76a66}.rarity-mythic{color:#ff72f1;text-shadow:0 0 8px #ff72f188,0 0 20px #6cfbff55;animation:mythicTextPulse 1.2s ease-in-out infinite alternate}@keyframes mythicTextPulse{from{filter:brightness(.95)}to{filter:brightness(1.35)}}
 .spherebox-reel-overlay{position:fixed;inset:0;background:radial-gradient(circle at 50% 46%,#25180f 0%,#080604 70%);display:flex;align-items:center;justify-content:center;z-index:50;}
 .spherebox-reel-panel{width:min(920px,94vw);background:#110c08f7;border:2px solid #503622;border-radius:4px;padding:18px;box-shadow:0 24px 90px #000c;text-align:center;}
 .spherebox-reel-window{position:relative;height:126px;overflow:hidden;border:2px solid #62452d;background:#080604;border-radius:3px;margin:16px 0;}
@@ -244,7 +252,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .spherebox-card .drop-view-btn{margin-top:2px;}
 @media(max-width:760px){.spherebox-drops-grid{grid-template-columns:1fr;}}
 
-@media(max-width:760px){#sphereboxCards{grid-template-columns:1fr!important}.spherebox-card{min-width:0}.dash-effect-card{width:100%;}}
+@media(max-width:760px){#sphereboxCards{grid-template-columns:1fr!important}.spherebox-card{min-width:0}.dash-effect-card{width:100%;}.dash-effect-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
 
 /* subtle main-menu motion/audio polish */
 #gameCanvas{z-index:0;}
@@ -253,7 +261,33 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .spherebox-reel-overlay{backdrop-filter:blur(2px);}
 .spherebox-reel-panel{overflow:hidden;}
 .spherebox-card .sphere-open-btn{padding:15px 18px;font-size:14px;font-weight:900;}.spherebox-card .drop-view-btn{padding:7px 9px;font-size:10px;min-width:0}.spherebox-actions{display:grid!important;grid-template-columns:1.35fr .65fr!important;align-items:stretch}.spherebox-card .drop-view-btn{align-self:center}.spherebox-roll-hint{opacity:.7}.spherebox-reel-window{height:128px}.spherebox-reel-panel{max-width:980px}
-.cust-color-fields{display:flex;gap:8px;align-items:flex-start}.cust-color-fields>.field{flex:1;min-width:0}.cust-color-fields label{font-size:12px;white-space:nowrap;text-align:center;display:block;margin-bottom:2px}.cust-color-picker{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 0;width:100%}.cust-color-wheel{width:64px;height:64px;display:block;border-radius:50%;touch-action:none;cursor:crosshair;filter:drop-shadow(0 3px 8px #0009)}.cust-sat-slider{width:72px;height:12px;margin-top:2px;accent-color:#fff;cursor:pointer}</style>
+.cust-color-fields{display:flex;gap:8px;align-items:flex-start}.cust-color-fields>.field{flex:1;min-width:0}.cust-color-fields label{font-size:12px;white-space:nowrap;text-align:center;display:block;margin-bottom:2px}.cust-color-picker{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 0;width:100%}.cust-color-wheel{width:64px;height:64px;display:block;border-radius:50%;touch-action:none;cursor:crosshair;filter:drop-shadow(0 3px 8px #0009)}.cust-sat-slider{width:72px;height:12px;margin-top:2px;accent-color:#fff;cursor:pointer}
+/* customize layout */
+.cust-layout{display:grid;grid-template-columns:minmax(220px,.82fr) minmax(300px,1.15fr) minmax(220px,.82fr);gap:14px;align-items:stretch;margin-top:10px;}
+.cust-col-preview,.cust-effect-left{min-height:290px;}
+.cust-col-preview,.cust-effect-left{display:flex;flex-direction:column;}
+.cust-col-preview .cust-character-preview-wrap,.cust-effect-left .cust-effect-preview-wrap{flex:1;display:flex;align-items:center;justify-content:center;min-height:240px;}
+.cust-col-preview #custPreview,.cust-effect-left #custEffectShower{width:240px!important;height:240px!important;flex:0 0 auto;object-fit:contain;background:transparent;border:0;border-radius:0;}
+.cust-col{background:#0d0906;border:1px solid #3a2a1a;border-radius:var(--radius);padding:12px;min-width:0;}
+.cust-col-options select{min-height:44px;font-size:14px;padding-top:8px;padding-bottom:8px;}
+
+.cust-col-title{font-size:10px;font-weight:900;letter-spacing:2px;color:var(--accent3);margin-bottom:10px;}
+.cust-col-colors .cust-name-field{margin-bottom:10px;}
+.cust-color-fields{display:flex;gap:6px;align-items:flex-start;}
+.cust-color-fields>.field{flex:1;min-width:0;}
+.cust-color-fields label{font-size:9px;white-space:nowrap;text-align:center;display:block;margin-bottom:2px;}
+.cust-color-picker{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 0;width:100%;}
+.cust-color-wheel{width:60px;height:60px;display:block;border-radius:50%;touch-action:none;cursor:crosshair;filter:drop-shadow(0 3px 8px #0009);}
+.cust-sat-slider{width:68px;height:12px;margin-top:2px;accent-color:#fff;cursor:pointer;}
+.cust-col-options .field{margin-bottom:10px;}
+.cust-col-options .field:last-child{margin-bottom:0;}
+
+.cust-character-preview-wrap canvas,.cust-effect-preview-wrap canvas{display:block;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;}
+.cust-character-preview-wrap{display:flex;justify-content:center;align-items:center;margin-bottom:10px;}
+.cust-effect-preview-field{margin-bottom:4px;}
+.cust-effect-preview-field label{font-size:10px;}
+@media(max-width:760px){.cust-layout{grid-template-columns:1fr;}.cust-col-preview{grid-column:1;grid-row:1;}.cust-col-options{grid-column:1;grid-row:2;}.cust-effect-left{grid-column:1;grid-row:3;}.cust-col-preview #custPreview,.cust-effect-left #custEffectShower{width:210px!important;height:210px!important;background:transparent;border:0;border-radius:0;}}
+</style>
 </head>
 <body>
 <div id="app">
@@ -271,7 +305,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <button class="btn" data-go="spherebox">SPHEREBOX</button>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 1.73</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 1.76</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -323,12 +357,11 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   <div class="panel" style="width:min(420px,94vw);position:relative;">
     <span class="close-x" data-go="main">✕</span>
     <h2>JOIN GAME</h2>
-    <div class="field"><label>Username</label><input type="text" id="joinName" maxlength="14" value="Player" readonly aria-readonly="true"></div>
     <div class="field" style="margin-top:10px;"><label>ENTER GAME CODE</label>
-      <input type="text" id="joinCode" maxlength="1" style="font-size:28px;letter-spacing:4px;text-align:center;text-transform:uppercase;width:90px;" placeholder="A" autocomplete="off" spellcheck="false">
-    </div>
-    <div class="row" style="margin-top:14px;">
-      <button class="btn primary" id="btnJoin">JOIN</button>
+      <div style="display:flex;align-items:center;gap:8px;justify-content:center;">
+        <input type="text" id="joinCode" maxlength="1" style="font-size:28px;letter-spacing:4px;text-align:center;text-transform:uppercase;width:72px;" placeholder="A" autocomplete="off" spellcheck="false">
+        <button class="btn primary" id="btnJoin">JOIN</button>
+      </div>
     </div>
     <div class="errbox" id="joinErr"></div>
   </div>
@@ -380,77 +413,92 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   </div>
 </div>
 
+<!-- ============ SPHEREBOX ============ -->
+<div class="screen" id="screen-spherebox">
+  <div class="panel wide-panel" style="width:min(920px,96vw);position:relative;max-height:90vh;overflow-y:auto;">
+    <span class="close-x" data-go="main">✕</span>
+    <div class="spherebox-odds-wrap">
+      <button class="btn spherebox-odds-btn" id="sphereboxOddsBtn" type="button">ODDS</button>
+      <div class="spherebox-odds-panel" id="sphereboxOddsPanel">
+        <div style="font-weight:900;font-size:10px;margin-bottom:4px;letter-spacing:1px;">RARITY ODDS</div>
+        <div class="spherebox-odds-row rarity-common"><span>COMMON</span><span>1/1.5</span></div>
+        <div class="spherebox-odds-row rarity-uncommon"><span>UNCOMMON</span><span>1/5</span></div>
+        <div class="spherebox-odds-row rarity-rare"><span>RARE</span><span>1/20</span></div>
+        <div class="spherebox-odds-row rarity-epic"><span>EPIC</span><span>1/200</span></div>
+        <div class="spherebox-odds-row rarity-legendary"><span>LEGENDARY</span><span>1/2,000</span></div>
+        <div class="spherebox-odds-row rarity-mythic"><span>MYTHIC</span><span>1/100,000</span></div>
+      </div>
+    </div>
+    <h2>SPHEREBOX</h2>
+    <div class="subhint" style="margin:-4px 0 12px;">Open boxes to unlock dash charge effects. Click an owned effect to equip it.</div>
+    <div id="sphereboxCards" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;"></div>
+    <div class="spherebox-result hidden" id="sphereboxResult"></div>
+    <div style="margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <div><h3 style="margin:0;">YOUR EFFECTS</h3><div class="subhint" id="sphereboxCounts">0 effects owned</div></div>
+    </div>
+    <div id="sphereboxInventory" class="dash-effect-grid" style="margin-top:8px;"></div>
+  </div>
+</div>
+
 <!-- ============ CUSTOMIZE ============ -->
 <div class="screen" id="screen-customize">
-  <div class="panel" style="width:min(560px,94vw);position:relative;">
+  <div class="panel" style="width:min(900px,94vw);position:relative;">
     <span class="close-x" data-go="main">✕</span>
     <h2>CUSTOMIZE</h2>
-    <div class="row" style="gap:24px;align-items:flex-start;">
-      <canvas id="custPreview" width="160" height="160" style="background:#0d0906;border:2px solid #3a2a1a;border-radius:var(--radius);"></canvas>
-      <div style="flex:1;">
-        <div class="field"><label>Name</label><input type="text" id="custName" maxlength="14" value="Player"></div>
-        <div class="cust-color-fields" style="margin-top:8px;">
+    <div class="cust-layout">
+      <div class="cust-col cust-col-preview">
+        <div class="cust-col-title">PLAYER PREVIEW</div>
+        <div class="cust-character-preview-wrap"><canvas id="custPreview" width="240" height="240"></canvas></div>
+      </div>
+      <div class="cust-col cust-col-options">
+        <div class="cust-col-title">PLAYER</div>
+        <div class="field cust-name-field"><label>Username</label><input type="text" id="custName" maxlength="14" value="Player"></div>
+        <div class="cust-color-fields">
           <div class="field"><label>Primary Color</label><div class="cust-color-picker"><canvas class="cust-color-wheel" id="custPrimaryWheel" width="96" height="96"></canvas><input class="cust-sat-slider" id="custPrimarySat" type="range" min="0" max="100" value="80" aria-label="Primary color saturation"></div></div>
           <div class="field"><label>Secondary Color</label><div class="cust-color-picker"><canvas class="cust-color-wheel" id="custSecondaryWheel" width="96" height="96"></canvas><input class="cust-sat-slider" id="custSecondarySat" type="range" min="0" max="100" value="60" aria-label="Secondary color saturation"></div></div>
         </div>
-        <div class="field" style="margin-top:8px;"><label>Body Gradient</label>
+        <div style="height:8px"></div>
+        <div class="field"><label>Body Gradient</label>
           <select id="custGradient">
-            <option value="none">No Gradient</option>
-            <option value="radial-in">Gradient In</option>
-            <option value="radial-out" selected>Gradient Out</option>
-            <option value="spiral">Spiral Gradient</option>
-            <option value="linear">Linear Gradient</option>
-            <option value="split">Split Gradient</option>
+            <option value="none">No Gradient</option><option value="radial-in">Gradient In</option><option value="radial-out" selected>Gradient Out</option><option value="spiral">Spiral Gradient</option><option value="linear">Linear Gradient</option><option value="split">Split Gradient</option>
           </select>
         </div>
-        <div class="field" style="margin-top:8px;"><label>Face</label>
+        <div class="field"><label>Face</label>
           <select id="custFace">
-            <option>Happy</option><option>Cool</option><option>Angry</option><option>Sleepy</option>
-            <option>Star</option><option>Wink</option><option>Surprised</option><option>Grumpy</option>
-            <option>Cyclops</option><option>Heart</option>
+            <option>Happy</option><option>Cool</option><option>Angry</option><option>Sleepy</option><option>Star</option><option>Wink</option><option>Surprised</option><option>Grumpy</option><option>Cyclops</option><option>Heart</option>
           </select>
         </div>
-        <div class="field" style="margin-top:8px;"><label>Dash Charge Effect</label><select id="custDashEffect"></select></div>
-        <div class="field" style="margin-top:10px;"><label>Effect Shower</label>
-          <canvas id="custEffectShower" width="300" height="120" style="width:100%;height:120px;background:#080604;border:2px solid #3a2a1a;border-radius:var(--radius);"></canvas>
-        </div>
+        <div class="field"><label>Dash Charge Effect</label><select id="custDashEffect"></select></div>
+      </div>
+      <div class="cust-col cust-effect-left">
+        <div class="cust-col-title">DASH CHARGE EFFECT PREVIEW</div>
+        <div class="cust-effect-preview-wrap"><canvas id="custEffectShower" width="240" height="240"></canvas></div>
       </div>
     </div>
     <div class="row" style="margin-top:16px;"><button class="btn primary" id="btnSaveCust">SAVE</button></div>
   </div>
 </div>
 
-<!-- ============ SPHEREBOX ============ -->
-<div class="screen" id="screen-spherebox">
-  <div class="panel wide-panel" style="width:min(940px,96vw);position:relative;">
-    <span class="close-x" data-go="main">✕</span>
-    <h2>SPHEREBOX</h2>
-    <div id="sphereboxCards" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;"></div>
-    <div id="sphereboxResult" class="spherebox-result hidden"></div>
-    <div class="panel" style="margin-top:14px;background:#0d090688;">
-      <div class="row between"><h3 style="margin:0;">YOUR DASH EFFECTS</h3><span id="sphereboxCounts" class="subhint"></span></div>
-      <div id="sphereboxInventory" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:9px;"></div>
-    </div>
-  </div>
-</div>
-
-<!-- Spherebox opening animation overlay -->
+<!-- ============ SPHEREBOX ROLL OVERLAY ============ -->
 <div id="sphereboxReelOverlay" class="spherebox-reel-overlay hidden">
   <div class="spherebox-reel-panel">
-    <div id="sphereReelTitle" style="font-size:12px;letter-spacing:3px;color:var(--text-dim);">OPENING SPHEREBOX</div>
-    <div id="sphereReelBoxName" style="font-size:22px;font-weight:900;color:var(--accent3);margin-top:4px;"></div>
+    <h2 id="sphereReelBoxName" style="margin:0;">SPHEREBOX</h2>
+    <div id="sphereReelHint" class="subhint" style="margin-top:4px;">Rolling...</div>
     <div class="spherebox-reel-window">
       <div class="spherebox-pointer"></div>
       <div id="sphereboxReelStrip" class="spherebox-reel-strip"></div>
     </div>
-    <div id="sphereReelHint" class="subhint">Rolling...</div>
-    <button id="sphereReelSkip" class="btn primary spherebox-reel-skip">SKIP</button>
+    <button class="btn primary spherebox-reel-skip" id="sphereReelSkip">SKIP</button>
   </div>
 </div>
 
+<!-- ============ SPHEREBOX DROPS OVERLAY ============ -->
 <div id="sphereboxDropsOverlay" class="spherebox-drops-overlay hidden">
   <div class="spherebox-drops-panel">
-    <div class="row between"><div><div id="sphereDropsTitle" style="font-size:20px;font-weight:900;color:var(--accent3);"></div><div class="subhint">Possible dash effects</div></div><button class="btn small" id="sphereDropsClose">CLOSE</button></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;">
+      <h2 id="sphereDropsTitle" style="margin:0;">POSSIBLE DROPS</h2>
+      <button class="btn small" id="sphereDropsClose">CLOSE</button>
+    </div>
     <div id="sphereboxDropsGrid" class="spherebox-drops-grid"></div>
   </div>
 </div>
@@ -691,7 +739,7 @@ const AudioManager = {
   crateSpin(){ this.beep(180,0.16,'sawtooth',0.06,90); },
   crateStop(){ this.beep(620,0.13,'triangle',0.12,980); },
   rareDrop(rarity){
-    const base=rarity==='legendary'?440:rarity==='epic'?350:270;
+    const base=rarity==='mythic'?520:rarity==='legendary'?440:rarity==='epic'?350:270;
     [base,base*1.25,base*1.5].forEach((f,i)=>setTimeout(()=>this.beep(f,0.16,'triangle',0.12),i*70));
   },
   jump(){ this.beep(420,0.14,'square',0.25,700); },
@@ -790,10 +838,11 @@ const PHYS = {
   baseGravity: 1300,
   friction: 0.975,      // grounded friction — high value = very slidey
   airFriction: 0.992,
-  accel: 1050,
-  airAccel: 650,
+  accel: 980,
+  airAccel: 610,
   maxSpeed: 950,
   jumpVel: 645,
+  jumpHoldGravityScale: 0.873, // holding W longer preserves about the same max height with a slower takeoff
   jumpShortHopFactor: 0.52,   // tapping jump clamps the upward speed to this fraction of full jumpVel
   fastFallMultiplier: 2.3,    // extra gravity multiplier while holding the down key in the air
   bounceDamp: 0.6,
@@ -809,17 +858,17 @@ const PHYS = {
   grappleSlack: 5,
   grappleMaxStretch: 170,
   grappleRebound: 0.42,
-  dashChargeTime: 0.55,       // seconds of holding dash to gain ONE charge level
+  dashChargeTime: 1.0,        // one charge level per second; max charge takes a full 3 seconds
   dashMaxLevel: 3,              // hold through three charge levels for the strongest dash
   dashBaseSpeed: 320,           // weak speed for an uncharged tap
-  dashMaxBonus: 5600,             // extreme extra speed at max charge
+  dashMaxBonus: 2680,             // slightly slower max dash (80% of previous max bonus)
   dashPowerCurve: 3.2,            // very steep nonlinear curve: most power arrives at the final charge
   dashCdBase: 0.4,               // cooldown after an uncharged tap dash
   dashCdMaxBonus: 0.9,            // extra cooldown added at max charge
   actionProjectileSpeed: 520,
   actionProjectileMaxSpeed: 1250,
   actionProjectileLife: Infinity,
-  actionProjectileCooldown: 0.55,
+  actionProjectileCooldown: 1.0,
   actionProjectileLength: 24,
   actionProjectileWidth: 10,
   actionProjectileSpawnGrace: 0.16,
@@ -840,7 +889,7 @@ class Player{
     this.damage=0; this.alive=true;
     this.heavy=false; this.hitFlash=0;
     this.bounceBoostQueued=false;
-    this.dashCd=0; this.dashTime=0;
+    this.dashCd=0; this.dashTime=0; this.dashVelocity=0; this.dashDirection=0;
     this.dashCharging=false; this.dashCharge=0; this.dashCdMax=PHYS.dashCdBase; this._dashHeldPrev=false; this._dashChargeFxAcc=0;
     this.grappleAnchor=null; this.grappleLen=0; this.grappleRestLen=0;
     this.grappleStamina=PHYS.grappleStaminaMax; this.grappleStaminaMax=PHYS.grappleStaminaMax;
@@ -880,24 +929,24 @@ const BUILTIN_MAPS = [
     {x:200,y:760,w:1200,h:60,type:'solid'},
     {x:500,y:580,w:250,h:24,type:'oneway'},
     {x:900,y:580,w:250,h:24,type:'oneway'},
-  ],[{x:400,y:600},{x:1200,y:600},{x:800,y:400},{x:800,y:700}],[],'grid'),
+  ],[{x:400,y:600},{x:1200,y:600},{x:800,y:400},{x:800,y:700}],[],'default'),
   makeMap('Volcano',1900,1000,[
     {x:120,y:880,w:500,h:40,type:'solid'},
     {x:1280,y:880,w:500,h:40,type:'solid'},
     {x:700,y:680,w:500,h:30,type:'oneway'},
     {x:850,y:450,w:200,h:24,type:'bounce'},
   ],[{x:300,y:800},{x:1600,y:800},{x:950,y:600},{x:950,y:380}],
-     [{x:650,y:940,w:600,h:60,type:'lava'}],'volcano'),
+     [{x:650,y:940,w:600,h:60,type:'lava'}],'default'),
   makeMap('Tiny Arena',1000,650,[
     {x:150,y:560,w:700,h:40,type:'solid'},
     {x:380,y:420,w:240,h:24,type:'oneway'},
-  ],[{x:300,y:480},{x:700,y:480},{x:500,y:340}],[],'grid'),
+  ],[{x:300,y:480},{x:700,y:480},{x:500,y:340}],[],'default'),
   makeMap('Chaos Pit',1700,950,[
     {x:100,y:860,w:1500,h:40,type:'solid'},
     {x:300,y:660,w:220,h:24,type:'bounce'},
     {x:1180,y:660,w:220,h:24,type:'bounce'},
     {x:750,y:480,w:200,h:24,type:'oneway'},
-  ],[{x:300,y:780},{x:1400,y:780},{x:850,y:400},{x:600,y:580},{x:1100,y:580}],[],'chaos'),
+  ],[{x:300,y:780},{x:1400,y:780},{x:850,y:400},{x:600,y:580},{x:1100,y:580}],[],'default'),
 ];
 
 /* Procedurally add directional arrow tiles for the Arrows / Death Arrows modes.
@@ -1225,12 +1274,15 @@ const SphereBoxes = {
     earthNova:{name:'Earth Nova',rarity:'epic',hueShift:130,particle:'#9cffb4',shape:'diamond',aura:true,style:'bloom'},
     terraCore:{name:'Terra Core',rarity:'epic',hueShift:75,particle:'#9dffb6',shape:'supernova',aura:true},
     worldshatter:{name:'Worldshatter',rarity:'legendary',hueShift:15,particle:'#ffe1a3',colors:['#7a4b2a','#a76a3a','#ffe1a3','#c7ff67','#5be3ff'],shape:'shard',aura:true,style:'shatter'},
-    gaiaAwakening:{name:'Gaia Awakening',rarity:'legendary',hueShift:120,particle:'#d7ffd9',colors:['#5cff8a','#8de66d','#d7ffd9','#6bd6ff','#f1ff7d'],shape:'hex',aura:true}
+    gaiaAwakening:{name:'Gaia Awakening',rarity:'legendary',hueShift:120,particle:'#d7ffd9',colors:['#5cff8a','#8de66d','#d7ffd9','#6bd6ff','#f1ff7d'],shape:'hex',aura:true},
+    lunarSingularity:{name:'Lunar Singularity',rarity:'mythic',hueShift:270,particle:'#e9dcff',colors:['#12002b','#6d2bff','#c78cff','#ffffff','#4dfcff'],shape:'supernova',aura:true,style:'singularity'},
+    solarSeraph:{name:'Solar Seraph',rarity:'mythic',hueShift:42,particle:'#fff5a8',colors:['#ff2b1f','#ff7b22','#ffe36b','#ffffff','#5de1ff'],shape:'star',aura:true,style:'seraph'},
+    worldtreeCataclysm:{name:'Worldtree Cataclysm',rarity:'mythic',hueShift:120,particle:'#d8ffb0',colors:['#0b3518','#2cff72','#b7ff55','#fff3a0','#6bdcff'],shape:'shard',aura:true,style:'worldtree'}
   },
   boxes:{
-    moon:{name:'MOONSPHERE BOX',symbol:'☾',odds:[['common',72],['uncommon',20],['rare',6],['epic',1.5],['legendary',0.5]],pool:['moonGlow','moonHalo','moonDust','lunarEclipse','moonOrbit','moonComet','moonVoid','lunarSupernova']},
-    sun:{name:'SUNSPHERE BOX',symbol:'☀',odds:[['common',72],['uncommon',20],['rare',6],['epic',1.5],['legendary',0.5]],pool:['sunSpark','solarFlare','sunRay','solarCrown','sunburst','sunCore','solarStorm','solarEclipse','solarPhoenix']},
-    earth:{name:'EARTHSPHERE BOX',symbol:'◉',odds:[['common',72],['uncommon',20],['rare',6],['epic',1.5],['legendary',0.5]],pool:['earthPulse','earthStone','earthBloom','earthCrack','tectonic','seismic','earthNova','terraCore','worldshatter','gaiaAwakening']}
+    moon:{name:'MOONSPHERE BOX',symbol:'☾',odds:[['mythic',0.001],['common',73.224],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['moonGlow','moonHalo','moonDust','lunarEclipse','moonOrbit','moonComet','moonVoid','lunarSupernova','moonAstralCrown','lunarSingularity']},
+    sun:{name:'SUNSPHERE BOX',symbol:'☀',odds:[['mythic',0.001],['common',73.224],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['sunSpark','solarFlare','sunRay','solarCrown','sunburst','sunCore','solarStorm','solarEclipse','solarPhoenix','solarSeraph']},
+    earth:{name:'EARTHSPHERE BOX',symbol:'◉',odds:[['mythic',0.001],['common',73.224],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['earthPulse','earthStone','earthBloom','earthCrack','tectonic','seismic','earthNova','terraCore','worldshatter','gaiaAwakening','worldtreeCataclysm']}
   },
   getInventory(){
     const inv=Storage.get('sphereInventory',{basic:1});
@@ -1465,7 +1517,7 @@ const Game = {
       p.radius=26*Math.max(0.5,Math.min(2,Number(this.matchSettings.playerSize)||1));
       p.heavy=false; p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0; p.grounded=false; p.grappleStamina=p.grappleStaminaMax; p.lastMoveDir=0;
       p.bounceBoostQueued=false;
-      p.dashCd=0; p.dashTime=0; p.dashCharging=false; p.dashCharge=0; p.dashCdMax=PHYS.dashCdBase; p._dashHeldPrev=false; p._dashChargeFxAcc=0;
+      p.dashCd=0; p.dashTime=0; p.dashVelocity=0; p.dashDirection=0; p.dashCharging=false; p.dashCharge=0; p.dashCdMax=PHYS.dashCdBase; p._dashHeldPrev=false; p._dashChargeFxAcc=0;
       p.renderX=p.x; p.renderY=p.y; p.netErrorX=0; p.netErrorY=0; p.lastAckSeq=0;
       p.jumpBuffer=0; p.jumpSerial=0; p.netJumpSerial=0; p.lastJumpEventSeq=null;
       p.dashSerial=0; p.netDashSerial=0; p.grappleSerial=0; p.netGrappleSerial=0; p._dashChargeSfxLevel=0;
@@ -1658,7 +1710,15 @@ const Game = {
     else if(moveDir>0){ p.vx += accel*dt; p.facing=1; }
     else{ p.vx *= (p.grounded?PHYS.friction:PHYS.airFriction); }
     const maxS = (PHYS.maxSpeed / (p.heavy?1.25:1)) * chargeMoveFactor;
-    p.vx = Math.max(-maxS, Math.min(maxS, p.vx));
+    if(p.dashTime>0 && Number.isFinite(p.dashVelocity)){
+      // Dash momentum is locked to the direction chosen when the dash fired.
+      // Turning during the dash may change the character's facing, but never
+      // redirects the dash velocity.
+      const dashDir = p.dashDirection || p.facing || 1;
+      p.vx = dashDir * Math.abs(p.dashVelocity);
+    } else {
+      p.vx = Math.max(-maxS, Math.min(maxS, p.vx));
+    }
 
     const jumpPower = PHYS.jumpVel / (p.heavy?1.2:1);
     if(p.jumpBuffer>0 && p.grounded && !p.grappleAnchor){
@@ -1680,6 +1740,7 @@ const Game = {
     // Fast fall: holding down while airborne pulls you down harder, both cutting
     // a rising arc short and accelerating the fall itself.
     if(input.down && !p.grounded) grav *= PHYS.fastFallMultiplier;
+    if(input.jump && !p.grounded && p.vy < 0) grav *= PHYS.jumpHoldGravityScale;
 
     // Dash: hold to charge through three power levels, then release to fire.
     // A quick tap still produces the familiar low-power poke.
@@ -1726,9 +1787,13 @@ const Game = {
     const chargeNorm = charge/PHYS.dashMaxLevel;
     const power = PHYS.dashBaseSpeed + Math.pow(chargeNorm, PHYS.dashPowerCurve)*PHYS.dashMaxBonus;
     p.vx = p.facing * power;
+    p.dashVelocity = power;
     p.dashCd = PHYS.dashCdBase + chargeNorm*PHYS.dashCdMaxBonus;
     p.dashCdMax = p.dashCd;
-    p.dashTime = 10;
+    // Revert to the original dash duration; all charge levels use the same
+    // momentum duration, including max charge.
+    p.dashTime = chargeNorm >= 0.9 ? 14 : 10;
+    p.dashDirection = p.facing || 1;
     p.dashCharging = false;
     p.dashCharge = 0;
     p.dashSerial = ((p.dashSerial||0) + 1) & 65535;
@@ -1749,14 +1814,38 @@ const Game = {
     const hue = cust.hue||200;
     const effect=SphereBoxes.describe(cust.dashEffect||'basic');
     const level = Math.min(PHYS.dashMaxLevel,Math.floor(charge||0)+1);
-    const color = chargeNorm>0.85 ? effect.particle : `hsl(${(hue+(effect.hueShift||0))%360},90%,${65+chargeNorm*20}%)`;
-    const shapeBoost = effect.rarity==='legendary'?1.7:effect.rarity==='epic'?1.35:effect.rarity==='rare'?1.15:1;
+    const effectColors = SphereBoxes.colors(effect);
+    const color = chargeNorm>0.85 ? (effect.particle || effectColors[0] || '#fff') : `hsl(${(hue+(effect.hueShift||0))%360},90%,${65+chargeNorm*20}%)`;
+    const shapeBoost = effect.rarity==='mythic'?2.3:effect.rarity==='legendary'?1.95:effect.rarity==='epic'?1.35:effect.rarity==='rare'?1.15:1;
     const spawnOne=(ox=0,oy=0,extra={})=>this.particles.spawn(x+ox,y+oy,{
       vx:(p.x-x)*(3+chargeNorm*6)+(extra.vx||0), vy:(p.y-y)*(3+chargeNorm*6)-30-chargeNorm*35+(extra.vy||0),
       life:(0.22+chargeNorm*0.14)*shapeBoost, size:(1.5+chargeNorm*4+level*0.5)*shapeBoost, sizeEnd:0.2, color:extra.color||color,
       gravity:0, drag:0.85-chargeNorm*0.08, twinkle:chargeNorm>0.45,
       shape:extra.shape||effect.shape||'orb', spin:extra.spin||((Math.random()-.5)*6)
     });
+    if(effect.rarity==='mythic') {
+      if(effect.style==='singularity'){
+        for(let i=0;i<12;i++){
+          const a=t*(1.7+i*.045)+i*Math.PI/6; const ar=r*(.65+chargeNorm*.9)+(i%3)*7;
+          spawnOne(Math.cos(a)*ar,Math.sin(a)*ar,{color:effectColors[i%effectColors.length],vx:-Math.cos(a)*(120+chargeNorm*260)+Math.sin(a)*120,vy:-Math.sin(a)*(120+chargeNorm*260)-Math.cos(a)*120,shape:i%3?'orb':'star',spin:5});
+        }
+        this.particles.burst(x,y,'#09030f',10+Math.round(chargeNorm*10),80,{gravity:0,life:.45,size:5+chargeNorm*3,sizeEnd:1,twinkle:false,shape:'orb'});
+      } else if(effect.style==='seraph'){
+        for(const wing of [-1,1]) for(let i=0;i<8;i++){
+          const f=i/7, px=wing*(8+f*34), py=-4-f*32+Math.sin(f*Math.PI)*8;
+          spawnOne(px,py,{color:effectColors[i%effectColors.length],vx:wing*(70+f*150),vy:-90-f*80,shape:i%2?'star':'spark',spin:wing*(2+f*4)});
+        }
+        for(let i=0;i<10;i++){ const a=i*Math.PI/5+t*.7; spawnOne(Math.cos(a)*r*1.8,Math.sin(a)*r*.7,{color:effectColors[(i+2)%effectColors.length],vx:Math.cos(a)*180,vy:Math.sin(a)*180,shape:'spark'}); }
+      } else if(effect.style==='worldtree'){
+        for(let i=0;i<10;i++){
+          const f=i/9, side=i%2?1:-1, px=side*(6+f*34), py=10-f*62;
+          spawnOne(px,py,{color:effectColors[i%effectColors.length],vx:side*(50+f*160),vy:-150-f*120,shape:i%3?'shard':'diamond',spin:side*(2+f*3)});
+        }
+        for(let i=0;i<7;i++){ const a=i/7*Math.PI*2+t; const ar=r*(1.2+chargeNorm*.6); spawnOne(Math.cos(a)*ar,Math.sin(a)*ar,{color:effectColors[(i+1)%effectColors.length],vx:-Math.sin(a)*170,vy:Math.cos(a)*170,shape:'shard',spin:4}); }
+      } else {
+        for(let i=0;i<6;i++){ const a=t*(i%2?1.8:-1.25)+i*Math.PI/3; const ar=r*(1.4+chargeNorm*.9); spawnOne(Math.cos(a)*ar,Math.sin(a)*ar,{color:effectColors[i%effectColors.length],vx:-Math.sin(a)*(180+chargeNorm*240),vy:Math.cos(a)*(180+chargeNorm*240),shape:i%2?'star':'shard',spin:3+Math.sin(t+i)*2}); }
+      }
+    }
     if(effect.shape==='diamond'||effect.shape==='shard'){
       for(let i=0;i<(effect.rarity==='legendary'?3:1);i++) spawnOne((Math.random()-.5)*10,(Math.random()-.5)*10,{vx:(Math.random()-.5)*140,vy:-40-Math.random()*90});
     }else if(effect.shape==='star'){
@@ -1766,7 +1855,7 @@ const Game = {
       spawnOne(-p.facing*20,Math.random()*8,{vx:-p.facing*(120+chargeNorm*180),vy:(Math.random()-.5)*50});
     }else{ spawnOne(); }
     if(effect.aura && chargeNorm>0.5){
-      const auraCount=effect.rarity==='legendary'?4:effect.rarity==='epic'?3:2;
+      const auraCount=effect.rarity==='mythic'?8:effect.rarity==='legendary'?6:effect.rarity==='epic'?3:2;
       for(let i=0;i<auraCount;i++){ const a=Math.random()*Math.PI*2; const ar=p.radius*(1.05+chargeNorm*.35); spawnOne(Math.cos(a)*ar,Math.sin(a)*ar,{color:effect.particle,vx:-Math.cos(a)*50,vy:-Math.sin(a)*50}); }
     }
   },
@@ -1826,18 +1915,37 @@ const Game = {
 
       // Only the host is allowed to destroy projectiles. Clients simply keep
       // rendering the authoritative projectile until an explicit remove event
-      // arrives from the host.
-      if(isHost && q.spawnGrace<=0){
+      // arrives from the host. A projectile is NEVER allowed to spawn inside
+      // a wall/platform: spawn grace is only for the player's body, not for
+      // pre-existing projectile/map overlap. This fixes point-blank wall shots.
+      if(isHost){
         const dist=Math.hypot(q.x-oldX,q.y-oldY);
-        const samples=Math.max(1,Math.ceil(dist/6));
-        for(let s=1;s<=samples;s++){
-          const t=s/samples;
-          const sx=oldX+(q.x-oldX)*t, sy=oldY+(q.y-oldY)*t;
-          const hitPlatform=this.projectileHitsPlatform(q,sx,sy);
+        const samples=Math.max(1,Math.ceil(dist/4));
+        const checkAt=(sx,sy,allowPlatform)=>{
           const hitWall=(sx-halfL<=0 || sx+halfL>=this.map.width || sy-halfW<=0 || sy+halfW>=this.map.height);
-          if(hitPlatform || hitWall){
-            remove=true; removeReason=hitPlatform?'platform':'wall'; break;
+          const hitPlatform=this.projectileHitsPlatform(q,sx,sy);
+          if(hitWall) return 'wall';
+          if(allowPlatform && hitPlatform) return 'platform';
+          return null;
+        };
+
+        // Always check the current spawn position against the map.
+        const spawnHit=checkAt(oldX,oldY,true);
+        if(spawnHit){
+          remove=true; removeReason=spawnHit;
+        } else if(q.spawnGrace<=0){
+          // After grace expires, use swept collision so fast arrows cannot tunnel.
+          for(let s=1;s<=samples;s++){
+            const t=s/samples;
+            const sx=oldX+(q.x-oldX)*t, sy=oldY+(q.y-oldY)*t;
+            const hit=checkAt(sx,sy,true);
+            if(hit){ remove=true; removeReason=hit; break; }
           }
+        } else {
+          // During grace, walls are still solid. This matters when the shooter
+          // is standing flush against a vertical wall.
+          const wallHit=checkAt(q.x,q.y,false);
+          if(wallHit==='wall'){ remove=true; removeReason='wall'; }
         }
       }
 
@@ -2214,18 +2322,34 @@ const Game = {
             this.particles.spawn(x-p.facing*10,y,{vx:Math.cos(a)*sp-p.facing*80,vy:Math.sin(a)*sp, color:c,gravity:35,life:.28+chargeNorm*.22,size:2.2+chargeNorm*3,sizeEnd:.15,twinkle:true,shape:effect.shape==='orb'?'orb':effect.shape});
           }
         }
+        if(effect.rarity==='mythic'){
+          const mythColors=effectColors;
+          if(effect.style==='singularity'){
+            this.particles.burst(x,y,'#0a0214',24+Math.round(chargeNorm*16),220+chargeNorm*180,{gravity:0,life:.9,size:5+chargeNorm*4,sizeEnd:.2,twinkle:false,shape:'orb'});
+            for(let q=0;q<34;q++){ const a=q*.46+performance.now()*.002, rr=15+(q%9)*4+chargeNorm*30; this.particles.spawn(x+Math.cos(a)*rr,y+Math.sin(a)*rr,{vx:-Math.sin(a)*(170+chargeNorm*210),vy:Math.cos(a)*(170+chargeNorm*210),life:.7,size:2.5+chargeNorm*2,sizeEnd:.05,color:mythColors[q%mythColors.length],gravity:0,drag:.9,twinkle:true,shape:q%3?'orb':'star'}); }
+          } else if(effect.style==='seraph'){
+            this.particles.burst(x,y,'#fff6b0',24+Math.round(chargeNorm*20),520+chargeNorm*360,{gravity:-60,life:.7+chargeNorm*.25,size:3+chargeNorm*3,sizeEnd:.1,twinkle:true,colors:mythColors,shape:'spark'});
+            for(const wing of [-1,1]) for(let q=0;q<11;q++){ const f=q/10; this.particles.spawn(x+wing*(10+f*48),y-4-f*54,{vx:wing*(100+f*180),vy:-120-f*150,life:.65+chargeNorm*.2,size:3+chargeNorm*2,sizeEnd:.05,color:mythColors[q%mythColors.length],gravity:0,drag:.91,twinkle:true,shape:q%2?'star':'spark'}); }
+          } else if(effect.style==='worldtree'){
+            this.particles.burst(x,y,'#7fff83',30+Math.round(chargeNorm*26),430+chargeNorm*300,{gravity:-110,life:.8+chargeNorm*.25,size:3+chargeNorm*3,sizeEnd:.08,twinkle:true,colors:mythColors,shape:'shard'});
+            for(let q=0;q<20;q++){ const f=q/19, side=q%2?1:-1; this.particles.spawn(x+side*(8+f*55),y+8-f*78,{vx:side*(80+f*180),vy:-130-f*160,life:.72+chargeNorm*.2,size:2.8+chargeNorm*2,sizeEnd:.05,color:mythColors[q%mythColors.length],gravity:15,drag:.91,twinkle:true,shape:q%3?'shard':'diamond'}); }
+          } else {
+            this.particles.burst(x,y,effect.particle,38+Math.round(chargeNorm*28),680+chargeNorm*420,{gravity:-15,life:.75+chargeNorm*.3,size:3+chargeNorm*3.5,sizeEnd:.1,twinkle:true,colors:mythColors,shape:effect.shape==='supernova'?'star':effect.shape});
+          }
+          for(let k=0;k<3;k++){ const ringR=18+k*13+chargeNorm*18; for(let q=0;q<12;q++){ const a=(q/12)*Math.PI*2+k*.55+performance.now()*.001*(k+1); this.particles.spawn(x+Math.cos(a)*ringR,y+Math.sin(a)*ringR,{vx:-Math.cos(a)*(120+chargeNorm*170),vy:-Math.sin(a)*(120+chargeNorm*170),life:.55+chargeNorm*.25,size:2.5+chargeNorm*2.5,sizeEnd:.05,color:mythColors[(q+k)%mythColors.length],gravity:0,drag:.9,twinkle:true,shape:q%2?'star':'shard'}); } }
+        }
         if(effect.rarity==='epic'||effect.rarity==='legendary'){
-          const extraCount=effect.rarity==='legendary'?18:10;
+          const extraCount=effect.rarity==='mythic'?34:effect.rarity==='legendary'?24:10;
           this.particles.burst(x-p.facing*12,y,dashColor,extraCount,520+chargeNorm*360,{gravity:0,life:.55+chargeNorm*.25,size:2+chargeNorm*2,sizeEnd:.1,twinkle:true,shape:effect.shape==='orb'?'star':effect.shape});
           if(effect.aura){
-            this.particles.burst(x,y,effect.particle,effect.rarity==='legendary'?16:9,150+chargeNorm*120,{gravity:0,life:.35+chargeNorm*.25,size:2+chargeNorm*2,sizeEnd:.2,twinkle:true,shape:effect.shape==='orb'?'orb':effect.shape});
+            this.particles.burst(x,y,effect.particle,effect.rarity==='mythic'?28:effect.rarity==='legendary'?22:9,150+chargeNorm*120,{gravity:0,life:.35+chargeNorm*.25,size:2+chargeNorm*2,sizeEnd:.2,twinkle:true,shape:effect.shape==='orb'?'orb':effect.shape});
           }
         }
         if(effect.shape==='diamond'||effect.shape==='shard'){
-          this.particles.burst(x-p.facing*18,y,dashColor,effect.rarity==='legendary'?12:6,430+chargeNorm*320,{gravity:70,life:.4+chargeNorm*.18,size:3+chargeNorm*2.5,sizeEnd:.2,drag:.9,shape:effect.shape});
+          this.particles.burst(x-p.facing*18,y,dashColor,effect.rarity==='mythic'?24:effect.rarity==='legendary'?17:6,430+chargeNorm*320,{gravity:70,life:.4+chargeNorm*.18,size:3+chargeNorm*2.5,sizeEnd:.2,drag:.9,shape:effect.shape});
         }
         if(effect.rarity==='epic'||effect.rarity==='legendary'){
-          const rings=effect.rarity==='legendary'?3:2;
+          const rings=effect.rarity==='mythic'?5:effect.rarity==='legendary'?4:2;
           for(let k=0;k<rings;k++){
             const rr=14+k*9+chargeNorm*10;
             for(let q=0;q<6;q++){
@@ -2712,19 +2836,19 @@ const Game = {
         const chargeNorm=Math.min(1,(p.dashCharge||0)/(PHYS.dashMaxLevel||3));
         const effect=SphereBoxes.describe(p.cust?.dashEffect||'moonGlow');
         const pulse=1+Math.sin(performance.now()*0.012)*0.06;
-        const rarityBoost=effect.rarity==='legendary'?1.55:effect.rarity==='epic'?1.3:effect.rarity==='rare'?1.12:1;
+        const rarityBoost=effect.rarity==='mythic'?2.05:effect.rarity==='legendary'?1.7:effect.rarity==='epic'?1.3:effect.rarity==='rare'?1.12:1;
         const ringR=(p.radius+5+chargeNorm*18*rarityBoost)*pulse;
         const ringAlpha=Math.min(0.9,0.24+chargeNorm*0.58);
         ctx.save();
         ctx.globalAlpha=alpha*ringAlpha;
         ctx.strokeStyle=effect.particle;
-        ctx.lineWidth=2+chargeNorm*(effect.rarity==='legendary'?7:effect.rarity==='epic'?5:effect.rarity==='rare'?3.5:2.5);
+        ctx.lineWidth=2+chargeNorm*(effect.rarity==='mythic'?9:effect.rarity==='legendary'?8:effect.rarity==='epic'?5:effect.rarity==='rare'?3.5:2.5);
         ctx.shadowColor=effect.particle;
-        ctx.shadowBlur=8+chargeNorm*(effect.rarity==='legendary'?34:effect.rarity==='epic'?27:20);
+        ctx.shadowBlur=8+chargeNorm*(effect.rarity==='mythic'?50:effect.rarity==='legendary'?40:effect.rarity==='epic'?27:20);
         ctx.beginPath();
         ctx.arc(p.x,p.y,ringR,0,Math.PI*2);
         ctx.stroke();
-        if(effect.rarity==='legendary'||effect.rarity==='epic'){
+        if(effect.rarity==='mythic'||effect.rarity==='legendary'||effect.rarity==='epic'){
           ctx.globalAlpha=alpha*(0.07+chargeNorm*0.18);
           ctx.fillStyle=effect.particle;
           ctx.beginPath(); ctx.arc(p.x,p.y,ringR*0.84,0,Math.PI*2); ctx.fill();
@@ -2758,7 +2882,7 @@ const Game = {
     const key=[
       +cust.hue||0,+cust.saturation||0,+cust.brightness||60,
       +cust.hue2||0,+cust.saturation2||0,+cust.brightness2||60,
-      pattern,face,heavy?'1':'0',Math.round(r*10)/10
+      pattern,face,heavy?'1':'0',Math.round(r*10)/10,p.preview?'preview':'gameplay'
     ].join('|');
     let sprite=this.characterSpriteCache.get(key);
     if(sprite) return sprite;
@@ -2796,23 +2920,26 @@ const Game = {
     o.fillStyle=bodyFill; o.beginPath(); o.arc(0,0,r,0,Math.PI*2); o.fill();
     o.lineWidth=heavy?5:3; o.strokeStyle=secondary; o.stroke();
 
-    const fx=r*0.25;
+    const faceR=r;
+    const faceScale=Math.max(1,faceR/26);
+    const fx=faceR*0.25;
+    const fs=v=>v*faceScale;
     o.fillStyle='#12100c';
     o.beginPath();
-    if(face==='Angry'){ o.arc(fx-8,-4,3,0,Math.PI*2); o.arc(fx+8,-4,3,0,Math.PI*2); }
-    else if(face==='Sleepy'){ o.fillRect(fx-10,-4,8,2); o.fillRect(fx+2,-4,8,2); }
-    else if(face==='Star'){ for(let k=0;k<2;k++){ this.starPath(o, fx-7+k*14, -4, 4); } }
-    else if(face==='Wink'){ o.arc(fx-7,-4,3.5,0,Math.PI*2); o.fillRect(fx+4,-4,7,2); }
-    else if(face==='Surprised'){ o.arc(fx-7,-4,4.5,0,Math.PI*2); o.arc(fx+7,-4,4.5,0,Math.PI*2); }
-    else if(face==='Grumpy'){ o.fillRect(fx-11,-6,8,2); o.fillRect(fx+3,-6,8,2); o.arc(fx-7,-2,2.5,0,Math.PI*2); o.arc(fx+7,-2,2.5,0,Math.PI*2); }
-    else if(face==='Cyclops'){ o.arc(fx,-4,6,0,Math.PI*2); }
-    else if(face==='Heart'){ this.heartPath(o, fx-7,-5,5); this.heartPath(o, fx+7,-5,5); }
-    else { o.arc(fx-7,-4,3.5,0,Math.PI*2); o.arc(fx+7,-4,3.5,0,Math.PI*2); }
+    if(face==='Angry'){ o.arc(fx-fs(8),-fs(4),fs(3),0,Math.PI*2); o.arc(fx+fs(8),-fs(4),fs(3),0,Math.PI*2); }
+    else if(face==='Sleepy'){ o.fillRect(fx-fs(10),-fs(4),fs(8),fs(2)); o.fillRect(fx+fs(2),-fs(4),fs(8),fs(2)); }
+    else if(face==='Star'){ for(let k=0;k<2;k++){ this.starPath(o, fx-fs(7)+k*fs(14), -fs(4), fs(4)); } }
+    else if(face==='Wink'){ o.arc(fx-fs(7),-fs(4),fs(3.5),0,Math.PI*2); o.fillRect(fx+fs(4),-fs(4),fs(7),fs(2)); }
+    else if(face==='Surprised'){ o.arc(fx-fs(7),-fs(4),fs(4.5),0,Math.PI*2); o.arc(fx+fs(7),-fs(4),fs(4.5),0,Math.PI*2); }
+    else if(face==='Grumpy'){ o.fillRect(fx-fs(11),-fs(6),fs(8),fs(2)); o.fillRect(fx+fs(3),-fs(6),fs(8),fs(2)); o.arc(fx-fs(7),-fs(2),fs(2.5),0,Math.PI*2); o.arc(fx+fs(7),-fs(2),fs(2.5),0,Math.PI*2); }
+    else if(face==='Cyclops'){ o.arc(fx,-fs(4),fs(6),0,Math.PI*2); }
+    else if(face==='Heart'){ this.heartPath(o, fx-fs(7),-fs(5),fs(5)); this.heartPath(o, fx+fs(7),-fs(5),fs(5)); }
+    else { o.arc(fx-fs(7),-fs(4),fs(3.5),0,Math.PI*2); o.arc(fx+fs(7),-fs(4),fs(3.5),0,Math.PI*2); }
     o.fill();
-    o.strokeStyle='#12100c'; o.lineWidth=2; o.beginPath();
-    if(face==='Cool'){ o.moveTo(fx-3,6); o.lineTo(fx+8,4); }
-    else if(face==='Grumpy'){ o.arc(fx,10,6,1.15*Math.PI,1.85*Math.PI); }
-    else{ o.arc(fx,4,6,0.15*Math.PI,0.85*Math.PI); }
+    o.strokeStyle='#12100c'; o.lineWidth=fs(2); o.beginPath();
+    if(face==='Cool'){ o.moveTo(fx-fs(3),fs(6)); o.lineTo(fx+fs(8),fs(4)); }
+    else if(face==='Grumpy'){ o.arc(fx,fs(10),fs(6),1.15*Math.PI,1.85*Math.PI); }
+    else{ o.arc(fx,fs(4),fs(6),0.15*Math.PI,0.85*Math.PI); }
     o.stroke();
 
     sprite={canvas:off,size};
@@ -3561,7 +3688,8 @@ function drawMapThumb(canvasEl, map){
 function drawCustPreview(){
   const canvas = document.getElementById('custPreview');
   const ctx = canvas.getContext('2d');
-  ctx.clearRect(0,0,160,160);
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0,0,W,H);
   const cust = {
     hue:+(Storage.get('customization',{}).hue??200),
     saturation:+(Storage.get('customization',{}).saturation??80),
@@ -3573,10 +3701,14 @@ function drawCustPreview(){
     face: document.getElementById('custFace').value,
     dashEffect: document.getElementById('custDashEffect')?.value||'basic'
   };
-  const dummy = new Player('preview','',cust,{x:80,y:82});
-  dummy.radius=40;
+  const dummy = new Player('preview','',cust,{x:W/2,y:H/2});
+  // Scale to the box's actual pixel size (kept square, but this stays correct
+  // even if the canvas dimensions ever change) so the character fills the
+  // circular preview instead of floating small in the middle of it.
+  dummy.radius=Math.min(W,H)*0.3;
   dummy.facing=1;
   dummy.alive=true;
+  dummy.preview=true;
   const previewEffect=SphereBoxes.describe(cust.dashEffect||'basic');
   if(previewEffect.aura){
     const pulse=1+Math.sin(performance.now()*0.012)*0.06;
@@ -3602,7 +3734,7 @@ function effectPreviewHtml(e){
   const colors=SphereBoxes.colors(e);
   const extra=e.aura?'<div class="aura"></div>':'';
   let orbs='';
-  if(e.shape==='orb'||e.shape==='comet'||e.rarity==='legendary'){
+  if(e.shape==='orb'||e.shape==='comet'||e.rarity==='mythic'||e.rarity==='legendary'){
     for(let i=0;i<3;i++) orbs+=`<div class="orb o${i+1}" style="--orb-color:${colors[i%colors.length]}"></div>`;
   }
   const ring=(e.aura||e.shape==='supernova'||e.shape==='shard'||e.shape==='hex')?'<div class="ring"></div>':'';
@@ -3621,18 +3753,18 @@ function updateCustomizeEffectShower(){
   const t=performance.now()*0.001;
   ctx.clearRect(0,0,W,H); ctx.fillStyle='#080604'; ctx.fillRect(0,0,W,H);
   const cx=W*0.5, cy=H*0.58;
-  ctx.globalAlpha=.22; ctx.fillStyle=effect.particle; ctx.beginPath(); ctx.arc(cx,cy,22+(effect.aura?10:0),0,Math.PI*2); ctx.fill();
+  ctx.globalAlpha=.24; ctx.fillStyle=effect.particle; ctx.beginPath(); ctx.arc(cx,cy,34+(effect.aura?14:0),0,Math.PI*2); ctx.fill();
   for(let i=0;i<28;i++){
     const phase=(t*(1.2+(effect.rarity==='legendary'?1.2:effect.rarity==='epic'?.8:.35))+i*.63)%1;
-    const ang=i*2.399+t*(effect.aura?1.4:.65); const r=16+phase*120;
-    const x=cx-Math.cos(ang)*r, y=cy+Math.sin(ang)*r*0.55; const size=(1.8+(1-phase)*3)*(effect.rarity==='legendary'?1.45:effect.rarity==='epic'?1.2:1);
+    const ang=i*2.399+t*(effect.rarity==='mythic'?2.2:(effect.aura?1.4:.65)); const r=24+phase*145;
+    const x=cx-Math.cos(ang)*r, y=cy+Math.sin(ang)*r*0.55; const size=(2.6+(1-phase)*4.4)*(effect.rarity==='mythic'?1.9:effect.rarity==='legendary'?1.55:effect.rarity==='epic'?1.2:1);
     ctx.globalAlpha=Math.max(.12,1-phase); ctx.fillStyle=effectColors[i%effectColors.length]; ctx.save(); ctx.translate(x,y); ctx.rotate(ang+t*3); ctx.beginPath();
     if(effect.shape==='diamond'||effect.shape==='shard'){ctx.moveTo(0,-size);ctx.lineTo(size,0);ctx.lineTo(0,size);ctx.lineTo(-size,0);ctx.closePath();}
     else if(effect.shape==='star'||effect.shape==='supernova'){for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,rr=k%2?size*.42:size; const px=Math.cos(a)*rr,py=Math.sin(a)*rr;if(k===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}ctx.closePath();}
     else {ctx.arc(0,0,size,0,Math.PI*2);}
     ctx.fill(); ctx.restore();
   }
-  if(effect.aura){ctx.globalAlpha=.35;ctx.strokeStyle=effect.particle;ctx.lineWidth=2+Math.sin(t*4);ctx.beginPath();ctx.arc(cx,cy,30+Math.sin(t*3)*3,0,Math.PI*2);ctx.stroke();}
+  if(effect.aura){ctx.globalAlpha=.35;ctx.strokeStyle=effect.particle;ctx.lineWidth=3+Math.sin(t*4);ctx.beginPath();ctx.arc(cx,cy,46+Math.sin(t*3)*4,0,Math.PI*2);ctx.stroke();}
   ctx.globalAlpha=1;
   custShowerRAF=requestAnimationFrame(updateCustomizeEffectShower);
 }
@@ -3655,10 +3787,10 @@ function makeReelCards(boxKey, winnerId){
   const b=SphereBoxes.boxes[boxKey];
   const all=[];
   const winner=SphereBoxes.describe(winnerId);
-  const rarityRank={common:0,uncommon:1,rare:2,epic:3,legendary:4};
+  const rarityRank={common:0,uncommon:1,rare:2,epic:3,legendary:4,mythic:5};
   const rank=rarityRank[winner.rarity]||0;
-  const nearbyRanks=Math.min(4,rank+1);
-  const pools={0:[],1:[],2:[],3:[],4:[]};
+  const nearbyRanks=Math.min(5,rank+1);
+  const pools={0:[],1:[],2:[],3:[],4:[],5:[]};
   b.pool.forEach(id=>{ const r=rarityRank[SphereBoxes.describe(id).rarity]??0; pools[r].push(id); });
   const pickPool=(r)=>{ const arr=pools[Math.max(0,Math.min(4,r))]; return arr.length?arr[Math.floor(Math.random()*arr.length)]:SphereBoxes.roll(boxKey); };
   for(let i=0;i<48;i++){
@@ -3704,7 +3836,7 @@ function openSphereBox(boxKey){
   SphereBoxes.opening=true;
   const id=SphereBoxes.roll(boxKey), e=SphereBoxes.describe(id);
   const overlay=document.getElementById('sphereboxReelOverlay'), strip=document.getElementById('sphereboxReelStrip'), title=document.getElementById('sphereReelBoxName'), hint=document.getElementById('sphereReelHint'), skip=document.getElementById('sphereReelSkip');
-  if(!overlay||!strip){ SphereBoxes.opening=false; const amount=SphereBoxes.addEffect(id); finishSphereOpen(boxKey,id,amount,['rare','epic','legendary'].includes(e.rarity)); return; }
+  if(!overlay||!strip){ SphereBoxes.opening=false; const amount=SphereBoxes.addEffect(id); finishSphereOpen(boxKey,id,amount,['rare','epic','legendary','mythic'].includes(e.rarity)); return; }
   overlay.classList.remove('hidden');
   title.textContent=box.name; hint.textContent='Rolling...'; skip.disabled=false; skip.textContent='SKIP';
   strip.innerHTML='';
@@ -3714,7 +3846,7 @@ function openSphereBox(boxKey){
       card.innerHTML=`<div class="mini" style="--fx-color:${ceColors[0]};background:${ceGrad};"></div><div style="font-size:9px;">${ce.name}</div><div class="${SphereBoxes.rarityColor(ce.rarity)}" style="font-size:8px;">${ce.rarity.toUpperCase()}</div>`; strip.appendChild(card); });
   let done=false, timer=null;
   const targetIndex=42;
-  const finish=()=>{ if(done) return; done=true; if(timer) clearTimeout(timer); skip.disabled=true; SphereBoxes.opening=false; const amount=SphereBoxes.addEffect(id); const rare=['rare','epic','legendary'].includes(e.rarity); if(rare) AudioManager.rareDrop(e.rarity); finishSphereOpen(boxKey,id,amount,rare); };
+  const finish=()=>{ if(done) return; done=true; if(timer) clearTimeout(timer); skip.disabled=true; SphereBoxes.opening=false; const amount=SphereBoxes.addEffect(id); const rare=['rare','epic','legendary','mythic'].includes(e.rarity); if(rare) AudioManager.rareDrop(e.rarity); finishSphereOpen(boxKey,id,amount,rare); };
   const doSpin=()=>{
     const win=overlay.querySelector('.spherebox-reel-window');
     const cardW=124, targetCenter=targetIndex*cardW+58, center=win.clientWidth/2, targetX=center-targetCenter;
@@ -3781,6 +3913,15 @@ window.addEventListener('DOMContentLoaded', ()=>{
     if(el) AudioManager.hover();
   });
   document.addEventListener('pointerdown', ()=>{ AudioManager.init(); AudioManager.resume(); }, {passive:true});
+  const sphereboxOddsBtn = document.getElementById('sphereboxOddsBtn');
+  const sphereboxOddsPanel = document.getElementById('sphereboxOddsPanel');
+  sphereboxOddsBtn?.addEventListener('click', (e)=>{
+    e.stopPropagation();
+    sphereboxOddsPanel?.classList.toggle('open');
+  });
+  document.addEventListener('click', (e)=>{
+    if(!e.target.closest('.spherebox-odds-wrap')) sphereboxOddsPanel?.classList.remove('open');
+  });
   Game.init();
   document.getElementById('sphereDropsClose')?.addEventListener('click',()=>document.getElementById('sphereboxDropsOverlay')?.classList.add('hidden'));
   document.getElementById('sphereboxDropsOverlay')?.addEventListener('click',e=>{if(e.target.id==='sphereboxDropsOverlay') e.currentTarget.classList.add('hidden');});
@@ -3859,7 +4000,6 @@ window.addEventListener('DOMContentLoaded', ()=>{
 
   document.getElementById('btnJoin').addEventListener('click', ()=>{
     AudioManager.init(); AudioManager.resume();
-    document.getElementById('joinName').value=getSavedUsername();
     Game.myName = getSavedUsername();
     const code = document.getElementById('joinCode').value;
     if(!code){ document.getElementById('joinErr').textContent='Enter a game code.'; return; }
@@ -3912,7 +4052,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('custDashEffect').addEventListener('change', ()=>{
     const c=Storage.get('customization',{dashEffect:'basic'}); c.dashEffect=document.getElementById('custDashEffect').value||'basic'; Storage.set('customization',c); drawCustPreview();
   });
-  document.getElementById('btnSaveCust').addEventListener('click', ()=>{
+document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     const oldCust=Storage.get('customization',{dashEffect:'basic'});
     const cust = {
       name: document.getElementById('custName').value.trim()||'Player',
