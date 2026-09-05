@@ -137,6 +137,11 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 #dashfill{background:linear-gradient(90deg,#8a5a35,#e0a35c);}
 #dashfill.ready{background:linear-gradient(90deg,#c9793a,#ffcf7a);box-shadow:0 0 8px #ffcf7a99;}
 #dashfill.charging{background:linear-gradient(90deg,#ff9d3a,#fff2c2);}
+#arrowlabel{color:#ffd86bcc;}
+#arrowbar{border:1px solid #ffd86b55;}
+#arrowfill{background:linear-gradient(90deg,#9b7433,#ffd86b);}
+#arrowfill.ready{background:linear-gradient(90deg,#d59b39,#ffe9a2);box-shadow:0 0 8px #ffd86b99;}
+#arrowfill.charging{background:linear-gradient(90deg,#ffb34d,#fff3c6);}
 #chatbox{position:absolute;bottom:10px;right:10px;width:260px;max-height:200px;display:flex;flex-direction:column;
   gap:2px;pointer-events:none;}
 #chatlog{max-height:150px;overflow-y:auto;font-size:12px;display:flex;flex-direction:column;gap:2px;
@@ -305,7 +310,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <button class="btn" data-go="spherebox">SPHEREBOX</button>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 1.77</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 1.83</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -556,6 +561,10 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <div class="hudbar-wrap" id="dashwrap">
       <div class="hudbar-label" id="dashlabel">Dash</div>
       <div class="hudbar-track" id="dashbar"><div class="hudbar-fill" id="dashfill"></div></div>
+    </div>
+    <div class="hudbar-wrap" id="arrowwrap">
+      <div class="hudbar-label" id="arrowlabel">Arrow</div>
+      <div class="hudbar-track" id="arrowbar"><div class="hudbar-fill" id="arrowfill"></div></div>
     </div>
     <div class="hudbar-wrap" id="staminawrap">
       <div class="hudbar-label" id="staminalabel">Grapple</div>
@@ -835,7 +844,7 @@ class ParticleSystem{
    acceleration, bouncy collisions. */
 const PHYS = {
   step: 1/60,
-  baseGravity: 1300,
+  baseGravity: 1235,
   friction: 0.975,      // grounded friction — high value = very slidey
   airFriction: 0.992,
   accel: 980,
@@ -885,7 +894,7 @@ class Player{
     this.cust = Object.assign({hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',face:'Happy',dashEffect:'basic'}, cust||{});
     this.x=spawn?spawn.x:0; this.y=spawn?spawn.y:0;
     this.vx=0; this.vy=0; this.radius=26;
-    this.grounded=false; this.facing=1;
+    this.grounded=false; this.netGrounded=false; this.supportPlatform=-1; this.netSupportPlatform=-1; this.facing=1;
     this.damage=0; this.alive=true;
     this.heavy=false; this.hitFlash=0;
     this.bounceBoostQueued=false;
@@ -898,6 +907,9 @@ class Player{
       dash:false,dashPressed:false,grapple:false,grapplePressed:false,down:false};
     this.trail=[];
     this.renderX=this.x; this.renderY=this.y;
+    this.renderTargetX=this.x; this.renderTargetY=this.y;
+    this.netServerX=this.x; this.netServerY=this.y; this.netServerVX=0; this.netServerVY=0;
+    this.netStateReceivedAt=performance.now();
     this.netErrorX=0; this.netErrorY=0;
     this.lastNetState=0; this.inputSeq=0; this.lastAckSeq=0;
     // Deterministic multiplayer action markers. Clients simulate every player
@@ -907,7 +919,7 @@ class Player{
     this.dashSerial=0; this.netDashSerial=0;
     this.grappleSerial=0; this.netGrappleSerial=0; this.grappleEventSeq=0; this.lastGrappleEventSeq=null;
     this.pendingGrappleTarget=null; this.remoteGrappleActive=false; this.remoteGrappleEventSeq=null;
-    this.actionAiming=false; this.actionAngle=-Math.PI/2; this.actionAimStartAngle=-Math.PI/2; this.actionAimStartTime=0; this.actionEventSeq=0; this.lastActionEventSeq=null; this.pendingActionAngle=null; this.remoteActionActive=false; this.actionCooldown=0; this.actionCharge=0; this.actionChargeStartTime=0; this.actionPower=0;
+    this.actionAiming=false; this.actionAngle=-Math.PI/2; this.actionAimStartAngle=-Math.PI/2; this.actionAimStartTime=0; this.actionEventSeq=0; this.lastActionEventSeq=null; this.pendingActionAngle=null; this.remoteActionActive=false; this.actionCooldown=0; this.actionCooldownMax=PHYS.actionProjectileCooldown; this.actionCharge=0; this.actionChargeStartTime=0; this.actionPower=0;
   }
 }
 
@@ -973,24 +985,35 @@ function injectArrows(baseMap, deadly){
 /* ---------------------------- CAMERA ---------------------------- */
 class Camera{
   constructor(){ this.x=0;this.y=0;this.zoom=1;this.targetZoom=1; this.shake=0; }
-  follow(players, mapW, mapH, viewW, viewH){
+  _calcView(players, mapW, mapH, viewW, viewH){
     const alive = players.filter(p=>p.alive);
     const targets = alive.length? alive : players;
-    if(!targets.length) return;
+    if(!targets.length) return null;
     let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
     for(const p of targets){ minX=Math.min(minX,p.x); maxX=Math.max(maxX,p.x); minY=Math.min(minY,p.y); maxY=Math.max(maxY,p.y); }
     const cx=(minX+maxX)/2, cy=(minY+maxY)/2;
     const spreadX=(maxX-minX)+500, spreadY=(maxY-minY)+400;
     let z = Math.min(viewW/spreadX, viewH/spreadY, 1.15);
     z = Math.max(0.45, z);
-    this.targetZoom += (z-this.targetZoom)*0.06;
+    let tx = cx - (viewW/2)/z;
+    let ty = cy - (viewH/2)/z;
+    tx = Math.max(0, Math.min(tx, Math.max(0,mapW-viewW/z)));
+    ty = Math.max(0, Math.min(ty, Math.max(0,mapH-viewH/z)));
+    return {z,tx,ty};
+  }
+  snapTo(players, mapW, mapH, viewW, viewH){
+    const v=this._calcView(players,mapW,mapH,viewW,viewH);
+    if(!v) return;
+    this.x=v.tx; this.y=v.ty; this.zoom=v.z; this.targetZoom=v.z;
+    this.shake=0;
+  }
+  follow(players, mapW, mapH, viewW, viewH){
+    const v=this._calcView(players,mapW,mapH,viewW,viewH);
+    if(!v) return;
+    this.targetZoom += (v.z-this.targetZoom)*0.06;
     this.zoom = this.targetZoom;
-    let tx = cx - (viewW/2)/this.zoom;
-    let ty = cy - (viewH/2)/this.zoom;
-    tx = Math.max(0, Math.min(tx, Math.max(0,mapW-viewW/this.zoom)));
-    ty = Math.max(0, Math.min(ty, Math.max(0,mapH-viewH/this.zoom)));
-    this.x += (tx-this.x)*0.12;
-    this.y += (ty-this.y)*0.12;
+    this.x += (v.tx-this.x)*0.12;
+    this.y += (v.ty-this.y)*0.12;
     if(this.shake>0){
       this.x += (Math.random()-0.5)*this.shake;
       this.y += (Math.random()-0.5)*this.shake;
@@ -1256,7 +1279,6 @@ const SphereBoxes = {
     moonComet:{name:'Moon Comet',rarity:'epic',hueShift:205,particle:'#e9f4ff',colors:['#e9f4ff','#72c7ff','#d58cff','#ffffff'],shape:'comet',aura:true,style:'comet'},
     moonVoid:{name:'Moon Void',rarity:'epic',hueShift:275,particle:'#c98cff',shape:'supernova',aura:true},
     lunarSupernova:{name:'Lunar Supernova',rarity:'legendary',hueShift:285,particle:'#ffffff',colors:['#ffffff','#8f6cff','#ff62dd','#6ff4ff','#ffd76a'],shape:'supernova',aura:true,style:'nova'},
-    moonAstralCrown:{name:'Moon Astral Crown',rarity:'legendary',hueShift:235,particle:'#dfe8ff',colors:['#8ea8ff','#dfe8ff','#ffffff','#b58cff','#6ff4ff'],shape:'star',aura:true,style:'crown'},
     sunSpark:{name:'Sun Spark',rarity:'common',hueShift:45,particle:'#ffc94a',shape:'spark',aura:false},
     solarFlare:{name:'Solar Flare',rarity:'uncommon',hueShift:40,particle:'#ffd76a',shape:'spark',aura:false},
     sunRay:{name:'Sun Ray',rarity:'uncommon',hueShift:48,particle:'#ffe07c',shape:'spark',aura:true},
@@ -1417,6 +1439,8 @@ const Game = {
   eliminationOrder:[],
   roundNumber:1,
   roundConfig:{mode:'rounds',count:3,target:3},
+  roundTransitionId:0,
+  _roundTransitionTimer:null,
   scores:{},
   fpsCounter:0, fpsTime:0, fps:0,
   lobbyHostName:'Player',
@@ -1461,13 +1485,13 @@ const Game = {
   beginCountdown(){
     this.state='countdown'; this.eliminationOrder=[]; this.projectiles=[];
     this.physicsTick=0; this.hostPhysicsTick=0; this.lastRecvStateSeq=null; this.stateSeq=0;
+    this.roundTransitionId=0;
+    if(this._roundTransitionTimer){ clearTimeout(this._roundTransitionTimer); this._roundTransitionTimer=null; }
     UI.showHUD();
     this.resetPlayers();
-    this.camera.x=0; this.camera.y=0; this.camera.zoom=1; this.camera.targetZoom=1;
-    // Frame the arena on the spawned players right away instead of sitting at a
-    // fixed zoom-1 origin, so the countdown punches actually happen where the
-    // action is.
-    this.camera.follow(Object.values(this.players), this.map.width, this.map.height, this.viewW, this.viewH);
+    // Snap the camera to the freshly spawned players. Starting from zoom=1 and
+    // then easing toward the player spread caused the brief startup zoom/glitch.
+    this.camera.snapTo(Object.values(this.players), this.map.width, this.map.height, this.viewW, this.viewH);
     let n=3;
     this.countdownTick(n);
     this._cdInt = setInterval(()=>{
@@ -1497,14 +1521,22 @@ const Game = {
     }
   },
 
-  beginRoundImmediate(){
+  beginRoundImmediate(expectedRound=null, transitionId=null){
+    if(expectedRound!=null && expectedRound < this.roundNumber) return false;
+    if(transitionId!=null && transitionId < (this.roundTransitionId||0)) return false;
     if(this._cdInt){ clearInterval(this._cdInt); this._cdInt=null; }
+    if(this._roundTransitionTimer){ clearTimeout(this._roundTransitionTimer); this._roundTransitionTimer=null; }
+    if(expectedRound!=null) this.roundNumber=expectedRound;
+    if(transitionId!=null) this.roundTransitionId=transitionId;
     this.state='playing'; this.eliminationOrder=[]; this.projectiles=[];
     UI.showHUD();
     this.resetPlayers();
-    this.camera.x=0; this.camera.y=0; this.camera.zoom=1; this.camera.targetZoom=1;
+    // Keep round transitions from briefly jumping through the default camera
+    // zoom before settling on the new spawn layout.
+    this.camera.snapTo(Object.values(this.players), this.map.width, this.map.height, this.viewW, this.viewH);
     this.matchTime=0; this.physicsTick=0; this.hostPhysicsTick=0;
     UI.pulseBanner('');
+    return true;
   },
 
   resetPlayers(){
@@ -1515,15 +1547,18 @@ const Game = {
       const p = this.players[id];
       const sp = spawns[i%spawns.length]; i++;
       p.x=sp.x; p.y=sp.y; p.vx=0; p.vy=0; p.damage=0; p.alive=true;
+      // Give every spawn a deterministic starting facing so host and clients
+      // agree immediately, even before the first authoritative state snapshot.
+      p.facing = sp.x < (this.map.width||1600)/2 ? 1 : (sp.x > (this.map.width||1600)/2 ? -1 : 1);
       p.radius=26*Math.max(0.5,Math.min(2,Number(this.matchSettings.playerSize)||1));
-      p.heavy=false; p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0; p.grounded=false; p.grappleStamina=p.grappleStaminaMax; p.lastMoveDir=0;
+      p.heavy=false; p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0; p.grounded=false; p.netGrounded=false; p.supportPlatform=-1; p.netSupportPlatform=-1; p.grappleStamina=p.grappleStaminaMax; p.lastMoveDir=0;
       p.bounceBoostQueued=false;
       p.dashCd=0; p.dashTime=0; p.dashVelocity=0; p.dashDirection=0; p.dashCharging=false; p.dashCharge=0; p.dashCdMax=PHYS.dashCdBase; p._dashHeldPrev=false; p._dashChargeFxAcc=0;
-      p.renderX=p.x; p.renderY=p.y; p.netErrorX=0; p.netErrorY=0; p.lastAckSeq=0;
+      p.renderX=p.x; p.renderY=p.y; p.renderTargetX=p.x; p.renderTargetY=p.y; p.netServerX=p.x; p.netServerY=p.y; p.netServerVX=0; p.netServerVY=0; p.netStateReceivedAt=performance.now(); p.netErrorX=0; p.netErrorY=0; p.lastAckSeq=0;
       p.jumpBuffer=0; p.jumpSerial=0; p.netJumpSerial=0; p.lastJumpEventSeq=null;
       p.dashSerial=0; p.netDashSerial=0; p.grappleSerial=0; p.netGrappleSerial=0; p._dashChargeSfxLevel=0;
       p.grappleEventSeq=0; p.lastGrappleEventSeq=null; p.pendingGrappleTarget=null; p.remoteGrappleActive=false; p.remoteGrappleEventSeq=null;
-      p.actionAiming=false; p.actionAngle=-Math.PI/2; p.actionAimStartAngle=-Math.PI/2; p.actionAimStartTime=0; p.actionEventSeq=0; p.lastActionEventSeq=null; p.pendingActionAngle=null; p.remoteActionActive=false; p.actionCooldown=0; p.actionCharge=0; p.actionChargeStartTime=0; p.actionPower=0;
+      p.actionAiming=false; p.actionAngle=-Math.PI/2; p.actionAimStartAngle=-Math.PI/2; p.actionAimStartTime=0; p.actionEventSeq=0; p.lastActionEventSeq=null; p.pendingActionAngle=null; p.remoteActionActive=false; p.actionCooldown=0; p.actionCooldownMax=PHYS.actionProjectileCooldown; p.actionCharge=0; p.actionChargeStartTime=0; p.actionPower=0; p._actionChargeFxAcc=0;
     }
   },
 
@@ -1584,6 +1619,7 @@ const Game = {
               me.actionChargeStartTime=performance.now();
               me.actionCharge=0;
               me.actionPower=0;
+              me._actionChargeFxAcc=0;
               me._lastActionHeld=true;
               if(!this.isHost){
                 me.actionEventSeq=((me.actionEventSeq||0)+1)&65535;
@@ -1613,7 +1649,12 @@ const Game = {
             me.actionPower=0;
             if((me.actionCooldown||0)<=0){
               if(this.isHost) this.fireActionProjectile(me,angle,power);
-              else { me.actionEventSeq=((me.actionEventSeq||0)+1)&65535; NetworkManager.sendToHost({t:'action_fire',seq:me.actionEventSeq,angle,power},true); }
+              else {
+                me.actionEventSeq=((me.actionEventSeq||0)+1)&65535;
+                me.actionCooldown=PHYS.actionProjectileCooldown;
+                me.actionCooldownMax=PHYS.actionProjectileCooldown;
+                NetworkManager.sendToHost({t:'action_fire',seq:me.actionEventSeq,angle,power},true);
+              }
             }
           }
         }
@@ -1647,11 +1688,12 @@ const Game = {
 
     if(this.isHost && this.state==='playing'){
       this._snapTimer = (this._snapTimer||0)+dt;
-      if(this._snapTimer >= 1/30){ this._snapTimer=0; this.broadcastState(); }
+      if(this._snapTimer >= 1/60){ this._snapTimer=0; this.broadcastState(); }
       this._secTimer = (this._secTimer||0)+dt;
       if(this._secTimer>=1){ this._secTimer=0; this.matchTime++; NetworkManager.broadcast({t:'tick', matchTime:this.matchTime}, false); }
     }
 
+    this.updateRemoteRenderTargets(dt);
     this.particles.update(dt);
     if(this.state==='playing'||this.state==='countdown') this.updateCameraAndHud(dt);
     if(this.countdownPunch>0) this.countdownPunch=Math.max(0,this.countdownPunch-dt*2.6);
@@ -1701,6 +1743,29 @@ const Game = {
 
     p.dashCd = Math.max(0,p.dashCd-dt);
     p.actionCooldown = Math.max(0,(p.actionCooldown||0)-dt);
+    p.actionCooldownMax = p.actionCooldownMax || PHYS.actionProjectileCooldown;
+    if(this.isHost && p.remoteActionActive && p.alive && GameModes[this.mode]?.projectile){
+      // Remote clients send the action-start event, but their local charge timer
+      // is not available on the host. Advance the authoritative remote charge here
+      // so the next state snapshots tell every peer how far that player has charged.
+      const heldFor=Math.max(0,(performance.now()-p.actionChargeStartTime)/1000);
+      const chargeNorm=Math.min(1,heldFor/PHYS.actionChargeMaxTime);
+      p.actionCharge=chargeNorm;
+      p.actionPower=Math.pow(chargeNorm,PHYS.actionChargePowerExponent);
+
+      const target=this.findNearestLivingPlayer(p);
+      if(target){
+        p.actionAngle=this.normalizeAngle(Math.atan2(target.y-p.y,target.x-p.x));
+      }
+    }
+    if(p.actionAiming && p.alive && GameModes[this.mode]?.projectile){
+      p._actionChargeFxAcc=(p._actionChargeFxAcc||0)+dt;
+      if(p._actionChargeFxAcc>=0.10){
+        p._actionChargeFxAcc=0;
+        this.spawnActionChargeFx(p, p.actionCharge||0);
+        if((p.actionCharge||0)>0.45) this.spawnActionChargeFx(p, p.actionCharge||0);
+      }
+    }
     p.hitFlash = Math.max(0,p.hitFlash-1);
 
     const chargeMoveNorm = p.dashCharging ? Math.min(1,(p.dashCharge||0)/PHYS.dashMaxLevel) : 0;
@@ -1861,6 +1926,24 @@ const Game = {
     }
   },
 
+  spawnActionChargeFx(p, charge){
+    if(!p || !p.alive) return;
+    const effect=SphereBoxes.describe(p.cust?.dashEffect||'basic');
+    const colors=SphereBoxes.colors(effect);
+    const chargeNorm=Math.max(0,Math.min(1,Number(charge)||0));
+    const color=chargeNorm>0.35 ? (effect.particle||colors[0]||'#fff') : (colors[0]||effect.particle||'#fff');
+    const ang=Math.random()*Math.PI*2;
+    const ring=p.radius*(1.18+chargeNorm*.28);
+    const x=p.x+Math.cos(ang)*ring, y=p.y+Math.sin(ang)*ring;
+    this.particles.spawn(x,y,{
+      vx:-Math.cos(ang)*(22+chargeNorm*42)+(Math.random()-.5)*24,
+      vy:-Math.sin(ang)*(22+chargeNorm*42)+(Math.random()-.5)*24,
+      life:.28+chargeNorm*.12,size:1.9+chargeNorm*2.35,sizeEnd:.25,
+      color,gravity:0,drag:.91,twinkle:chargeNorm>.45,
+      shape:effect.shape||'orb',spin:(Math.random()-.5)*4
+    });
+  },
+
   fireActionProjectile(p, angle, power=0){
     if(!p || !p.alive || !this.isHost || !GameModes[this.mode]?.projectile) return false;
     if((p.actionCooldown||0)>0) return false;
@@ -1872,7 +1955,10 @@ const Game = {
     const proj={id:this._nextProjectileId++,ownerId:p.id,x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:PHYS.actionProjectileLife,deadly:!!GameModes[this.mode].deadly,halfLength:halfL,halfWidth:halfW,angle,spawnGrace:PHYS.actionProjectileSpawnGrace,power:powerNorm};
     this.projectiles.push(proj);
     p.actionCooldown=PHYS.actionProjectileCooldown;
+    p.actionCooldownMax=PHYS.actionProjectileCooldown;
     p.actionAiming=false;
+    p.remoteActionActive=false;
+    p._actionChargeFxAcc=0;
     NetworkManager.broadcast({t:'action_shot',projectile:proj},true);
     AudioManager.beep(proj.deadly?110:180,0.08,'square',0.18,70);
     return true;
@@ -2125,13 +2211,15 @@ const Game = {
   collideWithMap(p, dt){
     if(!p || !p.alive) return;
     p.grounded=false;
-    for(const plat of this.map.platforms){
+    p.supportPlatform=-1;
+    for(let platIndex=0; platIndex<this.map.platforms.length; platIndex++){
+      const plat=this.map.platforms[platIndex];
       const px1=plat.x, px2=plat.x+plat.w, py1=plat.y, py2=plat.y+plat.h;
       const withinX = p.x+p.radius>px1 && p.x-p.radius<px2;
       if(!withinX) continue;
       if(plat.type==='oneway'){
         if(p.vy>=0 && p.y+p.radius>py1 && p.y+p.radius<py1+20 && (p.y - p.vy*dt)+p.radius <= py1+2){
-          p.y = py1-p.radius; p.vy=0; p.grounded=true;
+          p.y = py1-p.radius; p.vy=0; p.grounded=true; p.supportPlatform=platIndex;
         }
         continue;
       }
@@ -2147,7 +2235,7 @@ const Game = {
             this.spawnFx(p,'bounce');
             if(boosted) this.spawnFx(p,'jump');
           }
-          else { p.vy=0; p.grounded=true; }
+          else { p.vy=0; p.grounded=true; p.supportPlatform=platIndex; }
         } else if(p.vy<0 && (p.y - p.vy*dt)-p.radius >= py2-4){
           p.y = py2+p.radius; p.vy = Math.abs(p.vy)*PHYS.bounceDamp*0.2;
         } else {
@@ -2261,28 +2349,42 @@ const Game = {
     const fixedDone=this.roundConfig.mode==='rounds' && this.roundNumber>=this.roundConfig.count;
     const scoreDone=target!=null && winner && this.scores[winner.id]>=target;
     const seriesDone=fixedDone||scoreDone;
+    const transitionId=(this.roundTransitionId||0)+1;
+    this.roundTransitionId=transitionId;
     const payload={
       round:this.roundNumber, winnerId:winner?.id||null, winnerName:winner?.name||null,
-      scores:this.scores, final:seriesDone, totalRounds:this.roundConfig.count, target
+      scores:this.scores, final:seriesDone, totalRounds:this.roundConfig.count, target, transitionId
     };
     NetworkManager.broadcast({t:'round_end', data:payload}, true);
     UI.showRoundResult(payload);
     if(seriesDone){
       const finalResults=this.buildResults();
       setTimeout(()=>{
+        if(this.roundTransitionId!==transitionId || this.state!=='roundResults') return;
         this.state='results';
-        NetworkManager.broadcast({t:'matchend', results:finalResults, scores:this.scores, round:this.roundNumber}, true);
+        NetworkManager.broadcast({t:'matchend', results:finalResults, scores:this.scores, round:this.roundNumber, transitionId}, true);
         UI.showResults(finalResults, this.scores, this.roundNumber);
         AudioManager.victory();
       }, 900);
     }else{
-      // Keep the round leaderboard visible briefly, then fade directly into the next round.
+      // Advance through one idempotent transition. The watchdog prevents a UI
+      // animation/timer failure from leaving the host stuck in roundResults.
+      const nextRound=this.roundNumber+1;
+      let started=false;
+      const startNext=()=>{
+        if(started || !this.isHost) return;
+        if(this.roundTransitionId!==transitionId || this.state!=='roundResults') return;
+        started=true;
+        this.roundNumber=nextRound;
+        this.beginRoundImmediate(nextRound,transitionId);
+      };
       setTimeout(()=>{
-        if(this.state==='roundResults' && this.isHost){
-          this.roundNumber++;
-          NetworkManager.broadcast({t:'round_start', round:this.roundNumber, scores:this.scores}, true);
-          UI.fadeToNextRound(()=>this.beginRoundImmediate());
-        }
+        if(this.roundTransitionId!==transitionId || this.state!=='roundResults') return;
+        const startFacings={};
+        for(const id in this.players) startFacings[id]=this.players[id].facing||1;
+        NetworkManager.broadcast({t:'round_start', round:nextRound, scores:this.scores, transitionId, facings:startFacings}, true);
+        UI.fadeToNextRound(startNext);
+        this._roundTransitionTimer=setTimeout(startNext, 900);
       }, 650);
     }
   },
@@ -2396,13 +2498,83 @@ const Game = {
         g?1:0,g?Math.round(g.x):0,g?Math.round(g.y):0,Math.round(p.grappleStamina),
         p.jumpSerial||0,p.dashSerial||0,p.grappleSerial||0,
         i.left?1:0,i.right?1:0,i.jump?1:0,i.heavy?1:0,i.dash?1:0,i.grapple?1:0,
-        p.lastInputSeq||0,i.down?1:0
+        p.lastInputSeq||0,i.down?1:0,
+        p.actionAiming?1:0,Number.isFinite(p.actionAngle)?p.actionAngle:0,Math.max(0,Math.min(1,p.actionCharge||0)),
+        p.grounded?1:0, Number.isInteger(p.supportPlatform)?p.supportPlatform:-1
       ];
     }
-    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace}))}, false);
+    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace}))}, false);
     this.lastServerState = Date.now();
   },
+  updateRemoteRenderTargets(dt){
+    const now=performance.now();
+    for(const id in this.players){
+      const p=this.players[id];
+      if(!p) continue;
+      if(id===this.myId){ p.renderX=p.x; p.renderY=p.y; continue; }
+
+      // Remote visuals are driven directly from the newest authoritative host
+      // state and extrapolated to the present frame. This avoids the visible
+      // lag introduced by easing toward a target: at 60 Hz snapshots, the host's
+      // position + velocity already gives us a very good continuous trajectory.
+      const age=Math.max(0,Math.min(0.20,(now-(p.netStateReceivedAt||now))/1000));
+      const sx=Number.isFinite(p.netServerX)?p.netServerX:p.x;
+      const sy=Number.isFinite(p.netServerY)?p.netServerY:p.y;
+      const vx=Number.isFinite(p.netServerVX)?p.netServerVX:0;
+      const vy=Number.isFinite(p.netServerVY)?p.netServerVY:0;
+
+      let tx=sx + vx*age;
+      let ty=sy + vy*age;
+
+      // When the host says the player is grounded, especially on a one-way
+      // platform, lock the rendered Y to the authoritative support surface.
+      // Do not extrapolate vertical velocity while grounded: even a tiny stale
+      // non-zero vy between snapshots can create a visible little bounce.
+      const remoteGrounded = p.netGrounded && p.netSupportPlatform>=0 && p.netSupportPlatform<this.map.platforms.length;
+      if(remoteGrounded){
+        const sp=this.map.platforms[p.netSupportPlatform];
+        if(sp){ ty=sp.y-p.radius; }
+      }
+
+      p.renderTargetX=tx; p.renderTargetY=ty;
+
+      // Follow the authoritative/extrapolated path immediately. New snapshots
+      // naturally update the trajectory every frame; only large discontinuities
+      // are softened to avoid a visible teleport after packet loss or a respawn.
+      if(!Number.isFinite(p.renderX) || !Number.isFinite(p.renderY)){
+        p.renderX=tx; p.renderY=ty;
+        continue;
+      }
+      const errX=tx-p.renderX, errY=ty-p.renderY;
+      const err=Math.hypot(errX,errY);
+      if(err>120){
+        p.renderX=tx; p.renderY=ty;
+      }else{
+        // Advance from the last rendered point using the host's velocity, then
+        // apply only the small residual correction. This keeps motion fluid at
+        // the browser frame rate without accumulating network-induced trailing.
+        p.renderX += vx*dt + errX*Math.min(1,dt*18);
+        if(remoteGrounded){
+          // Grounded remote players should visually stick to the support surface.
+          // Keep horizontal prediction smooth, but never carry vertical motion
+          // forward between snapshots while the host says they are grounded.
+          p.renderY += errY*Math.min(1,dt*30);
+          p.renderY = ty;
+        }else{
+          p.renderY += vy*dt + errY*Math.min(1,dt*18);
+        }
+      }
+    }
+  },
+
   applyServerState(msg){
+    if(!this.isHost && Number.isFinite(msg.round) && msg.round > this.roundNumber){
+      const incomingRound=Number(msg.round);
+      const incomingTransition=Number(msg.transitionId)||0;
+      this.roundNumber=incomingRound;
+      this.roundTransitionId=Math.max(this.roundTransitionId||0,incomingTransition);
+      this.beginRoundImmediate(incomingRound,incomingTransition);
+    }
     const seq = msg.seq;
     if(seq!=null){
       const prev=this.lastRecvStateSeq;
@@ -2436,6 +2608,8 @@ const Game = {
       if(!p) continue;
 
       const serverX=v[0], serverY=v[1], serverVX=v[2], serverVY=v[3];
+      p.netServerX=serverX; p.netServerY=serverY; p.netServerVX=serverVX; p.netServerVY=serverVY;
+      p.netStateReceivedAt=performance.now();
       const dx=serverX-p.x, dy=serverY-p.y;
       const error=Math.hypot(dx,dy);
       p.netErrorX=dx; p.netErrorY=dy;
@@ -2461,6 +2635,11 @@ const Game = {
 
       p.damage=v[4];
       p.alive=!!v[5];
+      p.netGrounded=!!v[26];
+      p.netSupportPlatform=Number.isInteger(v[27])?v[27]:-1;
+      if(id!==this.myId){
+        p.renderTargetX=serverX; p.renderTargetY=serverY;
+      }
 
       // Host sends the held input (and derived state like facing/stamina/grapple)
       // for every remote player so every client can simulate the complete world,
@@ -2481,6 +2660,13 @@ const Game = {
         p.input.dash=!!v[19];
         p.input.grapple=!!v[20];
         p.input.down=!!v[22];
+        if(this.mode==='arrows' || this.mode==='death_arrows'){
+          p.actionAiming=!!v[23];
+          if(Number.isFinite(v[24])) p.actionAngle=v[24];
+          p.actionCharge=Math.max(0,Math.min(1,Number(v[25])||0));
+          if(p.actionAiming) p.remoteActionActive=true;
+          else if(!p.actionAiming) p.remoteActionActive=false;
+        }
 
         // Recreate discrete actions from authoritative serials. This is what makes
         // remote jumps/dashes/grapples line up with the host instead of appearing a
@@ -2489,6 +2675,14 @@ const Game = {
         if(js !== (p.netJumpSerial||0)){ p.netJumpSerial=js; p.input.jumpPressed=true; }
         if(ds !== (p.netDashSerial||0)){ p.netDashSerial=ds; p.input.dashPressed=true; }
         if(gs !== (p.netGrappleSerial||0)){ p.netGrappleSerial=gs; p.input.grapplePressed=true; }
+
+        p.grounded=p.netGrounded;
+        p.supportPlatform=p.netSupportPlatform;
+        if(p.netGrounded && p.netSupportPlatform>=0 && p.netSupportPlatform<this.map.platforms.length){
+          const sp=this.map.platforms[p.netSupportPlatform];
+          const nearSupport = p.x+p.radius>sp.x && p.x-p.radius<sp.x+sp.w && Math.abs((p.y+p.radius)-sp.y)<14;
+          if(nearSupport){ p.y=sp.y-p.radius; p.vy=Math.min(0,p.vy); }
+        }
 
         if(!v[8]){ p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0; }
         else {
@@ -2500,18 +2694,18 @@ const Game = {
   },
 
   applyClientCorrections(dt){
-    // A second, very small correction pass removes residual packet jitter after
-    // the fixed-step predictor has run. The actual physics stays fully local.
+    // Physics corrections stay gentle; remote visuals are smoothed separately.
     for(const id in this.players){
       const p=this.players[id];
       if(!p || p.netErrorX==null) continue;
-      const ax=Math.max(-7,Math.min(7,p.netErrorX*dt*5.0));
-      const ay=Math.max(-7,Math.min(7,p.netErrorY*dt*5.0));
-      p.x += ax; p.y += ay;
-      p.netErrorX -= ax; p.netErrorY -= ay;
+      if(id!==this.myId){
+        const ax=Math.max(-3.5,Math.min(3.5,p.netErrorX*dt*3.0));
+        const ay=Math.max(-3.5,Math.min(3.5,p.netErrorY*dt*3.0));
+        p.x += ax; p.y += ay;
+        p.netErrorX -= ax; p.netErrorY -= ay;
+      }
     }
   },
-
   handleNetData(pid, data){
     switch(data.t){
       case 'input':
@@ -2575,7 +2769,7 @@ const Game = {
           const p=this.players[pid]; if(!p) return;
           const seq=(data.seq||0)&65535; const prev=p.lastActionEventSeq;
           const newer=prev===null || (((seq-(prev||0)+65536)&65535)<32768 && seq!==prev);
-          if(!newer) return; p.lastActionEventSeq=seq; p.remoteActionActive=true; p.actionAiming=((p.actionCooldown||0)<=0 && p.alive); p.actionChargeStartTime=performance.now(); p.actionCharge=0; p.actionPower=0; p.actionAngle=Number.isFinite(data.angle)?data.angle:(p.facing<0?Math.PI:0);
+          if(!newer) return; p.lastActionEventSeq=seq; p.remoteActionActive=true; p.actionAiming=((p.actionCooldown||0)<=0 && p.alive); p.actionChargeStartTime=performance.now(); p.actionCharge=0; p.actionPower=0; p._actionChargeFxAcc=0; p.actionAngle=Number.isFinite(data.angle)?data.angle:(p.facing<0?Math.PI:0);
         }
         break;
       case 'action_fire':
@@ -2583,13 +2777,19 @@ const Game = {
           const p=this.players[pid]; if(!p) return;
           const seq=(data.seq||0)&65535; const prev=p.lastActionEventSeq;
           const newer=prev===null || (((seq-(prev||0)+65536)&65535)<32768 && seq!==prev);
-          if(!newer) return; p.lastActionEventSeq=seq; p.remoteActionActive=false; p.actionAiming=false;
-          if(Number.isFinite(data.angle)) this.fireActionProjectile(p,data.angle,Number(data.power)||0);
+          if(!newer) return;
+          const fireAngle = p.remoteActionActive && Number.isFinite(p.actionAngle) ? p.actionAngle : data.angle;
+          p.lastActionEventSeq=seq; p.remoteActionActive=false; p.actionAiming=false;
+          if(Number.isFinite(fireAngle)) this.fireActionProjectile(p,fireAngle,Number(data.power)||0);
         }
         break;
       case 'action_shot':
         if(!this.isHost && data.projectile){
           const q=data.projectile;
+          if(q.ownerId===this.myId){
+            const me=this.players[this.myId];
+            if(me){ me.actionCooldown=PHYS.actionProjectileCooldown; me.actionCooldownMax=PHYS.actionProjectileCooldown; me.actionAiming=false; me.remoteActionActive=false; me.actionCharge=0; me.actionPower=0; }
+          }
           if(!this.projectiles.some(existing=>existing.id===q.id)) this.projectiles.push(Object.assign({},q));
         }
         break;
@@ -2634,19 +2834,36 @@ const Game = {
       case 'match_start': if(!this.isHost) Lobby.clientStartMatch(data); break;
       case 'round_end':
         if(!this.isHost && data.data){
+          const incomingRound=Number(data.data.round)||0;
+          const incomingTransition=Number(data.data.transitionId)||0;
+          if(incomingRound < this.roundNumber || (incomingRound===this.roundNumber && incomingTransition < (this.roundTransitionId||0))) break;
+          this.roundTransitionId=Math.max(this.roundTransitionId||0,incomingTransition);
           this.scores=data.data.scores||this.scores;
-          this.roundNumber=data.data.round||this.roundNumber;
+          this.roundNumber=incomingRound||this.roundNumber;
           UI.showRoundResult(data.data);
         }
         break;
       case 'round_start':
         if(!this.isHost){
+          const incomingRound=Number(data.round)||0;
+          const incomingTransition=Number(data.transitionId)||0;
+          if(incomingRound < this.roundNumber || (incomingRound===this.roundNumber && incomingTransition <= (this.roundTransitionId||0))) break;
           this.scores=data.scores||this.scores;
-          this.roundNumber=data.round||this.roundNumber;
-          UI.fadeToNextRound(()=>this.beginRoundImmediate());
+          this.roundTransitionId=incomingTransition;
+          this.roundNumber=incomingRound;
+          if(data.facings){ for(const id in data.facings){ if(this.players[id]) this.players[id].facing=(data.facings[id]<0?-1:1); } }
+          UI.fadeToNextRound(()=>this.beginRoundImmediate(incomingRound,incomingTransition));
+          setTimeout(()=>this.beginRoundImmediate(incomingRound,incomingTransition),900);
         }
         break;
-      case 'matchend': if(!this.isHost){ this.scores=data.scores||this.scores; UI.showResults(data.results, data.scores, data.round); } break;
+      case 'matchend':
+        if(!this.isHost){
+          const incomingRound=Number(data.round)||0;
+          if(incomingRound < this.roundNumber) break;
+          this.scores=data.scores||this.scores;
+          UI.showResults(data.results, data.scores, data.round);
+        }
+        break;
       case 'rematch': if(!this.isHost) Lobby.goToLobby(); break;
       case 'map_data': if(!this.isHost) Lobby.receiveMap(data.map); break;
       case 'lobby_closed':
@@ -2676,7 +2893,11 @@ const Game = {
 
   /* ---------- render ---------- */
   updateCameraAndHud(dt){
-    this.camera.follow(Object.values(this.players), this.map.width, this.map.height, this.viewW, this.viewH);
+    const cameraPlayers=Object.values(this.players).map(p=>{
+      if(p.id===this.myId) return p;
+      return Object.assign({},p,{x:Number.isFinite(p.renderX)?p.renderX:p.x,y:Number.isFinite(p.renderY)?p.renderY:p.y});
+    });
+    this.camera.follow(cameraPlayers, this.map.width, this.map.height, this.viewW, this.viewH);
     UI.updateHUD();
   },
   render(){
@@ -2799,6 +3020,8 @@ const Game = {
     for(const id in this.players){
       const p=this.players[id];
       const alpha = p.alive ? 1 : 0.15;
+      const drawX = p.id===this.myId ? p.x : (Number.isFinite(p.renderX)?p.renderX:p.x);
+      const drawY = p.id===this.myId ? p.y : (Number.isFinite(p.renderY)?p.renderY:p.y);
       ctx.globalAlpha = alpha;
       for(let i=0;i<p.trail.length;i++){
         const t=p.trail[i]; const a=(i/p.trail.length)*0.3;
@@ -2817,7 +3040,7 @@ const Game = {
         ctx.shadowColor = effectColor;
         ctx.shadowBlur = 7+chg*13+(effect.rarity==='legendary'?10:effect.rarity==='epic'?5:0);
         ctx.lineWidth = 2+chg*3+(effect.rarity==='legendary'?1:0);
-        ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(drawX,drawY,r,0,Math.PI*2); ctx.stroke();
         ctx.restore();
       }
       if(p.grappleAnchor && p.alive){
@@ -2828,8 +3051,8 @@ const Game = {
         const wave=Math.sin(performance.now()*0.018+dist*0.02)*(2+Math.min(8,stretch*0.08));
         ctx.strokeStyle=stretch>4?'#aaffb9':'#5dff8fcc'; ctx.lineWidth=stretch>12?4:3;
         ctx.beginPath();
-        ctx.moveTo(p.x,p.y);
-        ctx.quadraticCurveTo((p.x+p.grappleAnchor.x)/2+nx*wave,(p.y+p.grappleAnchor.y)/2+ny*wave,p.grappleAnchor.x,p.grappleAnchor.y);
+        ctx.moveTo(drawX,drawY);
+        ctx.quadraticCurveTo((drawX+p.grappleAnchor.x)/2+nx*wave,(drawY+p.grappleAnchor.y)/2+ny*wave,p.grappleAnchor.x,p.grappleAnchor.y);
         ctx.stroke();
         ctx.fillStyle='#5dff8f'; ctx.beginPath(); ctx.arc(p.grappleAnchor.x,p.grappleAnchor.y,4+Math.sin(performance.now()*0.012)*1.5,0,Math.PI*2); ctx.fill();
       }
@@ -2847,28 +3070,53 @@ const Game = {
         ctx.shadowColor=effect.particle;
         ctx.shadowBlur=8+chargeNorm*(effect.rarity==='mythic'?50:effect.rarity==='legendary'?40:effect.rarity==='epic'?27:20);
         ctx.beginPath();
-        ctx.arc(p.x,p.y,ringR,0,Math.PI*2);
+        ctx.arc(drawX,drawY,ringR,0,Math.PI*2);
         ctx.stroke();
         if(effect.rarity==='mythic'||effect.rarity==='legendary'||effect.rarity==='epic'){
           ctx.globalAlpha=alpha*(0.07+chargeNorm*0.18);
           ctx.fillStyle=effect.particle;
-          ctx.beginPath(); ctx.arc(p.x,p.y,ringR*0.84,0,Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.arc(drawX,drawY,ringR*0.84,0,Math.PI*2); ctx.fill();
         }
         ctx.restore();
       }
       if(p.actionAiming && p.alive && GameModes[this.mode]?.projectile){
         const a=this.getActionReticleAngle(p);
         const rr=p.radius+18;
-        const tx=p.x+Math.cos(a)*rr, ty=p.y+Math.sin(a)*rr;
         const charge=Math.max(0,Math.min(1,p.actionCharge||0));
+        const aimLen=p.radius+72+charge*22;
+        const tx=p.x+Math.cos(a)*rr, ty=p.y+Math.sin(a)*rr;
+        const ex=tx, ey=ty;
         ctx.save();
-        ctx.strokeStyle=GameModes[this.mode].deadly?'#ff4b4b':'#ffd86b'; ctx.lineWidth=3;
-        ctx.beginPath(); ctx.arc(p.x,p.y,rr,0,Math.PI*2); ctx.stroke();
+        const baseAim=GameModes[this.mode].deadly?{r:255,g:75,b:75}:{r:255,g:216,b:107};
+        const mid={r:255,g:155,b:55};
+        const hot={r:255,g:70,b:70};
+        let ar,ag,ab;
+        if(charge<0.5){
+          const mix=charge*2;
+          ar=Math.round(baseAim.r+(mid.r-baseAim.r)*mix);
+          ag=Math.round(baseAim.g+(mid.g-baseAim.g)*mix);
+          ab=Math.round(baseAim.b+(mid.b-baseAim.b)*mix);
+        }else{
+          const mix=(charge-0.5)*2;
+          ar=Math.round(mid.r+(hot.r-mid.r)*mix);
+          ag=Math.round(mid.g+(hot.g-mid.g)*mix);
+          ab=Math.round(mid.b+(hot.b-mid.b)*mix);
+        }
+        const aimColor=`rgb(${ar},${ag},${ab})`;
+        ctx.strokeStyle=aimColor; ctx.globalAlpha=0.72; ctx.lineWidth=2;
+        ctx.setLineDash([6,6]);
+        ctx.beginPath(); ctx.moveTo(p.x+Math.cos(a)*(p.radius+8),p.y+Math.sin(a)*(p.radius+8)); ctx.lineTo(ex,ey); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.globalAlpha=0.8; ctx.strokeStyle=aimColor; ctx.lineWidth=3;
+        ctx.beginPath(); ctx.arc(drawX,drawY,rr,0,Math.PI*2); ctx.stroke();
         ctx.strokeStyle='#ffffff99'; ctx.lineWidth=4;
-        ctx.beginPath(); ctx.arc(p.x,p.y,rr+5,-Math.PI/2,-Math.PI/2+Math.PI*2*charge); ctx.stroke();
-        ctx.fillStyle=GameModes[this.mode].deadly?'#ff5656':'#ffe07c';
-        ctx.beginPath(); ctx.arc(tx,ty,7+charge*5,0,Math.PI*2); ctx.fill();
-        ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(tx-10,ty); ctx.lineTo(tx+10,ty); ctx.moveTo(tx,ty-10); ctx.lineTo(tx,ty+10); ctx.stroke();
+        ctx.beginPath(); ctx.arc(drawX,drawY,rr+5,-Math.PI/2,-Math.PI/2+Math.PI*2*charge); ctx.stroke();
+        ctx.fillStyle=aimColor;
+        ctx.shadowColor=aimColor;
+        ctx.shadowBlur=5+charge*12;
+        ctx.beginPath(); ctx.arc(ex,ey,6+charge*4,0,Math.PI*2); ctx.fill();
+        ctx.shadowBlur=0;
+        ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(ex-9,ey); ctx.lineTo(ex+9,ey); ctx.moveTo(ex,ey-9); ctx.lineTo(ex,ey+9); ctx.stroke();
         ctx.restore();
       }
       this.drawCharacter(ctx,p);
@@ -3073,6 +3321,19 @@ const UI = {
     const m=Math.floor(Game.matchTime/60), s=Game.matchTime%60;
     document.getElementById('timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
     const me = Game.players[Game.myId];
+    const arrowWrap = document.getElementById('arrowwrap');
+    const arrowFill = document.getElementById('arrowfill');
+    if(arrowWrap) arrowWrap.style.display = (Game.mode==='arrows'||Game.mode==='death_arrows') ? 'block' : 'none';
+    if(me && arrowFill && (Game.mode==='arrows'||Game.mode==='death_arrows')){
+      const cdMax = me.actionCooldownMax || PHYS.actionProjectileCooldown;
+      const pct = Math.max(0, Math.min(100, 100 - ((me.actionCooldown||0)/cdMax)*100));
+      arrowFill.style.width = pct+'%';
+      arrowFill.classList.toggle('ready', pct>=100);
+      arrowFill.classList.toggle('charging', !!me.actionAiming);
+      arrowFill.style.boxShadow = me.actionAiming ? `0 0 ${4+(me.actionCharge||0)*10}px rgba(255,216,107,${0.35+(me.actionCharge||0)*0.45})` : '';
+      document.getElementById('arrowlabel').textContent = me.actionAiming ? 'Arrow Aiming' : 'Arrow';
+    }
+
     const fillWrap = document.getElementById('staminawrap');
     const fill = document.getElementById('staminafill');
     if(fillWrap) fillWrap.style.display = Game.mode==='grapple' ? 'block' : 'none';
