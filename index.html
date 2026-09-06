@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<link rel="icon" type="image/png" href="icon.png">
 <title>PLUNK</title>
+<link rel="icon" type="image/png" href="icon.png">
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
 :root{
@@ -344,7 +344,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <button class="btn" data-go="spherebox">SPHEREBOX</button>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 1.98</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.03</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -1369,6 +1369,7 @@ const SphereBoxes = {
   },
   describe(id){ return this.effects[id]||this.effects.basic; },
   colors(effect){ return Array.isArray(effect?.colors) && effect.colors.length ? effect.colors : [effect?.particle||'#fff']; },
+  primaryColor(effect){ const colors=this.colors(effect); return colors[0] || '#fff'; },
   equip(id){ if(!this.owns(id)) return false; const c=Storage.get('customization',{name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out'}); c.dashEffect=id; Storage.set('customization',c); return true; },
   equipped(){ return Storage.get('customization',{}).dashEffect||'basic'; }
 };
@@ -2004,11 +2005,10 @@ const Game = {
     const ang = t + Math.random()*Math.PI*2;
     const r = p.radius*(0.9+chargeNorm*0.75);
     const x = p.x + Math.cos(ang)*r, y = p.y + Math.sin(ang)*r;
-    const hue = cust.hue||200;
     const effect=SphereBoxes.describe(cust.dashEffect||'basic');
     const level = Math.min(PHYS.dashMaxLevel,Math.floor(charge||0)+1);
     const effectColors = SphereBoxes.colors(effect);
-    const color = chargeNorm>0.85 ? (effect.particle || effectColors[0] || '#fff') : `hsl(${(hue+(effect.hueShift||0))%360},90%,${65+chargeNorm*20}%)`;
+    const color = effectColors[0] || effect.particle || '#fff';
     const shapeBoost = effect.rarity==='mythic'?2.3:effect.rarity==='legendary'?1.95:effect.rarity==='epic'?1.35:effect.rarity==='rare'?1.15:1;
     const spawnOne=(ox=0,oy=0,extra={})=>this.particles.spawn(x+ox,y+oy,{
       vx:(p.x-x)*(3+chargeNorm*6)+(extra.vx||0), vy:(p.y-y)*(3+chargeNorm*6)-30-chargeNorm*35+(extra.vy||0),
@@ -2022,7 +2022,7 @@ const Game = {
           const a=t*(1.7+i*.045)+i*Math.PI/6; const ar=r*(.65+chargeNorm*.9)+(i%3)*7;
           spawnOne(Math.cos(a)*ar,Math.sin(a)*ar,{color:effectColors[i%effectColors.length],vx:-Math.cos(a)*(120+chargeNorm*260)+Math.sin(a)*120,vy:-Math.sin(a)*(120+chargeNorm*260)-Math.cos(a)*120,shape:i%3?'orb':'star',spin:5});
         }
-        this.particles.burst(x,y,'#09030f',10+Math.round(chargeNorm*10),80,{gravity:0,life:.45,size:5+chargeNorm*3,sizeEnd:1,twinkle:false,shape:'orb'});
+        this.particles.burst(x,y,effectColors[0] || '#09030f',10+Math.round(chargeNorm*10),80,{gravity:0,life:.45,size:5+chargeNorm*3,sizeEnd:1,twinkle:false,shape:'orb'});
       } else if(effect.style==='seraph'){
         for(const wing of [-1,1]) for(let i=0;i<8;i++){
           const f=i/7, px=wing*(8+f*34), py=-4-f*32+Math.sin(f*Math.PI)*8;
@@ -2042,14 +2042,14 @@ const Game = {
     if(effect.shape==='diamond'||effect.shape==='shard'){
       for(let i=0;i<(effect.rarity==='legendary'?3:1);i++) spawnOne((Math.random()-.5)*10,(Math.random()-.5)*10,{vx:(Math.random()-.5)*140,vy:-40-Math.random()*90});
     }else if(effect.shape==='star'){
-      spawnOne(0,0,{color:effect.particle,vx:(Math.random()-.5)*80,vy:-50-Math.random()*90});
+      spawnOne(0,0,{color:effectColors[0],vx:(Math.random()-.5)*80,vy:-50-Math.random()*90});
     }else if(effect.shape==='comet'){
       spawnOne(-p.facing*(10+Math.random()*14),0,{vx:-p.facing*(160+chargeNorm*220),vy:(Math.random()-.5)*60});
       spawnOne(-p.facing*20,Math.random()*8,{vx:-p.facing*(120+chargeNorm*180),vy:(Math.random()-.5)*50});
     }else{ spawnOne(); }
     if(effect.aura && chargeNorm>0.5){
       const auraCount=effect.rarity==='mythic'?8:effect.rarity==='legendary'?6:effect.rarity==='epic'?3:2;
-      for(let i=0;i<auraCount;i++){ const a=Math.random()*Math.PI*2; const ar=p.radius*(1.05+chargeNorm*.35); spawnOne(Math.cos(a)*ar,Math.sin(a)*ar,{color:effect.particle,vx:-Math.cos(a)*50,vy:-Math.sin(a)*50}); }
+      for(let i=0;i<auraCount;i++){ const a=Math.random()*Math.PI*2; const ar=p.radius*(1.05+chargeNorm*.35); spawnOne(Math.cos(a)*ar,Math.sin(a)*ar,{color:effectColors[i%effectColors.length],vx:-Math.cos(a)*50,vy:-Math.sin(a)*50}); }
     }
   },
 
@@ -2058,7 +2058,7 @@ const Game = {
     const effect=SphereBoxes.describe(p.cust?.dashEffect||'basic');
     const colors=SphereBoxes.colors(effect);
     const chargeNorm=Math.max(0,Math.min(1,Number(charge)||0));
-    const color=chargeNorm>0.35 ? (effect.particle||colors[0]||'#fff') : (colors[0]||effect.particle||'#fff');
+    const color=colors[0] || effect.particle || '#fff';
     const ang=Math.random()*Math.PI*2;
     const ring=p.radius*(1.18+chargeNorm*.28);
     const x=p.x+Math.cos(ang)*ring, y=p.y+Math.sin(ang)*ring;
@@ -2799,7 +2799,7 @@ const Game = {
         const count = 12 + Math.round(chargeNorm*34);
         const speed = 230 + chargeNorm*360;
         const effectColors = SphereBoxes.colors(effect);
-        const dashColor = chargeNorm>0.82 ? effectColors[0] : `hsl(${((cust.hue||200)+(effect.hueShift||0))%360},80%,60%)`;
+        const dashColor = effectColors[0] || effect.particle || '#fff';
         this.particles.burst(x-p.facing*8,y,dashColor,count,speed,{gravity:60,life:.3+chargeNorm*0.28,size:3.5+chargeNorm*4,sizeEnd:.7,twinkle:chargeNorm>0.42,colors:effectColors});
         if(effectColors.length>1){
           const multicolorCount=Math.max(4,Math.round(count*0.42));
@@ -2812,16 +2812,16 @@ const Game = {
         if(effect.rarity==='mythic'){
           const mythColors=effectColors;
           if(effect.style==='singularity'){
-            this.particles.burst(x,y,'#0a0214',24+Math.round(chargeNorm*16),220+chargeNorm*180,{gravity:0,life:.9,size:5+chargeNorm*4,sizeEnd:.2,twinkle:false,shape:'orb'});
+            this.particles.burst(x,y,effectColors[0] || '#0a0214',24+Math.round(chargeNorm*16),220+chargeNorm*180,{gravity:0,life:.9,size:5+chargeNorm*4,sizeEnd:.2,twinkle:false,shape:'orb'});
             for(let q=0;q<34;q++){ const a=q*.46+performance.now()*.002, rr=15+(q%9)*4+chargeNorm*30; this.particles.spawn(x+Math.cos(a)*rr,y+Math.sin(a)*rr,{vx:-Math.sin(a)*(170+chargeNorm*210),vy:Math.cos(a)*(170+chargeNorm*210),life:.7,size:2.5+chargeNorm*2,sizeEnd:.05,color:mythColors[q%mythColors.length],gravity:0,drag:.9,twinkle:true,shape:q%3?'orb':'star'}); }
           } else if(effect.style==='seraph'){
-            this.particles.burst(x,y,'#fff6b0',24+Math.round(chargeNorm*20),520+chargeNorm*360,{gravity:-60,life:.7+chargeNorm*.25,size:3+chargeNorm*3,sizeEnd:.1,twinkle:true,colors:mythColors,shape:'spark'});
+            this.particles.burst(x,y,effectColors[0] || '#fff6b0',24+Math.round(chargeNorm*20),520+chargeNorm*360,{gravity:-60,life:.7+chargeNorm*.25,size:3+chargeNorm*3,sizeEnd:.1,twinkle:true,colors:mythColors,shape:'spark'});
             for(const wing of [-1,1]) for(let q=0;q<11;q++){ const f=q/10; this.particles.spawn(x+wing*(10+f*48),y-4-f*54,{vx:wing*(100+f*180),vy:-120-f*150,life:.65+chargeNorm*.2,size:3+chargeNorm*2,sizeEnd:.05,color:mythColors[q%mythColors.length],gravity:0,drag:.91,twinkle:true,shape:q%2?'star':'spark'}); }
           } else if(effect.style==='worldtree'){
-            this.particles.burst(x,y,'#7fff83',30+Math.round(chargeNorm*26),430+chargeNorm*300,{gravity:-110,life:.8+chargeNorm*.25,size:3+chargeNorm*3,sizeEnd:.08,twinkle:true,colors:mythColors,shape:'shard'});
+            this.particles.burst(x,y,effectColors[0] || '#7fff83',30+Math.round(chargeNorm*26),430+chargeNorm*300,{gravity:-110,life:.8+chargeNorm*.25,size:3+chargeNorm*3,sizeEnd:.08,twinkle:true,colors:mythColors,shape:'shard'});
             for(let q=0;q<20;q++){ const f=q/19, side=q%2?1:-1; this.particles.spawn(x+side*(8+f*55),y+8-f*78,{vx:side*(80+f*180),vy:-130-f*160,life:.72+chargeNorm*.2,size:2.8+chargeNorm*2,sizeEnd:.05,color:mythColors[q%mythColors.length],gravity:15,drag:.91,twinkle:true,shape:q%3?'shard':'diamond'}); }
           } else {
-            this.particles.burst(x,y,effect.particle,38+Math.round(chargeNorm*28),680+chargeNorm*420,{gravity:-15,life:.75+chargeNorm*.3,size:3+chargeNorm*3.5,sizeEnd:.1,twinkle:true,colors:mythColors,shape:effect.shape==='supernova'?'star':effect.shape});
+            this.particles.burst(x,y,effectColors[0] || '#fff',38+Math.round(chargeNorm*28),680+chargeNorm*420,{gravity:-15,life:.75+chargeNorm*.3,size:3+chargeNorm*3.5,sizeEnd:.1,twinkle:true,colors:mythColors,shape:effect.shape==='supernova'?'star':effect.shape});
           }
           for(let k=0;k<3;k++){ const ringR=18+k*13+chargeNorm*18; for(let q=0;q<12;q++){ const a=(q/12)*Math.PI*2+k*.55+performance.now()*.001*(k+1); this.particles.spawn(x+Math.cos(a)*ringR,y+Math.sin(a)*ringR,{vx:-Math.cos(a)*(120+chargeNorm*170),vy:-Math.sin(a)*(120+chargeNorm*170),life:.55+chargeNorm*.25,size:2.5+chargeNorm*2.5,sizeEnd:.05,color:mythColors[(q+k)%mythColors.length],gravity:0,drag:.9,twinkle:true,shape:q%2?'star':'shard'}); } }
         }
@@ -2829,7 +2829,7 @@ const Game = {
           const extraCount=effect.rarity==='mythic'?34:effect.rarity==='legendary'?24:10;
           this.particles.burst(x-p.facing*12,y,dashColor,extraCount,520+chargeNorm*360,{gravity:0,life:.55+chargeNorm*.25,size:2+chargeNorm*2,sizeEnd:.1,twinkle:true,shape:effect.shape==='orb'?'star':effect.shape});
           if(effect.aura){
-            this.particles.burst(x,y,effect.particle,effect.rarity==='mythic'?28:effect.rarity==='legendary'?22:9,150+chargeNorm*120,{gravity:0,life:.35+chargeNorm*.25,size:2+chargeNorm*2,sizeEnd:.2,twinkle:true,shape:effect.shape==='orb'?'orb':effect.shape});
+            this.particles.burst(x,y,effectColors[0] || '#fff',effect.rarity==='mythic'?28:effect.rarity==='legendary'?22:9,150+chargeNorm*120,{gravity:0,life:.35+chargeNorm*.25,size:2+chargeNorm*2,sizeEnd:.2,twinkle:true,shape:effect.shape==='orb'?'orb':effect.shape});
           }
         }
         if(effect.shape==='diamond'||effect.shape==='shard'){
@@ -2843,7 +2843,7 @@ const Game = {
               const a=(q/6)*Math.PI*2+(k*.7);
               this.particles.spawn(x+Math.cos(a)*rr,y+Math.sin(a)*rr,{
                 vx:-Math.cos(a)*(70+chargeNorm*90),vy:-Math.sin(a)*(70+chargeNorm*90),
-                life:.35+chargeNorm*.22,size:2.2+chargeNorm*2,sizeEnd:.15,color:effect.particle,
+                life:.35+chargeNorm*.22,size:2.2+chargeNorm*2,sizeEnd:.15,color:effectColors[0] || '#fff',
                 gravity:0,drag:.88,twinkle:true,shape:effect.shape==='supernova'?'star':effect.shape
               });
             }
@@ -3551,12 +3551,25 @@ const Game = {
         const chg = p.dashCharge||0;
         const pulse = 1+Math.sin(performance.now()*0.02)*0.08;
         const r = (p.radius+4+chg*10)*pulse;
-        const effect=SphereBoxes.describe(p.cust?.dashEffect||'basic');
-        const effectColor=effect.particle||`hsl(${p.cust?.hue??200},90%,65%)`;
+        const effectId=p.cust?.dashEffect||'basic';
+        const effect=SphereBoxes.describe(effectId);
+        const effectColors=SphereBoxes.colors(effect);
+        const colorPhase=performance.now()*0.0018;
         ctx.save();
         ctx.globalAlpha = alpha*(0.35+chg*0.5);
-        ctx.strokeStyle = effectColor;
-        ctx.shadowColor = effectColor;
+        if(effectId!=='lunarSingularity' && effectColors.length>1){
+          const start=((colorPhase*0.35)%1)*Math.PI*2;
+          const grad=ctx.createConicGradient(start,visualX,visualY);
+          effectColors.forEach((c,i)=>grad.addColorStop(i/effectColors.length,c));
+          grad.addColorStop(1,effectColors[0]);
+          ctx.strokeStyle=grad;
+          const glowIndex=Math.floor(colorPhase*1.7)%effectColors.length;
+          ctx.shadowColor=effectColors[glowIndex];
+        }else{
+          const effectColor=SphereBoxes.primaryColor(effect);
+          ctx.strokeStyle=effectColor;
+          ctx.shadowColor=effectColor;
+        }
         ctx.shadowBlur = 7+chg*13+(effect.rarity==='legendary'?10:effect.rarity==='epic'?5:0);
         ctx.lineWidth = 2+chg*3+(effect.rarity==='legendary'?1:0);
         const circleX=visualX, circleY=visualY;
@@ -3597,24 +3610,41 @@ const Game = {
       }
       if(p.dashCharging && p.alive){
         const chargeNorm=Math.min(1,(p.dashCharge||0)/(PHYS.dashMaxLevel||3));
-        const effect=SphereBoxes.describe(p.cust?.dashEffect||'moonGlow');
+        const effectId=p.cust?.dashEffect||'moonGlow';
+        const effect=SphereBoxes.describe(effectId);
+        const effectColors=SphereBoxes.colors(effect);
         const pulse=1+Math.sin(performance.now()*0.012)*0.06;
         const rarityBoost=effect.rarity==='mythic'?2.05:effect.rarity==='legendary'?1.7:effect.rarity==='epic'?1.3:effect.rarity==='rare'?1.12:1;
         const ringR=(p.radius+5+chargeNorm*18*rarityBoost)*pulse;
         const ringAlpha=Math.min(0.9,0.24+chargeNorm*0.58);
+        const colorPhase=performance.now()*0.0018;
         ctx.save();
         ctx.globalAlpha=alpha*ringAlpha;
-        ctx.strokeStyle=effect.particle;
-        ctx.lineWidth=2+chargeNorm*(effect.rarity==='mythic'?9:effect.rarity==='legendary'?8:effect.rarity==='epic'?5:effect.rarity==='rare'?3.5:2.5);
-        ctx.shadowColor=effect.particle;
-        ctx.shadowBlur=8+chargeNorm*(effect.rarity==='mythic'?50:effect.rarity==='legendary'?40:effect.rarity==='epic'?27:20);
         const ringX=visualX, ringY=visualY;
+        if(effectId!=='lunarSingularity' && effectColors.length>1){
+          const start=((colorPhase*0.35)%1)*Math.PI*2;
+          const grad=ctx.createConicGradient(start,ringX,ringY);
+          effectColors.forEach((c,i)=>grad.addColorStop(i/effectColors.length,c));
+          grad.addColorStop(1,effectColors[0]);
+          ctx.strokeStyle=grad;
+          ctx.shadowColor=effectColors[Math.floor(colorPhase*1.7)%effectColors.length];
+        }else{
+          const effectColor=SphereBoxes.primaryColor(effect);
+          ctx.strokeStyle=effectColor;
+          ctx.shadowColor=effectColor;
+        }
+        ctx.lineWidth=2+chargeNorm*(effect.rarity==='mythic'?9:effect.rarity==='legendary'?8:effect.rarity==='epic'?5:effect.rarity==='rare'?3.5:2.5);
+        ctx.shadowBlur=8+chargeNorm*(effect.rarity==='mythic'?50:effect.rarity==='legendary'?40:effect.rarity==='epic'?27:20);
         ctx.beginPath();
         ctx.arc(ringX,ringY,ringR,0,Math.PI*2);
         ctx.stroke();
         if(effect.rarity==='mythic'||effect.rarity==='legendary'||effect.rarity==='epic'){
           ctx.globalAlpha=alpha*(0.07+chargeNorm*0.18);
-          ctx.fillStyle=effect.particle;
+          if(effectId!=='lunarSingularity' && effectColors.length>1){
+            ctx.fillStyle=effectColors[(Math.floor(colorPhase*1.1)+2)%effectColors.length];
+          }else{
+            ctx.fillStyle=SphereBoxes.primaryColor(effect);
+          }
           ctx.beginPath(); ctx.arc(ringX,ringY,ringR*0.84,0,Math.PI*2); ctx.fill();
         }
         ctx.restore();
@@ -4716,7 +4746,7 @@ function updateCustomizeEffectShower(){
   const t=performance.now()*0.001;
   ctx.clearRect(0,0,W,H); ctx.fillStyle='#080604'; ctx.fillRect(0,0,W,H);
   const cx=W*0.5, cy=H*0.58;
-  ctx.globalAlpha=.24; ctx.fillStyle=effect.particle; ctx.beginPath(); ctx.arc(cx,cy,34+(effect.aura?14:0),0,Math.PI*2); ctx.fill();
+  ctx.globalAlpha=.24; ctx.fillStyle=effectColors[0] || effect.particle || '#fff'; ctx.beginPath(); ctx.arc(cx,cy,34+(effect.aura?14:0),0,Math.PI*2); ctx.fill();
   for(let i=0;i<28;i++){
     const phase=(t*(1.2+(effect.rarity==='legendary'?1.2:effect.rarity==='epic'?.8:.35))+i*.63)%1;
     const ang=i*2.399+t*(effect.rarity==='mythic'?2.2:(effect.aura?1.4:.65)); const r=24+phase*145;
@@ -4727,7 +4757,7 @@ function updateCustomizeEffectShower(){
     else {ctx.arc(0,0,size,0,Math.PI*2);}
     ctx.fill(); ctx.restore();
   }
-  if(effect.aura){ctx.globalAlpha=.35;ctx.strokeStyle=effect.particle;ctx.lineWidth=3+Math.sin(t*4);ctx.beginPath();ctx.arc(cx,cy,46+Math.sin(t*3)*4,0,Math.PI*2);ctx.stroke();}
+  if(effect.aura){ctx.globalAlpha=.35;ctx.strokeStyle=effectColors[0] || effect.particle || '#fff';ctx.lineWidth=3+Math.sin(t*4);ctx.beginPath();ctx.arc(cx,cy,46+Math.sin(t*3)*4,0,Math.PI*2);ctx.stroke();}
   ctx.globalAlpha=1;
   custShowerRAF=requestAnimationFrame(updateCustomizeEffectShower);
 }
