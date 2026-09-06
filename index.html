@@ -286,6 +286,13 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .cust-sat-slider{width:68px;height:12px;margin-top:2px;accent-color:#fff;cursor:pointer;}
 .cust-col-options .field{margin-bottom:10px;}
 .cust-col-options .field:last-child{margin-bottom:0;}
+.cust-face-editor{margin-top:2px;border-top:1px solid #3a2a1a;padding-top:9px;}
+.cust-face-heading{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:7px;font-size:10px;font-weight:900;letter-spacing:1.5px;color:var(--accent3);}
+.cust-face-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+.cust-face-btn{padding:8px 7px!important;font-size:10px!important;letter-spacing:.5px!important;line-height:1.15;min-width:0;white-space:normal;}
+.cust-face-btn b{display:block;font-size:9px;color:var(--text-dim);letter-spacing:1px;margin-bottom:2px;}
+.cust-face-btn span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+@media(max-width:760px){.cust-face-controls{grid-template-columns:repeat(2,minmax(0,1fr));}}
 
 .cust-character-preview-wrap canvas,.cust-effect-preview-wrap canvas{display:block;background:transparent!important;border:0!important;border-radius:0!important;box-shadow:none!important;}
 .cust-character-preview-wrap{display:flex;justify-content:center;align-items:center;margin-bottom:10px;}
@@ -310,7 +317,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <button class="btn" data-go="spherebox">SPHEREBOX</button>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 1.83</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 1.93</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -326,7 +333,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
         <div class="setting-grid">
           <div class="field"><label>Room Letter</label><input type="text" id="hostRoomLetter" maxlength="1" value="A" style="width:72px;font-size:26px;text-transform:uppercase;text-align:center;" autocomplete="off" spellcheck="false"></div>
           <div class="field"><label>Game Mode</label>
-            <select id="hostMode"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option></select>
+            <select id="hostMode"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option></select>
           </div>
         </div>
         <h3>PHYSICS</h3>
@@ -391,7 +398,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
       <section class="lobby-settings-col">
         <div class="section-header-row"><div><h3>HOST SETTINGS</h3><div class="subhint" id="settingsOwnerHint">Only the host can change these.</div></div><div class="host-only-badge" id="hostControlBadge">HOST CONTROL</div></div>
         <div class="setting-grid compact">
-          <div class="field"><label>Mode</label><select id="lobbyModeSelect"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option></select></div>
+          <div class="field"><label>Mode</label><select id="lobbyModeSelect"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option></select></div>
           <div class="field"><label>Gravity</label><input type="number" id="lobbyGravity" min="0.1" max="3" step="0.1" value="1"></div>
           <div class="field"><label>Knockback ×</label><input type="number" id="lobbyKB" min="0.2" max="3" step="0.1" value="1"></div>
           <div class="field"><label>Player Size</label><input type="number" id="lobbyPlayerSize" min="0.5" max="2" step="0.1" value="1"></div>
@@ -468,10 +475,9 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
             <option value="none">No Gradient</option><option value="radial-in">Gradient In</option><option value="radial-out" selected>Gradient Out</option><option value="spiral">Spiral Gradient</option><option value="linear">Linear Gradient</option><option value="split">Split Gradient</option>
           </select>
         </div>
-        <div class="field"><label>Face</label>
-          <select id="custFace">
-            <option>Happy</option><option>Cool</option><option>Angry</option><option>Sleepy</option><option>Star</option><option>Wink</option><option>Surprised</option><option>Grumpy</option><option>Cyclops</option><option>Heart</option>
-          </select>
+        <div class="cust-face-editor">
+          <div class="cust-face-heading"><span>CUSTOMIZATION</span></div>
+          <div id="custFaceControls" class="cust-face-controls"></div>
         </div>
         <div class="field"><label>Dash Charge Effect</label><select id="custDashEffect"></select></div>
       </div>
@@ -857,7 +863,8 @@ const PHYS = {
   bounceDamp: 0.6,
   wallBounce: 0.55,
   heavyMass: 2.15,        // density multiplier while Space is held
-  grappleRange: 700,          // max distance to a platform to latch on
+  grappleRange: 700,          // normal Grapple max distance to a platform
+  grappleRangeDiameters: 5,   // PYPG grapple range = 5 player diameters
   grappleStaminaMax: 100,
   grappleDrainPerSec: 32,     // ~3.1s of continuous swinging on a full tank
   grappleRegenPerSec: 16,     // ~6.25s to refill from empty (only while not attached)
@@ -891,7 +898,7 @@ const PHYS = {
 class Player{
   constructor(id,name,cust,spawn){
     this.id=id; this.name=name||'Player';
-    this.cust = Object.assign({hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',face:'Happy',dashEffect:'basic'}, cust||{});
+    this.cust = Object.assign({hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',dashEffect:'basic'}, cust||{});
     this.x=spawn?spawn.x:0; this.y=spawn?spawn.y:0;
     this.vx=0; this.vy=0; this.radius=26;
     this.grounded=false; this.netGrounded=false; this.supportPlatform=-1; this.netSupportPlatform=-1; this.facing=1;
@@ -900,11 +907,13 @@ class Player{
     this.bounceBoostQueued=false;
     this.dashCd=0; this.dashTime=0; this.dashVelocity=0; this.dashDirection=0;
     this.dashCharging=false; this.dashCharge=0; this.dashCdMax=PHYS.dashCdBase; this._dashHeldPrev=false; this._dashChargeFxAcc=0;
-    this.grappleAnchor=null; this.grappleLen=0; this.grappleRestLen=0;
+    this.grappleAnchor=null; this.grappleTargetId=null; this.grappleLen=0; this.grappleRestLen=0;
     this.grappleStamina=PHYS.grappleStaminaMax; this.grappleStaminaMax=PHYS.grappleStaminaMax;
     this.lastMoveDir=0;
     this.input={left:false,right:false,jump:false,jumpPressed:false,heavy:false,
       dash:false,dashPressed:false,grapple:false,grapplePressed:false,down:false};
+    this.remoteJumpHeld=false; this.remoteJumpHoldSeq=0; this.remoteJumpReleaseSeq=0;
+    this._lastReliableJumpHeld=false; this._jumpHoldSendSeq=0;
     this.trail=[];
     this.renderX=this.x; this.renderY=this.y;
     this.renderTargetX=this.x; this.renderTargetY=this.y;
@@ -916,9 +925,16 @@ class Player{
     // locally and use these serials to reproduce one-shot actions before the
     // next authoritative host snapshot arrives.
     this.jumpBuffer=0; this.jumpSerial=0; this.netJumpSerial=0; this.lastJumpEventSeq=null;
-    this.dashSerial=0; this.netDashSerial=0;
+    // Remote-jump prediction state. The host's snapshots anchor the trajectory,
+    // while the client fills the frames between snapshots with the same gravity
+    // model. Observed host positions are also used to learn the actual jump height.
+    this.netJumpActive=false; this._lastRemoteJumpSerial=0; this.netJumpStartY=this.y; this.netJumpPeakY=this.y;
+    this.netJumpHeight=0; this.netJumpLastY=this.y; this.netJumpLastVY=0;
+    this.netJumpLastSampleAt=performance.now(); this.netJumpGravity=PHYS.baseGravity;
+    this.netJumpStartedAt=0;
+    this.dashSerial= this.netDashSerial=0;
     this.grappleSerial=0; this.netGrappleSerial=0; this.grappleEventSeq=0; this.lastGrappleEventSeq=null;
-    this.pendingGrappleTarget=null; this.remoteGrappleActive=false; this.remoteGrappleEventSeq=null;
+    this.pendingGrappleTargetId=null; this.remoteGrappleActive=false; this.remoteGrappleEventSeq=null;
     this.actionAiming=false; this.actionAngle=-Math.PI/2; this.actionAimStartAngle=-Math.PI/2; this.actionAimStartTime=0; this.actionEventSeq=0; this.lastActionEventSeq=null; this.pendingActionAngle=null; this.remoteActionActive=false; this.actionCooldown=0; this.actionCooldownMax=PHYS.actionProjectileCooldown; this.actionCharge=0; this.actionChargeStartTime=0; this.actionPower=0;
   }
 }
@@ -1326,7 +1342,7 @@ const SphereBoxes = {
   },
   describe(id){ return this.effects[id]||this.effects.basic; },
   colors(effect){ return Array.isArray(effect?.colors) && effect.colors.length ? effect.colors : [effect?.particle||'#fff']; },
-  equip(id){ if(!this.owns(id)) return false; const c=Storage.get('customization',{name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',face:'Happy'}); c.dashEffect=id; Storage.set('customization',c); return true; },
+  equip(id){ if(!this.owns(id)) return false; const c=Storage.get('customization',{name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out'}); c.dashEffect=id; Storage.set('customization',c); return true; },
   equipped(){ return Storage.get('customization',{}).dashEffect||'basic'; }
 };
 
@@ -1336,6 +1352,7 @@ const SphereBoxes = {
 const GameModes = {
   regular:{ label:'Regular', grapple:false, projectile:false, deadly:false },
   grapple:{ label:'Grapple', grapple:true, projectile:false, deadly:false },
+  pypg:{ label:'PYPG', grapple:true, projectile:false, deadly:false },
   arrows:{ label:'Arrows', grapple:false, projectile:true, deadly:false },
   death_arrows:{ label:'Death Arrows', grapple:false, projectile:true, deadly:true },
 };
@@ -1442,12 +1459,15 @@ const Game = {
   roundTransitionId:0,
   _roundTransitionTimer:null,
   scores:{},
+  spawnAssignments:{},
   fpsCounter:0, fpsTime:0, fps:0,
   lobbyHostName:'Player',
   countdownPunch:0,
   projectiles:[],
   _nextProjectileId:1,
   menuFlyers:[],
+  impactFrames:0,
+  impactFrameBroadcastCooldown:0,
 
   init(){
     this.canvas = document.getElementById('gameCanvas');
@@ -1534,7 +1554,7 @@ const Game = {
     // Keep round transitions from briefly jumping through the default camera
     // zoom before settling on the new spawn layout.
     this.camera.snapTo(Object.values(this.players), this.map.width, this.map.height, this.viewW, this.viewH);
-    this.matchTime=0; this.physicsTick=0; this.hostPhysicsTick=0;
+    this.matchTime=0; this.physicsTick=0; this.hostPhysicsTick=0; this.impactFrames=0; this.impactFrameBroadcastCooldown=0;
     UI.pulseBanner('');
     return true;
   },
@@ -1542,23 +1562,38 @@ const Game = {
   resetPlayers(){
     ensureMapSpawn(this.map);
     const spawns = this.map.spawnPoints;
-    let i=0;
-    for(const id in this.players){
+
+    // Spawn order is owned by the host. Never build it from each peer's own
+    // myId, because that makes the same player occupy different spawn slots
+    // on different machines.
+    if(this.isHost || !this.spawnAssignments || Object.keys(this.spawnAssignments).length===0){
+      const ids = Object.keys(this.players); // host roster insertion order
+      const next = {};
+      ids.forEach((id,i)=>{ next[id]=i%spawns.length; });
+      this.spawnAssignments = next;
+    }
+
+    for(const id of Object.keys(this.players)){
       const p = this.players[id];
-      const sp = spawns[i%spawns.length]; i++;
+      const assigned = Number.isInteger(this.spawnAssignments[id]) ? this.spawnAssignments[id] : 0;
+      const sp = spawns[((assigned%spawns.length)+spawns.length)%spawns.length];
       p.x=sp.x; p.y=sp.y; p.vx=0; p.vy=0; p.damage=0; p.alive=true;
       // Give every spawn a deterministic starting facing so host and clients
       // agree immediately, even before the first authoritative state snapshot.
       p.facing = sp.x < (this.map.width||1600)/2 ? 1 : (sp.x > (this.map.width||1600)/2 ? -1 : 1);
       p.radius=26*Math.max(0.5,Math.min(2,Number(this.matchSettings.playerSize)||1));
-      p.heavy=false; p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0; p.grounded=false; p.netGrounded=false; p.supportPlatform=-1; p.netSupportPlatform=-1; p.grappleStamina=p.grappleStaminaMax; p.lastMoveDir=0;
+      p.heavy=false; p.grappleAnchor=null; p.grappleTargetId=null; p.grappleLen=0; p.grappleRestLen=0; p.grounded=false; p.netGrounded=false; p.supportPlatform=-1; p.netSupportPlatform=-1; p.grappleStamina=p.grappleStaminaMax; p.lastMoveDir=0;
       p.bounceBoostQueued=false;
       p.dashCd=0; p.dashTime=0; p.dashVelocity=0; p.dashDirection=0; p.dashCharging=false; p.dashCharge=0; p.dashCdMax=PHYS.dashCdBase; p._dashHeldPrev=false; p._dashChargeFxAcc=0;
       p.renderX=p.x; p.renderY=p.y; p.renderTargetX=p.x; p.renderTargetY=p.y; p.netServerX=p.x; p.netServerY=p.y; p.netServerVX=0; p.netServerVY=0; p.netStateReceivedAt=performance.now(); p.netErrorX=0; p.netErrorY=0; p.lastAckSeq=0;
-      p.jumpBuffer=0; p.jumpSerial=0; p.netJumpSerial=0; p.lastJumpEventSeq=null;
+      p.jumpBuffer=0; p.jumpSerial=0; p.netJumpSerial=0; p.lastJumpEventSeq=null; p.remoteJumpHeld=false; p.remoteJumpHoldSeq=0; p.remoteJumpReleaseSeq=0;
+      p.netJumpActive=false; p._lastRemoteJumpSerial=0; p.netJumpStartY=p.y; p.netJumpPeakY=p.y; p.netJumpHeight=0;
+      p.netJumpLastY=p.y; p.netJumpLastVY=0; p.netJumpLastSampleAt=performance.now();
+      p.netJumpGravity=PHYS.baseGravity; p.netJumpStartedAt=0;
       p.dashSerial=0; p.netDashSerial=0; p.grappleSerial=0; p.netGrappleSerial=0; p._dashChargeSfxLevel=0;
-      p.grappleEventSeq=0; p.lastGrappleEventSeq=null; p.pendingGrappleTarget=null; p.remoteGrappleActive=false; p.remoteGrappleEventSeq=null;
+      p.grappleEventSeq=0; p.lastGrappleEventSeq=null; p.pendingGrappleTargetId=null; p.remoteGrappleActive=false; p.remoteGrappleEventSeq=null;
       p.actionAiming=false; p.actionAngle=-Math.PI/2; p.actionAimStartAngle=-Math.PI/2; p.actionAimStartTime=0; p.actionEventSeq=0; p.lastActionEventSeq=null; p.pendingActionAngle=null; p.remoteActionActive=false; p.actionCooldown=0; p.actionCooldownMax=PHYS.actionProjectileCooldown; p.actionCharge=0; p.actionChargeStartTime=0; p.actionPower=0; p._actionChargeFxAcc=0;
+      p.remoteJumpHeld=false; p.remoteJumpHoldSeq=0; p.remoteJumpReleaseSeq=0;
     }
   },
 
@@ -1567,7 +1602,20 @@ const Game = {
     if(!this.lastTime) this.lastTime=ts;
     let dt = (ts-this.lastTime)/1000; this.lastTime=ts;
     dt = Math.min(dt, 0.1);
+    // Hitstop is checked BEFORE accumulating simulation time. This is important:
+    // the old implementation accumulated dt and then zeroed the accumulator,
+    // creating a visible timing hitch when normal physics resumed.
+    if((this.impactFrames||0)>0){
+      this.impactFrames = Math.max(0, this.impactFrames-1);
+      this.fpsTime += dt; this.fpsCounter++;
+      if(this.fpsTime>=0.5){ this.fps = Math.round(this.fpsCounter/this.fpsTime); this.fpsCounter=0; this.fpsTime=0; }
+      this.render();
+      requestAnimationFrame(this.loop);
+      return;
+    }
+
     this.accumulator += dt;
+    this.impactFrameBroadcastCooldown = Math.max(0,(this.impactFrameBroadcastCooldown||0)-dt);
     this.fpsTime += dt; this.fpsCounter++;
     if(this.fpsTime>=0.5){ this.fps = Math.round(this.fpsCounter/this.fpsTime); this.fpsCounter=0; this.fpsTime=0; }
 
@@ -1591,14 +1639,21 @@ const Game = {
         me.jumpEventSeq = ((me.jumpEventSeq||0) + 1) & 65535;
         NetworkManager.sendToHost({t:'jump', seq:me.jumpEventSeq}, true);
       }
-      if(me && (this.mode==='grapple' || this.mode==='arrows' || this.mode==='death_arrows')){
+      if(me && (this.mode==='grapple' || this.mode==='pypg' || this.mode==='arrows' || this.mode==='death_arrows')){
         const actionMode=this.mode;
-        if(actionMode==='grapple'){
+        if(actionMode==='grapple' || actionMode==='pypg'){
           if(me.input.grapplePressed){
             me.grappleEventSeq=((me.grappleEventSeq||0)+1)&65535;
-            const target=this.findGrappleTarget(me);
             me._lastGrappleSentHeld=true;
-            if(!this.isHost) NetworkManager.sendToHost({t:'grapple',seq:me.grappleEventSeq,x:target?target.x:null,y:target?target.y:null},true);
+            if(!this.isHost){
+              if(actionMode==='pypg'){
+                const target=this.findPYPGTarget(me);
+                NetworkManager.sendToHost({t:'grapple',seq:me.grappleEventSeq,targetId:target?target.id:null},true);
+              }else{
+                const target=this.findWallGrappleTarget(me);
+                NetworkManager.sendToHost({t:'grapple',seq:me.grappleEventSeq,x:target?target.x:null,y:target?target.y:null},true);
+              }
+            }
           }else if(!raw.grapple && me._lastGrappleSentHeld){
             me._lastGrappleSentHeld=false;
             if(!this.isHost) NetworkManager.sendToHost({t:'grapple_release',seq:me.grappleEventSeq},true);
@@ -1670,6 +1725,25 @@ const Game = {
             hv:raw.heavy?1:0,d:raw.dash?1:0,dp:me.input.dashPressed?1:0,
             g:raw.grapple?1:0,gp:me.input.grapplePressed?1:0,dn:raw.down?1:0
           }}, !!(me.input.jumpPressed || me.input.dashPressed || me.input.grapplePressed));
+
+          // Jump hold/release is sent reliably and independently of the normal
+          // input stream. A short 50ms heartbeat means packet loss cannot turn a
+          // held jump into an early short-hop.
+          this._jumpHoldSendTimer = (this._jumpHoldSendTimer||0) + 1/60;
+          const jumpState = !!raw.jump;
+          if(jumpState !== !!me._lastReliableJumpHeld || jumpState){
+            if(jumpState && ((this._jumpHoldSendTimer >= 0.05) || !me._lastReliableJumpHeld)){
+              this._jumpHoldSendTimer = 0;
+              me._jumpHoldSendSeq = ((me._jumpHoldSendSeq||0) + 1) & 65535;
+              NetworkManager.sendToHost({t:'jump_hold',held:true,seq:me._jumpHoldSendSeq},true);
+              me._lastReliableJumpHeld=true;
+            }else if(!jumpState && me._lastReliableJumpHeld){
+              this._jumpHoldSendTimer=0;
+              me._jumpHoldSendSeq = ((me._jumpHoldSendSeq||0) + 1) & 65535;
+              NetworkManager.sendToHost({t:'jump_hold',held:false,seq:me._jumpHoldSendSeq},true);
+              me._lastReliableJumpHeld=false;
+            }
+          }
         }
       }
     }
@@ -1699,6 +1773,31 @@ const Game = {
     if(this.countdownPunch>0) this.countdownPunch=Math.max(0,this.countdownPunch-dt*2.6);
     this.render();
     requestAnimationFrame(this.loop);
+  },
+
+  /**
+   * Briefly freezes gameplay on a hard collision.
+   * Relative speed is the magnitude of the velocity difference between the
+   * two colliding players, so a very fast player hitting a much slower player
+   * gets a larger hitstop than two players moving at similar speeds.
+   */
+  triggerImpactFrames(relativeSpeed, broadcast=true){
+    const speed = Math.max(0, Number(relativeSpeed)||0);
+    if(speed < 260) return 0;
+
+    // Every qualifying impact freezes for exactly three render frames.
+    const frames = 3;
+
+    this.impactFrames = Math.max(this.impactFrames||0, frames);
+
+    if(broadcast && this.isHost){
+      this.impactFrameBroadcastCooldown = Math.max(0, this.impactFrameBroadcastCooldown||0);
+      if(this.impactFrameBroadcastCooldown<=0){
+        this.impactFrameBroadcastCooldown = 0.08;
+        NetworkManager.broadcast({t:'impact_frames',frames}, true);
+      }
+    }
+    return frames;
   },
 
   /* ---------- host physics ---------- */
@@ -1786,6 +1885,7 @@ const Game = {
       p.vx = Math.max(-maxS, Math.min(maxS, p.vx));
     }
 
+    const jumpHeld = input.jump || (this.isHost && p.id!==this.myId && p.remoteJumpHeld);
     const jumpPower = PHYS.jumpVel / (p.heavy?1.2:1);
     if(p.jumpBuffer>0 && p.grounded && !p.grappleAnchor){
       p.vy = -jumpPower;
@@ -1798,7 +1898,7 @@ const Game = {
     // Variable jump height: a full hold rides the whole jumpVel arc, but letting
     // go early while still rising clamps the upward speed down to a "short hop"
     // so a quick tap of jump produces a noticeably lower hop.
-    if(!input.jump){
+    if(!jumpHeld){
       const shortHop = -jumpPower*PHYS.jumpShortHopFactor;
       if(p.vy < shortHop) p.vy = shortHop;
     }
@@ -1806,7 +1906,7 @@ const Game = {
     // Fast fall: holding down while airborne pulls you down harder, both cutting
     // a rising arc short and accelerating the fall itself.
     if(input.down && !p.grounded) grav *= PHYS.fastFallMultiplier;
-    if(input.jump && !p.grounded && p.vy < 0) grav *= PHYS.jumpHoldGravityScale;
+    if(jumpHeld && !p.grounded && p.vy < 0) grav *= PHYS.jumpHoldGravityScale;
 
     // Dash: hold to charge through three power levels, then release to fire.
     // A quick tap still produces the familiar low-power poke.
@@ -2105,14 +2205,41 @@ const Game = {
     return p?.actionAngle ?? -Math.PI/2;
   },
 
-  findGrappleTarget(p){
-    if(!p || !this.map) return null;
+  getGrappleRange(p){
+    return Math.max(0,(p?.radius||26) * 2 * PHYS.grappleRangeDiameters);
+  },
+
+  findWallGrappleTarget(p){
+    if(!p || !this.map?.platforms) return null;
     let closest=null, closestDist=PHYS.grappleRange;
     for(const plat of this.map.platforms){
       const c=this.closestPointOnRect(p.x,p.y,plat);
-      if(c.dist>4 && c.dist<=closestDist){ closestDist=c.dist; closest={x:c.x,y:c.y}; }
+      if(c.dist>4 && c.dist<=closestDist){
+        closestDist=c.dist;
+        closest={x:c.x,y:c.y};
+      }
     }
     return closest;
+  },
+
+  findPYPGTarget(p){
+    if(!p || !this.players) return null;
+    const range=this.getGrappleRange(p);
+    let closest=null, closestDist=range;
+    for(const id in this.players){
+      const other=this.players[id];
+      if(!other || other===p || !other.alive) continue;
+      const dist=Math.hypot(other.x-p.x,other.y-p.y);
+      if(dist>4 && dist<=closestDist){
+        closestDist=dist;
+        closest=other;
+      }
+    }
+    return closest;
+  },
+
+  findGrappleTarget(p){
+    return this.mode==='pypg' ? this.findPYPGTarget(p) : this.findWallGrappleTarget(p);
   },
 
   /* closest point on an axis-aligned rect to a given point — used to find the nearest platform to grapple to */
@@ -2122,91 +2249,198 @@ const Game = {
     return {x:cx, y:cy, dist:Math.hypot(cx-px, cy-py)};
   },
   applyGrapple(p, dt){
-    if(!p.alive){ p.grappleAnchor=null; return; }
+    if(!p.alive){
+      p.grappleAnchor=null;
+      p.grappleTargetId=null;
+      p.grappleLen=0;
+      p.grappleRestLen=0;
+      return;
+    }
+
+    const pypg=this.mode==='pypg';
+    const grappleMode=pypg || this.mode==='grapple';
     if(!p.grappleAnchor){
       p.grappleStamina = Math.min(p.grappleStaminaMax, p.grappleStamina + PHYS.grappleRegenPerSec*dt);
     }
 
-    // Remote players on a client are rendered/simulated from the host's
-    // authoritative rope state. Do not invent a second target locally and do not
-    // let a stale held-key packet detach an authoritative rope.
+    // Remote players on a client are driven by the host's authoritative rope state.
     const remoteClientPlayer = !this.isHost && p.id!==this.myId;
-    const remoteHostRequest = this.isHost && p.id!==this.myId && !!p.pendingGrappleTarget && p.remoteGrappleActive;
+    const remoteHostRequest = this.isHost && p.id!==this.myId && p.remoteGrappleActive;
 
-    if(this.mode==='grapple' && !remoteClientPlayer && (p.input.grapplePressed || remoteHostRequest)
+    // In PYPG, the rope endpoint follows the player being grappled.
+    if(pypg && p.grappleTargetId){
+      const target=this.players[p.grappleTargetId];
+      if(target && target.alive && target!==p){
+        const dist=Math.hypot(target.x-p.x,target.y-p.y);
+        if(dist<=this.getGrappleRange(p)+PHYS.grappleMaxStretch){
+          p.grappleAnchor={x:target.x,y:target.y};
+        }else{
+          p.grappleAnchor=null;
+          p.grappleTargetId=null;
+          p.grappleLen=0;
+          p.grappleRestLen=0;
+          if(this.isHost && p.id!==this.myId) p.remoteGrappleActive=false;
+        }
+      }else{
+        p.grappleAnchor=null;
+        p.grappleTargetId=null;
+        p.grappleLen=0;
+        p.grappleRestLen=0;
+        if(this.isHost && p.id!==this.myId) p.remoteGrappleActive=false;
+      }
+    }
+
+    if(grappleMode && !remoteClientPlayer && (p.input.grapplePressed || remoteHostRequest)
        && !p.grappleAnchor && p.grappleStamina >= PHYS.grappleMinToUse){
-      let closest=null, closestDist=PHYS.grappleRange;
+      let closest=null, closestDist=pypg?this.getGrappleRange(p):PHYS.grappleRange;
 
-      if(this.isHost && p.id!==this.myId){
-        const req=p.pendingGrappleTarget;
-        const dist=Math.hypot(req.x-p.x,req.y-p.y);
-        // The exact requested point must actually lie on a grapple-able platform.
-        let validSurface=false;
-        for(const plat of this.map.platforms){
-          const c=this.closestPointOnRect(req.x,req.y,plat);
-          if(c.dist<=2.5){ validSurface=true; break; }
+      if(pypg){
+        if(this.isHost && p.id!==this.myId){
+          // Prefer the exact target selected by the non-host. If the client's
+          // local prediction had not caught up yet, fall back to the host's
+          // nearest valid player so a grapple request can never become a
+          // local-only effect just because the client had no target ID ready.
+          const requestedTarget=this.players[p.pendingGrappleTargetId];
+          const target=(requestedTarget && requestedTarget!==p && requestedTarget.alive)
+            ? requestedTarget : this.findPYPGTarget(p);
+          if(target){
+            const dist=Math.hypot(target.x-p.x,target.y-p.y);
+            if(dist<=closestDist && dist>4){
+              closest=target; closestDist=dist;
+            }
+          }
+          p.pendingGrappleTargetId=null;
+        }else{
+          closest=this.findPYPGTarget(p);
+          if(closest) closestDist=Math.hypot(closest.x-p.x,closest.y-p.y);
         }
-        if(validSurface && dist<=PHYS.grappleRange && dist>4){
-          closest={x:req.x,y:req.y}; closestDist=dist;
+      }else{
+        if(this.isHost && p.id!==this.myId){
+          const x=Number.isFinite(p.pendingGrappleX)?p.pendingGrappleX:null;
+          const y=Number.isFinite(p.pendingGrappleY)?p.pendingGrappleY:null;
+          if(x!==null && y!==null){
+            let validSurface=false;
+            for(const plat of this.map.platforms){
+              const c=this.closestPointOnRect(x,y,plat);
+              if(c.dist<=2.5){ validSurface=true; break; }
+            }
+            const dist=Math.hypot(x-p.x,y-p.y);
+            if(validSurface && dist<=PHYS.grappleRange && dist>4){
+              closest={x,y}; closestDist=dist;
+            }
+          }
+          p.pendingGrappleX=null;
+          p.pendingGrappleY=null;
+        }else{
+          closest=this.findWallGrappleTarget(p);
+          if(closest) closestDist=Math.hypot(closest.x-p.x,closest.y-p.y);
         }
-        p.pendingGrappleTarget=null;
-      } else {
-        closest=this.findGrappleTarget(p);
-        if(closest) closestDist=Math.hypot(closest.x-p.x,closest.y-p.y);
       }
 
       if(closest){
-        p.grappleAnchor=closest;
+        p.grappleTargetId=pypg?closest.id:null;
+        p.grappleAnchor={x:closest.x,y:closest.y};
         p.grappleLen=Math.max(55,closestDist);
         p.grappleRestLen=p.grappleLen;
-        p.grappleSerial = ((p.grappleSerial||0) + 1) & 65535;
+        p.grappleSerial=((p.grappleSerial||0)+1)&65535;
         p.input.grapplePressed=false;
         this.spawnFx(p,'grapple');
       }
     }
 
-    // The host owns remote rope lifetime. The local player still uses the normal
-    // held-key state. A remote client never tears down an authoritative rope from
-    // its own slightly delayed input stream.
-    const shouldRelease = this.mode!=='grapple'
+    const shouldRelease=(this.mode!=='grapple' && this.mode!=='pypg')
       || (!remoteClientPlayer && !p.grappleAnchor && !p.remoteGrappleActive ? !p.input.grapple : false)
       || (!remoteClientPlayer && p.grappleAnchor && !p.remoteGrappleActive && !p.input.grapple && !(this.isHost && p.id!==this.myId));
-    if(shouldRelease){ p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0; }
+    if(shouldRelease){
+      p.grappleAnchor=null;
+      p.grappleTargetId=null;
+      p.grappleLen=0;
+      p.grappleRestLen=0;
+    }
 
     if(p.grappleAnchor){
       p.grappleStamina -= PHYS.grappleDrainPerSec*dt;
       if(p.grappleStamina<=0){
-        p.grappleStamina=0; p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0;
+        p.grappleStamina=0;
+        p.grappleAnchor=null;
+        p.grappleTargetId=null;
+        p.grappleLen=0;
+        p.grappleRestLen=0;
         if(this.isHost && p.id!==this.myId) p.remoteGrappleActive=false;
         return;
       }
-      const dx=p.x-p.grappleAnchor.x, dy=p.y-p.grappleAnchor.y;
+
+      const anchorX=pypg && p.grappleTargetId && this.players[p.grappleTargetId]
+        ? this.players[p.grappleTargetId].x : p.grappleAnchor.x;
+      const anchorY=pypg && p.grappleTargetId && this.players[p.grappleTargetId]
+        ? this.players[p.grappleTargetId].y : p.grappleAnchor.y;
+
+      // Keep a PYPG anchor synchronized to the target's live position.
+      if(pypg && p.grappleTargetId) p.grappleAnchor={x:anchorX,y:anchorY};
+
+      const dx=p.x-anchorX, dy=p.y-anchorY;
       const dist=Math.hypot(dx,dy)||0.01;
       const nx=dx/dist, ny=dy/dist;
       const slack=PHYS.grappleSlack;
       const stretch=dist-(p.grappleRestLen+slack);
+
       if(stretch>0){
         const radialVel=p.vx*nx+p.vy*ny;
         const springAccel=(stretch*PHYS.grappleSpring) + (Math.max(0,radialVel)*PHYS.grappleDamping);
         p.vx -= nx*springAccel*dt;
         p.vy -= ny*springAccel*dt;
+
+        // PYPG is a two-body grapple: pull the targeted player toward the grappler.
+        if(pypg && p.grappleTargetId){
+          const target=this.players[p.grappleTargetId];
+          if(target && target.alive){
+            const targetMass=target.input?.heavy ? PHYS.heavyMass : 1;
+            const pullAccel=(stretch*PHYS.grappleSpring*0.72 + Math.max(0,-radialVel)*PHYS.grappleDamping*0.35) / targetMass;
+            target.vx += nx*pullAccel*dt;
+            target.vy += ny*pullAccel*dt;
+          }
+        }
+
         if(radialVel>120 && stretch>16){
-          const rebound=Math.min(1, (radialVel-120)/900) * PHYS.grappleRebound * Math.min(1,stretch/70);
+          const rebound=Math.min(1,(radialVel-120)/900)*PHYS.grappleRebound*Math.min(1,stretch/70);
           p.vx -= nx*radialVel*rebound;
           p.vy -= ny*radialVel*rebound;
         }
       }
+
       const maxDist=p.grappleRestLen+PHYS.grappleMaxStretch;
       if(dist>maxDist){
-        p.x=p.grappleAnchor.x+nx*maxDist; p.y=p.grappleAnchor.y+ny*maxDist;
+        p.x=anchorX+nx*maxDist;
+        p.y=anchorY+ny*maxDist;
         const radialVel=p.vx*nx+p.vy*ny;
         if(radialVel>0){
-          const rebound=Math.min(0.95, PHYS.grappleRebound + stretch*0.0012);
-          p.vx-=nx*radialVel*(1+rebound); p.vy-=ny*radialVel*(1+rebound);
+          const rebound=Math.min(0.95,PHYS.grappleRebound+stretch*0.0012);
+          p.vx-=nx*radialVel*(1+rebound);
+          p.vy-=ny*radialVel*(1+rebound);
+        }
+      }
+    }
+
+    // When another player has a PYPG grapple attached to this player, apply the
+    // same pull on the target locally as well. This makes the victim feel the pull
+    // immediately on clients, while the host remains authoritative.
+    if(pypg && p.alive){
+      for(const other of Object.values(this.players)){
+        if(!other || other===p || !other.alive || other.grappleTargetId!==p.id || !other.grappleAnchor) continue;
+        const dx=other.x-p.x, dy=other.y-p.y;
+        const dist=Math.hypot(dx,dy)||0.01;
+        const nx=dx/dist, ny=dy/dist;
+        const stretch=dist-(other.grappleRestLen+PHYS.grappleSlack);
+        if(stretch>0){
+          const mass=p.input?.heavy ? PHYS.heavyMass : 1;
+          const pullAccel=(stretch*PHYS.grappleSpring*0.72)/mass;
+          p.vx += nx*pullAccel*dt;
+          p.vy += ny*pullAccel*dt;
         }
       }
     }
   },
+
 
   collideWithMap(p, dt){
     if(!p || !p.alive) return;
@@ -2275,37 +2509,108 @@ const Game = {
         const nx=dx/dist, ny=dy/dist;
         const overlap=minD-dist;
         // getting hit by a player using density (heavy) blows out your grapple line entirely
-        if(a.heavy && b.grappleAnchor){ b.grappleStamina=0; b.grappleAnchor=null; }
-        if(b.heavy && a.grappleAnchor){ a.grappleStamina=0; a.grappleAnchor=null; }
+        if(a.heavy && b.grappleAnchor){ b.grappleStamina=0; b.grappleAnchor=null; b.grappleTargetId=null; b.grappleLen=0; b.grappleRestLen=0; }
+        if(b.heavy && a.grappleAnchor){ a.grappleStamina=0; a.grappleAnchor=null; a.grappleTargetId=null; a.grappleLen=0; a.grappleRestLen=0; }
         const massA=a.heavy?PHYS.heavyMass:1, massB=b.heavy?PHYS.heavyMass:1;
         const totalMass=massA+massB;
-        a.x -= nx*overlap*(massB/totalMass); a.y -= ny*overlap*(massB/totalMass)*0.5;
-        b.x += nx*overlap*(massA/totalMass); b.y += ny*overlap*(massA/totalMass)*0.5;
+        const sepA=overlap*(massB/totalMass), sepB=overlap*(massA/totalMass);
+        a.x -= nx*sepA; a.y -= ny*sepA;
+        b.x += nx*sepB; b.y += ny*sepB;
         const rvx=b.vx-a.vx, rvy=b.vy-a.vy;
-        const relSpeed = rvx*nx+rvy*ny;
-        if(relSpeed<0){
-          // Prefer a lateral deflection for steep/top-down impacts so a player
-          // landing directly on another ball is not launched straight upward.
-          const tangentX=-ny, tangentY=nx;
-          const verticalApproach=Math.abs(ny);
-          const lateralBias=Math.min(1, verticalApproach*1.15);
-          const lateralSign=(a.x<=b.x)?1:-1;
-          const restitution=0.9;
-          const impulse = -(1+restitution)*relSpeed/((1/massA)+(1/massB));
-          const verticalScale=1-lateralBias*0.72;
-          const ix=impulse*nx*verticalScale + Math.abs(impulse)*lateralBias*0.52*tangentX*lateralSign;
-          const iy=impulse*ny*verticalScale + Math.abs(impulse)*lateralBias*0.10*tangentY*lateralSign;
-          const kb=(this.matchSettings.kb||1)*1.65;
-          a.vx -= ix/massA*kb; a.vy -= iy/massA*kb;
-          b.vx += ix/massB*kb; b.vy += iy/massB*kb;
-          const impact = Math.abs(relSpeed);
+        const relNormalSpeed = rvx*nx+rvy*ny;
+
+        // Capture dash state BEFORE collision math changes the velocities.
+        // The actual dash system is driven by dashTime/dashVelocity; those are
+        // what must be consumed at the impact moment.
+        const aWasDashing = a.dashTime>0 && Number.isFinite(a.dashVelocity) && Math.abs(a.dashVelocity)>0;
+        const bWasDashing = b.dashTime>0 && Number.isFinite(b.dashVelocity) && Math.abs(b.dashVelocity)>0;
+        const dashImpact = (aWasDashing || bWasDashing) && relNormalSpeed<0;
+
+        if(relNormalSpeed<0){
+          /*
+           * Newton's-cradle style collision:
+           * Treat the two balls' velocity along the collision normal as a
+           * one-dimensional elastic collision. This directly redistributes
+           * the incoming momentum instead of applying a repeated push.
+           *
+           * For equal masses this becomes a clean velocity exchange:
+           *   A_after = B_before
+           *   B_after = A_before
+           *
+           * So a fast ball striking a nearly stationary ball transfers its
+           * forward momentum to the target and loses that forward momentum.
+           */
+          const vaN = a.vx*nx + a.vy*ny;
+          const vbN = b.vx*nx + b.vy*ny;
+
+          // A dash is an intentional external energy source. Feed a little
+          // extra of that dash energy into the collision calculation before
+          // applying the elastic transfer, rather than applying a separate
+          // knockback force afterward. This makes the dash transfer strongly
+          // into the target without restoring the dasher's boost.
+          const dashEnergyMultiplier = 1.35;
+          const effectiveVaN = aWasDashing ? vaN*dashEnergyMultiplier : vaN;
+          const effectiveVbN = bWasDashing ? vbN*dashEnergyMultiplier : vbN;
+
+          const newVaN = ((massA-massB)*effectiveVaN + 2*massB*effectiveVbN)/(massA+massB);
+          const newVbN = ((massB-massA)*effectiveVbN + 2*massA*effectiveVaN)/(massA+massB);
+
+          const deltaAN = newVaN-vaN;
+          const deltaBN = newVbN-vbN;
+
+          a.vx += deltaAN*nx;
+          a.vy += deltaAN*ny;
+          b.vx += deltaBN*nx;
+          b.vy += deltaBN*ny;
+
+          // Keep tangential velocity unchanged. This is important for avoiding
+          // the "drill" behavior: the attacker cannot keep converting collision
+          // overlap into an extra sideways push every physics tick.
+
+          // A dash collision is the handoff point for the dash momentum.
+          // The elastic collision above has already redistributed the incoming
+          // velocity. Now consume ONLY the temporary dash state so the normal
+          // integratePlayer() dash lock cannot recreate the boost next frame.
+          if(dashImpact){
+            if(aWasDashing){
+              a.dashTime=0;
+              a.dashVelocity=0;
+              a.dashDirection=0;
+              a.dashCharging=false;
+              a.dashCharge=0;
+            }
+            if(bWasDashing){
+              b.dashTime=0;
+              b.dashVelocity=0;
+              b.dashDirection=0;
+              b.dashCharging=false;
+              b.dashCharge=0;
+            }
+          }
+
+          const effectiveRelativeNormal = effectiveVbN-effectiveVaN;
+          const relativeSpeed=Math.max(Math.hypot(rvx,rvy), Math.abs(effectiveRelativeNormal));
+          const impact = relativeSpeed;
           if(impact>50){
             const dmg = impact*0.025;
+            if(dashImpact){
+              this.triggerImpactFrames(Math.max(260,impact), this.isHost);
+            } else {
+              this.triggerImpactFrames(impact, this.isHost);
+            }
             a.damage += dmg; b.damage += dmg;
             a.hitFlash=10; b.hitFlash=10;
-            this.camera.addShake(Math.min(14,impact*0.02));
+            this.camera.addShake(Math.min(16,impact*0.022));
             this.spawnFx(a,'impact'); this.spawnFx(b,'impact');
-            AudioManager.impact(impact/200);
+            // A hard impact also gets a second, slightly stronger burst at the
+            // contact midpoint so the hitstop reads clearly visually.
+            if(impact >= 330){
+              const ixp=(a.x+b.x)*0.5, iyp=(a.y+b.y)*0.5;
+              this.particles.burst(ixp,iyp,'#fff',Math.min(18,4+Math.floor(impact/120)),260,{
+                gravity:40,life:.18,size:3.6,sizeEnd:.2,twinkle:true
+              });
+            }
+            AudioManager.impact(Math.min(1.5,impact/200));
           }
         }
       }
@@ -2382,7 +2687,7 @@ const Game = {
         if(this.roundTransitionId!==transitionId || this.state!=='roundResults') return;
         const startFacings={};
         for(const id in this.players) startFacings[id]=this.players[id].facing||1;
-        NetworkManager.broadcast({t:'round_start', round:nextRound, scores:this.scores, transitionId, facings:startFacings}, true);
+        NetworkManager.broadcast({t:'round_start', round:nextRound, scores:this.scores, transitionId, facings:startFacings, spawnAssignments:this.spawnAssignments}, true);
         UI.fadeToNextRound(startNext);
         this._roundTransitionTimer=setTimeout(startNext, 900);
       }, 650);
@@ -2475,12 +2780,20 @@ const Game = {
     }
 
     if(this.isHost && !fromNetwork){
-      NetworkManager.broadcast({t:'fx', fx:{type,x,y,facing:p.facing||1,hue:cust.hue??200,charge,effectId:p.cust?.dashEffect||'basic'}}, false);
+      NetworkManager.broadcast({t:'fx', fx:{type,x,y,ownerId:p.id,followOwner:(type==='dash'),facing:p.facing||1,hue:cust.hue??200,charge,effectId:p.cust?.dashEffect||'basic'}}, false);
     }
   },
 
   spawnNetworkFx(fx){
-    const p={id:'network-fx',x:fx.x,y:fx.y,radius:26,facing:fx.facing||1,cust:{hue:fx.hue??200,dashEffect:fx.effectId||'basic'}};
+    let x=fx.x, y=fx.y;
+    if(fx.followOwner && fx.ownerId){
+      const owner=this.players[fx.ownerId];
+      if(owner){
+        x=owner.x;
+        y=owner.y;
+      }
+    }
+    const p={id:'network-fx',x,y,radius:26,facing:fx.facing||1,cust:{hue:fx.hue??200,dashEffect:fx.effectId||'basic'}};
     this.spawnFx(p,fx.type,true,{charge:fx.charge||0});
   },
 
@@ -2500,17 +2813,73 @@ const Game = {
         i.left?1:0,i.right?1:0,i.jump?1:0,i.heavy?1:0,i.dash?1:0,i.grapple?1:0,
         p.lastInputSeq||0,i.down?1:0,
         p.actionAiming?1:0,Number.isFinite(p.actionAngle)?p.actionAngle:0,Math.max(0,Math.min(1,p.actionCharge||0)),
-        p.grounded?1:0, Number.isInteger(p.supportPlatform)?p.supportPlatform:-1
+        p.grounded?1:0, Number.isInteger(p.supportPlatform)?p.supportPlatform:-1,
+        p.grappleTargetId||''
       ];
     }
-    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace}))}, false);
+    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, spawnAssignments:this.spawnAssignments, s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace}))}, false);
     this.lastServerState = Date.now();
   },
-  updateRemoteRenderTargets(dt){
+  updateRemoteJumpPrediction(p, serverX, serverY, serverVX, serverVY, now){
+    if(!p || this.isHost) return;
+
+    const sampleDt=Math.max(0.001, Math.min(0.25, (now-(p.netJumpLastSampleAt||now))/1000));
+    const wasGrounded=!!p.netGrounded;
+    const airborne=!wasGrounded;
+    const jumpStarted = p.netJumpSerial !== (p._lastRemoteJumpSerial||0);
+
+    if(jumpStarted){
+      p._lastRemoteJumpSerial=p.netJumpSerial;
+      p.netJumpActive=true;
+      p.netJumpStartedAt=now;
+      p.netJumpStartY=serverY;
+      p.netJumpPeakY=serverY;
+      p.netJumpHeight=0;
+      p.netJumpGravity=PHYS.baseGravity*(this.matchSettings.gravity||1);
+    }
+
+    // Learn effective vertical acceleration from the authoritative samples.
+    // This automatically follows gravity scaling, held-jump gravity, fast-fall,
+    // and any other host-side vertical influence better than a hard-coded arc.
+    if(Number.isFinite(p.netJumpLastVY) && Number.isFinite(serverVY)){
+      const measuredG=(serverVY-p.netJumpLastVY)/sampleDt;
+      if(Number.isFinite(measuredG) && measuredG>50 && measuredG<6000){
+        p.netJumpGravity = p.netJumpGravity*0.82 + measuredG*0.18;
+      }
+    }
+
+    if(airborne && p.netJumpActive){
+      p.netJumpPeakY=Math.min(p.netJumpPeakY,serverY);
+      p.netJumpHeight=Math.max(0,p.netJumpStartY-p.netJumpPeakY);
+    }
+
+    // Landing ends the jump-prediction segment, while retaining the measured
+    // total height for the next airborne segment to use as a calibration hint.
+    if(wasGrounded){
+      if(p.netJumpActive && (now-p.netJumpStartedAt)>80){
+        p.netJumpHeight=Math.max(0,p.netJumpStartY-p.netJumpPeakY);
+      }
+      p.netJumpActive=false;
+      p.netJumpPeakY=serverY;
+    }
+
+    p.netJumpLastY=serverY;
+    p.netJumpLastVY=serverVY;
+    p.netJumpLastSampleAt=now;
+  },
+
+    updateRemoteRenderTargets(dt){
     const now=performance.now();
     for(const id in this.players){
       const p=this.players[id];
       if(!p) continue;
+      if(this.isHost){
+        // The host is authoritative. Keep every player's visual coordinates
+        // tied to the same current physics position used by the host. This lets
+        // persistent effects use one coordinate path on every screen.
+        p.renderX=p.x; p.renderY=p.y;
+        continue;
+      }
       if(id===this.myId){ p.renderX=p.x; p.renderY=p.y; continue; }
 
       // Remote visuals are driven directly from the newest authoritative host
@@ -2525,6 +2894,15 @@ const Game = {
 
       let tx=sx + vx*age;
       let ty=sy + vy*age;
+
+      // For airborne remote players, predict the host's jump between snapshots
+      // using the last authoritative vertical velocity plus learned gravity.
+      // The host snapshots continually re-anchor the arc, while the measured
+      // peak/start positions provide the observed total jump height.
+      if(p.netJumpActive && !p.netGrounded){
+        const g=Math.max(50,Number(p.netJumpGravity)||PHYS.baseGravity*(this.matchSettings.gravity||1));
+        ty = sy + vy*age + 0.5*g*age*age;
+      }
 
       // When the host says the player is grounded, especially on a one-way
       // platform, lock the rendered Y to the authoritative support surface.
@@ -2568,12 +2946,18 @@ const Game = {
   },
 
   applyServerState(msg){
+    if(!this.isHost && msg.spawnAssignments) this.spawnAssignments=msg.spawnAssignments;
+    // State snapshots carry the host's current round number, but they are NOT
+    // allowed to start a round transition. The reliable round_start message owns
+    // that transition; otherwise a state packet can arrive just before round_start
+    // and reset the client to spawns for a frame before the fade transition runs.
     if(!this.isHost && Number.isFinite(msg.round) && msg.round > this.roundNumber){
       const incomingRound=Number(msg.round);
       const incomingTransition=Number(msg.transitionId)||0;
+      // Record the newer round metadata only. Wait for round_start to actually
+      // reset/spawn the local simulation.
       this.roundNumber=incomingRound;
       this.roundTransitionId=Math.max(this.roundTransitionId||0,incomingTransition);
-      this.beginRoundImmediate(incomingRound,incomingTransition);
     }
     const seq = msg.seq;
     if(seq!=null){
@@ -2608,11 +2992,14 @@ const Game = {
       if(!p) continue;
 
       const serverX=v[0], serverY=v[1], serverVX=v[2], serverVY=v[3];
+      const sampleNow=performance.now();
       p.netServerX=serverX; p.netServerY=serverY; p.netServerVX=serverVX; p.netServerVY=serverVY;
-      p.netStateReceivedAt=performance.now();
+      p.netStateReceivedAt=sampleNow;
       const dx=serverX-p.x, dy=serverY-p.y;
       const error=Math.hypot(dx,dy);
       p.netErrorX=dx; p.netErrorY=dy;
+      p.netGrounded=!!v[26];
+      p.netSupportPlatform=Number.isInteger(v[27])?v[27]:-1;
 
       // Keep a locally predicted jump, dash or grapple from being erased or
       // rubber-banded by a late host snapshot. This is the local player's own
@@ -2635,8 +3022,6 @@ const Game = {
 
       p.damage=v[4];
       p.alive=!!v[5];
-      p.netGrounded=!!v[26];
-      p.netSupportPlatform=Number.isInteger(v[27])?v[27]:-1;
       if(id!==this.myId){
         p.renderTargetX=serverX; p.renderTargetY=serverY;
       }
@@ -2672,20 +3057,40 @@ const Game = {
         // remote jumps/dashes/grapples line up with the host instead of appearing a
         // few frames late or getting lost between snapshots.
         const js=v[12]||0, ds=v[13]||0, gs=v[14]||0;
-        if(js !== (p.netJumpSerial||0)){ p.netJumpSerial=js; p.input.jumpPressed=true; }
+        if(js !== (p.netJumpSerial||0)){
+          p.netJumpSerial=js;
+          p.input.jumpPressed=true;
+          // updateRemoteJumpPrediction sees the new serial on this same snapshot
+          // and starts the remote jump arc from the host's authoritative position.
+        }
         if(ds !== (p.netDashSerial||0)){ p.netDashSerial=ds; p.input.dashPressed=true; }
         if(gs !== (p.netGrappleSerial||0)){ p.netGrappleSerial=gs; p.input.grapplePressed=true; }
 
+        if(id!==this.myId) this.updateRemoteJumpPrediction(p,serverX,serverY,serverVX,serverVY,sampleNow);
+
         p.grounded=p.netGrounded;
         p.supportPlatform=p.netSupportPlatform;
+        p.grappleTargetId=(v[28]!==undefined && v[28]!=='' ? String(v[28]) : null);
+        if(p.grappleTargetId && this.mode==='pypg'){
+          const target=this.players[p.grappleTargetId];
+          if(target && target.alive && target!==p) p.grappleAnchor={x:target.x,y:target.y};
+        }
         if(p.netGrounded && p.netSupportPlatform>=0 && p.netSupportPlatform<this.map.platforms.length){
           const sp=this.map.platforms[p.netSupportPlatform];
           const nearSupport = p.x+p.radius>sp.x && p.x-p.radius<sp.x+sp.w && Math.abs((p.y+p.radius)-sp.y)<14;
           if(nearSupport){ p.y=sp.y-p.radius; p.vy=Math.min(0,p.vy); }
         }
 
-        if(!v[8]){ p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0; }
-        else {
+        if(!v[8] && !p.grappleTargetId){ p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0; }
+        else if(p.grappleTargetId){
+          const target=this.players[p.grappleTargetId];
+          if(target && target.alive && target!==p){
+            p.grappleAnchor={x:target.x,y:target.y};
+            if(!p.grappleRestLen) p.grappleRestLen=Math.max(55,Math.hypot(p.x-target.x,p.y-target.y));
+          }else{
+            p.grappleAnchor=null; p.grappleTargetId=null; p.grappleLen=0; p.grappleRestLen=0;
+          }
+        }else {
           p.grappleAnchor={x:v[9],y:v[10]};
           if(!p.grappleRestLen) p.grappleRestLen=Math.max(55,Math.hypot(p.x-v[9],p.y-v[10]));
         }
@@ -2718,15 +3123,33 @@ const Game = {
           const isNewer = !prev || (((seq-prev+65536)&65535) < 32768 && seq!==prev);
           if(!isNewer) return;
           const i=data.i;
-          p.input.left=!!i.l; p.input.right=!!i.r; p.input.jump=!!i.j; p.input.jumpPressed=!!i.jp;
+          p.input.left=!!i.l; p.input.right=!!i.r; p.input.jump = p.remoteJumpHeld ? true : !!i.j; p.input.jumpPressed=!!i.jp;
           p.input.heavy=!!i.hv; p.input.dash=!!i.d; p.input.dashPressed=!!i.dp;
           p.input.grapple=!!i.g; p.input.grapplePressed=!!i.gp; p.input.down=!!i.dn;
           p.lastInputSeq = seq;
         }
         break;
+      case 'jump_hold':
+        if(this.isHost){
+          const p=this.players[pid]; if(!p) return;
+          const seq=(data.seq||0)&65535;
+          const prev=p.remoteJumpHoldSeq||0;
+          const newer=!prev || (((seq-prev+65536)&65535)<32768 && seq!==prev);
+          if(!newer) return;
+          p.remoteJumpHoldSeq=seq;
+          p.remoteJumpHeld=!!data.held;
+          // Keep the generic input flag synchronized for other systems, but the
+          // reliable flag is what prevents a dropped unreliable packet from
+          // cutting the jump short.
+          p.input.jump=p.remoteJumpHeld;
+          return;
+        }
+        break;
       case 'jump':
         if(this.isHost){
           const p=this.players[pid]; if(!p) return;
+          p.remoteJumpHeld=true;
+          p.input.jump=true;
           const seq = (data.seq||0) & 65535;
           const prev = p.lastJumpEventSeq;
           const isNewer = prev===null || (((seq-prev+65536)&65535) < 32768 && seq!==prev);
@@ -2745,10 +3168,16 @@ const Game = {
           const isNewer=prev===null || (((seq-prev+65536)&65535)<32768 && seq!==prev);
           if(!isNewer) return;
           p.lastGrappleEventSeq=seq;
-          if(Number.isFinite(data.x) && Number.isFinite(data.y)){
-            p.pendingGrappleTarget={x:data.x,y:data.y};
-            p.remoteGrappleActive=true;
-            p.remoteGrappleEventSeq=seq;
+          p.remoteGrappleActive=true;
+          p.remoteGrappleEventSeq=seq;
+          if(data.targetId!=null){
+            p.pendingGrappleTargetId=String(data.targetId);
+            p.pendingGrappleX=null;
+            p.pendingGrappleY=null;
+          }else{
+            p.pendingGrappleTargetId=null;
+            p.pendingGrappleX=Number.isFinite(data.x)?Number(data.x):null;
+            p.pendingGrappleY=Number.isFinite(data.y)?Number(data.y):null;
           }
         }
         break;
@@ -2759,8 +3188,9 @@ const Game = {
           if(p.remoteGrappleEventSeq===null || seq===p.remoteGrappleEventSeq ||
              (((seq-(p.remoteGrappleEventSeq||0)+65536)&65535)<32768)){
             p.remoteGrappleActive=false;
-            p.pendingGrappleTarget=null;
-            p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0;
+            p.pendingGrappleTargetId=null;
+            p.pendingGrappleX=null; p.pendingGrappleY=null;
+            p.grappleAnchor=null; p.grappleTargetId=null; p.grappleLen=0; p.grappleRestLen=0;
           }
         }
         break;
@@ -2819,6 +3249,11 @@ const Game = {
         if(!this.isHost) this.spawnNetworkFx({x:data.x,y:data.y,type:'impact',facing:1,hue:200});
         this.camera.addShake(5);
         break;
+      case 'impact_frames':
+        if(!this.isHost){
+          this.impactFrames = Math.max(this.impactFrames||0, Number(data.frames)||0);
+        }
+        break;
       case 'eliminated':
         if(!this.isHost){
           const p=this.players[data.id]; if(p){ p.alive=false; this.spawnFx(p,'death'); }
@@ -2851,9 +3286,16 @@ const Game = {
           this.scores=data.scores||this.scores;
           this.roundTransitionId=incomingTransition;
           this.roundNumber=incomingRound;
+          if(data.spawnAssignments) this.spawnAssignments=data.spawnAssignments;
           if(data.facings){ for(const id in data.facings){ if(this.players[id]) this.players[id].facing=(data.facings[id]<0?-1:1); } }
-          UI.fadeToNextRound(()=>this.beginRoundImmediate(incomingRound,incomingTransition));
-          setTimeout(()=>this.beginRoundImmediate(incomingRound,incomingTransition),900);
+          // The reliable round_start packet is the single owner of the round transition.
+          // Start the round when the leaderboard fade finishes; never leave the results
+          // panel visible underneath an idle 900ms timer, which makes the leaderboard
+          // briefly reappear after its fade-out.
+          if(this._roundTransitionTimer) clearTimeout(this._roundTransitionTimer);
+          UI.fadeToNextRound(()=>{
+            this.beginRoundImmediate(incomingRound,incomingTransition);
+          });
         }
         break;
       case 'matchend':
@@ -2893,10 +3335,7 @@ const Game = {
 
   /* ---------- render ---------- */
   updateCameraAndHud(dt){
-    const cameraPlayers=Object.values(this.players).map(p=>{
-      if(p.id===this.myId) return p;
-      return Object.assign({},p,{x:Number.isFinite(p.renderX)?p.renderX:p.x,y:Number.isFinite(p.renderY)?p.renderY:p.y});
-    });
+    const cameraPlayers=Object.values(this.players);
     this.camera.follow(cameraPlayers, this.map.width, this.map.height, this.viewW, this.viewH);
     UI.updateHUD();
   },
@@ -3020,8 +3459,9 @@ const Game = {
     for(const id in this.players){
       const p=this.players[id];
       const alpha = p.alive ? 1 : 0.15;
-      const drawX = p.id===this.myId ? p.x : (Number.isFinite(p.renderX)?p.renderX:p.x);
-      const drawY = p.id===this.myId ? p.y : (Number.isFinite(p.renderY)?p.renderY:p.y);
+      const drawX = p.x;
+      const drawY = p.y;
+      const visualX = p.x, visualY = p.y;
       ctx.globalAlpha = alpha;
       for(let i=0;i<p.trail.length;i++){
         const t=p.trail[i]; const a=(i/p.trail.length)*0.3;
@@ -3040,21 +3480,41 @@ const Game = {
         ctx.shadowColor = effectColor;
         ctx.shadowBlur = 7+chg*13+(effect.rarity==='legendary'?10:effect.rarity==='epic'?5:0);
         ctx.lineWidth = 2+chg*3+(effect.rarity==='legendary'?1:0);
-        ctx.beginPath(); ctx.arc(drawX,drawY,r,0,Math.PI*2); ctx.stroke();
+        const circleX=visualX, circleY=visualY;
+        ctx.beginPath(); ctx.arc(circleX,circleY,r,0,Math.PI*2); ctx.stroke();
         ctx.restore();
       }
+      // PYPG range is local-only and only appears while the grapple key is held
+      // and there is no player currently available to grapple.
+      if(p.id===this.myId && this.mode==='pypg' && p.alive && p.input.grapple && !p.grappleAnchor && !this.findPYPGTarget(p)){
+        const range=this.getGrappleRange(p);
+        ctx.save();
+        ctx.globalAlpha=0.26;
+        ctx.strokeStyle='#5dff8f';
+        ctx.lineWidth=2;
+        ctx.setLineDash([8,8]);
+        ctx.beginPath();
+        ctx.arc(visualX,visualY,range,0,Math.PI*2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.restore();
+      }
+
       if(p.grappleAnchor && p.alive){
-        const dx=p.x-p.grappleAnchor.x, dy=p.y-p.grappleAnchor.y;
+        const target=this.players[p.grappleTargetId];
+        const anchorX=target&&target.alive ? target.x : p.grappleAnchor.x;
+        const anchorY=target&&target.alive ? target.y : p.grappleAnchor.y;
+        const dx=p.x-anchorX, dy=p.y-anchorY;
         const dist=Math.hypot(dx,dy)||1;
         const stretch=Math.max(0,dist-(p.grappleRestLen||p.grappleLen||dist));
         const nx=-dy/dist, ny=dx/dist;
         const wave=Math.sin(performance.now()*0.018+dist*0.02)*(2+Math.min(8,stretch*0.08));
         ctx.strokeStyle=stretch>4?'#aaffb9':'#5dff8fcc'; ctx.lineWidth=stretch>12?4:3;
         ctx.beginPath();
-        ctx.moveTo(drawX,drawY);
-        ctx.quadraticCurveTo((drawX+p.grappleAnchor.x)/2+nx*wave,(drawY+p.grappleAnchor.y)/2+ny*wave,p.grappleAnchor.x,p.grappleAnchor.y);
+        ctx.moveTo(visualX,visualY);
+        ctx.quadraticCurveTo((visualX+anchorX)/2+nx*wave,(visualY+anchorY)/2+ny*wave,anchorX,anchorY);
         ctx.stroke();
-        ctx.fillStyle='#5dff8f'; ctx.beginPath(); ctx.arc(p.grappleAnchor.x,p.grappleAnchor.y,4+Math.sin(performance.now()*0.012)*1.5,0,Math.PI*2); ctx.fill();
+        ctx.fillStyle='#5dff8f'; ctx.beginPath(); ctx.arc(anchorX,anchorY,4+Math.sin(performance.now()*0.012)*1.5,0,Math.PI*2); ctx.fill();
       }
       if(p.dashCharging && p.alive){
         const chargeNorm=Math.min(1,(p.dashCharge||0)/(PHYS.dashMaxLevel||3));
@@ -3069,13 +3529,14 @@ const Game = {
         ctx.lineWidth=2+chargeNorm*(effect.rarity==='mythic'?9:effect.rarity==='legendary'?8:effect.rarity==='epic'?5:effect.rarity==='rare'?3.5:2.5);
         ctx.shadowColor=effect.particle;
         ctx.shadowBlur=8+chargeNorm*(effect.rarity==='mythic'?50:effect.rarity==='legendary'?40:effect.rarity==='epic'?27:20);
+        const ringX=visualX, ringY=visualY;
         ctx.beginPath();
-        ctx.arc(drawX,drawY,ringR,0,Math.PI*2);
+        ctx.arc(ringX,ringY,ringR,0,Math.PI*2);
         ctx.stroke();
         if(effect.rarity==='mythic'||effect.rarity==='legendary'||effect.rarity==='epic'){
           ctx.globalAlpha=alpha*(0.07+chargeNorm*0.18);
           ctx.fillStyle=effect.particle;
-          ctx.beginPath(); ctx.arc(drawX,drawY,ringR*0.84,0,Math.PI*2); ctx.fill();
+          ctx.beginPath(); ctx.arc(ringX,ringY,ringR*0.84,0,Math.PI*2); ctx.fill();
         }
         ctx.restore();
       }
@@ -3084,7 +3545,7 @@ const Game = {
         const rr=p.radius+18;
         const charge=Math.max(0,Math.min(1,p.actionCharge||0));
         const aimLen=p.radius+72+charge*22;
-        const tx=p.x+Math.cos(a)*rr, ty=p.y+Math.sin(a)*rr;
+        const tx=visualX+Math.cos(a)*rr, ty=visualY+Math.sin(a)*rr;
         const ex=tx, ey=ty;
         ctx.save();
         const baseAim=GameModes[this.mode].deadly?{r:255,g:75,b:75}:{r:255,g:216,b:107};
@@ -3105,7 +3566,7 @@ const Game = {
         const aimColor=`rgb(${ar},${ag},${ab})`;
         ctx.strokeStyle=aimColor; ctx.globalAlpha=0.72; ctx.lineWidth=2;
         ctx.setLineDash([6,6]);
-        ctx.beginPath(); ctx.moveTo(p.x+Math.cos(a)*(p.radius+8),p.y+Math.sin(a)*(p.radius+8)); ctx.lineTo(ex,ey); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(visualX+Math.cos(a)*(p.radius+8),visualY+Math.sin(a)*(p.radius+8)); ctx.lineTo(ex,ey); ctx.stroke();
         ctx.setLineDash([]);
         ctx.globalAlpha=0.8; ctx.strokeStyle=aimColor; ctx.lineWidth=3;
         ctx.beginPath(); ctx.arc(drawX,drawY,rr,0,Math.PI*2); ctx.stroke();
@@ -3126,12 +3587,11 @@ const Game = {
   },
   getCharacterSprite(p,cust,r){
     const heavy=!!p.heavy;
-    const face=cust.face||'Happy';
     const pattern=cust.gradientPattern||'radial-out';
     const key=[
       +cust.hue||0,+cust.saturation||0,+cust.brightness||60,
       +cust.hue2||0,+cust.saturation2||0,+cust.brightness2||60,
-      pattern,face,heavy?'1':'0',Math.round(r*10)/10,p.preview?'preview':'gameplay'
+      pattern, cust.eyes||'classic',cust.mouth||'smile',cust.brows||'none',cust.hat||'none',heavy?'1':'0',Math.round(r*10)/10,p.preview?'preview':'gameplay'
     ].join('|');
     let sprite=this.characterSpriteCache.get(key);
     if(sprite) return sprite;
@@ -3169,27 +3629,119 @@ const Game = {
     o.fillStyle=bodyFill; o.beginPath(); o.arc(0,0,r,0,Math.PI*2); o.fill();
     o.lineWidth=heavy?5:3; o.strokeStyle=secondary; o.stroke();
 
-    const faceR=r;
-    const faceScale=Math.max(1,faceR/26);
-    const fx=faceR*0.25;
+    // Customizable face: separate eyes, mouth, eyebrows, and hat. These are
+    // intentionally simple vector parts so every player's design stays lightweight
+    // to network and fast to render through the sprite cache.
+    const eyes=cust.eyes||'classic', mouth=cust.mouth||'smile', brows=cust.brows||'none', hat=cust.hat||'none';
+    const faceScale=Math.max(1,r/26);
+    const fx=r*0.25, ey=-r*0.16;
     const fs=v=>v*faceScale;
-    o.fillStyle='#12100c';
-    o.beginPath();
-    if(face==='Angry'){ o.arc(fx-fs(8),-fs(4),fs(3),0,Math.PI*2); o.arc(fx+fs(8),-fs(4),fs(3),0,Math.PI*2); }
-    else if(face==='Sleepy'){ o.fillRect(fx-fs(10),-fs(4),fs(8),fs(2)); o.fillRect(fx+fs(2),-fs(4),fs(8),fs(2)); }
-    else if(face==='Star'){ for(let k=0;k<2;k++){ this.starPath(o, fx-fs(7)+k*fs(14), -fs(4), fs(4)); } }
-    else if(face==='Wink'){ o.arc(fx-fs(7),-fs(4),fs(3.5),0,Math.PI*2); o.fillRect(fx+fs(4),-fs(4),fs(7),fs(2)); }
-    else if(face==='Surprised'){ o.arc(fx-fs(7),-fs(4),fs(4.5),0,Math.PI*2); o.arc(fx+fs(7),-fs(4),fs(4.5),0,Math.PI*2); }
-    else if(face==='Grumpy'){ o.fillRect(fx-fs(11),-fs(6),fs(8),fs(2)); o.fillRect(fx+fs(3),-fs(6),fs(8),fs(2)); o.arc(fx-fs(7),-fs(2),fs(2.5),0,Math.PI*2); o.arc(fx+fs(7),-fs(2),fs(2.5),0,Math.PI*2); }
-    else if(face==='Cyclops'){ o.arc(fx,-fs(4),fs(6),0,Math.PI*2); }
-    else if(face==='Heart'){ this.heartPath(o, fx-fs(7),-fs(5),fs(5)); this.heartPath(o, fx+fs(7),-fs(5),fs(5)); }
-    else { o.arc(fx-fs(7),-fs(4),fs(3.5),0,Math.PI*2); o.arc(fx+fs(7),-fs(4),fs(3.5),0,Math.PI*2); }
-    o.fill();
-    o.strokeStyle='#12100c'; o.lineWidth=fs(2); o.beginPath();
-    if(face==='Cool'){ o.moveTo(fx-fs(3),fs(6)); o.lineTo(fx+fs(8),fs(4)); }
-    else if(face==='Grumpy'){ o.arc(fx,fs(10),fs(6),1.15*Math.PI,1.85*Math.PI); }
-    else{ o.arc(fx,fs(4),fs(6),0.15*Math.PI,0.85*Math.PI); }
-    o.stroke();
+    o.fillStyle='#12100c'; o.strokeStyle='#12100c'; o.lineCap='round'; o.lineJoin='round';
+
+    // Eyebrows
+    o.lineWidth=fs(2.4); o.beginPath();
+    if(brows==='raised'){ o.moveTo(fx-fs(12),ey-fs(9)); o.lineTo(fx-fs(3),ey-fs(11)); o.moveTo(fx+fs(3),ey-fs(11)); o.lineTo(fx+fs(12),ey-fs(9)); }
+    else if(brows==='angry'){ o.moveTo(fx-fs(12),ey-fs(7)); o.lineTo(fx-fs(3),ey-fs(11)); o.moveTo(fx+fs(3),ey-fs(11)); o.lineTo(fx+fs(12),ey-fs(7)); }
+    else if(brows==='sad'){ o.moveTo(fx-fs(12),ey-fs(11)); o.lineTo(fx-fs(3),ey-fs(7)); o.moveTo(fx+fs(3),ey-fs(7)); o.lineTo(fx+fs(12),ey-fs(11)); }
+    else if(brows==='flat'){ o.moveTo(fx-fs(12),ey-fs(9)); o.lineTo(fx-fs(3),ey-fs(9)); o.moveTo(fx+fs(3),ey-fs(9)); o.lineTo(fx+fs(12),ey-fs(9)); }
+    else if(brows==='worried'){ o.moveTo(fx-fs(12),ey-fs(5)); o.lineTo(fx-fs(3),ey-fs(10)); o.moveTo(fx+fs(3),ey-fs(10)); o.lineTo(fx+fs(12),ey-fs(5)); }
+    else if(brows==='skeptic'){ o.moveTo(fx-fs(12),ey-fs(10)); o.lineTo(fx-fs(3),ey-fs(10)); o.moveTo(fx+fs(3),ey-fs(6)); o.lineTo(fx+fs(12),ey-fs(9)); }
+    else if(brows==='sleepy'){ o.moveTo(fx-fs(12),ey-fs(5)); o.lineTo(fx-fs(3),ey-fs(6)); o.moveTo(fx+fs(3),ey-fs(6)); o.lineTo(fx+fs(12),ey-fs(5)); }
+    else if(brows==='thick'){ o.lineWidth=fs(4.2); o.moveTo(fx-fs(12),ey-fs(9)); o.lineTo(fx-fs(3),ey-fs(10)); o.moveTo(fx+fs(3),ey-fs(10)); o.lineTo(fx+fs(12),ey-fs(9)); }
+    if(brows!=='none') o.stroke();
+
+    // Eyes
+    o.fillStyle='#12100c'; o.strokeStyle='#12100c'; o.lineWidth=fs(2);
+    if(eyes==='closed'){ o.beginPath(); o.moveTo(fx-fs(11),ey); o.quadraticCurveTo(fx-fs(7),ey-fs(4),fx-fs(3),ey); o.moveTo(fx+fs(3),ey); o.quadraticCurveTo(fx+fs(7),ey-fs(4),fx+fs(11),ey); o.stroke(); }
+    else if(eyes==='wide'){ o.beginPath(); o.arc(fx-fs(7),ey,fs(4.8),0,Math.PI*2); o.arc(fx+fs(7),ey,fs(4.8),0,Math.PI*2); o.fill(); }
+    else if(eyes==='cool'){ o.save(); o.lineWidth=fs(3); o.beginPath(); o.moveTo(fx-fs(12),ey-fs(1)); o.lineTo(fx-fs(2),ey+fs(2)); o.moveTo(fx+fs(2),ey+fs(2)); o.lineTo(fx+fs(12),ey-fs(1)); o.stroke(); o.restore(); }
+    else if(eyes==='star'){ this.starPath(o,fx-fs(7),ey,fs(4.2)); this.starPath(o,fx+fs(7),ey,fs(4.2)); o.fill(); }
+    else if(eyes==='cyclops'){ o.beginPath(); o.arc(fx,ey,fs(6.2),0,Math.PI*2); o.fill(); o.fillStyle='#fff'; o.beginPath(); o.arc(fx,ey,fs(2),0,Math.PI*2); o.fill(); o.fillStyle='#12100c'; o.beginPath(); o.arc(fx,ey,fs(1),0,Math.PI*2); o.fill(); }
+    else if(eyes==='sleepy'){ o.beginPath(); o.moveTo(fx-fs(11),ey+fs(1)); o.quadraticCurveTo(fx-fs(7),ey-fs(2),fx-fs(3),ey+fs(1)); o.moveTo(fx+fs(3),ey+fs(1)); o.quadraticCurveTo(fx+fs(7),ey-fs(2),fx+fs(11),ey+fs(1)); o.stroke(); }
+    else if(eyes==='hearts'){ this.heartPath(o,fx-fs(7),ey,fs(4)); this.heartPath(o,fx+fs(7),ey,fs(4)); o.fill(); }
+    else if(eyes==='angry'){ o.beginPath(); o.arc(fx-fs(7),ey,fs(3.6),0,Math.PI*2); o.arc(fx+fs(7),ey,fs(3.6),0,Math.PI*2); o.fill(); o.strokeStyle='#12100c'; o.lineWidth=fs(2.5); o.beginPath(); o.moveTo(fx-fs(12),ey-fs(6)); o.lineTo(fx-fs(3),ey-fs(2)); o.moveTo(fx+fs(3),ey-fs(2)); o.lineTo(fx+fs(12),ey-fs(6)); o.stroke(); }
+    else if(eyes==='lashes'){ o.beginPath(); o.arc(fx-fs(7),ey,fs(3.7),0,Math.PI*2); o.arc(fx+fs(7),ey,fs(3.7),0,Math.PI*2); o.fill(); o.beginPath(); o.moveTo(fx-fs(10),ey-fs(1)); o.lineTo(fx-fs(13),ey-fs(4)); o.moveTo(fx+fs(10),ey-fs(1)); o.lineTo(fx+fs(13),ey-fs(4)); o.stroke(); }
+    else if(eyes==='dots'){ o.beginPath(); o.arc(fx-fs(6),ey,fs(2.2),0,Math.PI*2); o.arc(fx+fs(6),ey,fs(2.2),0,Math.PI*2); o.fill(); }
+    else if(eyes==='cross'){ o.beginPath(); o.moveTo(fx-fs(10),ey-fs(4)); o.lineTo(fx-fs(4),ey+fs(4)); o.moveTo(fx-fs(4),ey-fs(4)); o.lineTo(fx-fs(10),ey+fs(4)); o.moveTo(fx+fs(4),ey-fs(4)); o.lineTo(fx+fs(10),ey+fs(4)); o.moveTo(fx+fs(10),ey-fs(4)); o.lineTo(fx+fs(4),ey+fs(4)); o.stroke(); }
+    else { o.beginPath(); o.arc(fx-fs(7),ey,fs(3.5),0,Math.PI*2); o.arc(fx+fs(7),ey,fs(3.5),0,Math.PI*2); o.fill(); }
+
+    // Mouth
+    o.strokeStyle='#12100c'; o.fillStyle='#12100c'; o.lineWidth=fs(2.4);
+    if(mouth==='open'){ o.beginPath(); o.arc(fx,fs(9),fs(6),0,Math.PI); o.stroke(); }
+    else if(mouth==='flat'){ o.beginPath(); o.moveTo(fx-fs(7),fs(7)); o.lineTo(fx+fs(7),fs(7)); o.stroke(); }
+    else if(mouth==='sad'){ o.beginPath(); o.arc(fx,fs(14),fs(7),Math.PI*1.15,Math.PI*1.85); o.stroke(); }
+    else if(mouth==='surprise'){ o.beginPath(); o.arc(fx,fs(9),fs(5),0,Math.PI*2); o.fill(); }
+    else if(mouth==='smirk'){ o.beginPath(); o.moveTo(fx-fs(6),fs(8)); o.quadraticCurveTo(fx+fs(1),fs(12),fx+fs(8),fs(6)); o.stroke(); }
+    else if(mouth==='grin'){ o.beginPath(); o.arc(fx,fs(7),fs(8),0.08*Math.PI,0.92*Math.PI); o.stroke(); }
+    else if(mouth==='teeth'){
+      // Simple white tooth ellipse, with no black top lip.
+      o.fillStyle='#fff'; o.beginPath(); o.ellipse(fx,fs(9),fs(8),fs(5.2),0,0,Math.PI*2); o.fill();
+      o.strokeStyle='#12100c'; o.lineWidth=fs(1.35); o.beginPath();
+      o.moveTo(fx-fs(4.8),fs(5.4)); o.lineTo(fx-fs(4.8),fs(11.2));
+      o.moveTo(fx-fs(1.6),fs(4.7)); o.lineTo(fx-fs(1.6),fs(13.1));
+      o.moveTo(fx+fs(1.6),fs(4.7)); o.lineTo(fx+fs(1.6),fs(13.1));
+      o.moveTo(fx+fs(4.8),fs(5.4)); o.lineTo(fx+fs(4.8),fs(11.2));
+      o.stroke();
+    }
+    else if(mouth==='tongue'){
+      // Black-filled mouth with a pink tongue; no separate black top lip.
+      o.fillStyle='#12100c'; o.beginPath(); o.ellipse(fx,fs(8.6),fs(7.4),fs(5.7),0,0,Math.PI*2); o.fill();
+      o.fillStyle='#e77886'; o.beginPath(); o.ellipse(fx,fs(10.9),fs(4.3),fs(3.5),0,0,Math.PI*2); o.fill();
+      o.strokeStyle='#a94e5e'; o.lineWidth=fs(1.2); o.beginPath(); o.moveTo(fx,fs(8.9)); o.quadraticCurveTo(fx,fs(10.8),fx,fs(13.1)); o.stroke();
+    }
+    else if(mouth==='pout'){ o.beginPath(); o.arc(fx,fs(7),fs(5),0,Math.PI*2); o.stroke(); }
+    else if(mouth==='cat'){ o.beginPath(); o.moveTo(fx-fs(8),fs(8)); o.quadraticCurveTo(fx-fs(3),fs(13),fx,fs(8)); o.quadraticCurveTo(fx+fs(3),fs(13),fx+fs(8),fs(8)); o.stroke(); }
+    else if(mouth==='tiny'){ o.beginPath(); o.arc(fx,fs(8),fs(2.3),0,Math.PI*2); o.fill(); }
+    else { o.beginPath(); o.arc(fx,fs(5),fs(7),0.12*Math.PI,0.88*Math.PI); o.stroke(); }
+
+    // Hat / head accessory
+    o.save();
+    if(hat==='cap'){
+      o.fillStyle=secondary; o.beginPath(); o.arc(0,-r*.72,r*.48,Math.PI,Math.PI*2); o.fill(); o.fillRect(-r*.48,-r*.74,r*.92,r*.13);
+      o.fillStyle=secondaryHi; o.beginPath(); o.ellipse(r*.24,-r*.57,r*.43,r*.11,0,0,Math.PI*2); o.fill();
+    }else if(hat==='tophat'){
+      o.fillStyle=secondary; o.fillRect(-r*.34,-r*1.00,r*.68,r*.43); o.fillRect(-r*.52,-r*.61,r*1.04,r*.10);
+      o.fillStyle='#12100c'; o.fillRect(-r*.36,-r*.74,r*.72,r*.07);
+    }else if(hat==='crown'){
+      // Secondary-color crown: the three points share the exact same width as the band,
+      // so every point sits cleanly on top of the rectangular base.
+      o.fillStyle=secondary;
+      const crownLeft=-r*.44, crownWidth=r*.88;
+      const crownBaseY=-r*.72, crownTopY=-r*.98;
+      o.fillRect(crownLeft,crownBaseY,crownWidth,r*.14);
+      const seg=crownWidth/3;
+      for(let k=0;k<3;k++){
+        const x0=crownLeft+k*seg, x1=x0+seg, xm=(x0+x1)/2;
+        o.beginPath(); o.moveTo(x0,crownBaseY); o.lineTo(xm,crownTopY); o.lineTo(x1,crownBaseY); o.closePath(); o.fill();
+      }
+      o.fillStyle='#ffe89a';
+      o.beginPath(); o.arc(-r*.27,-r*.64,r*.035,0,Math.PI*2); o.arc(0,-r*.64,r*.035,0,Math.PI*2); o.arc(r*.27,-r*.64,r*.035,0,Math.PI*2); o.fill();
+    }else if(hat==='halo'){
+      o.strokeStyle=secondaryHi; o.lineWidth=fs(3); o.shadowColor=secondary; o.shadowBlur=8; o.beginPath(); o.ellipse(0,-r*.92,r*.53,r*.16,0,0,Math.PI*2); o.stroke();
+    }else if(hat==='horns'){
+      o.fillStyle=secondary; o.beginPath(); o.moveTo(-r*.40,-r*.60); o.lineTo(-r*.25,-r*.98); o.lineTo(-r*.08,-r*.69); o.closePath(); o.moveTo(r*.08,-r*.69); o.lineTo(r*.25,-r*.98); o.lineTo(r*.40,-r*.60); o.closePath(); o.fill();
+      o.fillStyle='#f0dfc8'; o.beginPath(); o.moveTo(-r*.25,-r*.92); o.lineTo(-r*.19,-r*.76); o.lineTo(-r*.13,-r*.70); o.closePath(); o.moveTo(r*.25,-r*.92); o.lineTo(r*.19,-r*.76); o.lineTo(r*.13,-r*.70); o.closePath(); o.fill();
+    }else if(hat==='flower'){
+      o.fillStyle=secondary; for(let k=0;k<5;k++){const a=-Math.PI/2+k*Math.PI*2/5; o.beginPath(); o.arc(Math.cos(a)*r*.19, -r*.80+Math.sin(a)*r*.19, r*.16,0,Math.PI*2); o.fill();} o.fillStyle='#ffd45c'; o.beginPath(); o.arc(0,-r*.80,r*.11,0,Math.PI*2); o.fill();
+    }else if(hat==='beanie'){
+      o.fillStyle=secondary; o.beginPath(); o.arc(0,-r*.66,r*.45,Math.PI,Math.PI*2); o.fill(); o.fillRect(-r*.46,-r*.68,r*.92,r*.12);
+      o.fillStyle=secondaryHi; o.beginPath(); o.arc(0,-r*1.07,r*.065,0,Math.PI*2); o.fill();
+    }else if(hat==='wizard'){
+      o.fillStyle=secondary; o.beginPath(); o.moveTo(-r*.40,-r*.67); o.lineTo(0,-r*1.16); o.lineTo(r*.40,-r*.67); o.closePath(); o.fill(); o.fillRect(-r*.46,-r*.69,r*.92,r*.10);
+      o.fillStyle='#ffd45c'; o.beginPath(); o.arc(-r*.03,-r*.95,r*.035,0,Math.PI*2); o.arc(r*.10,-r*.82,r*.03,0,Math.PI*2); o.fill();
+    }else if(hat==='party'){
+      o.fillStyle=secondary; o.beginPath(); o.moveTo(-r*.28,-r*.66); o.lineTo(r*.05,-r*1.11); o.lineTo(r*.35,-r*.66); o.closePath(); o.fill(); o.fillStyle='#ffd45c'; o.beginPath(); o.arc(r*.06,-r*1.13,r*.045,0,Math.PI*2); o.fill();
+    }else if(hat==='bandana'){
+      o.fillStyle=secondary; o.beginPath(); o.moveTo(-r*.46,-r*.66); o.lineTo(0,-r*.83); o.lineTo(r*.46,-r*.66); o.lineTo(r*.34,-r*.57); o.lineTo(-r*.34,-r*.57); o.closePath(); o.fill();
+      o.fillStyle='#12100c'; o.beginPath(); o.moveTo(r*.32,-r*.62); o.lineTo(r*.50,-r*.56); o.lineTo(r*.35,-r*.48); o.closePath(); o.fill();
+    }else if(hat==='antenna'){
+      o.strokeStyle=secondaryHi; o.lineWidth=fs(2.5); o.beginPath(); o.moveTo(0,-r*.66); o.lineTo(0,-r*.98); o.stroke(); o.fillStyle='#ff5d5d'; o.beginPath(); o.arc(0,-r*1.05,r*.07,0,Math.PI*2); o.fill();
+    }else if(hat==='bunny'){
+      o.fillStyle=secondary; o.beginPath(); o.ellipse(-r*.20,-r*.88,r*.13,r*.36,0,0,Math.PI*2); o.ellipse(r*.20,-r*.88,r*.13,r*.36,0,0,Math.PI*2); o.fill(); o.fillStyle='#f2a9bb'; o.beginPath(); o.ellipse(-r*.20,-r*.88,r*.05,r*.22,0,0,Math.PI*2); o.ellipse(r*.20,-r*.88,r*.05,r*.22,0,0,Math.PI*2); o.fill();
+    }else if(hat==='cowboy'){
+      o.fillStyle=secondary; o.fillRect(-r*.44,-r*.72,r*.88,r*.10); o.beginPath(); o.arc(0,-r*.77,r*.38,Math.PI,Math.PI*2); o.fill(); o.fillRect(-r*.18,-r*.97,r*.36,r*.27); o.fillStyle='#8b5a33'; o.fillRect(-r*.20,-r*.78,r*.40,r*.055);
+    }
+    o.restore();
 
     sprite={canvas:off,size};
     this.characterSpriteCache.set(key,sprite);
@@ -3200,7 +3752,7 @@ const Game = {
     return sprite;
   },
   drawCharacter(ctx,p){
-    const cust=p.cust||{hue:200,hue2:40,saturation:80,saturation2:60,brightness:60,brightness2:60,gradientPattern:'radial-out',face:'Happy'};
+    const cust=p.cust||{hue:200,hue2:40,saturation:80,saturation2:60,brightness:60,brightness2:60,gradientPattern:'radial-out'};
     const r=p.radius*(p.heavy?1.1:1);
     ctx.save();
     ctx.translate(p.x,p.y);
@@ -3238,6 +3790,7 @@ const Game = {
 /* ---------------------------- UI ---------------------------- */
 const UI = {
   goto(name){
+    stopCustomizePreviewLoop();
     stopCustomizeEffectShower();
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     const el = document.getElementById('screen-'+name);
@@ -3336,11 +3889,13 @@ const UI = {
 
     const fillWrap = document.getElementById('staminawrap');
     const fill = document.getElementById('staminafill');
-    if(fillWrap) fillWrap.style.display = Game.mode==='grapple' ? 'block' : 'none';
-    if(me && fill && Game.mode==='grapple'){
+    if(fillWrap) fillWrap.style.display = (Game.mode==='grapple'||Game.mode==='pypg') ? 'block' : 'none';
+    if(me && fill && (Game.mode==='grapple'||Game.mode==='pypg')){
       const pct = Math.max(0, Math.min(100, (me.grappleStamina/me.grappleStaminaMax)*100));
       fill.style.width = pct+'%';
       fill.classList.toggle('empty', pct<PHYS.grappleMinToUse);
+      const label=document.getElementById('staminalabel');
+      if(label) label.textContent = Game.mode==='pypg' ? 'PYPG' : 'Grapple';
     }
 
     const dashFill = document.getElementById('dashfill');
@@ -3393,7 +3948,7 @@ const Lobby = {
       this.code = id.replace('PLNK-','');
       Game.isHost=true; NetworkManager.isHost=true; Game.myId=id;
       document.getElementById('btnLeaveLobby').textContent='CLOSE LOBBY';
-      const cust = Storage.get('customization',{hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',face:'Happy',dashEffect:'basic'});
+      const cust = Storage.get('customization',{hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',dashEffect:'basic'});
       const hostPlayer = new Player(id, Game.myName, cust, {x:0,y:0});
       Game.players={}; Game.players[id]=hostPlayer;
       this.ready={}; this.ready[id]=true;
@@ -3425,7 +3980,7 @@ const Lobby = {
       document.getElementById('joinErr').textContent='';
       Game.isHost=false; NetworkManager.isHost=false; Game.myId=NetworkManager.myId;
       document.getElementById('btnLeaveLobby').textContent='LEAVE';
-      const cust = Storage.get('customization',{hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',face:'Happy',dashEffect:'basic'});
+      const cust = Storage.get('customization',{hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',dashEffect:'basic'});
       NetworkManager.sendToHost({t:'join_request', name:Game.myName, cust}, true);
     }).catch(err=>{
       document.getElementById('joinErr').textContent = 'Unable to connect. The game code may be invalid.';
@@ -3609,13 +4164,15 @@ const Lobby = {
     Object.keys(Game.players).forEach(id=>Game.scores[id]=0);
     for(const p of Object.values(Game.players)) p.score=0;
     NetworkManager.broadcast({t:'map_data', map:Game.map}, true);
-    NetworkManager.broadcast({t:'match_start', map:Game.map, mode:Game.mode, matchSettings:Game.matchSettings, roundConfig:Game.roundConfig, round:Game.roundNumber, scores:Game.scores}, true);
+    Game.resetPlayers();
+    NetworkManager.broadcast({t:'match_start', map:Game.map, mode:Game.mode, matchSettings:Game.matchSettings, roundConfig:Game.roundConfig, round:Game.roundNumber, scores:Game.scores, spawnAssignments:Game.spawnAssignments}, true);
     Game.beginCountdown();
   },
   clientStartMatch(data){
     Game.map=data.map; Game.mode=data.mode; Game.matchSettings=data.matchSettings;
     Game.roundConfig=data.roundConfig||{mode:'rounds',count:3,target:3};
     Game.roundNumber=data.round||1; Game.scores=data.scores||{};
+    Game.spawnAssignments=data.spawnAssignments||{};
     Game.beginCountdown();
   },
   receiveMap(map){ Game.map = map; },
@@ -3947,8 +4504,56 @@ function drawMapThumb(canvasEl, map){
     ctx.beginPath(); ctx.arc(offX+sp.x*s, offY+sp.y*s, 1.6, 0, Math.PI*2); ctx.fill();
   }
 }
+const FACE_OPTIONS={
+  eyes:[
+    ['classic','Classic'],['closed','Closed'],['wide','Wide'],['cool','Cool'],['star','Stars'],['cyclops','Cyclops'],
+    ['sleepy','Sleepy'],['hearts','Hearts'],['angry','Angry'],['lashes','Lashes'],['dots','Dots'],['cross','Crossed']
+  ],
+  mouth:[
+    ['smile','Smile'],['open','Open'],['flat','Flat'],['sad','Sad'],['surprise','Surprise'],['smirk','Smirk'],
+    ['grin','Big Grin'],['teeth','Teeth'],['tongue','Tongue'],['pout','Pout'],['cat','Cat'],['tiny','Tiny']
+  ],
+  brows:[
+    ['none','None'],['raised','Raised'],['angry','Angry'],['sad','Sad'],['flat','Flat'],
+    ['worried','Worried'],['skeptic','Skeptic'],['sleepy','Sleepy'],['thick','Thick']
+  ],
+  hat:[
+    ['none','None'],['cap','Cap'],['tophat','Top Hat'],['crown','Crown'],['halo','Halo'],['horns','Horns'],['flower','Flower'],
+    ['beanie','Beanie'],['wizard','Wizard'],['party','Party Hat'],['bandana','Bandana'],['antenna','Antenna'],['bunny','Bunny Ears'],['cowboy','Cowboy']
+  ]
+};
+const FACE_DEFAULTS={eyes:'classic',mouth:'smile',brows:'none',hat:'none'};
+function getFaceParts(){
+  const c=Storage.get('customization',{});
+  return {eyes:c.eyes||FACE_DEFAULTS.eyes,mouth:c.mouth||FACE_DEFAULTS.mouth,brows:c.brows||FACE_DEFAULTS.brows,hat:c.hat||FACE_DEFAULTS.hat};
+}
+function cycleFacePart(kind){
+  const c=Storage.get('customization',{});
+  const options=FACE_OPTIONS[kind]||[]; if(!options.length) return;
+  const cur=c[kind]||FACE_DEFAULTS[kind];
+  const idx=Math.max(0,options.findIndex(o=>o[0]===cur));
+  c[kind]=options[(idx+1)%options.length][0];
+  Storage.set('customization',c);
+  Game.characterSpriteCache.clear();
+  renderFaceControls();
+  drawCustPreview();
+}
+function renderFaceControls(){
+  const box=document.getElementById('custFaceControls'); if(!box) return;
+  const parts=getFaceParts(); box.innerHTML='';
+  [['eyes','Eyes'],['mouth','Mouth'],['brows','Eyebrows'],['hat','Hat']].forEach(([kind,label])=>{
+    const btn=document.createElement('button'); btn.type='button'; btn.className='btn cust-face-btn';
+    const current=(FACE_OPTIONS[kind]||[]).find(o=>o[0]===parts[kind]);
+    btn.innerHTML=`<b>${label}</b><span>${current?current[1]:parts[kind]}</span>`;
+    btn.addEventListener('click',()=>cycleFacePart(kind)); box.appendChild(btn);
+  });
+}
+
+let custPreviewRAF=0;
+let custPreviewRunning=false;
 function drawCustPreview(){
   const canvas = document.getElementById('custPreview');
+  if(!canvas) return;
   const ctx = canvas.getContext('2d');
   const W = canvas.width, H = canvas.height;
   ctx.clearRect(0,0,W,H);
@@ -3960,7 +4565,7 @@ function drawCustPreview(){
     saturation2:+(Storage.get('customization',{}).saturation2??60),
     brightness2:+(Storage.get('customization',{}).brightness2??60),
     gradientPattern: document.getElementById('custGradient').value || 'radial-out',
-    face: document.getElementById('custFace').value,
+    ...getFaceParts(),
     dashEffect: document.getElementById('custDashEffect')?.value||'basic'
   };
   const dummy = new Player('preview','',cust,{x:W/2,y:H/2});
@@ -3978,8 +4583,34 @@ function drawCustPreview(){
     ctx.save(); ctx.strokeStyle=previewEffect.particle; ctx.globalAlpha=.55; ctx.lineWidth=4; ctx.shadowColor=previewEffect.particle; ctx.shadowBlur=18; ctx.beginPath(); ctx.arc(dummy.x,dummy.y,ar,0,Math.PI*2); ctx.stroke();
     ctx.restore();
   }
+  const idleT=(performance.now()/1000);
+  const bob=Math.sin(idleT*2.2)*2.4;
+  const tilt=Math.sin(idleT*1.1)*0.018;
+  const squash=1+Math.sin(idleT*2.2+Math.PI/2)*0.018;
+  ctx.save();
+  ctx.translate(dummy.x,dummy.y+bob);
+  ctx.rotate(tilt);
+  ctx.scale(1/squash,squash);
+  ctx.translate(-dummy.x,-dummy.y);
+  dummy.y += bob;
   Game.drawCharacter(ctx, dummy);
+  ctx.restore();
+  startCustomizePreviewLoop();
   startCustomizeEffectShower();
+}
+function updateCustomizePreview(){
+  custPreviewRAF=0;
+  if(!custPreviewRunning || !document.getElementById('screen-customize')?.classList.contains('active')) return;
+  drawCustPreview();
+}
+function startCustomizePreviewLoop(){
+  if(custPreviewRAF) return;
+  custPreviewRunning=true;
+  custPreviewRAF=requestAnimationFrame(updateCustomizePreview);
+}
+function stopCustomizePreviewLoop(){
+  custPreviewRunning=false;
+  if(custPreviewRAF){ cancelAnimationFrame(custPreviewRAF); custPreviewRAF=0; }
 }
 
 function populateDashEffectSelect(selected){
@@ -4310,7 +4941,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
     else { UI.goto('lobby'); }
   });
 
-  ['custGradient','custFace'].forEach(id=>document.getElementById(id).addEventListener('input', drawCustPreview));
+  document.getElementById('custGradient').addEventListener('input', ()=>{ const c=Storage.get('customization',{}); c.gradientPattern=document.getElementById('custGradient').value; Storage.set('customization',c); Game.characterSpriteCache.clear(); drawCustPreview(); });
   document.getElementById('custDashEffect').addEventListener('change', ()=>{
     const c=Storage.get('customization',{dashEffect:'basic'}); c.dashEffect=document.getElementById('custDashEffect').value||'basic'; Storage.set('customization',c); drawCustPreview();
   });
@@ -4325,7 +4956,10 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
       saturation2:+(Storage.get('customization',{}).saturation2??60),
       brightness2:+(Storage.get('customization',{}).brightness2??60),
       gradientPattern:document.getElementById('custGradient').value||'radial-out',
-      face: document.getElementById('custFace').value,
+      eyes:getFaceParts().eyes,
+      mouth:getFaceParts().mouth,
+      brows:getFaceParts().brows,
+      hat:getFaceParts().hat,
       dashEffect:document.getElementById('custDashEffect').value||oldCust.dashEffect||'basic'
     };
     Storage.set('customization', cust);
@@ -4359,13 +4993,14 @@ quality: document.getElementById('setQuality').value,
   document.getElementById('edRedo').addEventListener('click', ()=>MapEditor.redo());
 
   function loadCustUI(){
-    const c = Storage.get('customization',{name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',face:'Happy',dashEffect:'basic'});
+    const c = Storage.get('customization',{name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',eyes:'classic',mouth:'smile',brows:'none',hat:'none',dashEffect:'basic'});
+    c.eyes=c.eyes||'classic'; c.mouth=c.mouth||'smile'; c.brows=c.brows||'none'; c.hat=c.hat||'none';
     document.getElementById('custName').value=c.name||'Player';
     c.brightness=c.brightness??60; c.brightness2=c.brightness2??60;
     Storage.set('customization',c); Game.characterSpriteCache.clear(); updatePickerUi();
     document.getElementById('custGradient').value=c.gradientPattern||'radial-out';
-    document.getElementById('custFace').value=c.face||'Happy';
     populateDashEffectSelect(c.dashEffect||'basic');
+    renderFaceControls();
     updatePickerUi();
     drawCustPreview();
   }
