@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="icon" type="image/png" href="icon.png">
 <title>PLUNK</title>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
@@ -249,6 +250,32 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .spherebox-rare-title{animation:sphereRareTitle .9s cubic-bezier(.2,1.5,.4,1) both;}
 @keyframes sphereRareTitle{0%{transform:scale(.35) rotate(-5deg);opacity:0}55%{transform:scale(1.12) rotate(2deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
 
+/* Dramatic reveal animations for the highest-rarity dash effects. */
+.spherebox-reveal-overlay{position:fixed;inset:0;z-index:90;pointer-events:none;display:flex;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 50%,#fff5 0%,transparent 18%,#020105cc 68%,#000e 100%);}
+.spherebox-reveal-overlay.legendary{animation:rarityRevealFade 2.65s ease-out forwards;background:radial-gradient(circle at 50% 50%,#ffd76a44 0%,#ff9e2b18 22%,#080604d8 68%,#000 100%);}
+.spherebox-reveal-overlay.mythic{animation:rarityRevealFade 3.25s ease-out forwards;background:radial-gradient(circle at 50% 50%,#ffffff55 0%,#ff72f128 18%,#6cfbff12 34%,#07020cd9 68%,#000 100%);}
+.spherebox-reveal-core{position:absolute;width:min(220px,38vw);aspect-ratio:1;border-radius:50%;opacity:0;}
+.spherebox-reveal-overlay.legendary .spherebox-reveal-core{background:radial-gradient(circle,#fff 0 6%,#ffd76a 18%,#ff9b2f 36%,transparent 72%);box-shadow:0 0 30px #fff,0 0 90px #ffd76a,0 0 180px #ff9b2f;animation:legendaryCore 1.25s cubic-bezier(.12,.75,.18,1) forwards;}
+.spherebox-reveal-overlay.mythic .spherebox-reveal-core{background:radial-gradient(circle,#fff 0 5%,#ff8ff4 13%,#8b5cf6 27%,#45e8ff 38%,transparent 72%);box-shadow:0 0 35px #fff,0 0 100px #ff72f1,0 0 190px #4dfcff;animation:mythicCore 1.6s cubic-bezier(.08,.7,.16,1) forwards;}
+.spherebox-reveal-ring{position:absolute;border-radius:50%;border:3px solid currentColor;opacity:0;box-shadow:0 0 16px currentColor,0 0 42px currentColor;}
+.spherebox-reveal-overlay.legendary .spherebox-reveal-ring{color:#ffd76a;animation:legendaryRing 1.7s cubic-bezier(.1,.7,.16,1) forwards;}
+.spherebox-reveal-overlay.mythic .spherebox-reveal-ring{color:#ff72f1;animation:mythicRing 2s cubic-bezier(.08,.72,.14,1) forwards;}
+.spherebox-reveal-ring.r2{animation-delay:.16s!important}.spherebox-reveal-ring.r3{animation-delay:.34s!important}
+.spherebox-reveal-label{position:relative;z-index:2;text-align:center;opacity:0;transform:translateY(16px) scale(.7);font-weight:1000;letter-spacing:8px;font-size:clamp(34px,7vw,74px);text-shadow:0 4px 0 #000,0 0 20px currentColor,0 0 55px currentColor,0 0 100px currentColor;}
+.spherebox-reveal-overlay.legendary .spherebox-reveal-label{color:#ffd76a;animation:rarityLabelIn 1.15s .38s cubic-bezier(.2,1.35,.28,1) forwards;}
+.spherebox-reveal-overlay.mythic .spherebox-reveal-label{color:#ff72f1;animation:rarityLabelIn 1.3s .45s cubic-bezier(.16,1.4,.2,1) forwards;}
+.spherebox-reveal-label small{display:block;font-size:clamp(11px,2vw,18px);letter-spacing:5px;color:#fff;margin-top:9px;text-shadow:0 2px 0 #000,0 0 16px currentColor;}
+.spherebox-reveal-spark{position:absolute;width:7px;height:34px;border-radius:50%;opacity:0;box-shadow:0 0 12px currentColor,0 0 28px currentColor;}
+.spherebox-reveal-overlay.legendary .spherebox-reveal-spark{color:#fff3ad;background:#fff3ad;animation:revealSpark 1.35s .15s ease-out forwards;}
+.spherebox-reveal-overlay.mythic .spherebox-reveal-spark{color:#fff;background:#fff;animation:revealSpark 1.55s .22s ease-out forwards;}
+@keyframes rarityRevealFade{0%{opacity:0}8%{opacity:1}72%{opacity:1}100%{opacity:0}}
+@keyframes legendaryCore{0%{opacity:0;transform:scale(.08)}18%{opacity:1;transform:scale(.7)}45%{opacity:1;transform:scale(1.35)}100%{opacity:.05;transform:scale(3.2)}}
+@keyframes mythicCore{0%{opacity:0;transform:scale(.05)}15%{opacity:1;transform:scale(.55)}42%{opacity:1;transform:scale(1.25)}100%{opacity:.04;transform:scale(3.8)}}
+@keyframes legendaryRing{0%{opacity:0;transform:scale(.08)}16%{opacity:1}100%{opacity:0;transform:scale(3.4)}}
+@keyframes mythicRing{0%{opacity:0;transform:scale(.06) rotate(0deg)}16%{opacity:1}100%{opacity:0;transform:scale(4.2) rotate(160deg)}}
+@keyframes rarityLabelIn{0%{opacity:0;transform:translateY(16px) scale(.7);filter:blur(8px)}62%{opacity:1;transform:translateY(0) scale(1.08);filter:blur(0)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes revealSpark{0%{opacity:0;transform:translate(0,0) rotate(0deg) scaleY(.35)}18%{opacity:1}100%{opacity:0;transform:translate(var(--sx),var(--sy)) rotate(var(--sr)) scaleY(1.1)}}
+
 .spherebox-drops-overlay{position:fixed;inset:0;background:#050302cc;display:flex;align-items:center;justify-content:center;z-index:70;}
 .spherebox-drops-panel{width:min(760px,94vw);max-height:84vh;overflow:auto;background:#110c08f8;border:2px solid #503622;border-radius:4px;padding:18px;box-shadow:0 24px 90px #000c;}
 .spherebox-drops-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px;}
@@ -317,7 +344,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <button class="btn" data-go="spherebox">SPHEREBOX</button>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 1.93</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 1.98</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -438,7 +465,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
         <div class="spherebox-odds-row rarity-rare"><span>RARE</span><span>1/20</span></div>
         <div class="spherebox-odds-row rarity-epic"><span>EPIC</span><span>1/200</span></div>
         <div class="spherebox-odds-row rarity-legendary"><span>LEGENDARY</span><span>1/2,000</span></div>
-        <div class="spherebox-odds-row rarity-mythic"><span>MYTHIC</span><span>1/100,000</span></div>
+        <div class="spherebox-odds-row rarity-mythic"><span>MYTHIC</span><span>1/20,000</span></div>
       </div>
     </div>
     <h2>SPHEREBOX</h2>
@@ -1319,9 +1346,9 @@ const SphereBoxes = {
     worldtreeCataclysm:{name:'Worldtree Cataclysm',rarity:'mythic',hueShift:120,particle:'#d8ffb0',colors:['#0b3518','#2cff72','#b7ff55','#fff3a0','#6bdcff'],shape:'shard',aura:true,style:'worldtree'}
   },
   boxes:{
-    moon:{name:'MOONSPHERE BOX',symbol:'☾',odds:[['mythic',0.001],['common',73.224],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['moonGlow','moonHalo','moonDust','lunarEclipse','moonOrbit','moonComet','moonVoid','lunarSupernova','moonAstralCrown','lunarSingularity']},
-    sun:{name:'SUNSPHERE BOX',symbol:'☀',odds:[['mythic',0.001],['common',73.224],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['sunSpark','solarFlare','sunRay','solarCrown','sunburst','sunCore','solarStorm','solarEclipse','solarPhoenix','solarSeraph']},
-    earth:{name:'EARTHSPHERE BOX',symbol:'◉',odds:[['mythic',0.001],['common',73.224],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['earthPulse','earthStone','earthBloom','earthCrack','tectonic','seismic','earthNova','terraCore','worldshatter','gaiaAwakening','worldtreeCataclysm']}
+    moon:{name:'MOONSPHERE BOX',symbol:'☾',odds:[['mythic',0.005],['common',73.220],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['moonGlow','moonHalo','moonDust','lunarEclipse','moonOrbit','moonComet','moonVoid','lunarSupernova','moonAstralCrown','lunarSingularity']},
+    sun:{name:'SUNSPHERE BOX',symbol:'☀',odds:[['mythic',0.005],['common',73.220],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['sunSpark','solarFlare','sunRay','solarCrown','sunburst','sunCore','solarStorm','solarEclipse','solarPhoenix','solarSeraph']},
+    earth:{name:'EARTHSPHERE BOX',symbol:'◉',odds:[['mythic',0.005],['common',73.220],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['earthPulse','earthStone','earthBloom','earthCrack','tectonic','seismic','earthNova','terraCore','worldshatter','gaiaAwakening','worldtreeCataclysm']}
   },
   getInventory(){
     const inv=Storage.get('sphereInventory',{basic:1});
@@ -1887,7 +1914,7 @@ const Game = {
 
     const jumpHeld = input.jump || (this.isHost && p.id!==this.myId && p.remoteJumpHeld);
     const jumpPower = PHYS.jumpVel / (p.heavy?1.2:1);
-    if(p.jumpBuffer>0 && p.grounded && !p.grappleAnchor){
+    if(p.jumpBuffer>0 && p.grounded){
       p.vy = -jumpPower;
       p.grounded=false;
       p.jumpBuffer=0;
@@ -2410,9 +2437,23 @@ const Game = {
 
       const maxDist=p.grappleRestLen+PHYS.grappleMaxStretch;
       if(dist>maxDist){
-        p.x=anchorX+nx*maxDist;
-        p.y=anchorY+ny*maxDist;
+        // PYPG's anchor is a moving player. During a jump-over the rope can
+        // rotate sharply from one side of the target to the other. Never use a
+        // hard positional snap for that moving anchor: it can place the player
+        // inside a platform between collision passes. Remove excess rope length
+        // gradually instead, so the rope stays taut without creating a large
+        // one-tick positional jump. Normal wall grapples retain their original
+        // exact boundary behavior.
         const radialVel=p.vx*nx+p.vy*ny;
+        if(pypg){
+          const excess=dist-maxDist;
+          const correction=Math.min(excess, Math.max(2, 520*dt));
+          p.x-=nx*correction;
+          p.y-=ny*correction;
+        }else{
+          p.x=anchorX+nx*maxDist;
+          p.y=anchorY+ny*maxDist;
+        }
         if(radialVel>0){
           const rebound=Math.min(0.95,PHYS.grappleRebound+stretch*0.0012);
           p.vx-=nx*radialVel*(1+rebound);
@@ -2420,32 +2461,15 @@ const Game = {
         }
       }
     }
-
-    // When another player has a PYPG grapple attached to this player, apply the
-    // same pull on the target locally as well. This makes the victim feel the pull
-    // immediately on clients, while the host remains authoritative.
-    if(pypg && p.alive){
-      for(const other of Object.values(this.players)){
-        if(!other || other===p || !other.alive || other.grappleTargetId!==p.id || !other.grappleAnchor) continue;
-        const dx=other.x-p.x, dy=other.y-p.y;
-        const dist=Math.hypot(dx,dy)||0.01;
-        const nx=dx/dist, ny=dy/dist;
-        const stretch=dist-(other.grappleRestLen+PHYS.grappleSlack);
-        if(stretch>0){
-          const mass=p.input?.heavy ? PHYS.heavyMass : 1;
-          const pullAccel=(stretch*PHYS.grappleSpring*0.72)/mass;
-          p.vx += nx*pullAccel*dt;
-          p.vy += ny*pullAccel*dt;
-        }
-      }
-    }
   },
 
 
-  collideWithMap(p, dt){
+  collideWithMap(p, dt, postPlayer=false){
     if(!p || !p.alive) return;
-    p.grounded=false;
-    p.supportPlatform=-1;
+    if(!postPlayer){
+      p.grounded=false;
+      p.supportPlatform=-1;
+    }
     for(let platIndex=0; platIndex<this.map.platforms.length; platIndex++){
       const plat=this.map.platforms[platIndex];
       const px1=plat.x, px2=plat.x+plat.w, py1=plat.y, py2=plat.y+plat.h;
@@ -2458,7 +2482,32 @@ const Game = {
         continue;
       }
       if(p.y+p.radius>py1 && p.y-p.radius<py2){
-        if(p.vy>=0 && (p.y - p.vy*dt)+p.radius <= py1+4){
+        if(postPlayer){
+          // A player/player impact is resolved after the normal map pass. That
+          // separation can create a small new overlap with the platform.
+          // Resolve that overlap by minimum penetration, never by the old
+          // velocity-blind side fallback that could snap the player to an edge.
+          const penTop=p.y+p.radius-py1;
+          const penBottom=py2-(p.y-p.radius);
+          const penLeft=px2-(p.x-p.radius);
+          const penRight=p.x+p.radius-px1;
+          if(Math.min(penTop,penBottom) <= Math.min(penLeft,penRight)){
+            if(p.y < (py1+py2)*0.5){
+              p.y=py1-p.radius;
+              if(p.vy>0) p.vy=0;
+              if(plat.type!=='bounce'){ p.grounded=true; p.supportPlatform=platIndex; }
+            }else{
+              p.y=py2+p.radius;
+              if(p.vy<0) p.vy=0;
+            }
+          }else if(p.x < (px1+px2)*0.5){
+            p.x=px1-p.radius;
+            if(p.vx>0) p.vx=0;
+          }else{
+            p.x=px2+p.radius;
+            if(p.vx<0) p.vx=0;
+          }
+        } else if(p.vy>=0 && (p.y - p.vy*dt)+p.radius <= py1+4){
           p.y = py1-p.radius;
           if(plat.type==='bounce'){
             // Holding W when hitting a bouncy block charges the next bounce.
@@ -2558,10 +2607,36 @@ const Game = {
           const deltaAN = newVaN-vaN;
           const deltaBN = newVbN-vbN;
 
+          // Apply the normal collision transfer first. Density is a gameplay
+          // modifier on the *hit it delivers*, not on the heavy player's mass
+          // alone. The previous multiplier changed both sides of the collision
+          // and could largely cancel out in a fast/dash impact. Instead, keep the
+          // normal physics transfer and then give the victim a direct bonus that
+          // scales with the actual incoming normal speed.
           a.vx += deltaAN*nx;
           a.vy += deltaAN*ny;
           b.vx += deltaBN*nx;
           b.vy += deltaBN*ny;
+
+          // Extra Density knockback: a heavy player transfers a clear additional
+          // impulse into the player they hit. It is strongest when the hitter is
+          // moving quickly and gets another boost while dashing. This is based on
+          // the collision-normal speed before the collision, so a fast run-in or
+          // dash has a visibly larger effect than a slow bump.
+          const addDensityHit = (hitter, victim, incomingNormalSpeed, wasDashing, directionX, directionY) => {
+            if(!hitter.heavy) return;
+            const incoming = Math.max(0, Math.abs(incomingNormalSpeed));
+            if(incoming<=40) return;
+            const speedScale = Math.max(0.65, Math.min(1.65, incoming/650));
+            const dashScale = wasDashing ? 1.35 : 1;
+            const extraVelocity = incoming * 0.50 * speedScale * dashScale;
+            victim.vx += directionX * extraVelocity;
+            victim.vy += directionY * extraVelocity;
+          };
+          // For A hitting B, the collision normal points A -> B. For B hitting A,
+          // the victim needs the opposite direction.
+          addDensityHit(a,b,effectiveVaN-effectiveVbN,aWasDashing,nx,ny);
+          addDensityHit(b,a,effectiveVbN-effectiveVaN,bWasDashing,-nx,-ny);
 
           // Keep tangential velocity unchanged. This is important for avoiding
           // the "drill" behavior: the attacker cannot keep converting collision
@@ -2615,6 +2690,10 @@ const Game = {
         }
       }
     }
+    // Re-check platform penetration after all player/player separation.
+    // This is what prevents an above-angle hit (including PYPG pulls) from
+    // leaving a player inside a platform and triggering the edge snap next tick.
+    for(const id in this.players) this.collideWithMap(this.players[id], dt, true);
   },
 
   checkDeaths(){
@@ -3673,16 +3752,6 @@ const Game = {
     else if(mouth==='surprise'){ o.beginPath(); o.arc(fx,fs(9),fs(5),0,Math.PI*2); o.fill(); }
     else if(mouth==='smirk'){ o.beginPath(); o.moveTo(fx-fs(6),fs(8)); o.quadraticCurveTo(fx+fs(1),fs(12),fx+fs(8),fs(6)); o.stroke(); }
     else if(mouth==='grin'){ o.beginPath(); o.arc(fx,fs(7),fs(8),0.08*Math.PI,0.92*Math.PI); o.stroke(); }
-    else if(mouth==='teeth'){
-      // Simple white tooth ellipse, with no black top lip.
-      o.fillStyle='#fff'; o.beginPath(); o.ellipse(fx,fs(9),fs(8),fs(5.2),0,0,Math.PI*2); o.fill();
-      o.strokeStyle='#12100c'; o.lineWidth=fs(1.35); o.beginPath();
-      o.moveTo(fx-fs(4.8),fs(5.4)); o.lineTo(fx-fs(4.8),fs(11.2));
-      o.moveTo(fx-fs(1.6),fs(4.7)); o.lineTo(fx-fs(1.6),fs(13.1));
-      o.moveTo(fx+fs(1.6),fs(4.7)); o.lineTo(fx+fs(1.6),fs(13.1));
-      o.moveTo(fx+fs(4.8),fs(5.4)); o.lineTo(fx+fs(4.8),fs(11.2));
-      o.stroke();
-    }
     else if(mouth==='tongue'){
       // Black-filled mouth with a pink tongue; no separate black top lip.
       o.fillStyle='#12100c'; o.beginPath(); o.ellipse(fx,fs(8.6),fs(7.4),fs(5.7),0,0,Math.PI*2); o.fill();
@@ -4511,7 +4580,7 @@ const FACE_OPTIONS={
   ],
   mouth:[
     ['smile','Smile'],['open','Open'],['flat','Flat'],['sad','Sad'],['surprise','Surprise'],['smirk','Smirk'],
-    ['grin','Big Grin'],['teeth','Teeth'],['tongue','Tongue'],['pout','Pout'],['cat','Cat'],['tiny','Tiny']
+    ['grin','Big Grin'],['tongue','Tongue'],['pout','Pout'],['cat','Cat'],['tiny','Tiny']
   ],
   brows:[
     ['none','None'],['raised','Raised'],['angry','Angry'],['sad','Sad'],['flat','Flat'],
@@ -4525,7 +4594,8 @@ const FACE_OPTIONS={
 const FACE_DEFAULTS={eyes:'classic',mouth:'smile',brows:'none',hat:'none'};
 function getFaceParts(){
   const c=Storage.get('customization',{});
-  return {eyes:c.eyes||FACE_DEFAULTS.eyes,mouth:c.mouth||FACE_DEFAULTS.mouth,brows:c.brows||FACE_DEFAULTS.brows,hat:c.hat||FACE_DEFAULTS.hat};
+  const mouth = c.mouth==='teeth' ? FACE_DEFAULTS.mouth : (c.mouth||FACE_DEFAULTS.mouth);
+  return {eyes:c.eyes||FACE_DEFAULTS.eyes,mouth,brows:c.brows||FACE_DEFAULTS.brows,hat:c.hat||FACE_DEFAULTS.hat};
 }
 function cycleFacePart(kind){
   const c=Storage.get('customization',{});
@@ -4707,6 +4777,27 @@ function makeReelCards(boxKey, winnerId){
   }
   return all;
 }
+function playSphereRarityReveal(effect){
+  if(!effect) return;
+  const rarity=effect.rarity;
+  if(rarity!=='legendary' && rarity!=='mythic') return;
+  const overlay=document.createElement('div');
+  overlay.className='spherebox-reveal-overlay '+rarity;
+  const core=document.createElement('div'); core.className='spherebox-reveal-core'; overlay.appendChild(core);
+  for(let i=0;i<3;i++){ const ring=document.createElement('div'); ring.className='spherebox-reveal-ring '+(i===1?'r2':i===2?'r3':''); const size=i===0?170:i===1?260:360; ring.style.width=size+'px'; ring.style.height=size+'px'; overlay.appendChild(ring); }
+  const label=document.createElement('div'); label.className='spherebox-reveal-label'; label.innerHTML=`${rarity.toUpperCase()}<small>${effect.name}</small>`; overlay.appendChild(label);
+  const sparkCount=rarity==='mythic'?28:18;
+  for(let i=0;i<sparkCount;i++){
+    const sp=document.createElement('div'); sp.className='spherebox-reveal-spark';
+    const ang=Math.random()*Math.PI*2, dist=(rarity==='mythic'?170:130)+Math.random()*(rarity==='mythic'?250:180);
+    sp.style.left='calc(50% - 3px)'; sp.style.top='calc(50% - 17px)';
+    sp.style.setProperty('--sx',Math.cos(ang)*dist+'px'); sp.style.setProperty('--sy',Math.sin(ang)*dist+'px'); sp.style.setProperty('--sr',(ang*180/Math.PI+90)+'deg');
+    sp.style.animationDelay=(0.1+Math.random()*0.45)+'s';
+    overlay.appendChild(sp);
+  }
+  document.body.appendChild(overlay);
+  setTimeout(()=>overlay.remove(),rarity==='mythic'?3400:2800);
+}
 function finishSphereOpen(boxKey,id,amount,wasRare){
   const b=SphereBoxes.boxes[boxKey], e=SphereBoxes.describe(id);
   const result=document.getElementById('sphereboxResult');
@@ -4720,6 +4811,7 @@ function finishSphereOpen(boxKey,id,amount,wasRare){
     const flash=document.createElement('div'); flash.className='spherebox-rare-flash'; document.body.appendChild(flash); setTimeout(()=>flash.remove(),850);
     const title=document.querySelector('#sphereboxResult .sphere-rare-title');
     if(title){ title.animate([{transform:'scale(.35) rotate(-5deg)',opacity:0},{transform:'scale(1.12) rotate(2deg)',opacity:1},{transform:'scale(1) rotate(0)',opacity:1}],{duration:900,easing:'cubic-bezier(.2,1.5,.4,1)'}); }
+    playSphereRarityReveal(e);
   }
   renderSpherebox(); populateDashEffectSelect(SphereBoxes.equipped());
 }
