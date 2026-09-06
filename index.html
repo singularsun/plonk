@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <link rel="icon" type="image/png" href="icon.png">
-<title>PLUNK</title>
+<title>plunk</title>
 <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
 <style>
 :root{
@@ -344,7 +344,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <button class="btn" data-go="spherebox">SPHEREBOX</button>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.07 | Made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.04 | Made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -382,7 +382,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
         <canvas class="map-preview big-preview" id="hostMapPreview" width="360" height="220"></canvas>
         <div class="field" style="margin-top:12px;"><label>Choose Map</label><select id="hostMap"></select></div>
         <div class="host-action-box">
-          <div class="subhint">The host can still change settings after the lobby is created.</div>
+          <div class="subhint">The host remains in control of the match settings after the lobby is created.</div>
           <button class="btn primary" id="btnHostCreate">CREATE LOBBY</button>
           <div class="errbox" id="hostErr"></div>
         </div>
@@ -1320,14 +1320,15 @@ const SphereBoxes = {
     lunarEclipse:{name:'Lunar Eclipse',rarity:'rare',hueShift:260,particle:'#d9a7ff',colors:['#8b5cf6','#d9a7ff','#ff4fd8','#6f7cff'],shape:'orb',aura:true,style:'void'},
     moonOrbit:{name:'Moon Orbit',rarity:'rare',hueShift:245,particle:'#b9c8ff',colors:['#9db3ff','#e8f0ff','#bd8cff'],shape:'star',aura:true},
     moonComet:{name:'Moon Comet',rarity:'epic',hueShift:205,particle:'#e9f4ff',colors:['#e9f4ff','#72c7ff','#d58cff','#ffffff'],shape:'comet',aura:true,style:'comet'},
-    moonVoid:{name:'Moon Void',rarity:'epic',hueShift:275,particle:'#c98cff',shape:'supernova',aura:true},
+    moonVoid:{name:'Moon Void',rarity:'epic',hueShift:275,particle:'#8f62ff',colors:['#12002b','#3b1cff','#7d5cff','#d45cff','#4de8ff'],shape:'supernova',aura:true,style:'void'},
     lunarSupernova:{name:'Lunar Supernova',rarity:'legendary',hueShift:285,particle:'#ffffff',colors:['#ffffff','#8f6cff','#ff62dd','#6ff4ff','#ffd76a'],shape:'supernova',aura:true,style:'nova'},
+    moonAstralCrown:{name:'Moon Astral Crown',rarity:'legendary',hueShift:320,particle:'#ff72c8',colors:['#06152f','#102e63','#d83b9c','#ff72c8','#ffd1ec'],shape:'star',aura:true,style:'crown'},
     sunSpark:{name:'Sun Spark',rarity:'common',hueShift:45,particle:'#ffc94a',shape:'spark',aura:false},
     solarFlare:{name:'Solar Flare',rarity:'uncommon',hueShift:40,particle:'#ffd76a',shape:'spark',aura:false},
     sunRay:{name:'Sun Ray',rarity:'uncommon',hueShift:48,particle:'#ffe07c',shape:'spark',aura:true},
     solarCrown:{name:'Solar Crown',rarity:'rare',hueShift:35,particle:'#fff0a0',shape:'star',aura:true,style:'crown'},
     sunburst:{name:'Sunburst',rarity:'rare',hueShift:30,particle:'#fff1a0',shape:'star',aura:true},
-    sunCore:{name:'Sun Core',rarity:'epic',hueShift:48,particle:'#fff6c7',shape:'star',aura:true,style:'flare'},
+    sunCore:{name:'Sun Core',rarity:'epic',hueShift:48,particle:'#fff6c7',colors:['#ff572e','#ff9b1f','#ffe15f','#fff6c7','#63dfff'],shape:'star',aura:true,style:'flare'},
     solarStorm:{name:'Solar Storm',rarity:'epic',hueShift:5,particle:'#ffb14a',shape:'comet',aura:true},
     solarEclipse:{name:'Solar Eclipse',rarity:'legendary',hueShift:15,particle:'#fff3bd',colors:['#ff5139','#ff9b2f','#ffe27a','#fff3bd','#8b3dff'],shape:'supernova',aura:true,style:'eclipse'},
     solarPhoenix:{name:'Solar Phoenix',rarity:'legendary',hueShift:8,particle:'#fff8d6',colors:['#ff3b30','#ff7a2f','#ffd95c','#fff8d6'],shape:'star',aura:true},
@@ -1338,7 +1339,7 @@ const SphereBoxes = {
     tectonic:{name:'Tectonic',rarity:'rare',hueShift:20,particle:'#b8b0a0',shape:'diamond',aura:true,style:'quake'},
     seismic:{name:'Seismic',rarity:'rare',hueShift:15,particle:'#e0a56c',shape:'plus',aura:true},
     earthNova:{name:'Earth Nova',rarity:'epic',hueShift:130,particle:'#9cffb4',shape:'diamond',aura:true,style:'bloom'},
-    terraCore:{name:'Terra Core',rarity:'epic',hueShift:75,particle:'#9dffb6',shape:'supernova',aura:true},
+    terraCore:{name:'Terra Core',rarity:'epic',hueShift:75,particle:'#9dffb6',colors:['#1b6f42','#39b95d','#86ee7f','#b9ff9a','#67d9c5'],shape:'supernova',aura:true,style:'terra'},
     worldshatter:{name:'Worldshatter',rarity:'legendary',hueShift:15,particle:'#ffe1a3',colors:['#7a4b2a','#a76a3a','#ffe1a3','#c7ff67','#5be3ff'],shape:'shard',aura:true,style:'shatter'},
     gaiaAwakening:{name:'Gaia Awakening',rarity:'legendary',hueShift:120,particle:'#d7ffd9',colors:['#5cff8a','#8de66d','#d7ffd9','#6bd6ff','#f1ff7d'],shape:'hex',aura:true},
     lunarSingularity:{name:'Lunar Singularity',rarity:'mythic',hueShift:270,particle:'#e9dcff',colors:['#12002b','#6d2bff','#c78cff','#ffffff','#4dfcff'],shape:'supernova',aura:true,style:'singularity'},
@@ -2809,7 +2810,28 @@ const Game = {
             this.particles.spawn(x-p.facing*10,y,{vx:Math.cos(a)*sp-p.facing*80,vy:Math.sin(a)*sp, color:c,gravity:35,life:.28+chargeNorm*.22,size:2.2+chargeNorm*3,sizeEnd:.15,twinkle:true,shape:effect.shape==='orb'?'orb':effect.shape});
           }
         }
-        if(effect.rarity==='mythic'){
+        if(effect.style==='void') {
+          const voidColors=effectColors;
+          this.particles.burst(x,y,voidColors[0],18+Math.round(chargeNorm*12),180+chargeNorm*140,{gravity:0,life:.55+chargeNorm*.25,size:4+chargeNorm*3,sizeEnd:.15,twinkle:true,colors:voidColors,shape:'orb'});
+          for(let k=0;k<2;k++){
+            const rr=18+k*16+chargeNorm*8;
+            for(let q=0;q<12;q++){
+              const a=q/12*Math.PI*2 + performance.now()*.0015*(k? -1:1);
+              this.particles.spawn(x+Math.cos(a)*rr,y+Math.sin(a)*rr,{vx:-Math.sin(a)*(100+chargeNorm*140),vy:Math.cos(a)*(100+chargeNorm*140),life:.58+chargeNorm*.2,size:2.4+chargeNorm*2,sizeEnd:.05,color:voidColors[(q+k)%voidColors.length],gravity:0,drag:.9,twinkle:true,shape:q%3?'orb':'star'});
+            }
+          }
+          this.particles.burst(x,y,voidColors[2],8+Math.round(chargeNorm*6),420+chargeNorm*220,{gravity:0,life:.42+chargeNorm*.2,size:2+chargeNorm*2,sizeEnd:.1,twinkle:true,colors:voidColors,shape:'shard'});
+        } else if(effect.style==='flare') {
+          const flareColors=effectColors;
+          this.particles.burst(x,y,flareColors[0],20+Math.round(chargeNorm*16),360+chargeNorm*260,{gravity:-80,life:.48+chargeNorm*.22,size:2.8+chargeNorm*2.5,sizeEnd:.1,twinkle:true,colors:flareColors,shape:'spark'});
+          this.particles.burst(x,y,flareColors[1]||flareColors[0],10+Math.round(chargeNorm*8),150+chargeNorm*120,{gravity:0,life:.55+chargeNorm*.2,size:3+chargeNorm*2,sizeEnd:.2,twinkle:true,colors:flareColors,shape:'star'});
+          for(let q=0;q<14;q++){ const a=q/14*Math.PI*2 + performance.now()*.0012; const rr=16+chargeNorm*16; this.particles.spawn(x+Math.cos(a)*rr,y+Math.sin(a)*rr,{vx:Math.cos(a)*(70+chargeNorm*90),vy:Math.sin(a)*(70+chargeNorm*90),life:.5+chargeNorm*.2,size:2.2+chargeNorm*1.7,sizeEnd:.05,color:flareColors[q%flareColors.length],gravity:-20,drag:.9,twinkle:true,shape:q%2?'spark':'star'}); }
+        } else if(effect.style==='terra') {
+          const terraColors=effectColors;
+          this.particles.burst(x,y,terraColors[2]||terraColors[0],18+Math.round(chargeNorm*14),260+chargeNorm*180,{gravity:80,life:.6+chargeNorm*.22,size:3+chargeNorm*2.5,sizeEnd:.12,twinkle:true,colors:terraColors,shape:'diamond'});
+          for(let q=0;q<18;q++){ const a=q/18*Math.PI*2 + performance.now()*.0008; const rr=17+chargeNorm*20; this.particles.spawn(x+Math.cos(a)*rr,y+Math.sin(a)*rr,{vx:-Math.sin(a)*(85+chargeNorm*110),vy:Math.cos(a)*(85+chargeNorm*110)-40,life:.62+chargeNorm*.18,size:2.2+chargeNorm*1.8,sizeEnd:.05,color:terraColors[q%terraColors.length],gravity:35,drag:.91,twinkle:true,shape:q%3?'diamond':'shard'}); }
+          this.particles.burst(x,y,terraColors[4]||terraColors[0],8+Math.round(chargeNorm*5),120+chargeNorm*80,{gravity:-25,life:.45+chargeNorm*.18,size:2.5+chargeNorm*1.5,sizeEnd:.1,twinkle:true,colors:terraColors,shape:'orb'});
+        } else if(effect.rarity==='mythic'){
           const mythColors=effectColors;
           if(effect.style==='singularity'){
             this.particles.burst(x,y,effectColors[0] || '#0a0214',24+Math.round(chargeNorm*16),220+chargeNorm*180,{gravity:0,life:.9,size:5+chargeNorm*4,sizeEnd:.2,twinkle:false,shape:'orb'});
