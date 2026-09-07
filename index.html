@@ -219,6 +219,18 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .spherebox-card h3{margin:0;color:var(--accent3);font-size:16px;}
 .spherebox-visual{height:92px;border:1px solid #3a2a1a;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900;background:radial-gradient(circle,#3a2a1a,#0a0705 72%);}
 .spherebox-result{margin-top:14px;text-align:center;padding:12px;border:2px solid #3a2a1a;background:#0d0906;border-radius:var(--radius);font-weight:900;}
+.spherebox-result.reveal-common{animation:resultCommonPop .62s ease-out both;box-shadow:0 0 0 1px #d7d7d733,0 0 20px #ffffff18;}
+.spherebox-result.reveal-uncommon{animation:resultUncommonPop .72s ease-out both;box-shadow:0 0 0 1px #72e6a155,0 0 26px #5dff8f22;}
+.spherebox-result.reveal-rare{animation:resultRarePop .86s cubic-bezier(.16,1.2,.28,1) both;box-shadow:0 0 0 1px #70b7ff77,0 0 34px #70b7ff33,0 0 58px #8b5cf61c;}
+.spherebox-result.reveal-common .dash-effect-preview{animation:resultIconPulse .62s ease-out both;}
+.spherebox-result.reveal-uncommon .dash-effect-preview{animation:resultIconPulse .72s ease-out both;}
+.spherebox-result.reveal-rare .dash-effect-preview{animation:resultIconRarePulse .86s cubic-bezier(.16,1.25,.3,1) both;}
+@keyframes resultCommonPop{0%{transform:scale(.94);opacity:.25}45%{transform:scale(1.025);opacity:1}100%{transform:scale(1)}}
+@keyframes resultUncommonPop{0%{transform:scale(.92);opacity:.2}40%{transform:scale(1.035);opacity:1}100%{transform:scale(1)}}
+@keyframes resultRarePop{0%{transform:scale(.88);opacity:.15}48%{transform:scale(1.045);opacity:1}100%{transform:scale(1)}}
+@keyframes resultIconPulse{0%{transform:scale(.7);filter:brightness(.7)}55%{transform:scale(1.08);filter:brightness(1.35)}100%{transform:scale(1);filter:brightness(1)}}
+@keyframes resultIconRarePulse{0%{transform:scale(.62);filter:brightness(.65) saturate(.8)}55%{transform:scale(1.12);filter:brightness(1.55) saturate(1.25)}100%{transform:scale(1);filter:brightness(1)}}
+
 .spherebox-item{border:1px solid #3a2a1a;border-radius:var(--radius);padding:7px 9px;background:#151009;cursor:pointer;min-width:120px;}
 .spherebox-item:hover{border-color:var(--accent);background:#241a10;}
 .dash-effect-card{width:155px;background:#0d0906;border:1px solid #3a2a1a;border-radius:var(--radius);padding:8px;cursor:pointer;transition:transform .12s,border-color .12s,box-shadow .12s;}
@@ -237,13 +249,32 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .dash-effect-preview .aura{position:absolute;inset:4px;border-radius:50%;border:5px solid var(--fx-color);opacity:.22;box-shadow:0 0 24px 8px var(--fx-color);}
 .dash-effect-meta{font-size:9px;color:var(--text-dim);margin-top:4px;line-height:1.35;}
 .rarity-common{color:#d7d7d7}.rarity-uncommon{color:#72e6a1}.rarity-rare{color:#70b7ff}.rarity-epic{color:#c58cff}.rarity-legendary{color:#ffd76a;text-shadow:0 0 8px #ffd76a66}.rarity-mythic{color:#ff72f1;text-shadow:0 0 8px #ff72f188,0 0 20px #6cfbff55;animation:mythicTextPulse 1.2s ease-in-out infinite alternate}@keyframes mythicTextPulse{from{filter:brightness(.95)}to{filter:brightness(1.35)}}
-.spherebox-reel-overlay{position:fixed;inset:0;background:radial-gradient(circle at 50% 46%,#25180f 0%,#080604 70%);display:flex;align-items:center;justify-content:center;z-index:50;}
+.spherebox-reel-overlay{position:fixed;inset:0;background:rgba(5,3,2,.58);display:flex;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(1px);}
 .spherebox-reel-panel{width:min(920px,94vw);background:#110c08f7;border:2px solid #503622;border-radius:4px;padding:18px;box-shadow:0 24px 90px #000c;text-align:center;}
 .spherebox-reel-window{position:relative;height:126px;overflow:hidden;border:2px solid #62452d;background:#080604;border-radius:3px;margin:16px 0;}
-.spherebox-reel-strip{position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;gap:8px;padding:8px;will-change:transform;}
+.spherebox-reel-strip{position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;gap:8px;padding:8px;will-change:transform;z-index:1;}
 .spherebox-reel-card{width:116px;height:104px;flex:0 0 116px;background:#120d09;border:1px solid #3a2a1a;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;}
-.spherebox-reel-card .mini{width:46px;height:46px;border-radius:50%;background:radial-gradient(circle,#fff 0 12%,var(--fx-color) 28%,#0b0806 74%);box-shadow:0 0 18px var(--fx-color);}
-.spherebox-pointer{position:absolute;top:0;bottom:0;left:50%;width:0;transform:translateX(-50%);border-left:3px solid #fff;box-shadow:0 0 13px #fff;z-index:2;}
+ .spherebox-roll-icon{width:40px;height:40px;flex:0 0 40px;border-radius:50%;position:relative;overflow:hidden;isolation:isolate;background:conic-gradient(from 215deg,var(--fx-c1),var(--fx-c2,var(--fx-c1)),var(--fx-c3,var(--fx-c2,var(--fx-c1))),var(--fx-c4,var(--fx-c3,var(--fx-c2,var(--fx-c1)))),var(--fx-c1));border:1.5px solid color-mix(in srgb,var(--fx-c1) 72%,#fff 28%);}
+.spherebox-roll-icon:before{content:'';position:absolute;left:50%;top:50%;width:23px;height:23px;transform:translate(-50%,-50%);border-radius:50%;background:linear-gradient(135deg,var(--fx-c1),var(--fx-c2,var(--fx-c1)) 28%,var(--fx-c3,var(--fx-c2,var(--fx-c1))) 58%,var(--fx-c4,var(--fx-c3,var(--fx-c2,var(--fx-c1)))) 82%,var(--fx-c1));}
+.spherebox-roll-icon.shape-orb:before{border-radius:50%;}
+.spherebox-roll-icon.shape-spark:before{clip-path:polygon(50% 0,61% 39%,100% 50%,61% 61%,50% 100%,39% 61%,0 50%,39% 39%);}
+.spherebox-roll-icon.shape-star:before{clip-path:polygon(50% 0,61% 36%,100% 50%,61% 64%,50% 100%,39% 64%,0 50%,39% 36%);}
+.spherebox-roll-icon.shape-diamond:before{width:22px;height:22px;border-radius:4px;transform:translate(-50%,-50%) rotate(45deg) scale(.76);}
+.spherebox-roll-icon.shape-hex:before{clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);}
+.spherebox-roll-icon.shape-plus:before{width:26px;height:26px;border-radius:0;clip-path:polygon(37% 0,63% 0,63% 37%,100% 37%,100% 63%,63% 63%,63% 100%,37% 100%,37% 63%,0 63%,0 37%,37% 37%);}
+.spherebox-roll-icon.shape-comet:before{width:28px;height:17px;border-radius:58% 42% 42% 58%;transform:translate(-50%,-50%) rotate(-18deg) scaleX(1.1);}
+.spherebox-roll-icon.shape-shard:before{width:21px;height:28px;clip-path:polygon(50% 0,82% 28%,68% 100%,32% 100%,18% 28%);}
+.spherebox-roll-icon.shape-supernova:before{width:27px;height:27px;clip-path:polygon(50% 0,58% 34%,76% 8%,70% 38%,100% 30%,74% 50%,100% 70%,70% 62%,76% 92%,58% 66%,50% 100%,42% 66%,24% 92%,30% 62%,0 70%,26% 50%,0 30%,30% 38%,24% 8%,42% 34%);}
+.spherebox-roll-icon.style-crown:before{width:27px;height:23px;clip-path:polygon(5% 18%,28% 42%,50% 4%,72% 42%,95% 18%,86% 85%,14% 85%);}
+.spherebox-roll-icon.style-flare:before{width:28px;height:28px;clip-path:polygon(50% 0,57% 37%,78% 7%,69% 41%,100% 35%,73% 50%,100% 65%,69% 59%,78% 93%,57% 63%,50% 100%,43% 63%,22% 93%,31% 59%,0 65%,27% 50%,0 35%,31% 41%,22% 7%,43% 37%);}
+.spherebox-roll-icon.style-bloom:before{width:25px;height:25px;border-radius:50%;clip-path:polygon(50% 0,61% 28%,86% 14%,72% 39%,100% 50%,72% 61%,86% 86%,61% 72%,50% 100%,39% 72%,14% 86%,28% 61%,0 50%,28% 39%,14% 14%,39% 28%);}
+.spherebox-roll-icon.style-eclipse:before{width:23px;height:23px;border-radius:50%;box-shadow:-4px -2px 0 0 #14091d,0 0 7px color-mix(in srgb,var(--fx-c3,var(--fx-c1)) 45%,transparent);}
+.spherebox-roll-icon.style-nova:before{width:27px;height:27px;clip-path:polygon(50% 0,56% 39%,100% 50%,56% 61%,50% 100%,44% 61%,0 50%,44% 39%);}
+.spherebox-roll-icon.style-singularity:before{width:25px;height:25px;border-radius:50%;box-shadow:inset 0 0 0 4px #100018,0 0 7px color-mix(in srgb,var(--fx-c3,var(--fx-c1)) 55%,transparent);}
+.spherebox-roll-icon.style-seraph:before{width:25px;height:25px;clip-path:polygon(50% 0,60% 34%,100% 18%,68% 50%,100% 82%,60% 66%,50% 100%,40% 66%,0 82%,32% 50%,0 18%,40% 34%);}
+.spherebox-roll-icon.style-worldtree:before{width:25px;height:29px;clip-path:polygon(50% 0,67% 35%,88% 22%,72% 48%,100% 55%,69% 62%,82% 92%,59% 70%,50% 100%,41% 70%,18% 92%,31% 62%,0 55%,28% 48%,12% 22%,33% 35%);}
+.spherebox-roll-icon.palette-rich{filter:saturate(1.05);}
+.spherebox-pointer{position:absolute;top:0;bottom:0;left:50%;width:0;transform:translateX(-50%);border-left:3px solid #fff;box-shadow:0 0 13px #fff,0 0 24px #fff;z-index:30;pointer-events:none;}
 .spherebox-reel-skip{min-width:150px;}
 .spherebox-rare-flash{position:fixed;inset:0;z-index:60;pointer-events:none;background:radial-gradient(circle,#fff8 0%,transparent 32%);animation:sphereRareFlash .8s ease-out forwards;}
 @keyframes sphereRareFlash{0%{opacity:0;transform:scale(.65)}20%{opacity:1}100%{opacity:0;transform:scale(1.2)}}
@@ -280,7 +311,6 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .spherebox-drops-panel{width:min(760px,94vw);max-height:84vh;overflow:auto;background:#110c08f8;border:2px solid #503622;border-radius:4px;padding:18px;box-shadow:0 24px 90px #000c;}
 .spherebox-drops-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px;}
 .spherebox-drop-row{display:flex;align-items:center;gap:10px;padding:9px;background:#0d0906;border:1px solid #3a2a1a;border-radius:3px;}
-.spherebox-drop-row .drop-mini{width:42px;height:42px;flex:0 0 42px;border-radius:50%;background:radial-gradient(circle,#fff 0 12%,var(--fx-color) 28%,#0b0806 74%);box-shadow:0 0 16px var(--fx-color);}
 .spherebox-card .drop-view-btn{margin-top:2px;}
 @media(max-width:760px){.spherebox-drops-grid{grid-template-columns:1fr;}}
 
@@ -344,7 +374,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <button class="btn" data-go="spherebox">SPHEREBOX</button>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.04 | Made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.07 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -1313,37 +1343,37 @@ function esc(s){ const d=document.createElement('div'); d.textContent=s; return 
 const SphereBoxes = {
   opening:false,
   effects:{
-    basic:{name:'Classic Spark',rarity:'common',hueShift:0,particle:'#ffffff',shape:'orb',aura:false},
-    moonGlow:{name:'Moon Glow',rarity:'common',hueShift:205,particle:'#d7e7ff',shape:'orb',aura:false},
-    moonHalo:{name:'Moon Halo',rarity:'uncommon',hueShift:220,particle:'#eef7ff',shape:'hex',aura:true},
-    moonDust:{name:'Moon Dust',rarity:'uncommon',hueShift:185,particle:'#c9dcff',shape:'orb',aura:true},
-    lunarEclipse:{name:'Lunar Eclipse',rarity:'rare',hueShift:260,particle:'#d9a7ff',colors:['#8b5cf6','#d9a7ff','#ff4fd8','#6f7cff'],shape:'orb',aura:true,style:'void'},
-    moonOrbit:{name:'Moon Orbit',rarity:'rare',hueShift:245,particle:'#b9c8ff',colors:['#9db3ff','#e8f0ff','#bd8cff'],shape:'star',aura:true},
+    basic:{name:'Classic Spark',rarity:'common',hueShift:0,particle:'#ffffff',colors:['#ffffff','#dbe7ff','#7fa8ff'],shape:'orb',aura:false},
+    moonGlow:{name:'Moon Glow',rarity:'common',hueShift:205,particle:'#d7e7ff',colors:['#76c8ff','#b9e4ff','#e8f5ff','#9f9cff'],shape:'orb',aura:false},
+    moonHalo:{name:'Moon Halo',rarity:'uncommon',hueShift:220,particle:'#eef7ff',colors:['#dff7ff','#7fd1ff','#9d7cff','#f0b8ff','#86a7ff'],shape:'hex',aura:true},
+    moonDust:{name:'Moon Dust',rarity:'uncommon',hueShift:185,particle:'#c9dcff',colors:['#90e6ff','#c9dcff','#f1d5ff','#9fb5ff'],shape:'orb',aura:true},
+    lunarEclipse:{name:'Lunar Eclipse',rarity:'rare',hueShift:260,particle:'#d9a7ff',colors:['#241044','#49206f','#7b3fd0','#b26cff','#e08cff','#ff4fba'],shape:'orb',aura:true,style:'void'},
+    moonOrbit:{name:'Moon Orbit',rarity:'rare',hueShift:245,particle:'#b9c8ff',colors:['#4668c8','#718cff','#b9c8ff','#d9e6ff','#d27cff'],shape:'star',aura:true},
     moonComet:{name:'Moon Comet',rarity:'epic',hueShift:205,particle:'#e9f4ff',colors:['#e9f4ff','#72c7ff','#d58cff','#ffffff'],shape:'comet',aura:true,style:'comet'},
     moonVoid:{name:'Moon Void',rarity:'epic',hueShift:275,particle:'#8f62ff',colors:['#12002b','#3b1cff','#7d5cff','#d45cff','#4de8ff'],shape:'supernova',aura:true,style:'void'},
     lunarSupernova:{name:'Lunar Supernova',rarity:'legendary',hueShift:285,particle:'#ffffff',colors:['#ffffff','#8f6cff','#ff62dd','#6ff4ff','#ffd76a'],shape:'supernova',aura:true,style:'nova'},
     moonAstralCrown:{name:'Moon Astral Crown',rarity:'legendary',hueShift:320,particle:'#ff72c8',colors:['#06152f','#102e63','#d83b9c','#ff72c8','#ffd1ec'],shape:'star',aura:true,style:'crown'},
-    sunSpark:{name:'Sun Spark',rarity:'common',hueShift:45,particle:'#ffc94a',shape:'spark',aura:false},
-    solarFlare:{name:'Solar Flare',rarity:'uncommon',hueShift:40,particle:'#ffd76a',shape:'spark',aura:false},
-    sunRay:{name:'Sun Ray',rarity:'uncommon',hueShift:48,particle:'#ffe07c',shape:'spark',aura:true},
-    solarCrown:{name:'Solar Crown',rarity:'rare',hueShift:35,particle:'#fff0a0',shape:'star',aura:true,style:'crown'},
-    sunburst:{name:'Sunburst',rarity:'rare',hueShift:30,particle:'#fff1a0',shape:'star',aura:true},
-    sunCore:{name:'Sun Core',rarity:'epic',hueShift:48,particle:'#fff6c7',colors:['#ff572e','#ff9b1f','#ffe15f','#fff6c7','#63dfff'],shape:'star',aura:true,style:'flare'},
-    solarStorm:{name:'Solar Storm',rarity:'epic',hueShift:5,particle:'#ffb14a',shape:'comet',aura:true},
-    solarEclipse:{name:'Solar Eclipse',rarity:'legendary',hueShift:15,particle:'#fff3bd',colors:['#ff5139','#ff9b2f','#ffe27a','#fff3bd','#8b3dff'],shape:'supernova',aura:true,style:'eclipse'},
-    solarPhoenix:{name:'Solar Phoenix',rarity:'legendary',hueShift:8,particle:'#fff8d6',colors:['#ff3b30','#ff7a2f','#ffd95c','#fff8d6'],shape:'star',aura:true},
-    earthPulse:{name:'Earth Pulse',rarity:'common',hueShift:110,particle:'#55e879',shape:'orb',aura:false},
-    earthStone:{name:'Earth Stone',rarity:'common',hueShift:90,particle:'#7fe38d',shape:'hex',aura:false},
-    earthBloom:{name:'Earth Bloom',rarity:'uncommon',hueShift:110,particle:'#76ff8a',shape:'diamond',aura:false},
-    earthCrack:{name:'Earth Crack',rarity:'uncommon',hueShift:25,particle:'#d5bd8a',shape:'shard',aura:false},
-    tectonic:{name:'Tectonic',rarity:'rare',hueShift:20,particle:'#b8b0a0',shape:'diamond',aura:true,style:'quake'},
-    seismic:{name:'Seismic',rarity:'rare',hueShift:15,particle:'#e0a56c',shape:'plus',aura:true},
+    sunSpark:{name:'Sun Spark',rarity:'common',hueShift:45,particle:'#fff06a',colors:['#ff4b22','#ff812e','#ffc928','#fff06a'],shape:'spark',aura:false},
+    solarFlare:{name:'Solar Flare',rarity:'uncommon',hueShift:40,particle:'#ffdd78',colors:['#ff2b1f','#ff5a2e','#ff9340','#ffd15a','#fff0b0'],shape:'spark',aura:false},
+    sunRay:{name:'Sun Ray',rarity:'uncommon',hueShift:48,particle:'#fff9d2',colors:['#ffca55','#ffe27a','#fff3b0','#fffdf0','#fff9d2'],shape:'spark',aura:true},
+    solarCrown:{name:'Solar Crown',rarity:'rare',hueShift:35,particle:'#fff4a8',colors:['#c92f1c','#e95c1f','#ff9a24','#ffd45c','#fff4a8'],shape:'star',aura:true,style:'crown'},
+    sunburst:{name:'Sunburst',rarity:'rare',hueShift:30,particle:'#fff8d6',colors:['#ff3157','#ff6b33','#ffbf3d','#fff16a','#fff8d6'],shape:'spark',aura:true},
+    sunCore:{name:'Sun Core',rarity:'epic',hueShift:48,particle:'#fff9df',colors:['#ff341f','#ff6a22','#ffb52c','#ffe86a','#fff9df','#ff8cf5'],shape:'star',aura:true,style:'flare'},
+    solarStorm:{name:'Solar Storm',rarity:'epic',hueShift:5,particle:'#ff9d5a',colors:['#6d1bff','#b431ff','#ff4f8b','#ff9d5a','#ffd45a'],shape:'comet',aura:true},
+    solarEclipse:{name:'Solar Eclipse',rarity:'legendary',hueShift:15,particle:'#fff3bd',colors:['#160b24','#3b145f','#8b3dff','#ff5a75','#ffb13b','#fff3bd'],shape:'supernova',aura:true,style:'eclipse'},
+    solarPhoenix:{name:'Solar Phoenix',rarity:'legendary',hueShift:8,particle:'#fff8d6',colors:['#ff1744','#ff5b2e','#ff9f1c','#ffe14d','#fff8d6','#67d9ff'],shape:'star',aura:true},
+    earthPulse:{name:'Earth Pulse',rarity:'common',hueShift:110,particle:'#55e879',colors:['#167a45','#36c95e','#72e08a','#b3f59b'],shape:'orb',aura:false},
+    earthStone:{name:'Earth Stone',rarity:'common',hueShift:90,particle:'#7fe38d',colors:['#508f52','#6cbf64','#7fe38d','#b9db86'],shape:'hex',aura:false},
+    earthBloom:{name:'Earth Bloom',rarity:'uncommon',hueShift:110,particle:'#76ff8a',colors:['#2bc56f','#76ff8a','#bafc71','#70e8d4'],shape:'diamond',aura:false},
+    earthCrack:{name:'Earth Crack',rarity:'uncommon',hueShift:25,particle:'#d5bd8a',colors:['#71442f','#9d7650','#d5bd8a','#d7e66d'],shape:'shard',aura:false},
+    tectonic:{name:'Tectonic',rarity:'rare',hueShift:20,particle:'#b8b0a0',colors:['#3e3430','#604b3d','#8a6a52','#c09a73','#e2d0b2'],shape:'diamond',aura:true,style:'quake'},
+    seismic:{name:'Seismic',rarity:'rare',hueShift:15,particle:'#e0a56c',colors:['#7a3f27','#ad5f35','#e0a56c','#ffbf72','#ffe0aa'],shape:'plus',aura:true},
     earthNova:{name:'Earth Nova',rarity:'epic',hueShift:130,particle:'#9cffb4',shape:'diamond',aura:true,style:'bloom'},
     terraCore:{name:'Terra Core',rarity:'epic',hueShift:75,particle:'#9dffb6',colors:['#1b6f42','#39b95d','#86ee7f','#b9ff9a','#67d9c5'],shape:'supernova',aura:true,style:'terra'},
     worldshatter:{name:'Worldshatter',rarity:'legendary',hueShift:15,particle:'#ffe1a3',colors:['#7a4b2a','#a76a3a','#ffe1a3','#c7ff67','#5be3ff'],shape:'shard',aura:true,style:'shatter'},
     gaiaAwakening:{name:'Gaia Awakening',rarity:'legendary',hueShift:120,particle:'#d7ffd9',colors:['#5cff8a','#8de66d','#d7ffd9','#6bd6ff','#f1ff7d'],shape:'hex',aura:true},
     lunarSingularity:{name:'Lunar Singularity',rarity:'mythic',hueShift:270,particle:'#e9dcff',colors:['#12002b','#6d2bff','#c78cff','#ffffff','#4dfcff'],shape:'supernova',aura:true,style:'singularity'},
-    solarSeraph:{name:'Solar Seraph',rarity:'mythic',hueShift:42,particle:'#fff5a8',colors:['#ff2b1f','#ff7b22','#ffe36b','#ffffff','#5de1ff'],shape:'star',aura:true,style:'seraph'},
+    solarSeraph:{name:'Solar Seraph',rarity:'mythic',hueShift:42,particle:'#ffffff',colors:['#ff3b30','#ff8a24','#ffe45c','#45e6ff','#4f7dff','#9b5cff','#ff55d8'],shape:'star',aura:true,style:'seraph'},
     worldtreeCataclysm:{name:'Worldtree Cataclysm',rarity:'mythic',hueShift:120,particle:'#d8ffb0',colors:['#0b3518','#2cff72','#b7ff55','#fff3a0','#6bdcff'],shape:'shard',aura:true,style:'worldtree'}
   },
   boxes:{
@@ -4919,7 +4949,7 @@ function renderEffectCard(id,e,owned,click){
   if(click) item.addEventListener('click',click);
   return item;
 }
-function makeReelCards(boxKey, winnerId){
+function makeReelCards(boxKey, winnerId, targetIndex){
   const b=SphereBoxes.boxes[boxKey];
   const all=[];
   const winner=SphereBoxes.describe(winnerId);
@@ -4929,8 +4959,8 @@ function makeReelCards(boxKey, winnerId){
   const pools={0:[],1:[],2:[],3:[],4:[],5:[]};
   b.pool.forEach(id=>{ const r=rarityRank[SphereBoxes.describe(id).rarity]??0; pools[r].push(id); });
   const pickPool=(r)=>{ const arr=pools[Math.max(0,Math.min(4,r))]; return arr.length?arr[Math.floor(Math.random()*arr.length)]:SphereBoxes.roll(boxKey); };
-  for(let i=0;i<48;i++){
-    if(i===42){ all.push(winnerId); continue; }
+  for(let i=0;i<38;i++){
+    if(i===targetIndex){ all.push(winnerId); continue; }
     // The reel is cosmetic only. It deliberately displays rarer items much more often
     // around the stop point than their actual drop odds, while the winner was rolled once.
     const dist=Math.abs(i-42);
@@ -4977,8 +5007,12 @@ function finishSphereOpen(boxKey,id,amount,wasRare){
   const overlay=document.getElementById('sphereboxReelOverlay');
   if(overlay) overlay.classList.add('hidden');
   if(result){
-    result.classList.remove('hidden');
+    result.classList.remove('hidden','reveal-common','reveal-uncommon','reveal-rare');
     result.innerHTML=`<div style="font-size:11px;letter-spacing:2px;color:var(--text-dim);">YOU UNBOXED</div>${effectPreviewHtml(e)}<div class="${SphereBoxes.rarityColor(e.rarity)} ${wasRare?'spherebox-rare-title':''}" style="font-size:26px;font-weight:900;margin:10px 0 4px;">${e.name}</div><div style="font-size:11px;letter-spacing:2px;">${e.rarity.toUpperCase()}</div><div style="margin-top:8px;font-size:11px;color:var(--text-dim);">Owned: ${amount}</div>`;
+    if(e.rarity==='common'||e.rarity==='uncommon'||e.rarity==='rare'){
+      void result.offsetWidth;
+      result.classList.add('reveal-'+e.rarity);
+    }
   }
   if(wasRare){
     const flash=document.createElement('div'); flash.className='spherebox-rare-flash'; document.body.appendChild(flash); setTimeout(()=>flash.remove(),850);
@@ -4998,31 +5032,43 @@ function openSphereBox(boxKey){
   overlay.classList.remove('hidden');
   title.textContent=box.name; hint.textContent='Rolling...'; skip.disabled=false; skip.textContent='SKIP';
   strip.innerHTML='';
-  const seq=makeReelCards(boxKey,id);
-  seq.forEach(cid=>{ const ce=SphereBoxes.describe(cid); const card=document.createElement('div'); card.className='spherebox-reel-card'; const ceColors=SphereBoxes.colors(ce);
-      const ceGrad=ceColors.length>1?`linear-gradient(135deg,${ceColors.join(',')})`:ceColors[0];
-      card.innerHTML=`<div class="mini" style="--fx-color:${ceColors[0]};background:${ceGrad};"></div><div style="font-size:9px;">${ce.name}</div><div class="${SphereBoxes.rarityColor(ce.rarity)}" style="font-size:8px;">${ce.rarity.toUpperCase()}</div>`; strip.appendChild(card); });
   let done=false, timer=null;
-  const targetIndex=42;
+  // Vary which card lands under the center marker so the winner is not always
+  // the same position in the reel. The marker still centers the selected card.
+  const targetIndex=28+Math.floor(Math.random()*9);
+  const seq=makeReelCards(boxKey,id,targetIndex);
+  seq.forEach(cid=>{ const ce=SphereBoxes.describe(cid); const card=document.createElement('div'); card.className='spherebox-reel-card'; card.innerHTML=sphereRollIconHtml(ce)+`<div style="font-size:9px;">${ce.name}</div><div class="${SphereBoxes.rarityColor(ce.rarity)}" style="font-size:8px;">${ce.rarity.toUpperCase()}</div>`; strip.appendChild(card); });
   const finish=()=>{ if(done) return; done=true; if(timer) clearTimeout(timer); skip.disabled=true; SphereBoxes.opening=false; const amount=SphereBoxes.addEffect(id); const rare=['rare','epic','legendary','mythic'].includes(e.rarity); if(rare) AudioManager.rareDrop(e.rarity); finishSphereOpen(boxKey,id,amount,rare); };
   const doSpin=()=>{
     const win=overlay.querySelector('.spherebox-reel-window');
-    const cardW=124, targetCenter=targetIndex*cardW+58, center=win.clientWidth/2, targetX=center-targetCenter;
-    strip.style.transition='none'; strip.style.transform='translate3d(0,0,0)';
+    const cardW=124, baseTargetCenter=targetIndex*cardW+58, center=win.clientWidth/2;
+    // Keep the original reel's fast, punchy motion. Randomize the landing within
+    // the winning card, but keep only about 30% of the previous edge bias.
+    let stopOffset;
+    if(Math.random()<0.30){
+      const edgeBias=12+Math.random()*3;
+      stopOffset=(Math.random()<0.5?-1:1)*edgeBias;
+    }else{
+      stopOffset=(Math.random()-.5)*40;
+    }
+    const targetCenter=baseTargetCenter+stopOffset;
+    const targetX=center-targetCenter;
+
+    strip.style.transition='none';
+    strip.style.transform='translate3d(0,0,0)';
     void strip.offsetWidth;
     requestAnimationFrame(()=>{
       AudioManager.crateSpin();
-      strip.style.transition='transform 7.0s cubic-bezier(.07,.78,.09,1)';
+      strip.style.transition='transform 6.25s cubic-bezier(.065,.84,.16,1)';
       strip.style.transform=`translate3d(${targetX}px,0,0)`;
     });
-    timer=setTimeout(finish,7150);
+
+    timer=setTimeout(finish,6400);
     strip.addEventListener('transitionend',()=>{ if(!done) finish(); },{once:true});
     skip.onclick=()=>{
       if(done) return;
       clearTimeout(timer);
       AudioManager.crateStop();
-      // Skip means teleport the reel to the exact position where the normal spin
-      // would finish. Keep the reel visible so the player can see the selected item.
       strip.style.transition='none';
       void strip.offsetWidth;
       strip.style.transform=`translate3d(${targetX}px,0,0)`;
@@ -5034,14 +5080,21 @@ function openSphereBox(boxKey){
   doSpin();
 }
 
+function sphereRollIconHtml(e){
+  const colors=SphereBoxes.colors(e);
+  const vars=colors.map((c,i)=>`--fx-c${i+1}:${c}`).join(';');
+  const shape=(e.shape||'orb');
+  const style=(e.style||'');
+  const cls=`spherebox-roll-icon shape-${shape} style-${style}${colors.length>=6?' palette-rich':''}`;
+  return `<div class="${cls}" style="${vars}" aria-hidden="true"></div>`;
+}
 function showSphereDrops(boxKey){
   const box=SphereBoxes.boxes[boxKey]; if(!box) return;
   const overlay=document.getElementById('sphereboxDropsOverlay'), title=document.getElementById('sphereDropsTitle'), grid=document.getElementById('sphereboxDropsGrid');
   if(!overlay||!grid) return;
   title.textContent=box.name+' — POSSIBLE DROPS'; grid.innerHTML='';
-  box.pool.forEach(id=>{ const e=SphereBoxes.describe(id); const row=document.createElement('div'); row.className='spherebox-drop-row'; const dropColors=SphereBoxes.colors(e);
-    const dropGrad=dropColors.length>1?`linear-gradient(135deg,${dropColors.join(',')})`:dropColors[0];
-    row.innerHTML=`<div class="drop-mini" style="--fx-color:${dropColors[0]};background:${dropGrad}"></div><div style="flex:1;font-weight:900;">${e.name}<div class="${SphereBoxes.rarityColor(e.rarity)}" style="font-size:10px;letter-spacing:1px;margin-top:2px;">${e.rarity.toUpperCase()}</div></div>`; grid.appendChild(row); });
+  box.pool.forEach(id=>{ const e=SphereBoxes.describe(id); const row=document.createElement('div'); row.className='spherebox-drop-row';
+    row.innerHTML=sphereRollIconHtml(e)+`<div style="flex:1;font-weight:900;">${e.name}<div class="${SphereBoxes.rarityColor(e.rarity)}" style="font-size:10px;letter-spacing:1px;margin-top:2px;">${e.rarity.toUpperCase()}</div></div>`; grid.appendChild(row); });
   overlay.classList.remove('hidden');
 }
 
