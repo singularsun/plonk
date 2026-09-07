@@ -124,6 +124,10 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 #debugpanel{position:absolute;bottom:10px;left:10px;background:#000000cc;padding:8px 12px;border-radius:2px;
   font-family:monospace;font-size:11px;line-height:1.5;color:#c9793a;display:none;}
 #debugpanel.active{display:block;}
+#perfOverlay{position:fixed;top:10px;right:10px;z-index:10000;display:none;align-items:center;gap:10px;pointer-events:none;background:#000000cc;border:1px solid #3a2a1a;padding:6px 9px;border-radius:2px;font:11px/1.25 monospace;color:#f0e6da;text-shadow:0 1px 2px #000;white-space:nowrap;}
+#perfOverlay.active{display:flex;}
+#perfFps{color:#8fffb0;}
+#perfPing{color:#8fc7ff;}
 #barswrap{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:14px;pointer-events:none;}
 .hudbar-wrap{width:190px;text-align:center;}
 .hudbar-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;text-shadow:0 1px 2px #000;}
@@ -374,7 +378,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <button class="btn" data-go="spherebox">SPHEREBOX</button>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.07 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.09 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -613,6 +617,9 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <button class="btn primary" data-go="main">RETURN TO LOBBY</button>
   </div>
 </div>
+
+<!-- ============ PERFORMANCE OVERLAY ============ -->
+<div id="perfOverlay"><span id="perfFps">FPS: -</span><span id="perfPing">PING: -</span></div>
 
 <!-- ============ IN-GAME HUD ============ -->
 <div id="hud">
@@ -3947,6 +3954,8 @@ const UI = {
     const el = document.getElementById('screen-'+name);
     if(el) el.classList.add('active');
     document.getElementById('hud').classList.remove('active');
+    const perf = document.getElementById('perfOverlay');
+    if(perf) perf.classList.remove('active');
     document.getElementById('editorUI').classList.remove('active');
     EditorState.active=false;
     AudioManager.init(); AudioManager.resume();
@@ -3954,6 +3963,7 @@ const UI = {
   showHUD(){
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById('hud').classList.add('active');
+    this.updateDebug();
   },
   /* Sets the countdown banner text and (re)plays its pop-in animation, plus a
      quick full-screen flash. Passing an empty string just clears everything. */
@@ -4084,6 +4094,15 @@ const UI = {
     document.getElementById('dbgOut').textContent = NetworkManager.packetsOut;
     NetworkManager.packetsIn=0; NetworkManager.packetsOut=0;
     document.getElementById('dbgLast').textContent = Game.lastServerState? (Date.now()-Game.lastServerState) : '-';
+    const perf=document.getElementById('perfOverlay');
+    if(perf){
+      const st=Storage.get('settings',{}), fpsOn=!!st.fps, pingOn=!!st.ping;
+      const gameHud=document.getElementById('hud')?.classList.contains('active');
+      perf.classList.toggle('active',!!gameHud && (fpsOn||pingOn));
+      const fpsEl=document.getElementById('perfFps'), pingEl=document.getElementById('perfPing');
+      if(fpsEl){fpsEl.style.display=fpsOn?'inline':'none';fpsEl.textContent=`FPS: ${Game.fps||0}`;}
+      if(pingEl){pingEl.style.display=pingOn?'inline':'none';pingEl.textContent=`PING: ${pings.length?Math.round(pings.reduce((a,b)=>a+b,0)/pings.length):'-'}ms`;}
+    }
   },
   applyLobbyUpdate(data){ Lobby.players = data.players; if(!Game.isHost) Lobby.syncGamePlayers(data.players); Lobby.render(); }
 };
@@ -5297,6 +5316,7 @@ quality: document.getElementById('setQuality').value,
     };
     Storage.set('settings', s);
     AudioManager.setMusicVol(s.music/100); AudioManager.setSfxVol(s.sfx/100);
+    UI.updateDebug();
     UI.goto('main');
   });
 
