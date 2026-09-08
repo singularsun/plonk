@@ -124,10 +124,6 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 #debugpanel{position:absolute;bottom:10px;left:10px;background:#000000cc;padding:8px 12px;border-radius:2px;
   font-family:monospace;font-size:11px;line-height:1.5;color:#c9793a;display:none;}
 #debugpanel.active{display:block;}
-#perfOverlay{position:fixed;top:10px;right:10px;z-index:10000;display:none;align-items:center;gap:10px;pointer-events:none;background:#000000cc;border:1px solid #3a2a1a;padding:6px 9px;border-radius:2px;font:11px/1.25 monospace;color:#f0e6da;text-shadow:0 1px 2px #000;white-space:nowrap;}
-#perfOverlay.active{display:flex;}
-#perfFps{color:#8fffb0;}
-#perfPing{color:#8fc7ff;}
 #barswrap{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);display:flex;gap:14px;pointer-events:none;}
 .hudbar-wrap{width:190px;text-align:center;}
 .hudbar-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;margin-bottom:3px;text-shadow:0 1px 2px #000;}
@@ -203,12 +199,49 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   #lobbyChatPanel{height:220px;min-height:220px;max-height:220px;}
 }
 
+
+/* map catalog */
+#mapCatalogOverlay{position:fixed;inset:0;background:rgba(5,3,2,.72);backdrop-filter:blur(2px);display:none;align-items:center;justify-content:center;z-index:80;padding:20px;}
+#mapCatalogOverlay.active{display:flex;}
+.map-catalog-panel{width:min(980px,96vw);max-height:90vh;display:flex;flex-direction:column;background:#110c08f8;border:2px solid #503622;border-radius:4px;box-shadow:0 24px 90px #000c;overflow:hidden;}
+.map-catalog-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid #3a2a1a;}
+.map-catalog-title{font-weight:900;color:var(--accent3);letter-spacing:2px;font-size:17px;}
+.map-catalog-tabs{display:flex;gap:6px;padding:10px 16px 0;border-bottom:1px solid #3a2a1a;}
+.map-catalog-tab{border:1px solid #3a2a1a;border-bottom:0;background:#151009;color:var(--text-dim);padding:9px 14px;font-size:11px;font-weight:900;letter-spacing:1px;cursor:pointer;border-radius:3px 3px 0 0;}
+.map-catalog-tab.active{background:#241a10;color:var(--accent3);border-color:var(--accent);}
+.map-catalog-body{padding:14px 16px 16px;overflow:auto;}
+.map-catalog-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.map-catalog-card{background:#0d0906;border:1px solid #3a2a1a;border-radius:3px;padding:8px;cursor:pointer;transition:transform .12s,border-color .12s,background .12s;}
+.map-catalog-card:hover{transform:translateY(-2px);border-color:var(--accent);background:#151009;}
+.map-catalog-card.selected{border-color:var(--accent3);box-shadow:0 0 0 1px #c9793a55;}
+.map-catalog-thumb{display:block;width:100%;height:120px;background:#080604;border:1px solid #2a1e12;border-radius:2px;}
+.map-catalog-name{margin-top:7px;font-size:12px;font-weight:900;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.map-catalog-meta{font-size:9px;color:var(--text-dim);margin-top:3px;}
+.map-catalog-empty{padding:30px 14px;text-align:center;color:var(--text-dim);font-size:12px;border:1px dashed #3a2a1a;border-radius:3px;}
+.map-picker-btn{width:100%;display:flex;justify-content:space-between;align-items:center;gap:10px;text-align:left;}
+.map-picker-btn .map-picker-value{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+@media(max-width:760px){.map-catalog-grid{grid-template-columns:repeat(2,minmax(0,1fr));}.map-catalog-thumb{height:100px;}}
+@media(max-width:520px){.map-catalog-grid{grid-template-columns:1fr;}}
+
 /* map editor */
 #editorUI{position:absolute;top:0;left:0;width:100%;height:100%;display:none;z-index:8;pointer-events:none;}
 #editorUI.active{display:block;}
 #editorToolbar{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:6px;
   background:var(--bg-panel);border:2px solid #3a2a1a;padding:10px;border-radius:var(--radius);pointer-events:auto;}
-#editorTop{position:absolute;top:10px;right:10px;display:flex;gap:6px;flex-wrap:wrap;max-width:340px;justify-content:flex-end;pointer-events:auto;}
+#editorTop{position:absolute;top:10px;right:10px;display:flex;gap:6px;flex-wrap:wrap;max-width:620px;justify-content:flex-end;pointer-events:auto;}
+.editor-size-wrap{display:flex;align-items:center;gap:5px;background:var(--bg-panel);border:2px solid #3a2a1a;padding:4px 6px;border-radius:var(--radius);}
+.editor-size-label{font-size:9px;font-weight:900;letter-spacing:1px;color:var(--accent3);}
+.editor-size-wrap input{width:72px;padding:6px 7px;font-size:11px;}
+.editor-size-x{color:var(--text-dim);font-weight:900;}
+.editor-size-unit{font-size:8px;color:var(--text-dim);font-weight:900;letter-spacing:1px;}
+#editorProps{position:absolute;right:10px;bottom:10px;width:230px;background:var(--bg-panel);border:2px solid #3a2a1a;padding:10px;border-radius:var(--radius);pointer-events:auto;display:none;}
+#editorProps.active{display:block;}
+#editorProps .prop-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+#editorProps .prop-grid .field{min-width:0;}
+#editorProps .ed-hazard-field{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:7px;min-height:34px;}
+#editorProps .ed-hazard-field label{margin:0;white-space:nowrap;cursor:pointer;}
+#editorProps .ed-hazard-field input[type=checkbox]{width:17px;height:17px;min-width:17px;flex:0 0 auto;margin:0;accent-color:#d72f2f;cursor:pointer;}
+#editorProps input[type=number],#editorProps select{width:100%;padding:7px 8px;font-size:12px;}
 .tool-active{border-color:var(--accent)!important;background:#2a1c10!important;}
 
 ::-webkit-scrollbar{width:8px;}
@@ -256,7 +289,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .spherebox-reel-overlay{position:fixed;inset:0;background:rgba(5,3,2,.58);display:flex;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(1px);}
 .spherebox-reel-panel{width:min(920px,94vw);background:#110c08f7;border:2px solid #503622;border-radius:4px;padding:18px;box-shadow:0 24px 90px #000c;text-align:center;}
 .spherebox-reel-window{position:relative;height:126px;overflow:hidden;border:2px solid #62452d;background:#080604;border-radius:3px;margin:16px 0;}
-.spherebox-reel-strip{position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;gap:8px;padding:8px;will-change:transform;z-index:1;}
+.spherebox-reel-strip{position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;gap:8px;padding:8px;will-change:transform;z-index:1;min-width:max-content;}
 .spherebox-reel-card{width:116px;height:104px;flex:0 0 116px;background:#120d09;border:1px solid #3a2a1a;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;}
  .spherebox-roll-icon{width:40px;height:40px;flex:0 0 40px;border-radius:50%;position:relative;overflow:hidden;isolation:isolate;background:conic-gradient(from 215deg,var(--fx-c1),var(--fx-c2,var(--fx-c1)),var(--fx-c3,var(--fx-c2,var(--fx-c1))),var(--fx-c4,var(--fx-c3,var(--fx-c2,var(--fx-c1)))),var(--fx-c1));border:1.5px solid color-mix(in srgb,var(--fx-c1) 72%,#fff 28%);}
 .spherebox-roll-icon:before{content:'';position:absolute;left:50%;top:50%;width:23px;height:23px;transform:translate(-50%,-50%);border-radius:50%;background:linear-gradient(135deg,var(--fx-c1),var(--fx-c2,var(--fx-c1)) 28%,var(--fx-c3,var(--fx-c2,var(--fx-c1))) 58%,var(--fx-c4,var(--fx-c3,var(--fx-c2,var(--fx-c1)))) 82%,var(--fx-c1));}
@@ -326,6 +359,9 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 #hud,#editorUI{z-index:5;}
 .spherebox-reel-overlay{backdrop-filter:blur(2px);}
 .spherebox-reel-panel{overflow:hidden;}
+#screen-spherebox{overflow:hidden;}
+#screen-spherebox .wide-panel{overflow-x:hidden!important;overflow-y:auto;}
+.spherebox-reveal-overlay{width:100vw;height:100vh;overflow:clip;contain:paint;}
 .spherebox-card .sphere-open-btn{padding:15px 18px;font-size:14px;font-weight:900;}.spherebox-card .drop-view-btn{padding:7px 9px;font-size:10px;min-width:0}.spherebox-actions{display:grid!important;grid-template-columns:1.35fr .65fr!important;align-items:stretch}.spherebox-card .drop-view-btn{align-self:center}.spherebox-roll-hint{opacity:.7}.spherebox-reel-window{height:128px}.spherebox-reel-panel{max-width:980px}
 .cust-color-fields{display:flex;gap:8px;align-items:flex-start}.cust-color-fields>.field{flex:1;min-width:0}.cust-color-fields label{font-size:12px;white-space:nowrap;text-align:center;display:block;margin-bottom:2px}.cust-color-picker{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2px 0;width:100%}.cust-color-wheel{width:64px;height:64px;display:block;border-radius:50%;touch-action:none;cursor:crosshair;filter:drop-shadow(0 3px 8px #0009)}.cust-sat-slider{width:72px;height:12px;margin-top:2px;accent-color:#fff;cursor:pointer}
 /* customize layout */
@@ -378,7 +414,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <button class="btn" data-go="spherebox">SPHEREBOX</button>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.09 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.13 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -394,7 +430,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
         <div class="setting-grid">
           <div class="field"><label>Room Letter</label><input type="text" id="hostRoomLetter" maxlength="1" value="A" style="width:72px;font-size:26px;text-transform:uppercase;text-align:center;" autocomplete="off" spellcheck="false"></div>
           <div class="field"><label>Game Mode</label>
-            <select id="hostMode"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option></select>
+            <select id="hostMode"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option><option value="mines">Mines</option></select>
           </div>
         </div>
         <h3>PHYSICS</h3>
@@ -414,7 +450,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
       <section class="map-column">
         <h3>MAP</h3>
         <canvas class="map-preview big-preview" id="hostMapPreview" width="360" height="220"></canvas>
-        <div class="field" style="margin-top:12px;"><label>Choose Map</label><select id="hostMap"></select></div>
+        <div class="field" style="margin-top:12px;"><label>Choose Map</label><button class="btn map-picker-btn" id="hostMapPicker" type="button"><span class="map-picker-value" id="hostMapPickerValue">Basic Arena</span><span>▾</span></button><select id="hostMap" class="hidden" aria-hidden="true"></select></div>
         <div class="host-action-box">
           <div class="subhint">The host remains in control of the match settings after the lobby is created.</div>
           <button class="btn primary" id="btnHostCreate">CREATE LOBBY</button>
@@ -459,7 +495,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
       <section class="lobby-settings-col">
         <div class="section-header-row"><div><h3>HOST SETTINGS</h3><div class="subhint" id="settingsOwnerHint">Only the host can change these.</div></div><div class="host-only-badge" id="hostControlBadge">HOST CONTROL</div></div>
         <div class="setting-grid compact">
-          <div class="field"><label>Mode</label><select id="lobbyModeSelect"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option></select></div>
+          <div class="field"><label>Mode</label><select id="lobbyModeSelect"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option><option value="mines">Mines</option></select></div>
           <div class="field"><label>Gravity</label><input type="number" id="lobbyGravity" min="0.1" max="3" step="0.1" value="1"></div>
           <div class="field"><label>Knockback ×</label><input type="number" id="lobbyKB" min="0.2" max="3" step="0.1" value="1"></div>
           <div class="field"><label>Player Size</label><input type="number" id="lobbyPlayerSize" min="0.5" max="2" step="0.1" value="1"></div>
@@ -478,7 +514,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
           </div>
           <div class="map-preview-wrap">
             <canvas class="map-preview big-preview" id="lobbyMapPreview" width="240" height="140"></canvas>
-            <div class="field" style="margin-top:6px;"><label>Map</label><select id="lobbyMapSelect"></select></div>
+            <div class="field" style="margin-top:6px;"><label>Map</label><button class="btn map-picker-btn" id="lobbyMapPicker" type="button"><span class="map-picker-value" id="lobbyMapPickerValue">Basic Arena</span><span>▾</span></button><select id="lobbyMapSelect" class="hidden" aria-hidden="true"></select><button class="btn small hidden" id="btnSaveLobbyMap" type="button" style="margin-top:6px;">SAVE MAP</button></div>
           </div>
         </div>
       </section>
@@ -618,9 +654,6 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   </div>
 </div>
 
-<!-- ============ PERFORMANCE OVERLAY ============ -->
-<div id="perfOverlay"><span id="perfFps">FPS: -</span><span id="perfPing">PING: -</span></div>
-
 <!-- ============ IN-GAME HUD ============ -->
 <div id="hud">
   <div class="playercards" id="playercards"></div>
@@ -667,8 +700,6 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <button class="btn small" data-tool="select">SELECT</button>
     <button class="btn small" data-tool="platform">PLATFORM</button>
     <button class="btn small" data-tool="spawn">SPAWN</button>
-    <button class="btn small" data-tool="hazard">HAZARD</button>
-    <button class="btn small" data-tool="bounce">BOUNCE</button>
     <button class="btn small" data-tool="erase">ERASE</button>
     <hr style="width:100%;border-color:#3a2a1a;">
     <button class="btn small" id="edUndo">UNDO</button>
@@ -676,17 +707,51 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   </div>
   <div id="editorTop">
     <input type="text" id="edMapName" placeholder="Map Name" style="width:140px;">
+    <div class="editor-size-wrap">
+      <span class="editor-size-label">SIZE</span>
+      <input type="number" id="edMapWidth" min="400" max="10000" step="10" value="1600" aria-label="Map width in pixels">
+      <span class="editor-size-x">×</span>
+      <input type="number" id="edMapHeight" min="300" max="10000" step="10" value="900" aria-label="Map height in pixels">
+      <span class="editor-size-unit">PX</span>
+    </div>
     <button class="btn small" id="edSave">SAVE</button>
     <button class="btn small" id="edLoad">LOAD</button>
-    <button class="btn small" id="edExport">EXPORT</button>
-    <button class="btn small" id="edImport">IMPORT</button>
     <button class="btn small" id="edClear">CLEAR</button>
-    <button class="btn small primary" id="edTest">TEST MAP</button>
     <button class="btn small danger" id="edExit">EXIT</button>
+  </div>
+  <div id="editorProps">
+    <div style="font-size:11px;font-weight:900;letter-spacing:1px;color:var(--accent3);margin-bottom:8px;">BLOCK PROPERTIES</div>
+    <div class="prop-grid">
+      <div class="field"><label>X</label><input type="number" id="edPropX" step="1"></div>
+      <div class="field"><label>Y</label><input type="number" id="edPropY" step="1"></div>
+      <div class="field"><label>WIDTH</label><input type="number" id="edPropW" min="20" step="1"></div>
+      <div class="field"><label>HEIGHT</label><input type="number" id="edPropH" min="20" step="1"></div>
+      <div class="field"><label>ROTATION°</label><input type="number" id="edPropRot" step="1"></div>
+      <div class="field"><label>BOUNCINESS</label>
+        <select id="edPropBounce"><option value="0">None</option><option value="0.25">Low</option><option value="0.5">Medium</option><option value="0.8">High</option><option value="1.2">Very High</option><option value="1.6">Extreme</option></select>
+      </div>
+      <div class="field ed-hazard-field"><label for="edPropHazard">HAZARD</label><input type="checkbox" id="edPropHazard" aria-label="Hazard" /></div>
+    </div>
+    <div id="edPropHint" style="margin-top:8px;font-size:10px;color:var(--text-dim);">Click a platform to edit it.</div>
   </div>
 </div>
 
 </div>
+<!-- ============ MAP CATALOG ============ -->
+<div id="mapCatalogOverlay">
+  <div class="map-catalog-panel">
+    <div class="map-catalog-head">
+      <div><div class="map-catalog-title">MAP CATALOG</div><div class="subhint" id="mapCatalogHint">Choose a map for this match.</div></div>
+      <button class="btn small" id="mapCatalogClose" type="button">CLOSE</button>
+    </div>
+    <div class="map-catalog-tabs">
+      <button class="map-catalog-tab active" id="mapCatalogBuiltInTab" type="button">BUILT-IN MAPS</button>
+      <button class="map-catalog-tab" id="mapCatalogSavedTab" type="button">SAVED MAPS</button>
+    </div>
+    <div class="map-catalog-body"><div class="map-catalog-grid" id="mapCatalogGrid"></div></div>
+  </div>
+</div>
+
 <script>
 'use strict';
 /* =========================================================================================
@@ -837,7 +902,11 @@ class ParticleSystem{
   spawn(x,y,opts={}){
     if(Storage.get('settings',{}).particles===false) return;
     if(this.active.length>=this.maxParticles){
-      const old=this.active.shift();
+      // Particle ordering has no gameplay meaning, so swap-pop avoids O(n) array
+      // shifts when effects hit the particle cap.
+      const lastIndex=this.active.length-1;
+      const old=this.active[lastIndex];
+      this.active.pop();
       this.pool.push(old);
     }
     let p = this.pool.pop() || {};
@@ -878,7 +947,12 @@ class ParticleSystem{
       p.vy+=p.gravity*dt;
       const damp=Math.pow(p.drag,dt*60);
       p.vx*=damp; p.vy*=damp; p.life-=dt; p.rotation += p.spin*dt;
-      if(p.life<=0){ this.active.splice(i,1); this.pool.push(p); }
+      if(p.life<=0){
+        const last=this.active.length-1;
+        if(i!==last) this.active[i]=this.active[last];
+        this.active.pop();
+        this.pool.push(p);
+      }
     }
   }
   render(ctx, cam){
@@ -922,7 +996,15 @@ const PHYS = {
   maxSpeed: 950,
   jumpVel: 645,
   jumpHoldGravityScale: 0.873, // holding W longer preserves about the same max height with a slower takeoff
-  jumpShortHopFactor: 0.52,   // tapping jump clamps the upward speed to this fraction of full jumpVel
+  jumpShortHopFactor: 0.52,   // normal jump short-hop tuning (unchanged)
+  bounceBaseHeightFactor: 0.75, // unassisted bounce reaches 75% of normal jump height
+  bounceMinReleaseHeightFactor: 0.90, // releasing a held bounce jump keeps at least 90% of its reached height
+  bounceJumpHoldAccel: 1150, // legacy bounce-jump tuning (kept isolated from normal jumps)
+  bounceHeightScale: 0.70, // all bouncy-platform jump heights are 70% of the current behavior
+  bounceWAccel: 5000, // brief, very fast acceleration after pressing W/Up on a bounce
+  bounceWMaxSpeed: 900, // maximum upward speed before the 70% height scale is applied
+  bounceWBoostTime: 0.085, // the boost is deliberately brief so holding W cannot add height forever
+  playerCollisionImpactFrames: 2, // shorter hitstop for player-to-player collisions
   fastFallMultiplier: 2.3,    // extra gravity multiplier while holding the down key in the air
   bounceDamp: 0.6,
   wallBounce: 0.55,
@@ -956,6 +1038,20 @@ const PHYS = {
   actionAimTurnSpeed: 0.9,
   actionChargeMaxTime: 1.5,
   actionChargePowerExponent: 1.55,
+  mineCooldown: 5.0,
+  mineChargeMaxTime: 1.15,
+  mineMinThrowSpeed: 400,
+  mineMaxThrowSpeed: 1050,
+  mineLaunchAngle: 0.72,
+  mineRadius: 13,
+  mineMaxAirTime: 6.0,
+  mineSideBounce: 0.42,
+  mineGroundRestSpeed: 70,
+  mineGroundFriction: 0.82,
+  mineArmingDelay: 0.08,
+  mineGroundLaunchSpeed: 2500,
+  mineAirKnockback: 1250,
+  mineAirDamage: 6,
 };
 
 /* ---------------------------- PLAYER ---------------------------- */
@@ -969,6 +1065,7 @@ class Player{
     this.damage=0; this.alive=true;
     this.heavy=false; this.hitFlash=0;
     this.bounceBoostQueued=false;
+    this.bounceJumpActive=false; this.bounceJumpPeakSpeed=0; this.bounceJumpHeldPrev=false; this.bounceWBoostTimer=0; this.bounceIgnorePlatform=-1;
     this.dashCd=0; this.dashTime=0; this.dashVelocity=0; this.dashDirection=0;
     this.dashCharging=false; this.dashCharge=0; this.dashCdMax=PHYS.dashCdBase; this._dashHeldPrev=false; this._dashChargeFxAcc=0;
     this.grappleAnchor=null; this.grappleTargetId=null; this.grappleLen=0; this.grappleRestLen=0;
@@ -999,7 +1096,7 @@ class Player{
     this.dashSerial= this.netDashSerial=0;
     this.grappleSerial=0; this.netGrappleSerial=0; this.grappleEventSeq=0; this.lastGrappleEventSeq=null;
     this.pendingGrappleTargetId=null; this.remoteGrappleActive=false; this.remoteGrappleEventSeq=null;
-    this.actionAiming=false; this.actionAngle=-Math.PI/2; this.actionAimStartAngle=-Math.PI/2; this.actionAimStartTime=0; this.actionEventSeq=0; this.lastActionEventSeq=null; this.pendingActionAngle=null; this.remoteActionActive=false; this.actionCooldown=0; this.actionCooldownMax=PHYS.actionProjectileCooldown; this.actionCharge=0; this.actionChargeStartTime=0; this.actionPower=0;
+    this.actionAiming=false; this.actionAngle=-Math.PI/2; this.actionAimStartAngle=-Math.PI/2; this.actionAimStartTime=0; this.actionEventSeq=0; this.lastActionEventSeq=null; this.pendingActionAngle=null; this.remoteActionActive=false; this.actionCooldown=0; this.actionCooldownMax=PHYS.actionProjectileCooldown; this.actionCharge=0; this.actionChargeStartTime=0; this.actionPower=0; this.actionKind=null;
   }
 }
 
@@ -1017,29 +1114,152 @@ function ensureMapSpawn(map){
   return map;
 }
 const BUILTIN_MAPS = [
-  makeMap('Training Grounds',1600,900,[
+  makeMap('Basic Arena',1600,900,[
     {x:200,y:760,w:1200,h:60,type:'solid'},
-    {x:500,y:580,w:250,h:24,type:'oneway'},
-    {x:900,y:580,w:250,h:24,type:'oneway'},
-  ],[{x:400,y:600},{x:1200,y:600},{x:800,y:400},{x:800,y:700}],[],'default'),
+    {x:500,y:592,w:250,h:24,type:'oneway'},
+    {x:900,y:592,w:250,h:24,type:'oneway'},
+  ],[],[],'default'),
   makeMap('Volcano',1900,1000,[
     {x:120,y:880,w:500,h:40,type:'solid'},
     {x:1280,y:880,w:500,h:40,type:'solid'},
-    {x:700,y:680,w:500,h:30,type:'oneway'},
-    {x:850,y:450,w:200,h:24,type:'bounce'},
-  ],[{x:300,y:800},{x:1600,y:800},{x:950,y:600},{x:950,y:380}],
-     [{x:650,y:940,w:600,h:60,type:'lava'}],'default'),
+    {x:700,y:692,w:500,h:30,type:'oneway'},
+    {x:850,y:450,w:200,h:24,type:'bounce',bounciness:0.85},
+  ],[],[{x:650,y:940,w:600,h:60,type:'lava'}],'default'),
   makeMap('Tiny Arena',1000,650,[
     {x:150,y:560,w:700,h:40,type:'solid'},
-    {x:380,y:420,w:240,h:24,type:'oneway'},
-  ],[{x:300,y:480},{x:700,y:480},{x:500,y:340}],[],'default'),
+    {x:380,y:430,w:240,h:24,type:'oneway'},
+  ],[],[],'default'),
   makeMap('Chaos Pit',1700,950,[
     {x:100,y:860,w:1500,h:40,type:'solid'},
-    {x:300,y:660,w:220,h:24,type:'bounce'},
-    {x:1180,y:660,w:220,h:24,type:'bounce'},
+    {x:300,y:672,w:220,h:24,type:'bounce',bounciness:0.85},
+    {x:1180,y:672,w:220,h:24,type:'bounce',bounciness:0.85},
     {x:750,y:480,w:200,h:24,type:'oneway'},
-  ],[{x:300,y:780},{x:1400,y:780},{x:850,y:400},{x:600,y:580},{x:1100,y:580}],[],'default'),
+  ],[],[],'default'),
+  makeMap('Crossfire',1800,1000,[
+    {x:100,y:900,w:1600,h:45,type:'solid'},
+    {x:300,y:712,w:330,h:28,type:'solid',rotation:-10,bounciness:0.5},
+    {x:1170,y:712,w:330,h:28,type:'solid',rotation:10,bounciness:0.5},
+    {x:650,y:500,w:500,h:26,type:'oneway',rotation:0},
+    {x:795,y:305,w:210,h:26,type:'solid',rotation:90,bounciness:0.8},
+  ],[],[{x:720,y:950,w:360,h:50,type:'lava'}],'default'),
+  makeMap('Pinball',1500,900,[
+    {x:120,y:780,w:1260,h:50,type:'solid'},
+    {x:230,y:570,w:260,h:28,type:'solid',rotation:-18,bounciness:1.2},
+    {x:1010,y:570,w:260,h:28,type:'solid',rotation:18,bounciness:1.2},
+    {x:520,y:355,w:460,h:26,type:'oneway',rotation:0,bounciness:0.5},
+    {x:720,y:160,w:60,h:220,type:'solid',rotation:0},
+  ],[],[],'default'),
+  makeMap('Skyline',2000,1000,[
+    {x:100,y:900,w:1800,h:48,type:'solid'},
+    {x:210,y:712,w:360,h:26,type:'oneway',rotation:-8},
+    {x:690,y:570,w:340,h:26,type:'oneway',rotation:12},
+    {x:1170,y:702,w:360,h:26,type:'oneway',rotation:-12,bounciness:0.8},
+    {x:1510,y:500,w:280,h:28,type:'solid',rotation:8},
+    {x:860,y:350,w:300,h:24,type:'oneway'},
+  ],[],[],'default'),
+  makeMap('Wrecking Yard',1900,1050,[
+    {x:120,y:940,w:1660,h:50,type:'solid'},
+    {x:260,y:772,w:260,h:34,type:'solid',rotation:14,bounciness:0.25},
+    {x:630,y:652,w:420,h:30,type:'solid',rotation:-9},
+    {x:1150,y:732,w:330,h:30,type:'oneway',rotation:16,bounciness:1.6},
+    {x:1430,y:500,w:280,h:32,type:'solid',rotation:-22},
+    {x:790,y:400,w:300,h:24,type:'oneway',rotation:5},
+  ],[],[{x:760,y:1000,w:380,h:50,type:'lava'},{x:1540,y:790,w:110,h:150,type:'lava'}],'default'),
 ];
+
+// Remove lava/hazard rectangles that are completely buried beneath a solid
+// built-in ground platform. Keep hazards that are actually exposed in pits/gaps.
+function removeBuriedBuiltinHazards(map){
+  if(!map) return map;
+  const solids=(map.platforms||[]).filter(p=>p.type==='solid' && !(Number(p.rotation)||0));
+  map.hazards=(map.hazards||[]).filter(h=>{
+    if(h.type!=='lava') return true;
+    return !solids.some(p=>h.x < p.x+p.w && h.x+h.w > p.x && h.y >= p.y+p.h-2);
+  });
+  return map;
+}
+for(const builtinMap of BUILTIN_MAPS) removeBuriedBuiltinHazards(builtinMap);
+
+// Built-in spawns are authored per-map and placed on the actual upper surfaces
+// of that map's platforms. Each map deliberately has a different layout, while
+// the final 1px-per-conflict pass guarantees no two spawn centers share the exact
+// same integer Y coordinate.
+function spawnOnPlatform(map, platformIndex, worldX, lift=0){
+  const p=map.platforms[platformIndex];
+  if(!p) return {x:worldX,y:80};
+  const radius=26;
+  const rot=(Number(p.rotation)||0)*Math.PI/180;
+  const cx=p.x+p.w/2, cy=p.y+p.h/2;
+  if(Math.abs(rot)<1e-8) return {x:worldX,y:p.y-radius-lift};
+  const ly=-p.h/2-radius-lift;
+  const cos=Math.cos(rot), sin=Math.sin(rot);
+  let lx=(worldX-cx + ly*sin)/(Math.abs(cos)>1e-6?cos:1e-6);
+  lx=Math.max(-p.w/2+radius,Math.min(p.w/2-radius,lx));
+  return {x:cx+lx*cos-ly*sin,y:cy+lx*sin+ly*cos};
+}
+function authorBuiltinSpawns(map, placements){
+  // Lower surfaces get the earliest spawn slots; higher surfaces are assigned later.
+  const resolved=placements.map((item,index)=>({item,index,sp:spawnOnPlatform(map,item.platform,item.x,item.lift||0)}));
+  // Larger world-Y is lower on the map. Fill spawn slots from the lowest supported
+  // platform upward so early spawn indices are always the safer/lower entrances.
+  resolved.sort((a,b)=>{ const dy=b.sp.y-a.sp.y; return Math.abs(dy)>0.01?dy:a.index-b.index; });
+  const usedY=new Set(), out=[];
+  for(const entry of resolved){
+    const sp=entry.sp;
+    let y=Math.round(sp.y);
+    while(usedY.has(y)) y-=1;
+    usedY.add(y);
+    out.push({x:Math.round(sp.x),y});
+  }
+  map.spawnPoints=out.slice(0,8);
+  return map;
+}
+
+authorBuiltinSpawns(BUILTIN_MAPS[0],[
+  {platform:1,x:545,lift:0},{platform:1,x:690,lift:1},
+  {platform:2,x:930,lift:0},{platform:2,x:1080,lift:1},
+  {platform:0,x:340,lift:0},{platform:0,x:700,lift:1},{platform:0,x:1050,lift:2},{platform:0,x:1360,lift:3}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[1],[
+  {platform:0,x:220,lift:0},{platform:0,x:500,lift:1},
+  {platform:2,x:800,lift:0},{platform:2,x:1080,lift:1},
+  {platform:1,x:1360,lift:0},{platform:1,x:1640,lift:1},
+  {platform:3,x:900,lift:0},{platform:3,x:1000,lift:1}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[2],[
+  {platform:1,x:410,lift:0},{platform:1,x:500,lift:1},{platform:1,x:590,lift:2},{platform:1,x:600,lift:3},
+  {platform:0,x:210,lift:0},{platform:0,x:390,lift:1},{platform:0,x:610,lift:2},{platform:0,x:790,lift:3}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[3],[
+  {platform:3,x:790,lift:0},{platform:3,x:910,lift:1},
+  {platform:1,x:350,lift:0},{platform:1,x:470,lift:1},
+  {platform:2,x:1220,lift:8},{platform:2,x:1340,lift:9},
+  {platform:0,x:240,lift:0},{platform:0,x:1450,lift:1}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[4],[
+  {platform:1,x:400,lift:0},{platform:1,x:550,lift:1},
+  {platform:2,x:1250,lift:0},{platform:2,x:1410,lift:1},
+  {platform:3,x:730,lift:0},{platform:3,x:1060,lift:1},
+  {platform:0,x:210,lift:0},{platform:0,x:1560,lift:1}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[5],[
+  {platform:1,x:290,lift:0},{platform:1,x:450,lift:1},
+  {platform:2,x:1050,lift:0},{platform:2,x:1210,lift:1},
+  {platform:3,x:600,lift:0},{platform:3,x:900,lift:1},
+  {platform:0,x:220,lift:0},{platform:0,x:1280,lift:1}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[6],[
+  {platform:1,x:260,lift:0},{platform:1,x:500,lift:1},
+  {platform:2,x:740,lift:0},{platform:2,x:900,lift:1},
+  {platform:3,x:1220,lift:0},{platform:3,x:1440,lift:1},
+  {platform:4,x:1600,lift:0},{platform:5,x:1000,lift:1}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[7],[
+  {platform:1,x:300,lift:0},{platform:1,x:470,lift:1},
+  {platform:2,x:720,lift:0},{platform:3,x:1210,lift:1},
+  {platform:4,x:1510,lift:0},{platform:5,x:930,lift:1},
+  {platform:0,x:230,lift:0},{platform:0,x:1680,lift:1}
+]);
 
 /* Procedurally add directional arrow tiles for the Arrows / Death Arrows modes.
    Simplified approach: attach arrow pads on top of wide solid platforms rather
@@ -1421,6 +1641,7 @@ const GameModes = {
   pypg:{ label:'PYPG', grapple:true, projectile:false, deadly:false },
   arrows:{ label:'Arrows', grapple:false, projectile:true, deadly:false },
   death_arrows:{ label:'Death Arrows', grapple:false, projectile:true, deadly:true },
+  mines:{ label:'Mines', grapple:false, projectile:false, deadly:false, mine:true },
 };
 
 /* ============================================================================
@@ -1531,6 +1752,8 @@ const Game = {
   countdownPunch:0,
   projectiles:[],
   _nextProjectileId:1,
+  mines:[],
+  _nextMineId:1,
   menuFlyers:[],
   impactFrames:0,
   impactFrameBroadcastCooldown:0,
@@ -1544,6 +1767,7 @@ const Game = {
     this.map = ensureMapSpawn(BUILTIN_MAPS[0]);
     this.loop = this.loop.bind(this);
     this.initMenuFlyers();
+    this.paintMenuFrame();
     requestAnimationFrame(this.loop);
     NetworkManager.onData = (pid,data)=>this.handleNetData(pid,data);
     NetworkManager.onPeerLeave = (pid)=>this.handlePeerLeave(pid);
@@ -1564,12 +1788,13 @@ const Game = {
     this.canvas.style.width='100%'; this.canvas.style.height='100%';
     this.ctx.setTransform(dpr,0,0,dpr,0,0);
     this.viewW = window.innerWidth; this.viewH = window.innerHeight;
+    if(this.state==='menu' && !EditorState.active && this.ctx) this.paintMenuFrame();
   },
   myColor(){ const c = Storage.get('customization',{hue:200}); return `hsl(${c.hue||200},80%,60%)`; },
 
   /* ---------- lifecycle ---------- */
   beginCountdown(){
-    this.state='countdown'; this.eliminationOrder=[]; this.projectiles=[];
+    this.state='countdown'; this.eliminationOrder=[]; this.projectiles=[]; this.mines=[];
     this.physicsTick=0; this.hostPhysicsTick=0; this.lastRecvStateSeq=null; this.stateSeq=0;
     this.roundTransitionId=0;
     if(this._roundTransitionTimer){ clearTimeout(this._roundTransitionTimer); this._roundTransitionTimer=null; }
@@ -1614,7 +1839,7 @@ const Game = {
     if(this._roundTransitionTimer){ clearTimeout(this._roundTransitionTimer); this._roundTransitionTimer=null; }
     if(expectedRound!=null) this.roundNumber=expectedRound;
     if(transitionId!=null) this.roundTransitionId=transitionId;
-    this.state='playing'; this.eliminationOrder=[]; this.projectiles=[];
+    this.state='playing'; this.eliminationOrder=[]; this.projectiles=[]; this.mines=[];
     UI.showHUD();
     this.resetPlayers();
     // Keep round transitions from briefly jumping through the default camera
@@ -1650,6 +1875,7 @@ const Game = {
       p.radius=26*Math.max(0.5,Math.min(2,Number(this.matchSettings.playerSize)||1));
       p.heavy=false; p.grappleAnchor=null; p.grappleTargetId=null; p.grappleLen=0; p.grappleRestLen=0; p.grounded=false; p.netGrounded=false; p.supportPlatform=-1; p.netSupportPlatform=-1; p.grappleStamina=p.grappleStaminaMax; p.lastMoveDir=0;
       p.bounceBoostQueued=false;
+      p.bounceJumpActive=false; p.bounceJumpPeakSpeed=0; p.bounceJumpHeldPrev=false; p.bounceWBoostTimer=0; p.bounceIgnorePlatform=-1;
       p.dashCd=0; p.dashTime=0; p.dashVelocity=0; p.dashDirection=0; p.dashCharging=false; p.dashCharge=0; p.dashCdMax=PHYS.dashCdBase; p._dashHeldPrev=false; p._dashChargeFxAcc=0;
       p.renderX=p.x; p.renderY=p.y; p.renderTargetX=p.x; p.renderTargetY=p.y; p.netServerX=p.x; p.netServerY=p.y; p.netServerVX=0; p.netServerVY=0; p.netStateReceivedAt=performance.now(); p.netErrorX=0; p.netErrorY=0; p.lastAckSeq=0;
       p.jumpBuffer=0; p.jumpSerial=0; p.netJumpSerial=0; p.lastJumpEventSeq=null; p.remoteJumpHeld=false; p.remoteJumpHoldSeq=0; p.remoteJumpReleaseSeq=0;
@@ -1658,7 +1884,7 @@ const Game = {
       p.netJumpGravity=PHYS.baseGravity; p.netJumpStartedAt=0;
       p.dashSerial=0; p.netDashSerial=0; p.grappleSerial=0; p.netGrappleSerial=0; p._dashChargeSfxLevel=0;
       p.grappleEventSeq=0; p.lastGrappleEventSeq=null; p.pendingGrappleTargetId=null; p.remoteGrappleActive=false; p.remoteGrappleEventSeq=null;
-      p.actionAiming=false; p.actionAngle=-Math.PI/2; p.actionAimStartAngle=-Math.PI/2; p.actionAimStartTime=0; p.actionEventSeq=0; p.lastActionEventSeq=null; p.pendingActionAngle=null; p.remoteActionActive=false; p.actionCooldown=0; p.actionCooldownMax=PHYS.actionProjectileCooldown; p.actionCharge=0; p.actionChargeStartTime=0; p.actionPower=0; p._actionChargeFxAcc=0;
+      p.actionAiming=false; p.actionAngle=-Math.PI/2; p.actionAimStartAngle=-Math.PI/2; p.actionAimStartTime=0; p.actionEventSeq=0; p.lastActionEventSeq=null; p.pendingActionAngle=null; p.remoteActionActive=false; p.actionCooldown=0; p.actionCooldownMax=GameModes[this.mode]?.mine?PHYS.mineCooldown:PHYS.actionProjectileCooldown; p.actionCharge=0; p.actionChargeStartTime=0; p.actionPower=0; p.actionKind=null; p._actionChargeFxAcc=0;
       p.remoteJumpHeld=false; p.remoteJumpHoldSeq=0; p.remoteJumpReleaseSeq=0;
     }
   },
@@ -1705,7 +1931,7 @@ const Game = {
         me.jumpEventSeq = ((me.jumpEventSeq||0) + 1) & 65535;
         NetworkManager.sendToHost({t:'jump', seq:me.jumpEventSeq}, true);
       }
-      if(me && (this.mode==='grapple' || this.mode==='pypg' || this.mode==='arrows' || this.mode==='death_arrows')){
+      if(me && (this.mode==='grapple' || this.mode==='pypg' || this.mode==='arrows' || this.mode==='death_arrows' || this.mode==='mines')){
         const actionMode=this.mode;
         if(actionMode==='grapple' || actionMode==='pypg'){
           if(me.input.grapplePressed){
@@ -1725,14 +1951,17 @@ const Game = {
             if(!this.isHost) NetworkManager.sendToHost({t:'grapple_release',seq:me.grappleEventSeq},true);
           }
         } else {
-          // Arrow modes use the Action key as a press-to-aim / release-to-fire control.
+          // Arrow/Mines modes use the Action key as a press-to-aim / release-to-use control.
           const pressed=me.input.grapplePressed;
           const released=!raw.grapple && me._lastActionHeld;
+          const isMineMode=actionMode==='mines';
           if(pressed){
             me.input.grapplePressed=false;
+            const cooldownMax=isMineMode?PHYS.mineCooldown:PHYS.actionProjectileCooldown;
             if((me.actionCooldown||0)<=0 && me.alive){
               me.actionAiming=true;
-              const target=this.findNearestLivingPlayer(me);
+              me.actionKind=isMineMode?'mine':'projectile';
+              const target=isMineMode?null:this.findNearestLivingPlayer(me);
               const targetAngle=target?Math.atan2(target.y-me.y,target.x-me.x):(me.facing<0?Math.PI:0);
               me.actionAngle=this.normalizeAngle(targetAngle);
               me.actionAimStartAngle=me.actionAngle;
@@ -1740,41 +1969,54 @@ const Game = {
               me.actionChargeStartTime=performance.now();
               me.actionCharge=0;
               me.actionPower=0;
+              me.actionCooldownMax=cooldownMax;
               me._actionChargeFxAcc=0;
               me._lastActionHeld=true;
               if(!this.isHost){
                 me.actionEventSeq=((me.actionEventSeq||0)+1)&65535;
-                NetworkManager.sendToHost({t:'action_start',seq:me.actionEventSeq,angle:me.actionAngle},true);
+                NetworkManager.sendToHost({t:'action_start',seq:me.actionEventSeq,angle:me.actionAngle,kind:isMineMode?'mine':'projectile'},true);
               }
             }else{
               me._lastActionHeld=false;
             }
           }
           if(me.actionAiming){
-            const target=this.findNearestLivingPlayer(me);
-            if(target){
-              const desired=Math.atan2(target.y-me.y,target.x-me.x);
-              const delta=this.shortAngleDelta(me.actionAngle,desired);
-              const maxTurn=PHYS.actionAimTurnSpeed*(dt||0);
-              me.actionAngle=this.normalizeAngle(me.actionAngle + Math.max(-maxTurn,Math.min(maxTurn,delta)));
+            if(isMineMode){
+              // Mines deliberately do not auto-track players. The reticle follows
+              // the thrower's current facing direction exactly.
+              me.actionAngle = me.facing<0 ? Math.PI : 0;
+            }else{
+              const target=this.findNearestLivingPlayer(me);
+              if(target){
+                const desired=Math.atan2(target.y-me.y,target.x-me.x);
+                const delta=this.shortAngleDelta(me.actionAngle,desired);
+                const maxTurn=PHYS.actionAimTurnSpeed*(dt||0);
+                me.actionAngle=this.normalizeAngle(me.actionAngle + Math.max(-maxTurn,Math.min(maxTurn,delta)));
+              }
             }
             const heldFor=Math.max(0,(performance.now()-me.actionChargeStartTime)/1000);
-            const chargeNorm=Math.min(1,heldFor/PHYS.actionChargeMaxTime);
+            const chargeMax=isMineMode?PHYS.mineChargeMaxTime:PHYS.actionChargeMaxTime;
+            const chargeNorm=Math.min(1,heldFor/chargeMax);
             me.actionCharge=chargeNorm;
-            me.actionPower=Math.pow(chargeNorm,PHYS.actionChargePowerExponent);
+            me.actionPower=isMineMode?chargeNorm:Math.pow(chargeNorm,PHYS.actionChargePowerExponent);
           }
           if(released){
             const angle=me.actionAngle;
             const power=me.actionPower||0;
+            const wasMine=isMineMode;
             me.actionAiming=false; me._lastActionHeld=false; me.actionCharge=0;
             me.actionPower=0;
+            me.actionKind=null;
+            const cooldownMax=wasMine?PHYS.mineCooldown:PHYS.actionProjectileCooldown;
             if((me.actionCooldown||0)<=0){
-              if(this.isHost) this.fireActionProjectile(me,angle,power);
-              else {
+              if(this.isHost){
+                if(wasMine) this.fireMine(me,angle,power);
+                else this.fireActionProjectile(me,angle,power);
+              }else {
                 me.actionEventSeq=((me.actionEventSeq||0)+1)&65535;
-                me.actionCooldown=PHYS.actionProjectileCooldown;
-                me.actionCooldownMax=PHYS.actionProjectileCooldown;
-                NetworkManager.sendToHost({t:'action_fire',seq:me.actionEventSeq,angle,power},true);
+                me.actionCooldown=cooldownMax;
+                me.actionCooldownMax=cooldownMax;
+                NetworkManager.sendToHost({t:'action_fire',seq:me.actionEventSeq,angle,power,kind:wasMine?'mine':'projectile'},true);
               }
             }
           }
@@ -1847,12 +2089,13 @@ const Game = {
    * two colliding players, so a very fast player hitting a much slower player
    * gets a larger hitstop than two players moving at similar speeds.
    */
-  triggerImpactFrames(relativeSpeed, broadcast=true){
+  triggerImpactFrames(relativeSpeed, broadcast=true, frameOverride=null){
     const speed = Math.max(0, Number(relativeSpeed)||0);
     if(speed < 260) return 0;
 
-    // Every qualifying impact freezes for exactly three render frames.
-    const frames = 3;
+    // Keep the general impact system intact, while allowing player collisions
+    // to use a shorter, dedicated hitstop window.
+    const frames = Math.max(1, Math.round(Number.isFinite(Number(frameOverride)) ? Number(frameOverride) : 3));
 
     this.impactFrames = Math.max(this.impactFrames||0, frames);
 
@@ -1870,10 +2113,12 @@ const Game = {
   stepHost(dt){
     for(const id in this.players){
       const p = this.players[id];
+      p.prevX = p.x; p.prevY = p.y;
       this.integratePlayer(p, dt, p.input);
       this.applyGrapple(p, dt);
     }
     this.resolveCollisions(dt);
+    this.updateMines(dt);
     this.checkDeaths();
     this.checkModeEnd();
   },
@@ -1884,10 +2129,12 @@ const Game = {
     // another network snapshot.
     for(const id in this.players){
       const p=this.players[id];
+      p.prevX = p.x; p.prevY = p.y;
       this.integratePlayer(p, dt, p.input);
       this.applyGrapple(p, dt);
     }
     this.resolveCollisions(dt);
+    this.updateMines(dt);
     // Deaths and round completion are host-authoritative. Clients wait for the
     // authoritative eliminated/round_end messages rather than making decisions
     // from their prediction.
@@ -1896,6 +2143,28 @@ const Game = {
   integratePlayer(p, dt, input){
     if(!p.alive){ return; }
     const mass = input.heavy ? PHYS.heavyMass : 1;
+
+    // Re-acquire support before processing a jump. The continuous collision
+    // rewrite can leave a player standing on a surface with grounded=false for
+    // one tick when contact is exactly at the platform boundary. A small support
+    // probe restores the semantic ground state without changing airborne motion.
+    if(!p.grounded && p.vy >= -35){
+      const supportEps=4;
+      for(let i=0;i<this.map.platforms.length;i++){
+        const plat=this.map.platforms[i];
+        if((Number(plat.rotation)||0)!==0) continue;
+        if(plat.type!=='oneway' && plat.type!=='bounce' && plat.type!=='solid') continue;
+        if(p.x+p.radius<=plat.x || p.x-p.radius>=plat.x+plat.w) continue;
+        const bottom=p.y+p.radius;
+        if(Math.abs(bottom-plat.y)<=supportEps){
+          p.y=plat.y-p.radius;
+          if(p.vy>0) p.vy=0;
+          p.grounded=true;
+          p.supportPlatform=i;
+          break;
+        }
+      }
+    }
 
     // A jump request is buffered briefly. This matters most for non-host
     // players because their input has network travel time before the host
@@ -1908,8 +2177,8 @@ const Game = {
 
     p.dashCd = Math.max(0,p.dashCd-dt);
     p.actionCooldown = Math.max(0,(p.actionCooldown||0)-dt);
-    p.actionCooldownMax = p.actionCooldownMax || PHYS.actionProjectileCooldown;
-    if(this.isHost && p.remoteActionActive && p.alive && GameModes[this.mode]?.projectile){
+    p.actionCooldownMax = p.actionCooldownMax || (GameModes[this.mode]?.mine?PHYS.mineCooldown:PHYS.actionProjectileCooldown);
+    if(this.isHost && p.remoteActionActive && p.alive && (GameModes[this.mode]?.projectile || GameModes[this.mode]?.mine)){
       // Remote clients send the action-start event, but their local charge timer
       // is not available on the host. Advance the authoritative remote charge here
       // so the next state snapshots tell every peer how far that player has charged.
@@ -1918,12 +2187,17 @@ const Game = {
       p.actionCharge=chargeNorm;
       p.actionPower=Math.pow(chargeNorm,PHYS.actionChargePowerExponent);
 
-      const target=this.findNearestLivingPlayer(p);
-      if(target){
-        p.actionAngle=this.normalizeAngle(Math.atan2(target.y-p.y,target.x-p.x));
+      if(GameModes[this.mode]?.mine){
+        p.actionAngle = p.facing<0 ? Math.PI : 0;
+        p.actionPower = chargeNorm;
+      }else{
+        const target=this.findNearestLivingPlayer(p);
+        if(target){
+          p.actionAngle=this.normalizeAngle(Math.atan2(target.y-p.y,target.x-p.x));
+        }
       }
     }
-    if(p.actionAiming && p.alive && GameModes[this.mode]?.projectile){
+    if(p.actionAiming && p.alive && (GameModes[this.mode]?.projectile || GameModes[this.mode]?.mine)){
       p._actionChargeFxAcc=(p._actionChargeFxAcc||0)+dt;
       if(p._actionChargeFxAcc>=0.10){
         p._actionChargeFxAcc=0;
@@ -1961,18 +2235,32 @@ const Game = {
       input.jumpPressed=false; // consume the one-shot locally
       this.spawnFx(p,'jump');
     }
-    // Variable jump height: a full hold rides the whole jumpVel arc, but letting
-    // go early while still rising clamps the upward speed down to a "short hop"
-    // so a quick tap of jump produces a noticeably lower hop.
-    if(!jumpHeld){
+
+    // Normal jumping is intentionally untouched. Bounce-specific W acceleration
+    // is handled separately so it cannot change the regular jump arc.
+    if(p.bounceJumpActive && !p.grounded){
+      // Bounce W boost is a short one-shot impulse window. Holding W after the
+      // window expires cannot keep accelerating the player upward.
+      if(p.bounceWBoostTimer>0 && p.vy < 0){
+        p.vy -= PHYS.bounceWAccel*dt;
+        p.vy = Math.max(-(PHYS.bounceWMaxSpeed*Math.sqrt(PHYS.bounceHeightScale)), p.vy);
+        p.bounceWBoostTimer = Math.max(0, p.bounceWBoostTimer-dt);
+      }else{
+        p.bounceJumpActive=false;
+        p.bounceWBoostTimer=0;
+      }
+    } else if(!jumpHeld){
       const shortHop = -jumpPower*PHYS.jumpShortHopFactor;
       if(p.vy < shortHop) p.vy = shortHop;
     }
+    p.bounceJumpHeldPrev=!!jumpHeld;
 
     // Fast fall: holding down while airborne pulls you down harder, both cutting
     // a rising arc short and accelerating the fall itself.
     if(input.down && !p.grounded) grav *= PHYS.fastFallMultiplier;
-    if(jumpHeld && !p.grounded && p.vy < 0) grav *= PHYS.jumpHoldGravityScale;
+    // Normal jumps keep their existing hold gravity. Bounce jumps use the explicit
+    // speed cap above so their extra W boost stays tight and predictable.
+    if(jumpHeld && !p.grounded && p.vy < 0 && !p.bounceJumpActive) grav *= PHYS.jumpHoldGravityScale;
 
     // Dash: hold to charge through three power levels, then release to fire.
     // A quick tap still produces the familiar low-power poke.
@@ -2109,6 +2397,233 @@ const Game = {
     });
   },
 
+  getMineLaunchState(p, power=0){
+    const powerNorm=Math.max(0,Math.min(1,Number(power)||0));
+    const speed=PHYS.mineMinThrowSpeed+(PHYS.mineMaxThrowSpeed-PHYS.mineMinThrowSpeed)*powerNorm;
+    const dir=p?.facing<0?-1:1;
+    // Mirror the upward lob correctly. Canvas Y grows downward, so the left-hand
+    // arc must use an angle just past PI (not PI minus the launch angle, which
+    // would point downward).
+    const angle=dir<0 ? (Math.PI+PHYS.mineLaunchAngle) : -PHYS.mineLaunchAngle;
+    // Canvas Y grows downward, so negative Y is the upward part of the lob.
+    return {powerNorm,speed,angle,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed};
+  },
+  serializeMine(m){
+    return {
+      id:m.id, ownerId:m.ownerId, x:m.x, y:m.y, vx:m.vx, vy:m.vy,
+      radius:m.radius||PHYS.mineRadius, landed:!!m.landed,
+      armed:!!m.armed, armTimer:Math.max(0,Number(m.armTimer)||0),
+      power:m.power||0, age:m.age||0
+    };
+  },
+  fireMine(p, angle, power=0){
+    if(!p || !p.alive || !this.isHost || !GameModes[this.mode]?.mine) return false;
+    if((p.actionCooldown||0)>0) return false;
+    const launch=this.getMineLaunchState(p,power);
+    const dir=p.facing<0?-1:1;
+    const offset=p.radius+PHYS.mineRadius+8;
+    const x=p.x+dir*offset, y=p.y-p.radius*0.10;
+    const mine={
+      id:this._nextMineId++, ownerId:p.id, x,y, vx:launch.vx,vy:launch.vy,
+      radius:PHYS.mineRadius, landed:false, armed:false, armTimer:0,
+      power:launch.powerNorm, age:0
+    };
+    this.mines.push(mine);
+    p.actionCooldown=PHYS.mineCooldown;
+    p.actionCooldownMax=PHYS.mineCooldown;
+    p.actionAiming=false; p.remoteActionActive=false; p.actionKind=null;
+    p._actionChargeFxAcc=0;
+    NetworkManager.broadcast({t:'mine_throw',mine:this.serializeMine(mine)},true);
+    AudioManager.beep(105,0.10,'square',0.16,52);
+    return true;
+  },
+  pointSegmentCircleHit(ax,ay,bx,by,cx,cy,r){
+    const abx=bx-ax, aby=by-ay;
+    const ab2=abx*abx+aby*aby;
+    let t=ab2>1e-10?((cx-ax)*abx+(cy-ay)*aby)/ab2:0;
+    t=Math.max(0,Math.min(1,t));
+    const px=ax+abx*t, py=ay+aby*t;
+    const dx=cx-px, dy=cy-py;
+    return {hit:dx*dx+dy*dy<=r*r,t,px,py};
+  },
+  detonateMine(mine, air=true, hitPlayer=null){
+    if(!mine) return;
+    const idx=this.mines.findIndex(m=>m.id===mine.id);
+    if(idx<0) return;
+    const x=mine.x, y=mine.y;
+    this.mines.splice(idx,1);
+
+    if(hitPlayer && hitPlayer.alive){
+      const dx=hitPlayer.x-x, dy=hitPlayer.y-y;
+      const dist=Math.hypot(dx,dy)||1;
+      const nx=dx/dist, ny=dy/dist;
+      if(air){
+        const upBias=ny*0.65-0.25;
+        const len=Math.hypot(nx,upBias)||1;
+        const k=PHYS.mineAirKnockback*(this.matchSettings.kb||1);
+        hitPlayer.vx += (nx/len)*k;
+        hitPlayer.vy += (upBias/len)*k;
+        hitPlayer.damage += PHYS.mineAirDamage;
+      }else{
+        const upBias=Math.min(-0.45,ny-0.35);
+        const len=Math.hypot(nx,upBias)||1;
+        const k=PHYS.mineGroundLaunchSpeed*(this.matchSettings.kb||1);
+        hitPlayer.vx += (nx/len)*k;
+        hitPlayer.vy += (upBias/len)*k;
+        hitPlayer.damage += 12;
+      }
+      hitPlayer.hitFlash=8;
+      // Mines already have their own authoritative detonation event, so do not
+      // also spawn the generic impact FX/network event here. That duplicate FX
+      // path was one of the main sources of frame spikes during explosions.
+    }
+
+    const color=air?'#ffd966':'#ff7a45';
+    // Keep the mine explosion readable while using a small, bounded particle
+    // burst. Mines can go off repeatedly in a crowded match, so avoid the much
+    // heavier generic impact/dash effects.
+    this.particles.burst(x,y,color,air?8:14,air?220:320,{gravity:air?110:190,life:air?0.22:0.34,size:air?3:3.6,sizeEnd:.4,twinkle:true});
+    this.camera.addShake(air?3:7);
+    NetworkManager.broadcast({t:'mine_detonate',id:mine.id,x,y,air:!!air,hitId:hitPlayer?.id||null},true);
+    AudioManager.beep(air?240:85,air?0.06:0.11,'sawtooth',air?0.12:0.2,air?100:60);
+  },
+  landMine(mine, x, y, nx=0, ny=-1){
+    mine.x=x; mine.y=y; mine.vx=0; mine.vy=0; mine.landed=true;
+    mine.armed=false; mine.armTimer=PHYS.mineArmingDelay;
+    // Give the client a deterministic resting state from this exact landing point.
+    if(ny< -0.25){
+      mine.x += nx*0.01; mine.y += ny*0.01;
+    }
+  },
+  updateMines(dt){
+    if(!this.mines.length) return;
+    const isHost=this.isHost;
+    const gravity=PHYS.baseGravity*(this.matchSettings.gravity||1);
+    // Reuse these arrays for every mine in the tick. Repeated Object.values()
+    // allocations become noticeable when several mines are active together.
+    const players=Object.values(this.players);
+    const platforms=this.map.platforms||[];
+    for(let i=this.mines.length-1;i>=0;i--){
+      const m=this.mines[i];
+      m.age=(m.age||0)+dt;
+      if(m.age>PHYS.mineMaxAirTime && !m.landed){
+        this.detonateMine(m,true,null);
+        continue;
+      }
+      if(m.armTimer>0){
+        m.armTimer=Math.max(0,m.armTimer-dt);
+        if(m.armTimer<=0) m.armed=true;
+      }else if(!m.landed){
+        m.armed=true;
+      }
+
+      if(!isHost){
+        if(!m.landed){
+          m.vy += gravity*dt;
+          m.x += m.vx*dt;
+          m.y += m.vy*dt;
+          if(m.y+m.radius>this.map.height){
+            m.y=this.map.height-m.radius; m.vx=0; m.vy=0; m.landed=true; m.armed=false; m.armTimer=PHYS.mineArmingDelay;
+          }
+        }else{
+          m.vx=0; m.vy=0;
+        }
+        continue;
+      }
+
+      if(!m.landed){
+        const oldX=m.x, oldY=m.y;
+        m.vy += gravity*dt;
+        const nxStep=m.vx*dt, nyStep=m.vy*dt;
+        const newX=oldX+nxStep, newY=oldY+nyStep;
+        let airHit=null, airHitT=Infinity;
+        const segMinX=Math.min(oldX,newX), segMaxX=Math.max(oldX,newX);
+        const segMinY=Math.min(oldY,newY), segMaxY=Math.max(oldY,newY);
+        for(const p of players) {
+          if(!p.alive) continue;
+          const pr=m.radius+p.radius;
+          const pPrevX=Number.isFinite(p.prevX)?p.prevX:p.x;
+          const pPrevY=Number.isFinite(p.prevY)?p.prevY:p.y;
+          const pMinX=Math.min(pPrevX,p.x);
+          const pMaxX=Math.max(pPrevX,p.x);
+          const pMinY=Math.min(pPrevY,p.y);
+          const pMaxY=Math.max(pPrevY,p.y);
+          if(pMaxX<segMinX-pr || pMinX>segMaxX+pr || pMaxY<segMinY-pr || pMinY>segMaxY+pr) continue;
+          const sweep=this.sweptCircleCircle(
+            oldX,oldY,newX,newY,
+            pPrevX,
+            pPrevY,
+            p.x,p.y,
+            m.radius+p.radius
+          );
+          if(sweep && sweep.t<airHitT){ airHitT=sweep.t; airHit=p; }
+        }
+        if(airHit){
+          m.x=oldX+nxStep*airHitT; m.y=oldY+nyStep*airHitT;
+          this.detonateMine(m,true,airHit);
+          continue;
+        }
+
+        // Map bounds behave like hard world surfaces. Bottom contact plants the mine;
+        // side/top contact reflects it so a lob can ricochet into a usable spot.
+        if(newX-m.radius<0){ m.x=m.radius; m.vx=Math.abs(m.vx)*PHYS.mineSideBounce; }
+        else if(newX+m.radius>this.map.width){ m.x=this.map.width-m.radius; m.vx=-Math.abs(m.vx)*PHYS.mineSideBounce; }
+        if(newY-m.radius<0){ m.y=m.radius; m.vy=Math.abs(m.vy)*PHYS.mineSideBounce; }
+        else if(newY+m.radius>this.map.height){
+          this.landMine(m,newX,Math.max(m.radius,this.map.height-m.radius),0,-1);
+        }
+        if(m.landed) continue;
+        m.x += nxStep; m.y += nyStep;
+
+        let landed=false;
+        for(const plat of platforms){
+          // One-way platforms only receive a mine from above.
+          if(plat.type==='oneway' && (Number(plat.rotation)||0)===0){
+            if(m.vy>=0 && oldY+m.radius<=plat.y+3 && m.x+m.radius>plat.x && m.x-m.radius<plat.x+plat.w && m.y+m.radius>=plat.y){
+              this.landMine(m,m.x,plat.y-m.radius,0,-1); landed=true; break;
+            }
+            continue;
+          }
+          const hit=(Number(plat.rotation)||0)!==0 ? this.circleVsRotatedRect(m,plat) : this.circleVsAxisAlignedRect(m,plat);
+          if(!hit) continue;
+          const vn=m.vx*hit.nx+m.vy*hit.ny;
+          if(hit.top && vn<50 && m.vy>=-20){
+            this.landMine(m,m.x+hit.nx*hit.depth,m.y+hit.ny*hit.depth,hit.nx,hit.ny);
+            landed=true; break;
+          }
+          // Side/underside contacts rebound lightly instead of pinning the mine.
+          if(vn<0){
+            m.x += hit.nx*hit.depth; m.y += hit.ny*hit.depth;
+            m.vx -= hit.nx*vn*(1+PHYS.mineSideBounce);
+            m.vy -= hit.ny*vn*(1+PHYS.mineSideBounce);
+            m.vx*=0.82; m.vy*=0.82;
+            if(Math.abs(m.vx)<PHYS.mineGroundRestSpeed && Math.abs(m.vy)<PHYS.mineGroundRestSpeed && hit.top){
+              this.landMine(m,m.x,m.y,hit.nx,hit.ny); landed=true; break;
+            }
+          }
+        }
+        if(landed) continue;
+      }else{
+        // Planted mines stay fixed and trigger on any living player, including the thrower.
+        for(const p of players){
+          if(!p.alive || !m.armed) continue;
+          const dx=p.x-m.x, dy=p.y-m.y;
+          const rr=p.radius+m.radius-2;
+          if(dx*dx+dy*dy<=rr*rr){
+            this.detonateMine(m,false,p);
+            break;
+          }
+        }
+        if(this.mines[i]!==m) continue;
+      }
+    }
+
+    if(isHost){
+      // Mines are included in state snapshots, so no separate per-frame sync event is needed.
+      // A reliable throw/detonate event provides immediate edge-triggered feedback.
+    }
+  },
+
   fireActionProjectile(p, angle, power=0){
     if(!p || !p.alive || !this.isHost || !GameModes[this.mode]?.projectile) return false;
     if((p.actionCooldown||0)>0) return false;
@@ -2128,6 +2643,48 @@ const Game = {
     AudioManager.beep(proj.deadly?110:180,0.08,'square',0.18,70);
     return true;
   },
+  projectileHitsPlayerAt(q, x, y, p, px=p.x, py=p.y){
+    const angle=q.angle ?? Math.atan2(q.vy,q.vx);
+    const c=Math.cos(angle), s=Math.sin(angle);
+    const dx=px-x, dy=py-y;
+    const lx=dx*c+dy*s, ly=-dx*s+dy*c;
+    const halfL=q.halfLength ?? 12, halfW=q.halfWidth ?? 5;
+    const cx=Math.max(-halfL,Math.min(halfL,lx));
+    const cy=Math.max(-halfW,Math.min(halfW,ly));
+    const ddx=lx-cx, ddy=ly-cy;
+    return ddx*ddx+ddy*ddy <= (p.radius*p.radius);
+  },
+
+  sweptCircleCircle(a0x,a0y,a1x,a1y,b0x,b0y,b1x,b1y,radius){
+    const rx=a0x-b0x, ry=a0y-b0y;
+    const vx=(a1x-a0x)-(b1x-b0x);
+    const vy=(a1y-a0y)-(b1y-b0y);
+    const rr=radius*radius;
+    const c=rx*rx+ry*ry-rr;
+    if(c<=0) return {t:0,nx:0,ny:0};
+    const a=vx*vx+vy*vy;
+    if(a<1e-10) return null;
+    const b=2*(rx*vx+ry*vy);
+    const disc=b*b-4*a*c;
+    if(disc<0) return null;
+    const root=Math.sqrt(disc);
+    const t0=(-b-root)/(2*a);
+    const t1=(-b+root)/(2*a);
+    let t=null;
+    if(t0>=0 && t0<=1) t=t0;
+    else if(t1>=0 && t1<=1) t=t1;
+    if(t===null) return null;
+    const ax=a0x+(a1x-a0x)*t, ay=a0y+(a1y-a0y)*t;
+    const bx=b0x+(b1x-b0x)*t, by=b0y+(b1y-b0y)*t;
+    let dx=bx-ax, dy=by-ay, d=Math.hypot(dx,dy);
+    if(d<1e-7){
+      dx=b1x-b0x-(a1x-a0x);
+      dy=b1y-b0y-(a1y-a0y);
+      d=Math.hypot(dx,dy)||1;
+    }
+    return {t,nx:dx/d,ny:dy/d};
+  },
+
   projectileHitsPlatform(q, x, y){
     // Exact OBB-vs-AABB SAT test. The old test only checked the projectile's
     // two local axes, which could report false positives near platform corners.
@@ -2156,81 +2713,55 @@ const Game = {
       const q=this.projectiles[i];
       const oldX=q.x, oldY=q.y;
       q.x+=q.vx*dt; q.y+=q.vy*dt;
-      // Projectiles never expire by time. They only leave the world when the
-      // host confirms contact with a platform or the arena boundary (a wall).
       q.life=Infinity;
       q.spawnGrace=Math.max(0,(q.spawnGrace||0)-dt);
       const angle=q.angle ?? Math.atan2(q.vy,q.vx);
-      const cos=Math.cos(angle), sin=Math.sin(angle);
       const halfL=q.halfLength ?? 12, halfW=q.halfWidth ?? 5;
       let remove=false, removeReason=null;
 
-      // Only the host is allowed to destroy projectiles. Clients simply keep
-      // rendering the authoritative projectile until an explicit remove event
-      // arrives from the host. A projectile is NEVER allowed to spawn inside
-      // a wall/platform: spawn grace is only for the player's body, not for
-      // pre-existing projectile/map overlap. This fixes point-blank wall shots.
       if(isHost){
-        const dist=Math.hypot(q.x-oldX,q.y-oldY);
-        const samples=Math.max(1,Math.ceil(dist/4));
-        const checkAt=(sx,sy,allowPlatform)=>{
-          const hitWall=(sx-halfL<=0 || sx+halfL>=this.map.width || sy-halfW<=0 || sy+halfW>=this.map.height);
-          const hitPlatform=this.projectileHitsPlatform(q,sx,sy);
-          if(hitWall) return 'wall';
-          if(allowPlatform && hitPlatform) return 'platform';
-          return null;
-        };
-
-        // Always check the current spawn position against the map.
-        const spawnHit=checkAt(oldX,oldY,true);
-        if(spawnHit){
-          remove=true; removeReason=spawnHit;
-        } else if(q.spawnGrace<=0){
-          // After grace expires, use swept collision so fast arrows cannot tunnel.
-          for(let s=1;s<=samples;s++){
-            const t=s/samples;
-            const sx=oldX+(q.x-oldX)*t, sy=oldY+(q.y-oldY)*t;
-            const hit=checkAt(sx,sy,true);
-            if(hit){ remove=true; removeReason=hit; break; }
-          }
-        } else {
-          // During grace, walls are still solid. This matters when the shooter
-          // is standing flush against a vertical wall.
-          const wallHit=checkAt(q.x,q.y,false);
-          if(wallHit==='wall'){ remove=true; removeReason='wall'; }
-        }
-      }
-
-      // Player hits do NOT destroy arrows. Keep a small per-projectile hit list
-      // on the host so one arrow cannot repeatedly damage the same player every
-      // frame while it passes through them.
-      if(isHost && !remove && q.spawnGrace<=0){
+        const dx=q.x-oldX, dy=q.y-oldY;
+        const dist=Math.hypot(dx,dy);
+        const samples=Math.max(1,Math.ceil(dist/3));
         if(!Array.isArray(q.hitPlayers)) q.hitPlayers=[];
-        for(const p of Object.values(this.players)){
-          if(!p.alive || p.id===q.ownerId || q.hitPlayers.includes(p.id)) continue;
-          const dx=p.x-q.x, dy=p.y-q.y;
-          const lx=dx*cos+dy*sin, ly=-dx*sin+dy*cos;
-          const cx=Math.max(-halfL,Math.min(halfL,lx));
-          const cy=Math.max(-halfW,Math.min(halfW,ly));
-          const ddx=lx-cx, ddy=ly-cy;
-          if(ddx*ddx+ddy*ddy <= p.radius*p.radius){
-            q.hitPlayers.push(p.id);
-            if(q.deadly){
-              p.alive=false; p.forceEliminate=false;
-              if(!this.eliminationOrder.includes(p.id)) this.eliminationOrder.push(p.id);
-              NetworkManager.broadcast({t:'eliminated',id:p.id,x:p.x,y:p.y},true);
-              this.spawnFx(p,'death'); AudioManager.death();
-            }else{
-              // Arrows knock targets in the direction the arrow is travelling,
-              // rather than away from the target's center (which could reverse
-              // the intended force when the arrow passed through from behind).
-              const travelLen=Math.hypot(q.vx,q.vy)||1;
-              const nx=q.vx/travelLen, ny=q.vy/travelLen;
-              const knock=(420+900*(q.power||0))*(this.matchSettings.kb||1);
-              p.vx += nx*knock;
-              p.vy += ny*knock;
-              p.damage += 8; p.hitFlash=8;
-              this.spawnFx(p,'impact'); NetworkManager.broadcast({t:'hitfx',x:p.x,y:p.y},false);
+
+        // Continuous-ish swept collision: sample the relative motion of the
+        // projectile and every target, while giving map geometry first refusal.
+        // Crucially, player hits are NOT subject to spawn grace. The shooter is
+        // already excluded by ownerId, so point-blank shots are legitimate hits.
+        for(let s=0;s<=samples;s++){
+          const t=s/samples;
+          const sx=oldX+dx*t, sy=oldY+dy*t;
+          const mapHit=(sx-halfL<=0 || sx+halfL>=this.map.width || sy-halfW<=0 || sy+halfW>=this.map.height)
+            ? 'wall'
+            : (this.projectileHitsPlatform(q,sx,sy) ? 'platform' : null);
+          if(mapHit){
+            remove=true; removeReason=mapHit;
+            break;
+          }
+
+          for(const p of Object.values(this.players)){
+            if(!p.alive || p.id===q.ownerId || q.hitPlayers.includes(p.id)) continue;
+            const p0x=Number.isFinite(p.prevX)?p.prevX:p.x;
+            const p0y=Number.isFinite(p.prevY)?p.prevY:p.y;
+            const p1x=p.x, p1y=p.y;
+            const px=p0x+(p1x-p0x)*t, py=p0y+(p1y-p0y)*t;
+            if(this.projectileHitsPlayerAt(q,sx,sy,p,px,py)){
+              q.hitPlayers.push(p.id);
+              if(q.deadly){
+                p.alive=false; p.forceEliminate=false;
+                if(!this.eliminationOrder.includes(p.id)) this.eliminationOrder.push(p.id);
+                NetworkManager.broadcast({t:'eliminated',id:p.id,x:p.x,y:p.y},true);
+                this.spawnFx(p,'death'); AudioManager.death();
+              }else{
+                const travelLen=Math.hypot(q.vx,q.vy)||1;
+                const nx=q.vx/travelLen, ny=q.vy/travelLen;
+                const knock=(420+900*(q.power||0))*(this.matchSettings.kb||1);
+                p.vx += nx*knock;
+                p.vy += ny*knock;
+                p.damage += 8; p.hitFlash=8;
+                this.spawnFx(p,'impact'); NetworkManager.broadcast({t:'hitfx',x:p.x,y:p.y},false);
+              }
             }
           }
         }
@@ -2307,11 +2838,40 @@ const Game = {
     return this.mode==='pypg' ? this.findPYPGTarget(p) : this.findWallGrappleTarget(p);
   },
 
-  /* closest point on an axis-aligned rect to a given point — used to find the nearest platform to grapple to */
+  /* Closest point on a platform's actual boundary, including rotation.
+     The editor stores rotation about the platform center, so do the query in
+     that same local coordinate system instead of using the unrotated bounds. */
   closestPointOnRect(px,py,rect){
-    const cx = Math.max(rect.x, Math.min(px, rect.x+rect.w));
-    const cy = Math.max(rect.y, Math.min(py, rect.y+rect.h));
-    return {x:cx, y:cy, dist:Math.hypot(cx-px, cy-py)};
+    const rot=(Number(rect.rotation)||0)*Math.PI/180;
+    const cr=Math.cos(rot), sr=Math.sin(rot);
+    const cx=rect.x+rect.w/2, cy=rect.y+rect.h/2;
+    const dx=px-cx, dy=py-cy;
+    const lx=dx*cr+dy*sr, ly=-dx*sr+dy*cr;
+    const hx=Math.max(0,rect.w/2), hy=Math.max(0,rect.h/2);
+
+    // Outside the rectangle: ordinary closest-point projection gives the
+    // exact nearest point on a face or corner.
+    if(Math.abs(lx)>hx || Math.abs(ly)>hy){
+      const qx=Math.max(-hx,Math.min(hx,lx));
+      const qy=Math.max(-hy,Math.min(hy,ly));
+      const wx=cx+qx*cr-qy*sr;
+      const wy=cy+qx*sr+qy*cr;
+      return {x:wx,y:wy,dist:Math.hypot(wx-px,wy-py)};
+    }
+
+    // If a query lands inside the solid, return the nearest actual face rather
+    // than the point itself (distance zero). This keeps grapple validation stable.
+    const dLeft=lx+hx, dRight=hx-lx, dTop=ly+hy, dBottom=hy-ly;
+    let qx=lx, qy=ly;
+    const minFace=Math.min(dLeft,dRight,dTop,dBottom);
+    if(minFace===dTop) qy=-hy;
+    else if(minFace===dBottom) qy=hy;
+    else if(minFace===dLeft) qx=-hx;
+    else qx=hx;
+
+    const wx=cx+qx*cr-qy*sr;
+    const wy=cy+qx*sr+qy*cr;
+    return {x:wx,y:wy,dist:Math.hypot(wx-px,wy-py)};
   },
   applyGrapple(p, dt){
     if(!p.alive){
@@ -2483,15 +3043,14 @@ const Game = {
         // one-tick positional jump. Normal wall grapples retain their original
         // exact boundary behavior.
         const radialVel=p.vx*nx+p.vy*ny;
-        if(pypg){
-          const excess=dist-maxDist;
-          const correction=Math.min(excess, Math.max(2, 520*dt));
-          p.x-=nx*correction;
-          p.y-=ny*correction;
-        }else{
-          p.x=anchorX+nx*maxDist;
-          p.y=anchorY+ny*maxDist;
-        }
+        const excess=dist-maxDist;
+        // Never teleport the player to the rope boundary. A hard positional snap
+        // can place the player inside a platform, after which the old platform
+        // solver had to guess which side to eject them from. Bleed off excess
+        // rope length over several fixed steps for both normal and PYPG grapple.
+        const correction=Math.min(excess, Math.max(2, 760*dt));
+        p.x-=nx*correction;
+        p.y-=ny*correction;
         if(radialVel>0){
           const rebound=Math.min(0.95,PHYS.grappleRebound+stretch*0.0012);
           p.vx-=nx*radialVel*(1+rebound);
@@ -2502,6 +3061,93 @@ const Game = {
   },
 
 
+  circleVsRotatedRect(p, plat){
+    const rot=(Number(plat.rotation)||0)*Math.PI/180;
+    const cr=Math.cos(rot), sr=Math.sin(rot);
+    const cx=plat.x+plat.w/2, cy=plat.y+plat.h/2;
+    const dx=p.x-cx, dy=p.y-cy;
+    const lx=dx*cr+dy*sr, ly=-dx*sr+dy*cr;
+    const hx=plat.w/2, hy=plat.h/2;
+    const qx=Math.max(-hx,Math.min(hx,lx)), qy=Math.max(-hy,Math.min(hy,ly));
+    let nxL=lx-qx, nyL=ly-qy, dist=Math.hypot(nxL,nyL);
+    if(dist>p.radius) return null;
+
+    // Outside/corner contact: the closest-point vector gives the exact normal.
+    if(dist>1e-7){
+      const worldNx=(nxL/dist)*cr-(nyL/dist)*sr;
+      const worldNy=(nxL/dist)*sr+(nyL/dist)*cr;
+      return {depth:p.radius-dist,nx:worldNx,ny:worldNy,top:worldNy< -0.10};
+    }
+
+    // Center is inside the rotated rectangle. Compute the true minimum
+    // translation to one of its four faces instead of using a radius-only push.
+    const leftDepth=lx+hx+p.radius;
+    const rightDepth=hx-lx+p.radius;
+    const topDepth=ly+hy+p.radius;
+    const bottomDepth=hy-ly+p.radius;
+    let depth=topDepth, fx=0, fy=-1;
+    if(bottomDepth<depth){ depth=bottomDepth; fx=0; fy=1; }
+    if(leftDepth<depth){ depth=leftDepth; fx=-1; fy=0; }
+    if(rightDepth<depth){ depth=rightDepth; fx=1; fy=0; }
+    const worldNx=fx*cr-fy*sr, worldNy=fx*sr+fy*cr;
+    return {depth,nx:worldNx,ny:worldNy,top:worldNy< -0.10};
+  },
+  circleVsAxisAlignedRect(p, plat){
+    const px1=plat.x, px2=plat.x+plat.w, py1=plat.y, py2=plat.y+plat.h;
+    const qx=Math.max(px1,Math.min(px2,p.x));
+    const qy=Math.max(py1,Math.min(py2,p.y));
+    let dx=p.x-qx, dy=p.y-qy;
+    let dist=Math.hypot(dx,dy);
+    if(dist>p.radius) return null;
+    if(dist>1e-7){
+      return {depth:p.radius-dist,nx:dx/dist,ny:dy/dist,top:(dy/dist)<-0.10};
+    }
+    // Center is inside the rectangle. Choose the nearest face by true minimum
+    // translation depth; never guess left/right from the platform center.
+    const leftDepth=p.x-px1+p.radius;
+    const rightDepth=px2-p.x+p.radius;
+    const topDepth=p.y-py1+p.radius;
+    const bottomDepth=py2-p.y+p.radius;
+    let depth=topDepth,nx=0,ny=-1,top=true;
+    if(bottomDepth<depth){ depth=bottomDepth; nx=0; ny=1; top=false; }
+    if(leftDepth<depth){ depth=leftDepth; nx=-1; ny=0; top=false; }
+    if(rightDepth<depth){ depth=rightDepth; nx=1; ny=0; top=false; }
+    return {depth,nx,ny,top};
+  },
+
+  steerOnSlope(p, plat, hit, dt){
+    if(!p || !plat || !hit || Math.abs(hit.nx)<=0.02) return;
+
+    // A slope should constrain the player to its tangent, but it should NOT
+    // magically reverse the player's momentum when the input changes. Keep one
+    // fixed tangent for the face and let the existing acceleration gradually
+    // turn the along-slope velocity through zero.
+    const rot=(Number(plat.rotation)||0)*Math.PI/180;
+    let tx=Math.cos(rot), ty=Math.sin(rot);
+    // Keep the canonical tangent pointing generally right; the signed
+    // along-slope velocity carries the actual movement direction.
+    if(tx<0){ tx=-tx; ty=-ty; }
+
+    let along=p.vx*tx+p.vy*ty;
+    const moveDir=p.input?.right&&!p.input?.left ? 1 : (p.input?.left&&!p.input?.right ? -1 : 0);
+
+    if(moveDir){
+      const chargeMoveNorm=p.dashCharging ? Math.min(1,(p.dashCharge||0)/PHYS.dashMaxLevel) : 0;
+      const chargeMoveFactor=1-chargeMoveNorm*0.58;
+      const slopeAccel=(PHYS.accel/(p.heavy?1.4:1))*chargeMoveFactor;
+      // The normal horizontal input already contributes accel*|tx| along the
+      // slope. Add only the missing portion, so a turn remains acceleration-
+      // driven while uphill/downhill speed stays close to flat-ground speed.
+      const missingFactor=1-Math.min(1,Math.abs(tx));
+      along += moveDir*slopeAccel*missingFactor*0.75*dt;
+    }
+
+    const maxS=(PHYS.maxSpeed/(p.heavy?1.25:1))*(p.dashCharging ? (1-Math.min(1,(p.dashCharge||0)/PHYS.dashMaxLevel)*0.58) : 1);
+    along=Math.max(-maxS,Math.min(maxS,along));
+    p.vx=tx*along;
+    p.vy=ty*along;
+  },
+
   collideWithMap(p, dt, postPlayer=false){
     if(!p || !p.alive) return;
     if(!postPlayer){
@@ -2510,66 +3156,130 @@ const Game = {
     }
     for(let platIndex=0; platIndex<this.map.platforms.length; platIndex++){
       const plat=this.map.platforms[platIndex];
-      const px1=plat.x, px2=plat.x+plat.w, py1=plat.y, py2=plat.y+plat.h;
-      const withinX = p.x+p.radius>px1 && p.x-p.radius<px2;
-      if(!withinX) continue;
-      if(plat.type==='oneway'){
-        if(p.vy>=0 && p.y+p.radius>py1 && p.y+p.radius<py1+20 && (p.y - p.vy*dt)+p.radius <= py1+2){
-          p.y = py1-p.radius; p.vy=0; p.grounded=true; p.supportPlatform=platIndex;
+      const rotation=Number(plat.rotation)||0;
+      if(p.bounceIgnorePlatform===platIndex && p.vy>=0) p.bounceIgnorePlatform=-1;
+
+      if(plat.type==='oneway' && rotation===0){
+        const py1=plat.y;
+        const withinX=p.x+p.radius>plat.x && p.x-p.radius<plat.x+plat.w;
+        if(withinX && p.vy>=0 && p.y+p.radius>py1 && p.y+p.radius<py1+24){
+          const prevBottom=(Number.isFinite(p.prevY)?p.prevY:p.y-p.vy*dt)+p.radius;
+          if(prevBottom<=py1+3){
+            p.y=py1-p.radius;
+            const bounce=Math.max(0,Number(plat.bounciness)||0);
+            if(bounce>0){
+              // A one-way surface is only contacted from above, so bounce it.
+              // The bounce launch is independent of incoming speed: every landing
+              // on the same surface starts at the same 75%-height baseline.
+              const baseBounceSpeed=(640 + 150*Math.min(1.6,bounce))*Math.sqrt(PHYS.bounceHeightScale);
+              const jumpHeld=!!(p.input&&p.input.jump);
+              const launchSpeed=baseBounceSpeed;
+              p.vy=-launchSpeed;
+              p.bounceJumpActive=jumpHeld;
+              p.bounceJumpPeakSpeed=launchSpeed;
+              p.bounceWBoostTimer=jumpHeld ? PHYS.bounceWBoostTime : 0;
+              p.bounceIgnorePlatform=platIndex;
+              if(!postPlayer){ p.grounded=false; p.supportPlatform=-1; }
+              this.spawnFx(p,'bounce');
+            }else{
+              p.vy=0;
+              if(!postPlayer){ p.grounded=true; p.supportPlatform=platIndex; }
+            }
+          }
         }
         continue;
       }
-      if(p.y+p.radius>py1 && p.y-p.radius<py2){
-        if(postPlayer){
-          // A player/player impact is resolved after the normal map pass. That
-          // separation can create a small new overlap with the platform.
-          // Resolve that overlap by minimum penetration, never by the old
-          // velocity-blind side fallback that could snap the player to an edge.
-          const penTop=p.y+p.radius-py1;
-          const penBottom=py2-(p.y-p.radius);
-          const penLeft=px2-(p.x-p.radius);
-          const penRight=p.x+p.radius-px1;
-          if(Math.min(penTop,penBottom) <= Math.min(penLeft,penRight)){
-            if(p.y < (py1+py2)*0.5){
-              p.y=py1-p.radius;
-              if(p.vy>0) p.vy=0;
-              if(plat.type!=='bounce'){ p.grounded=true; p.supportPlatform=platIndex; }
-            }else{
-              p.y=py2+p.radius;
-              if(p.vy<0) p.vy=0;
-            }
-          }else if(p.x < (px1+px2)*0.5){
-            p.x=px1-p.radius;
-            if(p.vx>0) p.vx=0;
-          }else{
-            p.x=px2+p.radius;
-            if(p.vx<0) p.vx=0;
+
+      const hit=rotation!==0 ? this.circleVsRotatedRect(p,plat) : this.circleVsAxisAlignedRect(p,plat);
+      if(!hit) continue;
+      // A fresh top bounce may not immediately re-trigger the same top face while
+      // rising, but its side faces remain valid collision surfaces.
+      if(p.bounceIgnorePlatform===platIndex && p.vy<0 && hit.top) continue;
+
+      const bounce=Math.max(0,Number(plat.bounciness)||0);
+      p.x += hit.nx*hit.depth;
+      p.y += hit.ny*hit.depth;
+
+      // hit.nx/hit.ny point from the platform toward the player's center.
+      // Therefore vn<0 means the player is moving INTO the surface. The old
+      // implementation checked vn>=0 for top contacts, which inverted the
+      // landing case and made bouncy blocks behave like ordinary platforms.
+      const vn=p.vx*hit.nx+p.vy*hit.ny;
+      if(vn<0){
+        const incoming=-vn;
+        if(bounce>0 && hit.top){
+          // Only the top-facing side of a bouncy surface launches the player.
+          // This prevents underside contacts from acting like a sticky "zipline".
+          // The baseline is a fixed 75% of normal jump height; holding jump can
+          // raise it toward a full normal jump without affecting normal jumping.
+          const baseBounceSpeed=(640 + 150*Math.min(1.6,bounce))*Math.sqrt(PHYS.bounceHeightScale);
+          const jumpHeld=!!(p.input&&p.input.jump);
+          const launchSpeed=baseBounceSpeed;
+          if(Math.abs(hit.nx)>0.02){
+            const tx=-hit.ny, ty=hit.nx;
+            const along=p.vx*tx+p.vy*ty;
+            p.vx=tx*along;
           }
-        } else if(p.vy>=0 && (p.y - p.vy*dt)+p.radius <= py1+4){
-          p.y = py1-p.radius;
-          if(plat.type==='bounce'){
-            // Holding W when hitting a bouncy block charges the next bounce.
-            // The boost is consumed by this bounce and makes it dramatically higher.
-            const boosted = !!(p.input && p.input.jump);
-            p.vy = boosted ? Math.min(-900, -Math.abs(p.vy)*0.5 - 420) : (-Math.abs(p.vy)*0.32 - 110);
-            p.bounceBoostQueued = false;
-            this.spawnFx(p,'bounce');
-            if(boosted) this.spawnFx(p,'jump');
+          p.vy=-launchSpeed;
+          p.bounceJumpActive=jumpHeld;
+          p.bounceJumpPeakSpeed=launchSpeed;
+          p.bounceJumpHeldPrev=jumpHeld;
+          p.bounceWBoostTimer=jumpHeld ? PHYS.bounceWBoostTime : 0;
+          p.bounceIgnorePlatform=platIndex;
+          if(!postPlayer){
+            p.grounded=false;
+            p.supportPlatform=-1;
           }
-          else { p.vy=0; p.grounded=true; p.supportPlatform=platIndex; }
-        } else if(p.vy<0 && (p.y - p.vy*dt)-p.radius >= py2-4){
-          p.y = py2+p.radius; p.vy = Math.abs(p.vy)*PHYS.bounceDamp*0.2;
-        } else {
-          if(p.x < (px1+px2)/2){ p.x = px1-p.radius; p.vx = -Math.abs(p.vx)*PHYS.wallBounce; }
-          else{ p.x = px2+p.radius; p.vx = Math.abs(p.vx)*PHYS.wallBounce; }
+          this.spawnFx(p,'bounce');
+        }else if(bounce>0 && Math.abs(hit.nx)>Math.abs(hit.ny)){
+          // Bouncy side faces reflect the incoming normal velocity. The bottom
+          // face deliberately falls through to the ordinary-solid behavior below,
+          // so coming up from underneath never launches the player.
+          p.vx -= hit.nx*vn;
+          p.vy -= hit.ny*vn;
+          const sideBounce=Math.max(0,Math.min(1.6,bounce));
+          p.vx += hit.nx*incoming*sideBounce;
+          p.vy += hit.ny*incoming*sideBounce;
+        }else if(bounce>0){
+          // Bouncy surface hit from underneath/bottom: ordinary solid behavior.
+          p.vx -= hit.nx*vn;
+          p.vy -= hit.ny*vn;
+        }else{
+          // Ordinary platform: cancel only inward normal velocity.
+          p.vx -= hit.nx*vn;
+          p.vy -= hit.ny*vn;
+          if(!postPlayer && hit.top){
+            p.vy=0;
+            p.grounded=true;
+            p.supportPlatform=platIndex;
+            // Constrain motion to the slope without snapping the direction to
+            // the latest input. Existing momentum is preserved and the tangent
+            // velocity turns only as acceleration crosses it through zero.
+            this.steerOnSlope(p, plat, hit, dt);
+          }
         }
+      }else if(!bounce && hit.top && !postPlayer && vn <= 25){
+        // A player sitting exactly on a normal platform can have vn===0. Keep
+        // the grounded state stable so jump input remains reliable.
+        p.vy=0;
+        p.grounded=true;
+        p.supportPlatform=platIndex;
+        this.steerOnSlope(p, plat, hit, dt);
       }
     }
+
+    for(const plat of this.map.platforms||[]){
+      if(!plat.hazard) continue;
+      const rotation=Number(plat.rotation)||0;
+      const hit=rotation!==0 ? this.circleVsRotatedRect(p,plat) : this.circleVsAxisAlignedRect(p,plat);
+      if(hit) p.forceEliminate=true;
+    }
+
     for(const hz of this.map.hazards||[]){
-      const overlap = p.x+p.radius>hz.x && p.x-p.radius<hz.x+hz.w && p.y+p.radius>hz.y && p.y-p.radius<hz.y+hz.h;
+      const overlap=p.x+p.radius>hz.x && p.x-p.radius<hz.x+hz.w && p.y+p.radius>hz.y && p.y-p.radius<hz.y+hz.h;
       if(!overlap) continue;
       if(hz.type==='arrow'){
-        if(hz.deadly){ p.forceEliminate=true; }
+        if(hz.deadly) p.forceEliminate=true;
         else{
           const spd=640;
           if(hz.dir==='right') p.vx=Math.max(p.vx,spd);
@@ -2577,160 +3287,128 @@ const Game = {
           else if(hz.dir==='up') p.vy=Math.min(p.vy,-spd);
           else if(hz.dir==='down') p.vy=Math.max(p.vy,spd);
         }
-      } else { // legacy hazard (e.g. Volcano lava)
+      }else{
         p.forceEliminate=true;
       }
     }
   },
 
   resolveCollisions(dt){
+    // First resolve player/map contact using the exact current overlap.
     for(const id in this.players) this.collideWithMap(this.players[id], dt);
-    const arr = Object.values(this.players).filter(p=>p.alive);
+
+    const arr=Object.values(this.players).filter(p=>p.alive);
     for(let i=0;i<arr.length;i++){
       for(let j=i+1;j<arr.length;j++){
         const a=arr[i], b=arr[j];
-        const dx=b.x-a.x, dy=b.y-a.y;
-        let dist=Math.hypot(dx,dy)||0.01;
+        const a0x=Number.isFinite(a.prevX)?a.prevX:a.x, a0y=Number.isFinite(a.prevY)?a.prevY:a.y;
+        const b0x=Number.isFinite(b.prevX)?b.prevX:b.x, b0y=Number.isFinite(b.prevY)?b.prevY:b.y;
+        const endDx=b.x-a.x, endDy=b.y-a.y;
+        const endDist=Math.hypot(endDx,endDy)||0.01;
         const minD=a.radius+b.radius;
-        if(dist>=minD) continue;
-        const nx=dx/dist, ny=dy/dist;
-        const overlap=minD-dist;
-        // getting hit by a player using density (heavy) blows out your grapple line entirely
-        if(a.heavy && b.grappleAnchor){ b.grappleStamina=0; b.grappleAnchor=null; b.grappleTargetId=null; b.grappleLen=0; b.grappleRestLen=0; }
-        if(b.heavy && a.grappleAnchor){ a.grappleStamina=0; a.grappleAnchor=null; a.grappleTargetId=null; a.grappleLen=0; a.grappleRestLen=0; }
+        let toi=null;
+        let nx=0, ny=0, overlap=0;
+
+        if(endDist<minD){
+          nx=endDx/endDist; ny=endDy/endDist;
+          overlap=minD-endDist;
+          toi=1;
+        }else{
+          const sweep=this.sweptCircleCircle(a0x,a0y,a.x,a.y,b0x,b0y,b.x,b.y,minD);
+          if(!sweep) continue;
+          toi=sweep.t;
+          nx=sweep.nx; ny=sweep.ny;
+          // Rewind to the first contact point, resolve the impulse there, then
+          // advance the remaining fraction. This prevents high-speed dashes from
+          // tunneling completely through small players.
+          a.x=a0x+(a.x-a0x)*toi; a.y=a0y+(a.y-a0y)*toi;
+          b.x=b0x+(b.x-b0x)*toi; b.y=b0y+(b.y-b0y)*toi;
+          overlap=0;
+        }
+
+        // A tiny controlled separation prevents floating-point re-detection while
+        // keeping the actual time-of-impact location intact.
+        const separationEps=0.02;
         const massA=a.heavy?PHYS.heavyMass:1, massB=b.heavy?PHYS.heavyMass:1;
         const totalMass=massA+massB;
-        const sepA=overlap*(massB/totalMass), sepB=overlap*(massA/totalMass);
-        a.x -= nx*sepA; a.y -= ny*sepA;
-        b.x += nx*sepB; b.y += ny*sepB;
-        const rvx=b.vx-a.vx, rvy=b.vy-a.vy;
-        const relNormalSpeed = rvx*nx+rvy*ny;
+        if(overlap>0){
+          const sepA=(overlap+separationEps)*(massB/totalMass);
+          const sepB=(overlap+separationEps)*(massA/totalMass);
+          a.x-=nx*sepA; a.y-=ny*sepA;
+          b.x+=nx*sepB; b.y+=ny*sepB;
+        }else{
+          a.x-=nx*(separationEps*0.5); a.y-=ny*(separationEps*0.5);
+          b.x+=nx*(separationEps*0.5); b.y+=ny*(separationEps*0.5);
+        }
 
-        // Capture dash state BEFORE collision math changes the velocities.
-        // The actual dash system is driven by dashTime/dashVelocity; those are
-        // what must be consumed at the impact moment.
-        const aWasDashing = a.dashTime>0 && Number.isFinite(a.dashVelocity) && Math.abs(a.dashVelocity)>0;
-        const bWasDashing = b.dashTime>0 && Number.isFinite(b.dashVelocity) && Math.abs(b.dashVelocity)>0;
-        const dashImpact = (aWasDashing || bWasDashing) && relNormalSpeed<0;
+        // Heavy-player impacts break grapples before velocity transfer.
+        if(a.heavy && b.grappleAnchor){ b.grappleStamina=0; b.grappleAnchor=null; b.grappleTargetId=null; b.grappleLen=0; b.grappleRestLen=0; }
+        if(b.heavy && a.grappleAnchor){ a.grappleStamina=0; a.grappleAnchor=null; a.grappleTargetId=null; a.grappleLen=0; a.grappleRestLen=0; }
+
+        const rvx=b.vx-a.vx, rvy=b.vy-a.vy;
+        const relNormalSpeed=rvx*nx+rvy*ny;
+        const aWasDashing=a.dashTime>0 && Number.isFinite(a.dashVelocity) && Math.abs(a.dashVelocity)>0;
+        const bWasDashing=b.dashTime>0 && Number.isFinite(b.dashVelocity) && Math.abs(b.dashVelocity)>0;
+        const dashImpact=(aWasDashing||bWasDashing) && relNormalSpeed<0;
 
         if(relNormalSpeed<0){
-          /*
-           * Newton's-cradle style collision:
-           * Treat the two balls' velocity along the collision normal as a
-           * one-dimensional elastic collision. This directly redistributes
-           * the incoming momentum instead of applying a repeated push.
-           *
-           * For equal masses this becomes a clean velocity exchange:
-           *   A_after = B_before
-           *   B_after = A_before
-           *
-           * So a fast ball striking a nearly stationary ball transfers its
-           * forward momentum to the target and loses that forward momentum.
-           */
-          const vaN = a.vx*nx + a.vy*ny;
-          const vbN = b.vx*nx + b.vy*ny;
+          const vaN=a.vx*nx+a.vy*ny;
+          const vbN=b.vx*nx+b.vy*ny;
+          const dashEnergyMultiplier=1.35;
+          const effectiveVaN=aWasDashing?vaN*dashEnergyMultiplier:vaN;
+          const effectiveVbN=bWasDashing?vbN*dashEnergyMultiplier:vbN;
+          const newVaN=((massA-massB)*effectiveVaN+2*massB*effectiveVbN)/totalMass;
+          const newVbN=((massB-massA)*effectiveVbN+2*massA*effectiveVaN)/totalMass;
+          const deltaAN=newVaN-vaN, deltaBN=newVbN-vbN;
+          a.vx+=deltaAN*nx; a.vy+=deltaAN*ny;
+          b.vx+=deltaBN*nx; b.vy+=deltaBN*ny;
 
-          // A dash is an intentional external energy source. Feed a little
-          // extra of that dash energy into the collision calculation before
-          // applying the elastic transfer, rather than applying a separate
-          // knockback force afterward. This makes the dash transfer strongly
-          // into the target without restoring the dasher's boost.
-          const dashEnergyMultiplier = 1.35;
-          const effectiveVaN = aWasDashing ? vaN*dashEnergyMultiplier : vaN;
-          const effectiveVbN = bWasDashing ? vbN*dashEnergyMultiplier : vbN;
-
-          const newVaN = ((massA-massB)*effectiveVaN + 2*massB*effectiveVbN)/(massA+massB);
-          const newVbN = ((massB-massA)*effectiveVbN + 2*massA*effectiveVaN)/(massA+massB);
-
-          const deltaAN = newVaN-vaN;
-          const deltaBN = newVbN-vbN;
-
-          // Apply the normal collision transfer first. Density is a gameplay
-          // modifier on the *hit it delivers*, not on the heavy player's mass
-          // alone. The previous multiplier changed both sides of the collision
-          // and could largely cancel out in a fast/dash impact. Instead, keep the
-          // normal physics transfer and then give the victim a direct bonus that
-          // scales with the actual incoming normal speed.
-          a.vx += deltaAN*nx;
-          a.vy += deltaAN*ny;
-          b.vx += deltaBN*nx;
-          b.vy += deltaBN*ny;
-
-          // Extra Density knockback: a heavy player transfers a clear additional
-          // impulse into the player they hit. It is strongest when the hitter is
-          // moving quickly and gets another boost while dashing. This is based on
-          // the collision-normal speed before the collision, so a fast run-in or
-          // dash has a visibly larger effect than a slow bump.
-          const addDensityHit = (hitter, victim, incomingNormalSpeed, wasDashing, directionX, directionY) => {
+          const addDensityHit=(hitter,victim,incomingNormalSpeed,wasDashing,dx,dy)=>{
             if(!hitter.heavy) return;
-            const incoming = Math.max(0, Math.abs(incomingNormalSpeed));
+            const incoming=Math.max(0,Math.abs(incomingNormalSpeed));
             if(incoming<=40) return;
-            const speedScale = Math.max(0.65, Math.min(1.65, incoming/650));
-            const dashScale = wasDashing ? 1.35 : 1;
-            const extraVelocity = incoming * 0.50 * speedScale * dashScale;
-            victim.vx += directionX * extraVelocity;
-            victim.vy += directionY * extraVelocity;
+            const speedScale=Math.max(0.65,Math.min(1.65,incoming/650));
+            const dashScale=wasDashing?1.35:1;
+            const extraVelocity=incoming*0.50*speedScale*dashScale;
+            victim.vx+=dx*extraVelocity; victim.vy+=dy*extraVelocity;
           };
-          // For A hitting B, the collision normal points A -> B. For B hitting A,
-          // the victim needs the opposite direction.
           addDensityHit(a,b,effectiveVaN-effectiveVbN,aWasDashing,nx,ny);
           addDensityHit(b,a,effectiveVbN-effectiveVaN,bWasDashing,-nx,-ny);
 
-          // Keep tangential velocity unchanged. This is important for avoiding
-          // the "drill" behavior: the attacker cannot keep converting collision
-          // overlap into an extra sideways push every physics tick.
-
-          // A dash collision is the handoff point for the dash momentum.
-          // The elastic collision above has already redistributed the incoming
-          // velocity. Now consume ONLY the temporary dash state so the normal
-          // integratePlayer() dash lock cannot recreate the boost next frame.
           if(dashImpact){
-            if(aWasDashing){
-              a.dashTime=0;
-              a.dashVelocity=0;
-              a.dashDirection=0;
-              a.dashCharging=false;
-              a.dashCharge=0;
-            }
-            if(bWasDashing){
-              b.dashTime=0;
-              b.dashVelocity=0;
-              b.dashDirection=0;
-              b.dashCharging=false;
-              b.dashCharge=0;
-            }
+            if(aWasDashing){a.dashTime=0;a.dashVelocity=0;a.dashDirection=0;a.dashCharging=false;a.dashCharge=0;}
+            if(bWasDashing){b.dashTime=0;b.dashVelocity=0;b.dashDirection=0;b.dashCharging=false;b.dashCharge=0;}
           }
 
-          const effectiveRelativeNormal = effectiveVbN-effectiveVaN;
-          const relativeSpeed=Math.max(Math.hypot(rvx,rvy), Math.abs(effectiveRelativeNormal));
-          const impact = relativeSpeed;
+          const effectiveRelativeNormal=effectiveVbN-effectiveVaN;
+          const relativeSpeed=Math.max(Math.hypot(rvx,rvy),Math.abs(effectiveRelativeNormal));
+          const impact=relativeSpeed;
           if(impact>50){
-            const dmg = impact*0.025;
-            if(dashImpact){
-              this.triggerImpactFrames(Math.max(260,impact), this.isHost);
-            } else {
-              this.triggerImpactFrames(impact, this.isHost);
-            }
-            a.damage += dmg; b.damage += dmg;
+            const dmg=impact*0.025;
+            if(dashImpact) this.triggerImpactFrames(Math.max(260,impact),this.isHost,PHYS.playerCollisionImpactFrames);
+            else this.triggerImpactFrames(impact,this.isHost,PHYS.playerCollisionImpactFrames);
+            a.damage+=dmg; b.damage+=dmg;
             a.hitFlash=10; b.hitFlash=10;
             this.camera.addShake(Math.min(16,impact*0.022));
             this.spawnFx(a,'impact'); this.spawnFx(b,'impact');
-            // A hard impact also gets a second, slightly stronger burst at the
-            // contact midpoint so the hitstop reads clearly visually.
-            if(impact >= 330){
+            if(impact>=330){
               const ixp=(a.x+b.x)*0.5, iyp=(a.y+b.y)*0.5;
-              this.particles.burst(ixp,iyp,'#fff',Math.min(18,4+Math.floor(impact/120)),260,{
-                gravity:40,life:.18,size:3.6,sizeEnd:.2,twinkle:true
-              });
+              this.particles.burst(ixp,iyp,'#fff',Math.min(18,4+Math.floor(impact/120)),260,{gravity:40,life:.18,size:3.6,sizeEnd:.2,twinkle:true});
             }
             AudioManager.impact(Math.min(1.5,impact/200));
           }
         }
+
+        if(toi<0.999999){
+          const remain=1-toi;
+          a.x+=a.vx*dt*remain; a.y+=a.vy*dt*remain;
+          b.x+=b.vx*dt*remain; b.y+=b.vy*dt*remain;
+        }
       }
     }
-    // Re-check platform penetration after all player/player separation.
-    // This is what prevents an above-angle hit (including PYPG pulls) from
-    // leaving a player inside a platform and triggering the edge snap next tick.
+
+    // Final map pass resolves any new contact created by a player/player impact
+    // or by the remaining post-TOI movement. The map solver never snaps to an edge.
     for(const id in this.players) this.collideWithMap(this.players[id], dt, true);
   },
 
@@ -2913,7 +3591,7 @@ const Game = {
       case 'grapple': this.particles.burst(x,y,'#5dff8f',12,150,{gravity:40,life:.42,size:3,sizeEnd:.3,twinkle:true}); break;
       case 'impact': this.particles.burst(x,y,'#ffffff',18,260,{gravity:360,life:.4,size:3.5,sizeEnd:.5}); break;
       case 'death': this.particles.burst(x,y,'#e0693a',34,340,{gravity:520,life:.55,size:4.5,sizeEnd:.7,twinkle:true}); break;
-      case 'bounce': this.particles.burst(x,y+p.radius,'#5df1ff',14,220,{gravity:500,life:.35,size:3.5,sizeEnd:.5}); break;
+      case 'bounce': this.particles.burst(x,y+p.radius,'#ffd45a',14,220,{gravity:500,life:.35,size:3.5,sizeEnd:.5}); break;
       case 'turn': this.particles.burst(x-p.facing*10,y,color,5,110,{gravity:40,life:.2,size:2.5,sizeEnd:.2}); break;
     }
 
@@ -2955,7 +3633,7 @@ const Game = {
         p.grappleTargetId||''
       ];
     }
-    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, spawnAssignments:this.spawnAssignments, s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace}))}, false);
+    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, spawnAssignments:this.spawnAssignments, s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace})), mines:this.mines.map(m=>this.serializeMine(m))}, false);
     this.lastServerState = Date.now();
   },
   updateRemoteJumpPrediction(p, serverX, serverY, serverVX, serverVY, now){
@@ -3124,6 +3802,23 @@ const Game = {
         }
       }
     }
+    if(Array.isArray(msg.mines) && !this.isHost){
+      const byId=new Map(msg.mines.map(m=>[m.id,m]));
+      const seen=new Set();
+      for(const incoming of msg.mines){
+        seen.add(incoming.id);
+        const local=this.mines.find(m=>m.id===incoming.id);
+        if(local){
+          local.x += (incoming.x-local.x)*0.72; local.y += (incoming.y-local.y)*0.72;
+          local.vx=incoming.vx; local.vy=incoming.vy; local.landed=!!incoming.landed;
+          local.armed=!!incoming.armed; local.armTimer=incoming.armTimer||0; local.power=incoming.power||0; local.age=incoming.age||0;
+          local.radius=incoming.radius||PHYS.mineRadius;
+        }else this.mines.push(Object.assign({},incoming));
+      }
+      for(let mi=this.mines.length-1;mi>=0;mi--){
+        if(!seen.has(this.mines[mi].id)) this.mines.splice(mi,1);
+      }
+    }
     for(const id in msg.s){
       const v = msg.s[id];
       const p = this.players[id];
@@ -3183,10 +3878,11 @@ const Game = {
         p.input.dash=!!v[19];
         p.input.grapple=!!v[20];
         p.input.down=!!v[22];
-        if(this.mode==='arrows' || this.mode==='death_arrows'){
+        if(this.mode==='arrows' || this.mode==='death_arrows' || this.mode==='mines'){
           p.actionAiming=!!v[23];
           if(Number.isFinite(v[24])) p.actionAngle=v[24];
           p.actionCharge=Math.max(0,Math.min(1,Number(v[25])||0));
+          if(this.mode==='mines') p.actionAngle=p.facing<0?Math.PI:0;
           if(p.actionAiming) p.remoteActionActive=true;
           else if(!p.actionAiming) p.remoteActionActive=false;
         }
@@ -3337,7 +4033,15 @@ const Game = {
           const p=this.players[pid]; if(!p) return;
           const seq=(data.seq||0)&65535; const prev=p.lastActionEventSeq;
           const newer=prev===null || (((seq-(prev||0)+65536)&65535)<32768 && seq!==prev);
-          if(!newer) return; p.lastActionEventSeq=seq; p.remoteActionActive=true; p.actionAiming=((p.actionCooldown||0)<=0 && p.alive); p.actionChargeStartTime=performance.now(); p.actionCharge=0; p.actionPower=0; p._actionChargeFxAcc=0; p.actionAngle=Number.isFinite(data.angle)?data.angle:(p.facing<0?Math.PI:0);
+          if(!newer) return;
+          const isMine=GameModes[this.mode]?.mine && data.kind==='mine';
+          const isProjectile=GameModes[this.mode]?.projectile && (!data.kind || data.kind==='projectile');
+          if(!isMine && !isProjectile) return;
+          p.lastActionEventSeq=seq; p.remoteActionActive=true; p.actionKind=isMine?'mine':'projectile';
+          p.actionAiming=((p.actionCooldown||0)<=0 && p.alive);
+          p.actionChargeStartTime=performance.now(); p.actionCharge=0; p.actionPower=0; p._actionChargeFxAcc=0;
+          p.actionAngle=isMine?(p.facing<0?Math.PI:0):(Number.isFinite(data.angle)?data.angle:(p.facing<0?Math.PI:0));
+          p.actionCooldownMax=isMine?PHYS.mineCooldown:PHYS.actionProjectileCooldown;
         }
         break;
       case 'action_fire':
@@ -3346,9 +4050,33 @@ const Game = {
           const seq=(data.seq||0)&65535; const prev=p.lastActionEventSeq;
           const newer=prev===null || (((seq-(prev||0)+65536)&65535)<32768 && seq!==prev);
           if(!newer) return;
-          const fireAngle = p.remoteActionActive && Number.isFinite(p.actionAngle) ? p.actionAngle : data.angle;
+          const fireMineNow=GameModes[this.mode]?.mine && (data.kind==='mine' || p.actionKind==='mine');
+          const fireProjectileNow=GameModes[this.mode]?.projectile && !fireMineNow;
+          const fireAngle=fireMineNow?(p.facing<0?Math.PI:0):(p.remoteActionActive && Number.isFinite(p.actionAngle)?p.actionAngle:data.angle);
+          const firePower=fireMineNow && p.remoteActionActive && Number.isFinite(p.actionPower) ? p.actionPower : Number(data.power)||0;
           p.lastActionEventSeq=seq; p.remoteActionActive=false; p.actionAiming=false;
-          if(Number.isFinite(fireAngle)) this.fireActionProjectile(p,fireAngle,Number(data.power)||0);
+          if(fireMineNow) this.fireMine(p,fireAngle,firePower);
+          else if(fireProjectileNow && Number.isFinite(fireAngle)) this.fireActionProjectile(p,fireAngle,Number(data.power)||0);
+          p.actionKind=null;
+        }
+        break;
+      case 'mine_throw':
+        if(!this.isHost && data.mine){
+          const incoming=data.mine;
+          if(!this.mines.some(existing=>existing.id===incoming.id)) this.mines.push(Object.assign({},incoming));
+          const me=this.players[this.myId];
+          if(me && incoming.ownerId===this.myId){
+            me.actionCooldown=PHYS.mineCooldown; me.actionCooldownMax=PHYS.mineCooldown;
+            me.actionAiming=false; me.remoteActionActive=false; me.actionCharge=0; me.actionPower=0; me.actionKind=null;
+          }
+        }
+        break;
+      case 'mine_detonate':
+        if(!this.isHost && data.id!=null){
+          const idx=this.mines.findIndex(existing=>existing.id===data.id);
+          if(idx>=0){ const m=this.mines[idx]; this.mines.splice(idx,1); m.x=Number(data.x)||m.x; m.y=Number(data.y)||m.y; }
+          this.particles.burst(Number(data.x)||0,Number(data.y)||0,data.air?'#ffd966':'#ff7a45',data.air?8:14,data.air?220:320,{gravity:data.air?110:190,life:data.air?0.22:0.34,size:data.air?3:3.6,sizeEnd:.4,twinkle:true});
+          this.camera.addShake(data.air?3:7);
         }
         break;
       case 'action_shot':
@@ -3450,6 +4178,7 @@ const Game = {
         if(!this.isHost){
           Chat.clear();
           this.projectiles=[];
+          this.mines=[];
           this.players={};
           Lobby.players=[]; Lobby.ready={}; Lobby.code=null;
           UI.showHostGone();
@@ -3489,6 +4218,7 @@ const Game = {
         ctx.translate(-this.viewW/2, -this.viewH/2);
       }
       this.renderMap(ctx);
+      this.renderMines(ctx);
       this.renderPlayers(ctx);
       this.renderProjectiles(ctx);
       this.particles.render(ctx, this.camera);
@@ -3498,6 +4228,13 @@ const Game = {
       this.renderMenuBg(ctx);
     }
     ctx.restore();
+  },
+  paintMenuFrame(){
+    if(!this.ctx || !this.viewW || !this.viewH) return;
+    this.ctx.save();
+    this.ctx.clearRect(0,0,this.viewW,this.viewH);
+    this.renderMenuBg(this.ctx);
+    this.ctx.restore();
   },
   renderMenuBg(ctx){
     const t=performance.now()/1000;
@@ -3545,13 +4282,48 @@ const Game = {
     ctx.translate(-cam.x, -cam.y);
 
     for(const plat of this.map.platforms){
+      const rot=(Number(plat.rotation)||0)*Math.PI/180;
+      const bounce=Math.max(0,Number(plat.bounciness)||0);
+      const isBounce=bounce>0 || plat.type==='bounce';
       let col = '#2a2018';
       if(plat.type==='oneway') col='#4a4030';
-      if(plat.type==='bounce') col='#c9793a';
+      if(isBounce){
+        const t=Math.max(0,Math.min(1,bounce/1.6));
+        const r=Math.round(190+65*t), g=Math.round(150-78*t), b=Math.round(48-26*t);
+        col=`rgb(${r},${g},${b})`;
+      }
+      ctx.save();
+      ctx.translate(plat.x+plat.w/2, plat.y+plat.h/2);
+      ctx.rotate(rot);
       ctx.fillStyle=col;
-      ctx.fillRect(plat.x, plat.y, plat.w, plat.h);
-      ctx.fillStyle='#ffffff22';
-      ctx.fillRect(plat.x, plat.y, plat.w, 4);
+      ctx.fillRect(-plat.w/2, -plat.h/2, plat.w, plat.h);
+      // Bright top edge makes regular blocks readable while the two-tone edge
+      // on bouncy blocks makes their special behavior obvious in-game.
+      ctx.fillStyle=isBounce ? '#ffd45a' : '#ffffff22';
+      ctx.fillRect(-plat.w/2, -plat.h/2, plat.w, Math.max(3,Math.min(6,plat.h*.18)));
+      if(isBounce){
+        ctx.strokeStyle='#f08a2b';
+        ctx.lineWidth=2.5;
+        ctx.strokeRect(-plat.w/2, -plat.h/2, plat.w, plat.h);
+        ctx.strokeStyle='#ffffff55';
+        ctx.lineWidth=1.5;
+        for(let x=-plat.w/2+10; x<plat.w/2-5; x+=18){
+          ctx.beginPath();
+          ctx.moveTo(x, -plat.h/2+Math.min(7,plat.h*.2));
+          ctx.lineTo(x+7, -plat.h/2+Math.min(7,plat.h*.2));
+          ctx.stroke();
+        }
+      }
+      if(plat.hazard){
+        // Hazard platforms use the same simple red, lethal presentation as the
+        // other hazard surfaces. No diagonal hatch lines.
+        ctx.fillStyle='#d72f2fcc';
+        ctx.fillRect(-plat.w/2,-plat.h/2,plat.w,plat.h);
+        ctx.strokeStyle='#ff6b6b';
+        ctx.lineWidth=2.5;
+        ctx.strokeRect(-plat.w/2,-plat.h/2,plat.w,plat.h);
+      }
+      ctx.restore();
     }
     for(const hz of this.map.hazards||[]){
       if(hz.type==='arrow'){
@@ -3575,6 +4347,80 @@ const Game = {
     ctx.strokeRect(-30,-30,this.map.width+60,this.map.height+60);
     ctx.restore();
   },
+  getMineTrajectoryPoints(p){
+    if(!p) return [];
+    const power=Math.max(0,Math.min(1,Number(p.actionPower!=null?p.actionPower:p.actionCharge)||0));
+    const launch=this.getMineLaunchState(p,power);
+    const dir=p.facing<0?-1:1;
+    const startX=p.x+dir*(p.radius+PHYS.mineRadius+8);
+    const startY=p.y-p.radius*0.10;
+    const pts=[];
+    const g=PHYS.baseGravity*(this.matchSettings.gravity||1);
+    const step=0.045;
+    const total=Math.min(PHYS.mineMaxAirTime,2.5);
+    let last={x:startX,y:startY};
+    for(let t=0;t<=total;t+=step){
+      const x=startX+launch.vx*t;
+      const y=startY+launch.vy*t+0.5*g*t*t;
+      // Stop preview at the world bounds. Platform intersection is sampled below
+      // so the preview does not claim a landing beyond a visible ledge.
+      if(x<PHYS.mineRadius || x>this.map.width-PHYS.mineRadius || y>this.map.height-PHYS.mineRadius){ break; }
+      pts.push({x,y});
+      last={x,y};
+      // A light platform probe ends the dotted preview at the first predicted landing.
+      let landed=false;
+      for(const plat of this.map.platforms||[]){
+        if(plat.type==='oneway' && (Number(plat.rotation)||0)===0){
+          if(y>=plat.y-PHYS.mineRadius && y<=plat.y+6 && x+PHYS.mineRadius>plat.x && x-PHYS.mineRadius<plat.x+plat.w){ landed=true; break; }
+          continue;
+        }
+        const hit=(Number(plat.rotation)||0)!==0 ? this.circleVsRotatedRect({x,y,radius:PHYS.mineRadius},plat) : this.circleVsAxisAlignedRect({x,y,radius:PHYS.mineRadius},plat);
+        if(hit){ landed=true; break; }
+      }
+      if(landed) break;
+    }
+    return pts;
+  },
+  renderMines(ctx){
+    if(this.mode!=='mines' || !this.mines.length) return;
+    const cam=this.camera,z=cam.zoom; ctx.save(); ctx.scale(z,z); ctx.translate(-cam.x,-cam.y);
+    const now=performance.now();
+    for(const m of this.mines){
+      const pulse=1+Math.sin(now*0.008+m.id*1.7)*0.06;
+      const r=(m.radius||PHYS.mineRadius)*pulse;
+      ctx.save(); ctx.translate(m.x,m.y);
+      ctx.shadowBlur=m.landed?10:8; ctx.shadowColor=m.armed?'#ff5c3a':'#d4b05a';
+      ctx.fillStyle=m.landed?(m.armed?'#e84c33':'#b99245'):'#d5b35c';
+      ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.fill();
+      ctx.fillStyle='#2a2018'; ctx.beginPath(); ctx.arc(0,0,r*.56,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle=m.armed?'#ff6a4a':'#ffe38b'; ctx.lineWidth=2.2; ctx.stroke();
+      ctx.strokeStyle='#fff2b8cc'; ctx.lineWidth=1.5;
+      ctx.beginPath(); ctx.moveTo(-r*.55,0); ctx.lineTo(r*.55,0); ctx.moveTo(0,-r*.55); ctx.lineTo(0,r*.55); ctx.stroke();
+      const sparkR=r*(1.1+0.12*Math.sin(now*0.012+m.id));
+      ctx.fillStyle=m.armed?'#ff704f':'#ffe083';
+      ctx.beginPath(); ctx.arc(0,-sparkR*.62,Math.max(2,r*.11),0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    ctx.restore();
+  },
+  renderMineTrajectory(ctx,p){
+    if(!p || !p.alive || this.mode!=='mines' || !p.actionAiming) return;
+    const pts=this.getMineTrajectoryPoints(p);
+    if(!pts.length) return;
+    const stepEvery=2;
+    for(let i=0;i<pts.length;i+=stepEvery){
+      const q=pts[i];
+      const fade=1-(i/Math.max(1,pts.length-1))*0.68;
+      ctx.save();
+      ctx.globalAlpha=0.78*fade;
+      ctx.fillStyle='#ffd966';
+      ctx.shadowColor='#ffd966'; ctx.shadowBlur=5;
+      ctx.beginPath(); ctx.arc(q.x,q.y,2.5+0.7*(1-fade),0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+    ctx.globalAlpha=1;
+  },
+
   renderProjectiles(ctx){
     if(!this.projectiles.length) return;
     const cam=this.camera,z=cam.zoom; ctx.save(); ctx.scale(z,z); ctx.translate(-cam.x,-cam.y);
@@ -3708,15 +4554,15 @@ const Game = {
         }
         ctx.restore();
       }
-      if(p.actionAiming && p.alive && GameModes[this.mode]?.projectile){
-        const a=this.getActionReticleAngle(p);
+      if(p.actionAiming && p.alive && (GameModes[this.mode]?.projectile || GameModes[this.mode]?.mine)){
+        if(GameModes[this.mode]?.mine) this.renderMineTrajectory(ctx,p);
+        const a=GameModes[this.mode]?.mine ? (p.facing<0?Math.PI:0) : this.getActionReticleAngle(p);
         const rr=p.radius+18;
         const charge=Math.max(0,Math.min(1,p.actionCharge||0));
-        const aimLen=p.radius+72+charge*22;
         const tx=visualX+Math.cos(a)*rr, ty=visualY+Math.sin(a)*rr;
         const ex=tx, ey=ty;
         ctx.save();
-        const baseAim=GameModes[this.mode].deadly?{r:255,g:75,b:75}:{r:255,g:216,b:107};
+        const baseAim=GameModes[this.mode]?.mine?{r:255,g:190,b:70}:(GameModes[this.mode].deadly?{r:255,g:75,b:75}:{r:255,g:216,b:107});
         const mid={r:255,g:155,b:55};
         const hot={r:255,g:70,b:70};
         let ar,ag,ab;
@@ -3954,8 +4800,6 @@ const UI = {
     const el = document.getElementById('screen-'+name);
     if(el) el.classList.add('active');
     document.getElementById('hud').classList.remove('active');
-    const perf = document.getElementById('perfOverlay');
-    if(perf) perf.classList.remove('active');
     document.getElementById('editorUI').classList.remove('active');
     EditorState.active=false;
     AudioManager.init(); AudioManager.resume();
@@ -3963,7 +4807,6 @@ const UI = {
   showHUD(){
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById('hud').classList.add('active');
-    this.updateDebug();
   },
   /* Sets the countdown banner text and (re)plays its pop-in animation, plus a
      quick full-screen flash. Passing an empty string just clears everything. */
@@ -4037,15 +4880,17 @@ const UI = {
     const me = Game.players[Game.myId];
     const arrowWrap = document.getElementById('arrowwrap');
     const arrowFill = document.getElementById('arrowfill');
-    if(arrowWrap) arrowWrap.style.display = (Game.mode==='arrows'||Game.mode==='death_arrows') ? 'block' : 'none';
-    if(me && arrowFill && (Game.mode==='arrows'||Game.mode==='death_arrows')){
-      const cdMax = me.actionCooldownMax || PHYS.actionProjectileCooldown;
-      const pct = Math.max(0, Math.min(100, 100 - ((me.actionCooldown||0)/cdMax)*100));
+    const actionIsArrow=(Game.mode==='arrows'||Game.mode==='death_arrows');
+    const actionIsMine=(Game.mode==='mines');
+    if(arrowWrap) arrowWrap.style.display = (actionIsArrow||actionIsMine) ? 'block' : 'none';
+    if(me && arrowFill && (actionIsArrow||actionIsMine)){
+      const cdMax = me.actionCooldownMax || (actionIsMine?PHYS.mineCooldown:PHYS.actionProjectileCooldown);
+      const pct = me.actionAiming ? Math.max(0,Math.min(100,(me.actionCharge||0)*100)) : Math.max(0, Math.min(100, 100 - ((me.actionCooldown||0)/cdMax)*100));
       arrowFill.style.width = pct+'%';
-      arrowFill.classList.toggle('ready', pct>=100);
+      arrowFill.classList.toggle('ready', pct>=100 && (me.actionCooldown||0)<=0 && !me.actionAiming);
       arrowFill.classList.toggle('charging', !!me.actionAiming);
       arrowFill.style.boxShadow = me.actionAiming ? `0 0 ${4+(me.actionCharge||0)*10}px rgba(255,216,107,${0.35+(me.actionCharge||0)*0.45})` : '';
-      document.getElementById('arrowlabel').textContent = me.actionAiming ? 'Arrow Aiming' : 'Arrow';
+      document.getElementById('arrowlabel').textContent = me.actionAiming ? (actionIsMine?'Mine Charging':'Arrow Aiming') : (actionIsMine?'Mine':'Arrow');
     }
 
     const fillWrap = document.getElementById('staminawrap');
@@ -4094,15 +4939,6 @@ const UI = {
     document.getElementById('dbgOut').textContent = NetworkManager.packetsOut;
     NetworkManager.packetsIn=0; NetworkManager.packetsOut=0;
     document.getElementById('dbgLast').textContent = Game.lastServerState? (Date.now()-Game.lastServerState) : '-';
-    const perf=document.getElementById('perfOverlay');
-    if(perf){
-      const st=Storage.get('settings',{}), fpsOn=!!st.fps, pingOn=!!st.ping;
-      const gameHud=document.getElementById('hud')?.classList.contains('active');
-      perf.classList.toggle('active',!!gameHud && (fpsOn||pingOn));
-      const fpsEl=document.getElementById('perfFps'), pingEl=document.getElementById('perfPing');
-      if(fpsEl){fpsEl.style.display=fpsOn?'inline':'none';fpsEl.textContent=`FPS: ${Game.fps||0}`;}
-      if(pingEl){pingEl.style.display=pingOn?'inline':'none';pingEl.textContent=`PING: ${pings.length?Math.round(pings.reduce((a,b)=>a+b,0)/pings.length):'-'}ms`;}
-    }
   },
   applyLobbyUpdate(data){ Lobby.players = data.players; if(!Game.isHost) Lobby.syncGamePlayers(data.players); Lobby.render(); }
 };
@@ -4275,6 +5111,8 @@ const Lobby = {
     document.getElementById('hostControlBadge')?.classList.toggle('hidden',!Game.isHost);
     const hint=document.getElementById('settingsOwnerHint');
     if(hint) hint.textContent=Game.isHost?'Changes apply to everyone in the room immediately.':'The host controls these settings.';
+    syncMapPickerButtons();
+    const picker=document.getElementById('lobbyMapPicker'); if(picker) picker.disabled=!Game.isHost;
   },
   commitSettingsFromUI(){
     if(!Game.isHost) return;
@@ -4355,6 +5193,7 @@ const EditorState = {
   tool:'select',
   undo:[], redo:[], map:null,
   dragging:null,
+  selected:null,
   placeStart:null,
   hoverWorld:null,
   camera:{x:0,y:0,zoom:1},
@@ -4365,14 +5204,17 @@ const MapEditor = {
     EditorState.active=true;
     EditorState.map = JSON.parse(JSON.stringify(BUILTIN_MAPS[0]));
     EditorState.map.name = 'Custom Map';
+    this.normalizeBlocks();
     EditorState.tool='select';
     EditorState.placeStart=null;
     EditorState.hoverWorld=null;
     EditorState.dragging=null;
+    EditorState.selected=null;
     EditorState.camera={x:0,y:0,zoom:1};
     document.getElementById('editorUI').classList.add('active');
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById('edMapName').value = EditorState.map.name;
+    this.updateMapSizeUI();
     this.highlightTool();
     this.bindEvents();
   },
@@ -4386,6 +5228,7 @@ const MapEditor = {
     EditorState.placeStart=null;
     EditorState.dragging=null;
     this.highlightTool();
+    this.updatePropertiesUI();
   },
   screenToWorld(pt){
     const c=EditorState.camera;
@@ -4411,6 +5254,24 @@ const MapEditor = {
   },
   snap(v){ return Math.round(v/20)*20; },
   snapPoint(pt){ return {x:this.snap(pt.x), y:this.snap(pt.y)}; },
+  updateMapSizeUI(){
+    const m=EditorState.map; if(!m) return;
+    const w=document.getElementById('edMapWidth');
+    const h=document.getElementById('edMapHeight');
+    if(w) w.value=Math.round(Number(m.width)||1600);
+    if(h) h.value=Math.round(Number(m.height)||900);
+  },
+  applyMapSize(width,height){
+    if(!EditorState.map) return;
+    const w=Math.max(400,Math.min(10000,Math.round(Number(width)||1600)));
+    const h=Math.max(300,Math.min(10000,Math.round(Number(height)||900)));
+    if(w===EditorState.map.width && h===EditorState.map.height){ this.updateMapSizeUI(); return; }
+    this.pushUndo();
+    EditorState.map.width=w;
+    EditorState.map.height=h;
+    this.clampCamera();
+    this.updateMapSizeUI();
+  },
   pushUndo(){ EditorState.undo.push(JSON.stringify(EditorState.map)); if(EditorState.undo.length>50) EditorState.undo.shift(); EditorState.redo=[]; },
   rectFromPoints(a,b,minSize=20){
     const x=Math.min(a.x,b.x), y=Math.min(a.y,b.y);
@@ -4421,9 +5282,7 @@ const MapEditor = {
     const m=EditorState.map;
     const r=this.rectFromPoints(a,b,20);
     this.pushUndo();
-    if(EditorState.tool==='platform') m.platforms.push({...r,type:'solid'});
-    else if(EditorState.tool==='bounce') m.platforms.push({...r,type:'bounce'});
-    else if(EditorState.tool==='hazard') m.hazards.push({...r,type:'lava'});
+    if(EditorState.tool==='platform') m.platforms.push({...r,type:'solid',rotation:0,bounciness:0,hazard:false});
     EditorState.placeStart=null;
   },
   bindEvents(){
@@ -4477,7 +5336,7 @@ const MapEditor = {
     const m=EditorState.map;
     const w=this.snapPoint(this.screenToWorld(pt));
     // Rectangular tools use exactly two clicks: first corner, then opposite corner.
-    if(EditorState.tool==='platform' || EditorState.tool==='bounce' || EditorState.tool==='hazard'){
+    if(EditorState.tool==='platform'){
       if(!EditorState.placeStart){ EditorState.placeStart=w; return; }
       this.finishTwoPointPlacement(EditorState.placeStart,w);
       return;
@@ -4489,31 +5348,47 @@ const MapEditor = {
     }
     if(EditorState.tool==='erase'){
       this.pushUndo();
-      m.platforms=m.platforms.filter(p=>!(w.x>p.x&&w.x<p.x+p.w&&w.y>p.y&&w.y<p.y+p.h));
+      m.platforms=m.platforms.filter(p=>!this.pointInRotatedRect(w.x,w.y,p));
       m.hazards=m.hazards.filter(h=>!(w.x>h.x&&w.x<h.x+h.w&&w.y>h.y&&w.y<h.y+h.h));
       m.spawnPoints=m.spawnPoints.filter(s=>Math.hypot(s.x-w.x,s.y-w.y)>20);
+      EditorState.selected=null;
+      this.updatePropertiesUI();
       return;
     }
-    if(EditorState.tool==='select'){
+    if(EditorState.tool!=='platform' && EditorState.tool!=='spawn' && EditorState.tool!=='erase'){
+      EditorState.selected=null;
       for(const p of m.platforms){
-        if(w.x>=p.x&&w.x<=p.x+p.w&&w.y>=p.y&&w.y<=p.y+p.h){
+        if(this.pointInRotatedRect(w.x,w.y,p)){
+          EditorState.selected=p;
           this.pushUndo();
-          EditorState.dragging={kind:'move',obj:p,offX:w.x-p.x,offY:w.y-p.y}; break;
+          EditorState.dragging={kind:'move',obj:p,offX:w.x-p.x,offY:w.y-p.y};
+          break;
         }
       }
-      if(!EditorState.dragging){
+      if(!EditorState.selected){
         for(const h of m.hazards){
           if(w.x>=h.x&&w.x<=h.x+h.w&&w.y>=h.y&&w.y<=h.y+h.h){
-            this.pushUndo(); EditorState.dragging={kind:'move',obj:h,offX:w.x-h.x,offY:w.y-h.y}; break;
+            EditorState.selected=h;
+            this.pushUndo();
+            EditorState.dragging={kind:'move',obj:h,offX:w.x-h.x,offY:w.y-h.y};
+            break;
           }
         }
       }
+      this.updatePropertiesUI();
     }
+  },
+  pointInRotatedRect(x,y,r){
+    const deg=Number(r.rotation)||0, a=-deg*Math.PI/180;
+    const dx=x-(r.x+r.w/2), dy=y-(r.y+r.h/2);
+    const lx=dx*Math.cos(a)-dy*Math.sin(a);
+    const ly=dx*Math.sin(a)+dy*Math.cos(a);
+    return Math.abs(lx)<=r.w/2 && Math.abs(ly)<=r.h/2;
   },
   handleDrag(pt){
     const d=EditorState.dragging; if(!d) return;
     const w=this.snapPoint(this.screenToWorld(pt));
-    if(d.kind==='move'){ d.obj.x=this.snap(w.x-d.offX); d.obj.y=this.snap(w.y-d.offY); }
+    if(d.kind==='move'){ d.obj.x=this.snap(w.x-d.offX); d.obj.y=this.snap(w.y-d.offY); this.updatePropertiesUI(); }
   },
   handleUp(){ EditorState.dragging=null; },
   render(ctx){
@@ -4535,8 +5410,26 @@ const MapEditor = {
     // Map bounds.
     ctx.strokeStyle='#c9793a66'; ctx.lineWidth=4/z; ctx.strokeRect(0,0,m.width,m.height);
     for(const p of m.platforms){
-      ctx.fillStyle=p.type==='bounce'?'#c9793a':(p.type==='oneway'?'#4a4030':'#2a2018');
-      ctx.fillRect(p.x,p.y,p.w,p.h); ctx.strokeStyle='#ffffff33'; ctx.lineWidth=2/z; ctx.strokeRect(p.x,p.y,p.w,p.h);
+      const rot=(Number(p.rotation)||0)*Math.PI/180;
+      ctx.save(); ctx.translate(p.x+p.w/2,p.y+p.h/2); ctx.rotate(rot);
+      const bounce=Math.max(0,Number(p.bounciness)||0);
+      const isBounce=bounce>0;
+      let fill=p.type==='oneway'?'#4a4030':'#2a2018';
+      if(isBounce){ const t=Math.max(0,Math.min(1,bounce/1.6)); fill=`rgb(${Math.round(190+65*t)},${Math.round(150-78*t)},${Math.round(48-26*t)})`; }
+      ctx.fillStyle=fill;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.strokeStyle=isBounce?'#f08a2b':(EditorState.selected===p?'#e0a35c':'#ffffff33');
+      ctx.lineWidth=(EditorState.selected===p?3:(isBounce?2.5:2))/z;
+      ctx.strokeRect(-p.w/2,-p.h/2,p.w,p.h);
+      if(isBounce){ ctx.fillStyle='#ffe07a'; ctx.fillRect(-p.w/2,-p.h/2,p.w,Math.max(3,Math.min(6,p.h*.18))); }
+      if(p.hazard){
+        ctx.fillStyle='#d72f2fcc';
+        ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+        ctx.strokeStyle='#ff6b6b';
+        ctx.lineWidth=2.5/z;
+        ctx.strokeRect(-p.w/2,-p.h/2,p.w,p.h);
+      }
+      ctx.restore();
     }
     for(const h of m.hazards||[]){
       ctx.fillStyle=h.type==='arrow'?(h.deadly?'#c92828':'#e0a35c'):'#ff4d2288';
@@ -4546,9 +5439,9 @@ const MapEditor = {
     for(const s of m.spawnPoints){ ctx.beginPath(); ctx.arc(s.x,s.y,10/z,0,Math.PI*2); ctx.fill(); }
 
     // Two-click placement preview.
-    if(EditorState.placeStart && EditorState.hoverWorld && (EditorState.tool==='platform'||EditorState.tool==='bounce'||EditorState.tool==='hazard')){
+    if(EditorState.placeStart && EditorState.hoverWorld && EditorState.tool==='platform'){
       const r=this.rectFromPoints(EditorState.placeStart,EditorState.hoverWorld,20);
-      ctx.fillStyle=EditorState.tool==='hazard'?'#ff4d2255':(EditorState.tool==='bounce'?'#c9793a66':'#ffffff33');
+      ctx.fillStyle='#ffffff33';
       ctx.fillRect(r.x,r.y,r.w,r.h); ctx.strokeStyle='#ffffffaa'; ctx.lineWidth=2/z; ctx.strokeRect(r.x,r.y,r.w,r.h);
       ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(EditorState.placeStart.x,EditorState.placeStart.y,5/z,0,Math.PI*2); ctx.fill();
     }
@@ -4556,11 +5449,48 @@ const MapEditor = {
 
     ctx.fillStyle='#e0a35c'; ctx.font='12px monospace';
     const placing=EditorState.placeStart?'  |  Click the opposite corner':'  |  Click a first corner';
-    ctx.fillText('Tool: '+EditorState.tool+'  |  MMB/RMB drag: pan  |  Wheel: zoom'+placing, 200, 24);
+    ctx.fillText('Tool: '+EditorState.tool+'  |  Click objects to select  |  MMB/RMB drag: pan  |  Wheel: zoom'+placing, 200, 24);
     ctx.fillText('Camera: '+Math.round(c.x)+','+Math.round(c.y)+'  Zoom: '+c.zoom.toFixed(2)+'x', 200, 42);
   },
+  normalizeBlocks(){
+    for(const p of (EditorState.map?.platforms||[])){
+      p.rotation=Number.isFinite(Number(p.rotation))?Number(p.rotation):0;
+      p.bounciness=Number.isFinite(Number(p.bounciness))?Math.max(0,Number(p.bounciness)):(p.type==='bounce'?0.8:0);
+      p.hazard=!!p.hazard;
+      if(p.type==='bounce') p.type='solid';
+    }
+  },
+  updatePropertiesUI(){
+    const panel=document.getElementById('editorProps'); if(!panel) return;
+    const p=EditorState.selected;
+    const active=!!p && EditorState.map?.platforms?.includes(p);
+    panel.classList.toggle('active',active);
+    if(!active) return;
+    document.getElementById('edPropX').value=Math.round(p.x);
+    document.getElementById('edPropY').value=Math.round(p.y);
+    document.getElementById('edPropW').value=Math.round(p.w);
+    document.getElementById('edPropH').value=Math.round(p.h);
+    document.getElementById('edPropRot').value=Math.round(Number(p.rotation)||0);
+    document.getElementById('edPropBounce').value=String(Number(p.bounciness)||0);
+    document.getElementById('edPropHazard').checked=!!p.hazard;
+  },
+  applySelectedProperty(key,val){
+    const p=EditorState.selected;
+    if(!p || !EditorState.map?.platforms?.includes(p)) return;
+    this.pushUndo();
+    if(key==='x'||key==='y'||key==='w'||key==='h') p[key]=Number(val);
+    else if(key==='rotation') p.rotation=Number(val)||0;
+    else if(key==='bounciness') p.bounciness=Math.max(0,Number(val)||0);
+    else if(key==='hazard') p.hazard=!!val;
+    this.normalizeBlocks();
+    this.updatePropertiesUI();
+  },
   async save(){
-    const m=ensureMapSpawn(EditorState.map); EditorState.map=m; m.name=document.getElementById('edMapName').value||'Custom Map';
+    const m=ensureMapSpawn(EditorState.map); EditorState.map=m;
+    const typedName=String(document.getElementById('edMapName').value ?? '');
+    // Preserve spaces exactly as typed, including between words. Only use the
+    // fallback title when the entire field is blank/whitespace.
+    m.name=typedName.trim().length ? typedName : 'Custom Map';
     await Storage.saveMap(m);
     await refreshSavedMapSelectors();
     alert('Map saved locally: '+m.name);
@@ -4571,29 +5501,11 @@ const MapEditor = {
     const names=maps.map(m=>m.name).join('\\n');
     const pick=prompt('Enter map name to load:\\n'+names);
     const found=maps.find(m=>m.name===pick);
-    if(found){ EditorState.map=ensureMapSpawn(found); document.getElementById('edMapName').value=found.name; EditorState.placeStart=null; this.clampCamera(); }
+    if(found){ EditorState.map=ensureMapSpawn(found); document.getElementById('edMapName').value=found.name; EditorState.placeStart=null; EditorState.selected=null; this.normalizeBlocks(); this.clampCamera(); this.updateMapSizeUI(); this.updatePropertiesUI(); }
   },
-  export(){
-    const data=JSON.stringify(EditorState.map,null,2), blob=new Blob([data],{type:'application/json'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=(EditorState.map.name||'map')+'.json'; a.click();
-  },
-  import(){
-    const inp=document.createElement('input'); inp.type='file'; inp.accept='.json,application/json';
-    inp.onchange=()=>{ const file=inp.files[0]; if(!file) return; const reader=new FileReader(); reader.onload=()=>{
-      try{ const map=JSON.parse(reader.result); if(!map.platforms||!map.spawnPoints) throw new Error('invalid');
-        EditorState.map=ensureMapSpawn(map); EditorState.placeStart=null; document.getElementById('edMapName').value=map.name||'Imported Map'; this.clampCamera();
-      }catch(e){ alert('Map could not be loaded. The map data appears to be invalid.'); }
-    }; reader.readAsText(file); }; inp.click();
-  },
-  clear(){ this.pushUndo(); EditorState.map={name:'Custom Map',width:1600,height:900,platforms:[],spawnPoints:[{x:400,y:400}],hazards:[],decorations:[],background:'default'}; EditorState.placeStart=null; this.clampCamera(); },
-  undo(){ if(!EditorState.undo.length) return; EditorState.redo.push(JSON.stringify(EditorState.map)); EditorState.map=JSON.parse(EditorState.undo.pop()); EditorState.placeStart=null; this.clampCamera(); },
-  redo(){ if(!EditorState.redo.length) return; EditorState.undo.push(JSON.stringify(EditorState.map)); EditorState.map=JSON.parse(EditorState.redo.pop()); EditorState.placeStart=null; this.clampCamera(); },
-  test(){
-    Game.isHost=true; NetworkManager.isHost=false; Game.myId='local'; Game.map=ensureMapSpawn(EditorState.map);
-    Game.players={}; Game.players['local']=new Player('local',Game.myName,Storage.get('customization',{}),Game.map.spawnPoints[0]||{x:400,y:400});
-    Game.matchSettings={gravity:1,kb:1,playerSize:1,maxPlayers:8}; Game.mode='regular'; EditorState.active=false;
-    document.getElementById('editorUI').classList.remove('active'); Game.beginCountdown();
-  },
+  clear(){ this.pushUndo(); EditorState.map={name:'Custom Map',width:1600,height:900,platforms:[],spawnPoints:[{x:400,y:400}],hazards:[],decorations:[],background:'default'}; EditorState.placeStart=null; EditorState.selected=null; this.clampCamera(); this.updateMapSizeUI(); this.updatePropertiesUI(); },
+  undo(){ if(!EditorState.undo.length) return; EditorState.redo.push(JSON.stringify(EditorState.map)); EditorState.map=JSON.parse(EditorState.undo.pop()); EditorState.placeStart=null; EditorState.selected=null; this.normalizeBlocks(); this.clampCamera(); this.updateMapSizeUI(); this.updatePropertiesUI(); },
+  redo(){ if(!EditorState.redo.length) return; EditorState.undo.push(JSON.stringify(EditorState.map)); EditorState.map=JSON.parse(EditorState.redo.pop()); EditorState.placeStart=null; EditorState.selected=null; this.normalizeBlocks(); this.clampCamera(); this.updateMapSizeUI(); this.updatePropertiesUI(); },
   exit(){ EditorState.active=false; document.getElementById('editorUI').classList.remove('active'); UI.goto('main'); }
 };
 
@@ -4624,28 +5536,83 @@ function selectedMapOptionValue(map){
   const ci=SAVED_CUSTOM_MAPS.findIndex(m=>m.name===map.name);
   return ci>=0 ? mapOptionValue('custom',SAVED_CUSTOM_MAPS[ci].name) : 'builtin:0';
 }
+let mapCatalogTarget=null;
+let mapCatalogTab='builtin';
+function mapIsBuiltIn(map){
+  return BUILTIN_MAPS.some(m=>m===map || (m.name===map?.name && m.width===map?.width && m.height===map?.height));
+}
+function syncMapPickerButtons(){
+  const hostSel=document.getElementById('hostMap');
+  const lobbySel=document.getElementById('lobbyMapSelect');
+  const hostVal=hostSel?.value;
+  const lobbyVal=lobbySel?.value;
+  const hostMap=findMapByOption(hostVal)||BUILTIN_MAPS[0];
+  const lobbyMap=findMapByOption(lobbyVal)||Game.map||BUILTIN_MAPS[0];
+  const hv=document.getElementById('hostMapPickerValue'); if(hv) hv.textContent=hostMap.name;
+  const lv=document.getElementById('lobbyMapPickerValue'); if(lv) lv.textContent=lobbyMap.name;
+  const saveBtn=document.getElementById('btnSaveLobbyMap');
+  if(saveBtn){
+    // Built-in maps are never offered as savable copies. Custom/lobby maps can be saved locally.
+    saveBtn.classList.toggle('hidden', mapIsBuiltIn(Game.map));
+  }
+}
 function populateMapSelects(){
   const selects=[document.getElementById('hostMap'), document.getElementById('lobbyMapSelect')].filter(Boolean);
   selects.forEach(sel=>{
     const previous=sel.value;
     sel.innerHTML='';
-    const builtGroup=document.createElement('optgroup');
-    builtGroup.label='BUILT-IN MAPS';
-    BUILTIN_MAPS.forEach((m,i)=>{
-      const o=document.createElement('option'); o.value=mapOptionValue('builtin',i); o.textContent=m.name; builtGroup.appendChild(o);
-    });
-    sel.appendChild(builtGroup);
-    if(SAVED_CUSTOM_MAPS.length){
-      const customGroup=document.createElement('optgroup');
-      customGroup.label='CUSTOM MAPS';
-      SAVED_CUSTOM_MAPS.forEach(m=>{
-        const o=document.createElement('option'); o.value=mapOptionValue('custom',m.name); o.textContent=m.name; customGroup.appendChild(o);
-      });
-      sel.appendChild(customGroup);
-    }
+    BUILTIN_MAPS.forEach((m,i)=>{ const o=document.createElement('option'); o.value=mapOptionValue('builtin',i); o.textContent=m.name; sel.appendChild(o); });
+    SAVED_CUSTOM_MAPS.forEach((m)=>{ const o=document.createElement('option'); o.value=mapOptionValue('custom',m.name); o.textContent=m.name; sel.appendChild(o); });
     if([...sel.options].some(o=>o.value===previous)) sel.value=previous;
+    else if(sel.options.length) sel.value=sel.options[0].value;
+  });
+  syncMapPickerButtons();
+}
+function renderMapCatalog(){
+  const grid=document.getElementById('mapCatalogGrid'); if(!grid) return;
+  grid.innerHTML='';
+  const maps=mapCatalogTab==='builtin' ? BUILTIN_MAPS : SAVED_CUSTOM_MAPS;
+  if(!maps.length){
+    const empty=document.createElement('div'); empty.className='map-catalog-empty'; empty.textContent='No saved maps yet.'; grid.appendChild(empty); return;
+  }
+  const targetSel=document.getElementById(mapCatalogTarget==='lobby'?'lobbyMapSelect':'hostMap');
+  const selectedValue=targetSel?.value;
+  maps.forEach((m,i)=>{
+    const card=document.createElement('button'); card.type='button'; card.className='map-catalog-card'+(selectedValue===mapOptionValue(mapCatalogTab==='builtin'?'builtin':'custom',mapCatalogTab==='builtin'?i:m.name)?' selected':'');
+    const thumb=document.createElement('canvas'); thumb.className='map-catalog-thumb'; thumb.width=320; thumb.height=160;
+    drawMapThumb(thumb,m);
+    const name=document.createElement('div'); name.className='map-catalog-name'; name.textContent=m.name;
+    const meta=document.createElement('div'); meta.className='map-catalog-meta'; meta.textContent=`${Math.round(m.width)} × ${Math.round(m.height)} · ${m.platforms?.length||0} platforms`;
+    card.append(thumb,name,meta);
+    card.addEventListener('click',()=>selectMapFromCatalog(m,mapCatalogTab==='builtin'?i:m.name));
+    grid.appendChild(card);
   });
 }
+function selectMapFromCatalog(map,key){
+  const sel=document.getElementById(mapCatalogTarget==='lobby'?'lobbyMapSelect':'hostMap');
+  if(!sel) return;
+  sel.value=mapOptionValue(mapCatalogTab==='builtin'?'builtin':'custom',key);
+  const chosen=ensureMapSpawn(map);
+  if(mapCatalogTarget==='lobby'){
+    if(Game.isHost){ Game.map=chosen; Lobby.commitSettingsFromUI(); }
+    const prev=document.getElementById('lobbyMapPreview'); if(prev) drawMapThumb(prev,chosen);
+  }else{
+    const prev=document.getElementById('hostMapPreview'); if(prev) drawMapThumb(prev,chosen);
+  }
+  syncMapPickerButtons();
+  closeMapCatalog();
+}
+function openMapCatalog(target){
+  mapCatalogTarget=target;
+  mapCatalogTab='builtin';
+  const overlay=document.getElementById('mapCatalogOverlay');
+  overlay?.classList.add('active');
+  document.getElementById('mapCatalogBuiltInTab')?.classList.add('active');
+  document.getElementById('mapCatalogSavedTab')?.classList.remove('active');
+  document.getElementById('mapCatalogHint').textContent=target==='lobby'?'Choose a map for this lobby.':'Choose a map for this match.';
+  renderMapCatalog();
+}
+function closeMapCatalog(){ document.getElementById('mapCatalogOverlay')?.classList.remove('active'); mapCatalogTarget=null; }
 async function refreshSavedMapSelectors(){
   try{ SAVED_CUSTOM_MAPS=await Storage.loadAllMaps(); }catch(e){ SAVED_CUSTOM_MAPS=[]; }
   const currentHost=Game.map;
@@ -4655,6 +5622,8 @@ async function refreshSavedMapSelectors(){
   const lobbySel=document.getElementById('lobbyMapSelect');
   if(hostSel && currentHost) hostSel.value=selectedMapOptionValue(currentHost);
   if(lobbySel && currentLobby) lobbySel.value=selectedMapOptionValue(currentLobby);
+  syncMapPickerButtons();
+  if(document.getElementById('mapCatalogOverlay')?.classList.contains('active')) renderMapCatalog();
 }
 function selectedMapFromSelect(sel){ return ensureMapSpawn(findMapByOption(sel?.value) || Game.map || BUILTIN_MAPS[0]); }
 function drawMapThumb(canvasEl, map){
@@ -4665,13 +5634,53 @@ function drawMapThumb(canvasEl, map){
   const sx = W/map.width, sy = H/map.height;
   const s = Math.min(sx,sy);
   const offX = (W-map.width*s)/2, offY = (H-map.height*s)/2;
-  ctx.fillStyle='#c9793a';
-  for(const p of map.platforms){
-    ctx.fillRect(offX+p.x*s, offY+p.y*s, Math.max(1,p.w*s), Math.max(1,p.h*s));
+  for(const p of map.platforms||[]){
+    ctx.save();
+    ctx.translate(offX+(p.x+p.w/2)*s, offY+(p.y+p.h/2)*s);
+    ctx.rotate((Number(p.rotation)||0)*Math.PI/180);
+    const isDeath=!!(p.kill||p.deadly||p.death||p.type==='death');
+    const isHazard=!!p.hazard;
+    const isBounce=(Number(p.bounciness)||0)>0 || p.type==='bounce';
+    const bounce=Math.max(0,Number(p.bounciness)||0);
+    let blockFill='#574233';
+    if(isBounce){
+      const t=Math.max(0,Math.min(1,bounce/1.6));
+      blockFill=`rgb(${Math.round(190+65*t)},${Math.round(150-78*t)},${Math.round(48-26*t)})`;
+    }
+    ctx.fillStyle=(isDeath||isHazard)?'#d72f2f':blockFill;
+    ctx.fillRect(-(p.w*s)/2, -(p.h*s)/2, Math.max(1,p.w*s), Math.max(1,p.h*s));
+    ctx.strokeStyle=(isDeath||isHazard)?'#ff6b6b':(isBounce?'#f08a2b':'#ffffff22');
+    ctx.lineWidth=isBounce && !(isDeath||isHazard)?Math.max(1,2*s):Math.max(1,1.5*s);
+    ctx.strokeRect(-(p.w*s)/2, -(p.h*s)/2, Math.max(1,p.w*s), Math.max(1,p.h*s));
+    if(isBounce && !isDeath && !isHazard){
+      ctx.strokeStyle='#ffe07a'; ctx.lineWidth=Math.max(1,1.5*s);
+      ctx.beginPath(); ctx.moveTo(-(p.w*s)/2,-(p.h*s)/2); ctx.lineTo((p.w*s)/2,-(p.h*s)/2); ctx.stroke();
+    }
+    ctx.restore();
+  }
+  for(const hz of map.hazards||[]){
+    if(hz.type==='lava' || hz.deadly){
+      ctx.save(); ctx.translate(offX+(hz.x+hz.w/2)*s,offY+(hz.y+hz.h/2)*s);
+      ctx.fillStyle='#d72f2f'; ctx.fillRect(-(hz.w*s)/2,-(hz.h*s)/2,Math.max(1,hz.w*s),Math.max(1,hz.h*s)); ctx.restore();
+    }
   }
   ctx.fillStyle='#5dff8f';
-  for(const sp of map.spawnPoints){
-    ctx.beginPath(); ctx.arc(offX+sp.x*s, offY+sp.y*s, 1.6, 0, Math.PI*2); ctx.fill();
+  for(const sp of map.spawnPoints||[]){ ctx.beginPath(); ctx.arc(offX+sp.x*s, offY+sp.y*s, Math.max(1.5,2.4*s), 0, Math.PI*2); ctx.fill(); }
+}
+async function saveCurrentLobbyMap(){
+  if(mapIsBuiltIn(Game.map)) return;
+  const map=Game.map ? ensureMapSpawn(JSON.parse(JSON.stringify(Game.map))) : null;
+  if(!map) return;
+  let name=String(map.name||'Lobby Map');
+  if(!name.trim()) name='Lobby Map';
+  // Preserve spaces exactly as entered in the map name.
+  map.name=name;
+  try{
+    await Storage.saveMap(map);
+    await refreshSavedMapSelectors();
+    alert('Map saved locally: '+name);
+  }catch(e){
+    alert('Could not save this map.');
   }
 }
 const FACE_OPTIONS={
@@ -4747,13 +5756,6 @@ function drawCustPreview(){
   dummy.facing=1;
   dummy.alive=true;
   dummy.preview=true;
-  const previewEffect=SphereBoxes.describe(cust.dashEffect||'basic');
-  if(previewEffect.aura){
-    const pulse=1+Math.sin(performance.now()*0.012)*0.06;
-    const ar=(dummy.radius+12)*pulse;
-    ctx.save(); ctx.strokeStyle=previewEffect.particle; ctx.globalAlpha=.55; ctx.lineWidth=4; ctx.shadowColor=previewEffect.particle; ctx.shadowBlur=18; ctx.beginPath(); ctx.arc(dummy.x,dummy.y,ar,0,Math.PI*2); ctx.stroke();
-    ctx.restore();
-  }
   const idleT=(performance.now()/1000);
   const bob=Math.sin(idleT*2.2)*2.4;
   const tilt=Math.sin(idleT*1.1)*0.018;
@@ -4978,7 +5980,7 @@ function makeReelCards(boxKey, winnerId, targetIndex){
   const pools={0:[],1:[],2:[],3:[],4:[],5:[]};
   b.pool.forEach(id=>{ const r=rarityRank[SphereBoxes.describe(id).rarity]??0; pools[r].push(id); });
   const pickPool=(r)=>{ const arr=pools[Math.max(0,Math.min(4,r))]; return arr.length?arr[Math.floor(Math.random()*arr.length)]:SphereBoxes.roll(boxKey); };
-  for(let i=0;i<38;i++){
+  for(let i=0;i<62;i++){
     if(i===targetIndex){ all.push(winnerId); continue; }
     // The reel is cosmetic only. It deliberately displays rarer items much more often
     // around the stop point than their actual drop odds, while the winner was rolled once.
@@ -5054,7 +6056,7 @@ function openSphereBox(boxKey){
   let done=false, timer=null;
   // Vary which card lands under the center marker so the winner is not always
   // the same position in the reel. The marker still centers the selected card.
-  const targetIndex=28+Math.floor(Math.random()*9);
+  const targetIndex=42+Math.floor(Math.random()*9);
   const seq=makeReelCards(boxKey,id,targetIndex);
   seq.forEach(cid=>{ const ce=SphereBoxes.describe(cid); const card=document.createElement('div'); card.className='spherebox-reel-card'; card.innerHTML=sphereRollIconHtml(ce)+`<div style="font-size:9px;">${ce.name}</div><div class="${SphereBoxes.rarityColor(ce.rarity)}" style="font-size:8px;">${ce.rarity.toUpperCase()}</div>`; strip.appendChild(card); });
   const finish=()=>{ if(done) return; done=true; if(timer) clearTimeout(timer); skip.disabled=true; SphereBoxes.opening=false; const amount=SphereBoxes.addEffect(id); const rare=['rare','epic','legendary','mythic'].includes(e.rarity); if(rare) AudioManager.rareDrop(e.rarity); finishSphereOpen(boxKey,id,amount,rare); };
@@ -5163,8 +6165,14 @@ window.addEventListener('DOMContentLoaded', ()=>{
   const updateHostPreview = ()=>{ const m=selectedMapFromSelect(hostMapSel); if(hostMapPreview) drawMapThumb(hostMapPreview,m); };
   const updateLobbyPreview = ()=>{ const m=selectedMapFromSelect(lobbyMapSel); if(lobbyMapPreview) drawMapThumb(lobbyMapPreview,m); };
   hostMapSel.addEventListener('change', updateHostPreview);
-  lobbyMapSel.addEventListener('change', ()=>{ updateLobbyPreview(); if(Game.isHost) Lobby.commitSettingsFromUI(); });
-  updateHostPreview(); updateLobbyPreview();
+  lobbyMapSel.addEventListener('change', ()=>{ updateLobbyPreview(); syncMapPickerButtons(); if(Game.isHost) Lobby.commitSettingsFromUI(); });
+  document.getElementById('hostMapPicker')?.addEventListener('click',()=>openMapCatalog('host'));
+  document.getElementById('lobbyMapPicker')?.addEventListener('click',()=>{ if(Game.isHost) openMapCatalog('lobby'); });
+  document.getElementById('mapCatalogClose')?.addEventListener('click',closeMapCatalog);
+  document.getElementById('mapCatalogBuiltInTab')?.addEventListener('click',()=>{ mapCatalogTab='builtin'; document.getElementById('mapCatalogBuiltInTab').classList.add('active'); document.getElementById('mapCatalogSavedTab').classList.remove('active'); renderMapCatalog(); });
+  document.getElementById('mapCatalogSavedTab')?.addEventListener('click',()=>{ mapCatalogTab='saved'; document.getElementById('mapCatalogBuiltInTab').classList.remove('active'); document.getElementById('mapCatalogSavedTab').classList.add('active'); renderMapCatalog(); });
+  document.getElementById('mapCatalogOverlay')?.addEventListener('click',e=>{ if(e.target.id==='mapCatalogOverlay') closeMapCatalog(); });
+  updateHostPreview(); updateLobbyPreview(); syncMapPickerButtons();
   refreshSavedMapSelectors().then(()=>{ updateHostPreview(); updateLobbyPreview(); });
 
   const roundModeSel=document.getElementById('hostRoundMode');
@@ -5259,6 +6267,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
     }
   });
   document.getElementById('btnStartMatch').addEventListener('click', ()=>Lobby.startMatch());
+  document.getElementById('btnSaveLobbyMap').addEventListener('click', ()=>saveCurrentLobbyMap());
   document.getElementById('btnLeaveLobby').addEventListener('click', ()=>{
     if(Game.isHost){
       NetworkManager.broadcast({t:'lobby_closed'}, true);
@@ -5316,19 +6325,24 @@ quality: document.getElementById('setQuality').value,
     };
     Storage.set('settings', s);
     AudioManager.setMusicVol(s.music/100); AudioManager.setSfxVol(s.sfx/100);
-    UI.updateDebug();
     UI.goto('main');
   });
 
   document.getElementById('edSave').addEventListener('click', ()=>MapEditor.save());
   document.getElementById('edLoad').addEventListener('click', ()=>MapEditor.load());
-  document.getElementById('edExport').addEventListener('click', ()=>MapEditor.export());
-  document.getElementById('edImport').addEventListener('click', ()=>MapEditor.import());
   document.getElementById('edClear').addEventListener('click', ()=>MapEditor.clear());
-  document.getElementById('edTest').addEventListener('click', ()=>MapEditor.test());
   document.getElementById('edExit').addEventListener('click', ()=>MapEditor.exit());
   document.getElementById('edUndo').addEventListener('click', ()=>MapEditor.undo());
   document.getElementById('edRedo').addEventListener('click', ()=>MapEditor.redo());
+  document.getElementById('edMapWidth')?.addEventListener('change', e=>MapEditor.applyMapSize(e.target.value, document.getElementById('edMapHeight')?.value));
+  document.getElementById('edMapHeight')?.addEventListener('change', e=>MapEditor.applyMapSize(document.getElementById('edMapWidth')?.value, e.target.value));
+  ['edPropX','edPropY','edPropW','edPropH','edPropRot'].forEach(id=>{
+    document.getElementById(id)?.addEventListener('change', e=>MapEditor.applySelectedProperty(
+      id==='edPropRot'?'rotation':id.replace('edProp','').toLowerCase(), e.target.value
+    ));
+  });
+  document.getElementById('edPropBounce')?.addEventListener('change', e=>MapEditor.applySelectedProperty('bounciness',e.target.value));
+  document.getElementById('edPropHazard')?.addEventListener('change', e=>MapEditor.applySelectedProperty('hazard',e.target.checked));
 
   function loadCustUI(){
     const c = Storage.get('customization',{name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',eyes:'classic',mouth:'smile',brows:'none',hat:'none',dashEffect:'basic'});
