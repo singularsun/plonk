@@ -414,7 +414,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <button class="btn" data-go="spherebox">SPHEREBOX</button>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.13 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.14 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -1258,7 +1258,7 @@ authorBuiltinSpawns(BUILTIN_MAPS[7],[
   {platform:1,x:300,lift:0},{platform:1,x:470,lift:1},
   {platform:2,x:720,lift:0},{platform:3,x:1210,lift:1},
   {platform:4,x:1510,lift:0},{platform:5,x:930,lift:1},
-  {platform:0,x:230,lift:0},{platform:0,x:1680,lift:1}
+  {platform:0,x:230,lift:0},{platform:0,x:1480,lift:1}
 ]);
 
 /* Procedurally add directional arrow tiles for the Arrows / Death Arrows modes.
@@ -2686,21 +2686,30 @@ const Game = {
   },
 
   projectileHitsPlatform(q, x, y){
-    // Exact OBB-vs-AABB SAT test. The old test only checked the projectile's
-    // two local axes, which could report false positives near platform corners.
+    // Exact OBB-vs-OBB SAT test. Both the arrow and platform use their actual
+    // rotated geometry, so the hit point follows the visible platform angle.
     const angle=q.angle ?? Math.atan2(q.vy,q.vx);
     const c=Math.cos(angle), s=Math.sin(angle);
     const halfL=q.halfLength ?? 12, halfW=q.halfWidth ?? 5;
-    const axes=[[c,s],[-s,c],[1,0],[0,1]];
+
     for(const plat of this.map.platforms){
+      const prot=(Number(plat.rotation)||0)*Math.PI/180;
+      const pc=Math.cos(prot), ps=Math.sin(prot);
       const pcx=plat.x+plat.w/2, pcy=plat.y+plat.h/2;
       const tx=pcx-x, ty=pcy-y;
+
+      // Separating-axis theorem for two oriented rectangles. The four unique
+      // axes are the local X/Y axes of the projectile and the platform.
+      const axes=[[c,s],[-s,c],[pc,ps],[-ps,pc]];
       let overlap=true;
       for(const [ax,ay] of axes){
         const projArrow=halfL*Math.abs(ax*c+ay*s)+halfW*Math.abs(ax*(-s)+ay*c);
-        const projPlat=(plat.w/2)*Math.abs(ax)+(plat.h/2)*Math.abs(ay);
+        const projPlat=(plat.w/2)*Math.abs(ax*pc+ay*ps)+(plat.h/2)*Math.abs(ax*(-ps)+ay*pc);
         const centerDist=Math.abs(tx*ax+ty*ay);
-        if(centerDist>projArrow+projPlat){ overlap=false; break; }
+        if(centerDist>projArrow+projPlat){
+          overlap=false;
+          break;
+        }
       }
       if(overlap) return true;
     }
