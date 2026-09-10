@@ -194,6 +194,23 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .map-preview-wrap{width:180px;flex:0 0 180px;order:2;}
 .lobby-chat-wrap{min-width:0;order:1;}
 .lobby-settings-col .hidden{display:none!important;}
+#createGameHeading{justify-content:flex-start;text-align:left;}
+#createGameHeading>div:first-child{text-align:left;margin:0!important;}
+#createGameHeading .subhint{max-width:760px;}
+.lobby-spikewall-setting{display:flex;align-items:center;justify-content:space-between;gap:7px;height:100%;padding:7px 8px;background:#0d090688;border:1px solid #2a1e12;border-radius:var(--radius);}
+.lobby-spikewall-setting label{margin:0;cursor:pointer;color:var(--text);font-weight:900;letter-spacing:.8px;font-size:10px;}
+.lobby-spikewall-setting input[type=checkbox]{width:17px;height:17px;margin:0;accent-color:#9a9a9a;cursor:pointer;flex:0 0 auto;}
+.mode-picker{position:relative;width:100%;}
+.mode-picker-main{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;white-space:nowrap;overflow:hidden;}
+.mode-picker-value{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.mode-picker-caret{flex:0 0 auto;color:var(--text-dim);font-size:10px;}
+.mode-picker-panel{position:absolute;left:0;top:calc(100% + 4px);min-width:100%;width:max-content;max-width:240px;display:none;z-index:40;padding:5px;background:#110c08f8;border:1px solid #503622;border-radius:3px;box-shadow:0 12px 28px #000b;}
+.mode-picker.open .mode-picker-panel{display:flex;flex-direction:column;gap:3px;}
+.mode-picker-option{width:100%;padding:7px 9px;border:1px solid #3a2a1a;background:#151009;color:var(--text);font-size:10px;font-weight:900;letter-spacing:.6px;text-align:left;border-radius:2px;cursor:pointer;white-space:nowrap;}
+.mode-picker-option:hover,.mode-picker-option:focus-visible{background:#241a10;border-color:var(--accent);outline:none;}
+.mode-picker-option.folder::after{content:'›';float:right;color:var(--text-dim);margin-left:12px;}
+.mode-picker-back{color:var(--text-dim);background:#0d0906;}
+.mode-picker-subtitle{padding:5px 8px 3px;color:var(--accent3);font-size:9px;font-weight:900;letter-spacing:1px;text-transform:uppercase;}
 #btnApplyLobbySettings{margin-top:7px;width:100%;padding:9px 12px;font-size:12px;}
 #lobbyChatPanel{display:flex;flex-direction:column;margin:0;height:250px;min-height:250px;max-height:250px;overflow:hidden;}
 #lobbyChatLog{flex:1;min-height:0;height:auto;max-height:none;overflow-y:auto;font-size:11px;line-height:1.35;background:#00000066;border:1px solid #2a1e12;border-radius:2px;padding:6px;white-space:pre-wrap;}
@@ -553,15 +570,15 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.23 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.28 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
 <div class="screen" id="screen-create">
   <div class="panel wide-panel" style="width:min(940px,96vw);position:relative;">
     <span class="close-x" data-go="main">✕</span>
-    <div class="split-heading">
-      <div><h2>CREATE GAME</h2><div class="subhint">Name your lobby, optionally protect it with a password, then fine-tune the match. You can change these settings again from the lobby.</div></div>
+    <div class="split-heading" id="createGameHeading">
+      <div><h2>CREATE GAME</h2><div class="subhint">Name your lobby and add a password (or not). You can change these settings again from the lobby.</div></div>
     </div>
     <div class="two-col-layout">
       <section class="settings-column">
@@ -570,7 +587,11 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
           <div class="field span-2"><label>Lobby Title</label><input type="text" id="hostLobbyTitle" maxlength="32" value="" autocomplete="off" spellcheck="false" placeholder="Name your lobby" aria-label="Lobby title, spaces allowed"></div>
           <div class="field"><label>Password</label><input type="password" id="hostLobbyPassword" class="game-text-input" maxlength="20" value="" autocomplete="new-password" spellcheck="false" placeholder="Optional"></div>
           <div class="field"><label>Game Mode</label>
-            <select id="hostMode"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option><option value="mines">Mines</option></select>
+            <div class="mode-picker" data-mode-picker="hostMode">
+              <button class="btn small mode-picker-main" type="button" aria-haspopup="true" aria-expanded="false"><span class="mode-picker-value">Regular</span><span class="mode-picker-caret">▾</span></button>
+              <div class="mode-picker-panel" role="menu"></div>
+            </div>
+            <select id="hostMode" class="hidden"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="grapple_hook">Grapple Hook</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option><option value="bouncy_arrows">Bouncy Arrows</option><option value="mines">Mines</option><option value="death_mines">Death Mines</option></select>
           </div>
           <div class="field"><label>Max Players</label><input type="number" id="hostMaxP" min="2" max="8" value="8"></div>
         </div>
@@ -647,13 +668,20 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
       <section class="lobby-settings-col">
         <div class="section-header-row"><div><h3>HOST SETTINGS</h3><div class="subhint" id="settingsOwnerHint">Only the host can change these.</div></div><div class="host-only-badge" id="hostControlBadge">HOST CONTROL</div></div>
         <div class="setting-grid compact">
-          <div class="field"><label>Mode</label><select id="lobbyModeSelect"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option><option value="mines">Mines</option></select></div>
+          <div class="field"><label>Mode</label>
+            <div class="mode-picker" data-mode-picker="lobbyModeSelect">
+              <button class="btn small mode-picker-main" type="button" aria-haspopup="true" aria-expanded="false"><span class="mode-picker-value">Regular</span><span class="mode-picker-caret">▾</span></button>
+              <div class="mode-picker-panel" role="menu"></div>
+            </div>
+            <select id="lobbyModeSelect" class="hidden"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="grapple_hook">Grapple Hook</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option><option value="bouncy_arrows">Bouncy Arrows</option><option value="mines">Mines</option><option value="death_mines">Death Mines</option></select>
+          </div>
           <div class="field"><label>Gravity</label><input type="number" id="lobbyGravity" min="0.1" max="3" step="0.1" value="1"></div>
           <div class="field"><label>Knockback ×</label><input type="number" id="lobbyKB" min="0.2" max="3" step="0.1" value="1"></div>
           <div class="field"><label>Player Size</label><input type="number" id="lobbyPlayerSize" min="0.5" max="2" step="0.1" value="1"></div>
           <div class="field"><label>Max Players</label><input type="number" id="lobbyMaxP" min="2" max="8" value="8"></div>
           <div class="field"><label>Round Rule</label><select id="lobbyRoundMode"><option value="rounds">Fixed Rounds</option><option value="score">First to Points</option></select></div>
           <div class="field" id="lobbyRoundCountField"><label>Rounds</label><input type="number" id="lobbyRoundCount" min="1" max="99" value="3"></div>
+          <div class="field"><label>&nbsp;</label><div class="lobby-spikewall-setting"><label for="lobbySpikewall">SPIKEWALL</label><input type="checkbox" id="lobbySpikewall" aria-label="Enable Spikewall"></div></div>
           <div class="field hidden" id="lobbyPointTargetField"><label>Points to Win</label><input type="number" id="lobbyPointTarget" min="1" max="99" value="3"></div>
         </div>
         <div class="lobby-map-editor">
@@ -1193,6 +1221,11 @@ const PHYS = {
   bounceWMaxSpeed: 900, // maximum upward speed before the 70% height scale is applied
   bounceWBoostTime: 0.085, // the boost is deliberately brief so holding W cannot add height forever
   playerCollisionImpactFrames: 2, // shorter hitstop for player-to-player collisions
+  collisionSafeTravelFactor: 0.65, // max travel per map-collision slice as a fraction of player radius
+  collisionMinTravel: 8,            // lower bound keeps tiny players from taking excessive slices
+  collisionMaxSubsteps: 8,          // hard cap so a bad frame can never explode physics cost
+  collisionSkin: 0.04,              // tiny numerical cushion; visually imperceptible
+  collisionSolverPasses: 3,         // extra penetration cleanup for post-impact contacts
   fastFallMultiplier: 2.3,    // extra gravity multiplier while holding the down key in the air
   bounceDamp: 0.6,
   wallBounce: 0.55,
@@ -1226,6 +1259,14 @@ const PHYS = {
   actionAimTurnSpeed: 0.9,
   actionChargeMaxTime: 1.5,
   actionChargePowerExponent: 1.55,
+  bouncyArrowMaxBounces: 5,
+  bouncyArrowBounceFxCooldown: 0.045,
+  grappleHookSpeed: 460,
+  grappleHookMaxSpeed: 1180,
+  grappleHookCooldown: 1.15,
+  grappleHookMinSling: 620,
+  grappleHookMaxSling: 1850,
+  grappleHookWallBoost: 1.12,
   mineCooldown: 5.0,
   mineChargeMaxTime: 1.15,
   mineMinThrowSpeed: 400,
@@ -1237,9 +1278,14 @@ const PHYS = {
   mineGroundRestSpeed: 70,
   mineGroundFriction: 0.82,
   mineArmingDelay: 0.08,
+  mineLandedLifetime: 20.0,
   mineGroundLaunchSpeed: 2500,
   mineAirKnockback: 1250,
   mineAirDamage: 6,
+  spikewallDelay: 45,          // wall appears 45 seconds into each round
+  spikewallCrossTime: 135,     // from 0:45 to 3:00 to clear the map
+  spikewallWidth: 58,          // visible gray wall thickness
+  spikewallSpikeLength: 28,    // warning spikes protruding into the map
 };
 
 /* ---------------------------- PLAYER ---------------------------- */
@@ -1930,9 +1976,12 @@ const GameModes = {
   regular:{ label:'Regular', grapple:false, projectile:false, deadly:false },
   grapple:{ label:'Grapple', grapple:true, projectile:false, deadly:false },
   pypg:{ label:'PYPG', grapple:true, projectile:false, deadly:false },
-  arrows:{ label:'Arrows', grapple:false, projectile:true, deadly:false },
-  death_arrows:{ label:'Death Arrows', grapple:false, projectile:true, deadly:true },
-  mines:{ label:'Mines', grapple:false, projectile:false, deadly:false, mine:true },
+  arrows:{ label:'Arrows', grapple:false, projectile:true, deadly:false, bouncy:false },
+  death_arrows:{ label:'Death Arrows', grapple:false, projectile:true, deadly:true, bouncy:false },
+  bouncy_arrows:{ label:'Bouncy Arrows', grapple:false, projectile:true, deadly:false, bouncy:true },
+  grapple_hook:{ label:'Grapple Hook', grapple:false, projectile:true, deadly:false, hook:true },
+  mines:{ label:'Mines', grapple:false, projectile:false, deadly:false, mine:true, deathMine:false },
+  death_mines:{ label:'Death Mines', grapple:false, projectile:false, deadly:false, mine:true, deathMine:true },
 };
 
 /* ============================================================================
@@ -2032,7 +2081,7 @@ const Game = {
   state:'menu',
   players:{},
   myId:null, myName:getSavedUsername(),
-  map:null, mode:'regular', matchSettings:{gravity:1,kb:1,maxPlayers:8},
+  map:null, mode:'regular', matchSettings:{gravity:1,kb:1,maxPlayers:8,spikewall:false},
   particles:new ParticleSystem(),
   // Trail FX are intentionally capped much lower than gameplay particles.
   // Trails are persistent cosmetics, so a small bounded pool keeps frame time stable.
@@ -2043,6 +2092,7 @@ const Game = {
   accumulator:0, lastTime:0,
   physicsTick:0, hostPhysicsTick:0, stateSeq:0, lastRecvStateSeq:null,
   matchTime:0,
+  roundElapsed:0,
   eliminationOrder:[],
   roundNumber:1,
   roundConfig:{mode:'rounds',count:3,target:3},
@@ -2111,10 +2161,41 @@ const Game = {
   },
   myColor(){ const c = Storage.get('customization',{hue:200}); return `hsl(${c.hue||200},80%,60%)`; },
 
+  getSpikewallState(){
+    if(!this.matchSettings?.spikewall || this.state!=='playing') return null;
+    const elapsed=Math.max(0,Number(this.roundElapsed ?? this.matchTime)||0);
+    if(elapsed<PHYS.spikewallDelay) return null;
+    const mapWidth=Math.max(1,Number(this.map?.width)||1600);
+    const wallWidth=Math.max(20,Number(PHYS.spikewallWidth)||58);
+    const progress=Math.max(0,Math.min(1,(elapsed-PHYS.spikewallDelay)/PHYS.spikewallCrossTime));
+    // The wall starts with its left edge exactly at the map's right edge, so
+    // its warning spikes are visible immediately at the one-minute mark. It
+    // travels far enough to move the entire wall body beyond the left edge
+    // exactly at the three-minute mark. The map width therefore determines the
+    // speed automatically for custom-sized maps.
+    const travel=mapWidth+wallWidth;
+    const left=mapWidth-travel*progress;
+    return {left,width:wallWidth,right:left+wallWidth,progress,mapWidth};
+  },
+
+  killPlayersInSpikewall(){
+    const wall=this.getSpikewallState();
+    if(!wall) return;
+    const top=-PHYS.spikewallSpikeLength-8;
+    const bottom=(Number(this.map?.height)||900)+PHYS.spikewallSpikeLength+8;
+    for(const p of Object.values(this.players)){
+      if(!p || !p.alive || p.spectator) continue;
+      const overlapX=p.x+p.radius>wall.left && p.x-p.radius<wall.right+PHYS.spikewallSpikeLength;
+      const overlapY=p.y+p.radius>top && p.y-p.radius<bottom;
+      if(overlapX && overlapY) p.forceEliminate=true;
+    }
+  },
+
   /* ---------- lifecycle ---------- */
   beginCountdown(){
     this.state='countdown'; this.eliminationOrder=[]; this.projectiles=[]; this.mines=[];
     this.physicsTick=0; this.hostPhysicsTick=0; this.lastRecvStateSeq=null; this.stateSeq=0;
+    this.roundElapsed=0;
     this.roundTransitionId=0;
     if(this._roundTransitionTimer){ clearTimeout(this._roundTransitionTimer); this._roundTransitionTimer=null; }
     UI.showHUD();
@@ -2167,7 +2248,7 @@ const Game = {
     // Keep round transitions from briefly jumping through the default camera
     // zoom before settling on the new spawn layout.
     this.camera.snapTo(Object.values(this.players), this.map.width, this.map.height, this.viewW, this.viewH);
-    this.matchTime=0; this.physicsTick=0; this.hostPhysicsTick=0; this.impactFrames=0; this.impactFrameBroadcastCooldown=0;
+    this.matchTime=0; this.roundElapsed=0; this.physicsTick=0; this.hostPhysicsTick=0; this.impactFrames=0; this.impactFrameBroadcastCooldown=0;
     UI.pulseBanner('');
     return true;
   },
@@ -2202,6 +2283,10 @@ const Game = {
       // agree immediately, even before the first authoritative state snapshot.
       p.facing = sp.x < (this.map.width||1600)/2 ? 1 : (sp.x > (this.map.width||1600)/2 ? -1 : 1);
       p.radius=26*Math.max(0.5,Math.min(2,Number(this.matchSettings.playerSize)||1));
+      // Spawn points are map-authored, but custom maps can contain accidental
+      // overlaps. Eject the player from solids before the round starts so the
+      // first physics tick never begins embedded in geometry.
+      this.repairMapPenetration(p, PHYS.collisionSolverPasses);
       p.heavy=false; p.grappleAnchor=null; p.grappleTargetId=null; p.grappleLen=0; p.grappleRestLen=0; p.grounded=false; p.netGrounded=false; p.supportPlatform=-1; p.netSupportPlatform=-1; p.grappleStamina=p.grappleStaminaMax; p.lastMoveDir=0;
       p.bounceBoostQueued=false;
       p.bounceJumpActive=false; p.bounceJumpPeakSpeed=0; p.bounceJumpHeldPrev=false; p.bounceWBoostTimer=0; p.bounceIgnorePlatform=-1;
@@ -2236,6 +2321,7 @@ const Game = {
     }
 
     this.accumulator += dt;
+    if(this.state==='playing') this.roundElapsed=(this.roundElapsed||0)+dt;
     this.impactFrameBroadcastCooldown = Math.max(0,(this.impactFrameBroadcastCooldown||0)-dt);
     this.fpsTime += dt; this.fpsCounter++;
     if(this.fpsTime>=0.5){ this.fps = Math.round(this.fpsCounter/this.fpsTime); this.fpsCounter=0; this.fpsTime=0; }
@@ -2260,7 +2346,7 @@ const Game = {
         me.jumpEventSeq = ((me.jumpEventSeq||0) + 1) & 65535;
         NetworkManager.sendToHost({t:'jump', seq:me.jumpEventSeq}, true);
       }
-      if(me && (this.mode==='grapple' || this.mode==='pypg' || this.mode==='arrows' || this.mode==='death_arrows' || this.mode==='mines')){
+      if(me && (this.mode==='grapple' || this.mode==='pypg' || this.mode==='grapple_hook' || this.mode==='arrows' || this.mode==='death_arrows' || this.mode==='bouncy_arrows' || this.mode==='mines' || this.mode==='death_mines')){
         const actionMode=this.mode;
         if(actionMode==='grapple' || actionMode==='pypg'){
           if(me.input.grapplePressed){
@@ -2283,13 +2369,14 @@ const Game = {
           // Arrow/Mines modes use the Action key as a press-to-aim / release-to-use control.
           const pressed=me.input.grapplePressed;
           const released=!raw.grapple && me._lastActionHeld;
-          const isMineMode=actionMode==='mines';
+          const isMineMode=actionMode==='mines'||actionMode==='death_mines';
+          const isHookMode=actionMode==='grapple_hook';
           if(pressed){
             me.input.grapplePressed=false;
-            const cooldownMax=isMineMode?PHYS.mineCooldown:PHYS.actionProjectileCooldown;
+            const cooldownMax=isMineMode?PHYS.mineCooldown:(isHookMode?PHYS.grappleHookCooldown:PHYS.actionProjectileCooldown);
             if((me.actionCooldown||0)<=0 && me.alive){
               me.actionAiming=true;
-              me.actionKind=isMineMode?'mine':'projectile';
+              me.actionKind=isMineMode?'mine':(isHookMode?'grapple_hook':'projectile');
               const target=isMineMode?null:this.findNearestLivingPlayer(me);
               const targetAngle=target?Math.atan2(target.y-me.y,target.x-me.x):(me.facing<0?Math.PI:0);
               me.actionAngle=this.normalizeAngle(targetAngle);
@@ -2303,7 +2390,7 @@ const Game = {
               me._lastActionHeld=true;
               if(!this.isHost){
                 me.actionEventSeq=((me.actionEventSeq||0)+1)&65535;
-                NetworkManager.sendToHost({t:'action_start',seq:me.actionEventSeq,angle:me.actionAngle,kind:isMineMode?'mine':'projectile'},true);
+                NetworkManager.sendToHost({t:'action_start',seq:me.actionEventSeq,angle:me.actionAngle,kind:isMineMode?'mine':(isHookMode?'grapple_hook':'projectile')},true);
               }
             }else{
               me._lastActionHeld=false;
@@ -2336,7 +2423,7 @@ const Game = {
             me.actionAiming=false; me._lastActionHeld=false; me.actionCharge=0;
             me.actionPower=0;
             me.actionKind=null;
-            const cooldownMax=wasMine?PHYS.mineCooldown:PHYS.actionProjectileCooldown;
+            const cooldownMax=wasMine?PHYS.mineCooldown:(this.mode==='grapple_hook'?PHYS.grappleHookCooldown:PHYS.actionProjectileCooldown);
             if((me.actionCooldown||0)<=0){
               if(this.isHost){
                 if(wasMine) this.fireMine(me,angle,power);
@@ -2345,7 +2432,7 @@ const Game = {
                 me.actionEventSeq=((me.actionEventSeq||0)+1)&65535;
                 me.actionCooldown=cooldownMax;
                 me.actionCooldownMax=cooldownMax;
-                NetworkManager.sendToHost({t:'action_fire',seq:me.actionEventSeq,angle,power,kind:wasMine?'mine':'projectile'},true);
+                NetworkManager.sendToHost({t:'action_fire',seq:me.actionEventSeq,angle,power,kind:wasMine?'mine':(this.mode==='grapple_hook'?'grapple_hook':'projectile')},true);
               }
             }
           }
@@ -2401,7 +2488,7 @@ const Game = {
       this._snapTimer = (this._snapTimer||0)+dt;
       if(this._snapTimer >= 1/60){ this._snapTimer=0; this.broadcastState(); }
       this._secTimer = (this._secTimer||0)+dt;
-      if(this._secTimer>=1){ this._secTimer=0; this.matchTime++; NetworkManager.broadcast({t:'tick', matchTime:this.matchTime}, false); }
+      if(this._secTimer>=1){ this._secTimer=0; this.matchTime++; NetworkManager.broadcast({t:'tick', matchTime:this.matchTime, roundElapsed:this.roundElapsed}, false); }
     }
 
     this.updateRemoteRenderTargets(dt);
@@ -2450,6 +2537,7 @@ const Game = {
     }
     this.resolveCollisions(dt);
     this.updateMines(dt);
+    this.killPlayersInSpikewall();
     this.checkDeaths();
     this.checkModeEnd();
   },
@@ -2467,6 +2555,7 @@ const Game = {
     }
     this.resolveCollisions(dt);
     this.updateMines(dt);
+    this.killPlayersInSpikewall();
     // Deaths and round completion are host-authoritative. Clients wait for the
     // authoritative eliminated/round_end messages rather than making decisions
     // from their prediction.
@@ -2624,9 +2713,13 @@ const Game = {
     p._dashHeldPrev = dashHeldNow;
     if(p.dashTime>0){ p.dashTime--; }
 
+    // Move through the map in small adaptive slices when travel is large.
+    // Normal movement still costs one slice; dashes/knockback use only the
+    // additional slices they actually need. This prevents tunneling through
+    // thin/rotated platforms without turning the whole physics loop into a
+    // permanently high-frequency simulation.
     p.vy += grav*dt;
-    p.x += p.vx*dt;
-    p.y += p.vy*dt;
+    this.movePlayerMapContinuous(p, dt);
 
     p.trail.push({x:p.x,y:p.y});
     if(p.trail.length>7) p.trail.shift();
@@ -2745,6 +2838,7 @@ const Game = {
       id:m.id, ownerId:m.ownerId, x:m.x, y:m.y, vx:m.vx, vy:m.vy,
       radius:m.radius||PHYS.mineRadius, landed:!!m.landed,
       armed:!!m.armed, armTimer:Math.max(0,Number(m.armTimer)||0),
+      landedAge:Math.max(0,Number(m.landedAge)||0),
       power:m.power||0, age:m.age||0
     };
   },
@@ -2757,7 +2851,7 @@ const Game = {
     const x=p.x+dir*offset, y=p.y-p.radius*0.10;
     const mine={
       id:this._nextMineId++, ownerId:p.id, x,y, vx:launch.vx,vy:launch.vy,
-      radius:PHYS.mineRadius, landed:false, armed:false, armTimer:0,
+      radius:PHYS.mineRadius, landed:false, armed:false, armTimer:0, landedAge:0,
       power:launch.powerNorm, age:0
     };
     this.mines.push(mine);
@@ -2786,6 +2880,11 @@ const Game = {
     this.mines.splice(idx,1);
 
     if(hitPlayer && hitPlayer.alive){
+      const deathMine=!!GameModes[this.mode]?.deathMine;
+      if(!air && deathMine && hitPlayer.id!==mine.ownerId){
+        hitPlayer.forceEliminate=true;
+        hitPlayer.hitFlash=10;
+      }
       const dx=hitPlayer.x-x, dy=hitPlayer.y-y;
       const dist=Math.hypot(dx,dy)||1;
       const nx=dx/dist, ny=dy/dist;
@@ -2810,18 +2909,22 @@ const Game = {
       // path was one of the main sources of frame spikes during explosions.
     }
 
-    const color=air?'#ffd966':'#ff7a45';
-    // Keep the mine explosion readable while using a small, bounded particle
-    // burst. Mines can go off repeatedly in a crowded match, so avoid the much
-    // heavier generic impact/dash effects.
-    this.particles.burst(x,y,color,air?8:14,air?220:320,{gravity:air?110:190,life:air?0.22:0.34,size:air?3:3.6,sizeEnd:.4,twinkle:true});
+    // Small three-tone mine burst: enough red/orange/yellow to read clearly,
+    // while staying far below the cost of the heavier gameplay FX.
+    const burstCount=air?3:4;
+    const speed=air?220:300;
+    const life=air?0.20:0.28;
+    const opts={gravity:air?110:170,life,size:air?2.6:3.0,sizeEnd:.3,twinkle:true};
+    this.particles.burst(x,y,'#ff4038',burstCount,speed,opts);
+    this.particles.burst(x,y,'#ff7a2f',burstCount,speed*1.05,opts);
+    this.particles.burst(x,y,'#ffd34a',air?2:3,speed*0.9,opts);
     this.camera.addShake(air?3:7);
     NetworkManager.broadcast({t:'mine_detonate',id:mine.id,x,y,air:!!air,hitId:hitPlayer?.id||null},true);
     AudioManager.beep(air?240:85,air?0.06:0.11,'sawtooth',air?0.12:0.2,air?100:60);
   },
   landMine(mine, x, y, nx=0, ny=-1){
     mine.x=x; mine.y=y; mine.vx=0; mine.vy=0; mine.landed=true;
-    mine.armed=false; mine.armTimer=PHYS.mineArmingDelay;
+    mine.armed=false; mine.armTimer=PHYS.mineArmingDelay; mine.landedAge=0;
     // Give the client a deterministic resting state from this exact landing point.
     if(ny< -0.25){
       mine.x += nx*0.01; mine.y += ny*0.01;
@@ -2936,9 +3039,17 @@ const Game = {
         }
         if(landed) continue;
       }else{
-        // Planted mines stay fixed and trigger on any living player, including the thrower.
+        // Planted mines count their own 20-second lifetime after landing.
+        m.landedAge=(m.landedAge||0)+dt;
+        if(m.landedAge>=PHYS.mineLandedLifetime){
+          this.detonateMine(m,false,null);
+          continue;
+        }
+        // Death Mines are lethal once planted, but never kill their owner.
+        // Airborne impacts remain the normal mine behavior and are handled above.
         for(const p of players){
           if(!p.alive || !m.armed) continue;
+          if(GameModes[this.mode]?.deathMine && p.id===m.ownerId) continue;
           const dx=p.x-m.x, dy=p.y-m.y;
           const rr=p.radius+m.radius-2;
           if(dx*dx+dy*dy<=rr*rr){
@@ -2957,17 +3068,19 @@ const Game = {
   },
 
   fireActionProjectile(p, angle, power=0){
-    if(!p || !p.alive || !this.isHost || !GameModes[this.mode]?.projectile) return false;
+    const modeDef=GameModes[this.mode]||{};
+    if(!p || !p.alive || !this.isHost || !modeDef.projectile) return false;
     if((p.actionCooldown||0)>0) return false;
     const powerNorm=Math.max(0,Math.min(1,Number(power)||0));
-    const speed=PHYS.actionProjectileSpeed + (PHYS.actionProjectileMaxSpeed-PHYS.actionProjectileSpeed)*powerNorm;
+    const isHook=!!modeDef.hook;
+    const speed=isHook ? (PHYS.grappleHookSpeed+(PHYS.grappleHookMaxSpeed-PHYS.grappleHookSpeed)*powerNorm) : (PHYS.actionProjectileSpeed + (PHYS.actionProjectileMaxSpeed-PHYS.actionProjectileSpeed)*powerNorm);
     const halfL=PHYS.actionProjectileLength*0.5, halfW=PHYS.actionProjectileWidth*0.5;
     const offset=p.radius+halfL+6;
     const x=p.x+Math.cos(angle)*offset, y=p.y+Math.sin(angle)*offset;
-    const proj={id:this._nextProjectileId++,ownerId:p.id,x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:PHYS.actionProjectileLife,deadly:!!GameModes[this.mode].deadly,halfLength:halfL,halfWidth:halfW,angle,spawnGrace:PHYS.actionProjectileSpawnGrace,power:powerNorm};
+    const proj={id:this._nextProjectileId++,ownerId:p.id,x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:PHYS.actionProjectileLife,deadly:!!modeDef.deadly,halfLength:isHook?10:halfL,halfWidth:isHook?5:halfW,angle,spawnGrace:PHYS.actionProjectileSpawnGrace,power:powerNorm,bouncy:!!modeDef.bouncy,bounceCount:0,hitPlayers:[],playerHitCooldowns:{},kind:isHook?'grapple_hook':'arrow'};
     this.projectiles.push(proj);
-    p.actionCooldown=PHYS.actionProjectileCooldown;
-    p.actionCooldownMax=PHYS.actionProjectileCooldown;
+    p.actionCooldown=isHook?PHYS.grappleHookCooldown:PHYS.actionProjectileCooldown;
+    p.actionCooldownMax=isHook?PHYS.grappleHookCooldown:PHYS.actionProjectileCooldown;
     p.actionAiming=false;
     p.remoteActionActive=false;
     p._actionChargeFxAcc=0;
@@ -3053,73 +3166,208 @@ const Game = {
     for(let i=this.projectiles.length-1;i>=0;i--){
       const q=this.projectiles[i];
       const oldX=q.x, oldY=q.y;
-      q.x+=q.vx*dt; q.y+=q.vy*dt;
-      q.life=Infinity;
       q.spawnGrace=Math.max(0,(q.spawnGrace||0)-dt);
-      const angle=q.angle ?? Math.atan2(q.vy,q.vx);
-      const halfL=q.halfLength ?? 12, halfW=q.halfWidth ?? 5;
-      let remove=false, removeReason=null;
+      q._bounceFxTimer=Math.max(0,(q._bounceFxTimer||0)-dt);
+      q.life=Infinity;
 
-      if(isHost){
-        const dx=q.x-oldX, dy=q.y-oldY;
-        const dist=Math.hypot(dx,dy);
-        const samples=Math.max(1,Math.ceil(dist/3));
-        if(!Array.isArray(q.hitPlayers)) q.hitPlayers=[];
-
-        // Continuous-ish swept collision: sample the relative motion of the
-        // projectile and every target, while giving map geometry first refusal.
-        // Crucially, player hits are NOT subject to spawn grace. The shooter is
-        // already excluded by ownerId, so point-blank shots are legitimate hits.
-        for(let s=0;s<=samples;s++){
-          const t=s/samples;
-          const sx=oldX+dx*t, sy=oldY+dy*t;
-          const mapHit=(sx-halfL<=0 || sx+halfL>=this.map.width || sy-halfW<=0 || sy+halfW>=this.map.height)
-            ? 'wall'
-            : (this.projectileHitsPlatform(q,sx,sy) ? 'platform' : null);
-          if(mapHit){
-            remove=true; removeReason=mapHit;
-            break;
+      if(q.kind==='grapple_hook'){
+        q.x+=q.vx*dt; q.y+=q.vy*dt;
+        q._syncTimer=(q._syncTimer||0)+dt; q._age=(q._age||0)+dt;
+        let remove=false;
+        if(isHost){
+          for(const target of Object.values(this.players)){
+            if(!target.alive || target.spectator || target.id===q.ownerId) continue;
+            if(this.projectileHitsPlayerAt(q,q.x,q.y,target)){
+              const owner=this.players[q.ownerId];
+              if(owner&&owner.alive){ this.applyGrappleHookSling(owner,target.x,target.y,q.power,true); this.spawnGrappleHookHitFx(q.x,q.y); }
+              remove=true; break;
+            }
           }
-
-          for(const p of Object.values(this.players)){
-            if(!p.alive || p.spectator || p.id===q.ownerId || q.hitPlayers.includes(p.id)) continue;
-            const p0x=Number.isFinite(p.prevX)?p.prevX:p.x;
-            const p0y=Number.isFinite(p.prevY)?p.prevY:p.y;
-            const p1x=p.x, p1y=p.y;
-            const px=p0x+(p1x-p0x)*t, py=p0y+(p1y-p0y)*t;
-            if(this.projectileHitsPlayerAt(q,sx,sy,p,px,py)){
-              q.hitPlayers.push(p.id);
-              if(q.deadly){
-                p.alive=false; p.forceEliminate=false;
-                if(!this.eliminationOrder.includes(p.id)) this.eliminationOrder.push(p.id);
-                NetworkManager.broadcast({t:'eliminated',id:p.id,x:p.x,y:p.y},true);
-                this.spawnFx(p,'death'); AudioManager.death();
-              }else{
-                const travelLen=Math.hypot(q.vx,q.vy)||1;
-                const nx=q.vx/travelLen, ny=q.vy/travelLen;
-                const knock=(420+900*(q.power||0))*(this.matchSettings.kb||1);
-                p.vx += nx*knock;
-                p.vy += ny*knock;
-                p.damage += 8; p.hitFlash=8;
-                this.spawnFx(p,'impact'); NetworkManager.broadcast({t:'hitfx',x:p.x,y:p.y},false);
+          if(!remove){
+            const dx=q.x-oldX,dy=q.y-oldY,dist=Math.hypot(dx,dy),samples=Math.max(1,Math.ceil(dist/4));
+            outer: for(let si=1;si<=samples;si++){
+              const t=si/samples,sx=oldX+dx*t,sy=oldY+dy*t;
+              if(sx<0||sx>this.map.width||sy<0||sy>this.map.height){
+                // The map boundary is a kill/despawn boundary for action projectiles.
+                // A grapple hook must never turn the outside edge into an implicit grapple target.
+                remove=true; break;
+              }
+              for(const plat of this.map.platforms||[]){
+                const hit=(Number(plat.rotation)||0)!==0 ? this.circleVsRotatedRect({x:sx,y:sy,radius:q.halfWidth||5},plat) : this.circleVsAxisAlignedRect({x:sx,y:sy,radius:q.halfWidth||5},plat);
+                if(hit){
+                  const owner=this.players[q.ownerId], cp=this.closestPointOnRect(sx,sy,plat);
+                  if(owner&&owner.alive){this.applyGrappleHookSling(owner,cp.x,cp.y,q.power,false);this.spawnGrappleHookHitFx(cp.x,cp.y);}
+                  remove=true; break outer;
+                }
               }
             }
           }
         }
+        if(isHost){
+          if(remove) NetworkManager.broadcast({t:'grapple_hook_remove',id:q.id},true);
+          else if(q._syncTimer>=PHYS.actionProjectileSyncRate){ q._syncTimer=0; NetworkManager.broadcast({t:'action_projectile_sync',projectile:{id:q.id,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,angle:q.angle,power:q.power,kind:q.kind}},false); }
+        }
+        if(remove || q._age>1.2) this.projectiles.splice(i,1);
+        continue;
       }
 
+      if(q.bouncy || GameModes[this.mode]?.bouncy){
+        q.bouncy=true;
+        if(isHost) this.updateBouncyArrow(q,dt); else { q.x+=q.vx*dt; q.y+=q.vy*dt; }
+        if(isHost){
+          q._syncTimer=(q._syncTimer||0)+dt;
+          if(q._removeAfterBounce){NetworkManager.broadcast({t:'action_projectile_remove',id:q.id},true);this.projectiles.splice(i,1);continue;}
+          if(q._syncTimer>=PHYS.actionProjectileSyncRate){q._syncTimer=0;NetworkManager.broadcast({t:'action_projectile_sync',projectile:{id:q.id,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,angle:q.angle,power:q.power,kind:q.kind,bouncy:true,bounceCount:q.bounceCount||0,playerHitCooldowns:q.playerHitCooldowns||{}}},false);}
+        }
+        continue;
+      }
+      q.x+=q.vx*dt; q.y+=q.vy*dt;
+      const halfL=q.halfLength ?? 12, halfW=q.halfWidth ?? 5;
+      let remove=false;
+      if(isHost){
+        if(!Array.isArray(q.hitPlayers)) q.hitPlayers=[];
+        const dx=q.x-oldX,dy=q.y-oldY,dist=Math.hypot(dx,dy),samples=Math.max(1,Math.ceil(dist/3));
+        for(let sIdx=0;sIdx<=samples;sIdx++){
+          const t=sIdx/samples,sx=oldX+dx*t,sy=oldY+dy*t;
+          if(sx-halfL<=0||sx+halfL>=this.map.width||sy-halfW<=0||sy+halfW>=this.map.height){
+            if(q.bouncy && (q.bounceCount||0)<PHYS.bouncyArrowMaxBounces){
+              const nx=sx-halfL<=0?1:(sx+halfL>=this.map.width?-1:0), ny=sy-halfW<=0?1:(sy+halfW>=this.map.height?-1:0);
+              this.bounceArrow(q,sx,sy,nx,ny); q.x=sx;q.y=sy; continue;
+            }
+            remove=true; break;
+          }
+          let wallHit=null;
+          for(const plat of this.map.platforms||[]){
+            const hit=(Number(plat.rotation)||0)!==0 ? this.circleVsRotatedRect({x:sx,y:sy,radius:halfW},plat) : this.circleVsAxisAlignedRect({x:sx,y:sy,radius:halfW},plat);
+            if(hit){wallHit=hit;break;}
+          }
+          if(wallHit){
+            if(q.bouncy && (q.bounceCount||0)<PHYS.bouncyArrowMaxBounces){this.bounceArrow(q,sx,sy,wallHit.nx,wallHit.ny);q.x=sx;q.y=sy;continue;}
+            remove=true;break;
+          }
+          for(const p of Object.values(this.players)){
+            if(!p.alive||p.spectator||p.id===q.ownerId) continue;
+            if(this.projectileHitsPlayerAt(q,sx,sy,p)){
+              const firstHit=!q.hitPlayers.includes(p.id); if(firstHit) q.hitPlayers.push(p.id);
+              if(q.deadly){
+                p.alive=false;p.forceEliminate=false;if(!this.eliminationOrder.includes(p.id))this.eliminationOrder.push(p.id);
+                NetworkManager.broadcast({t:'eliminated',id:p.id,x:p.x,y:p.y},true);this.spawnFx(p,'death');AudioManager.death();
+              }else if(firstHit){
+                const travelLen=Math.hypot(q.vx,q.vy)||1,nx=q.vx/travelLen,ny=q.vy/travelLen,knock=(420+900*(q.power||0))*(this.matchSettings.kb||1);
+                p.vx+=nx*knock;p.vy+=ny*knock;p.damage+=8;p.hitFlash=8;this.spawnFx(p,'impact');NetworkManager.broadcast({t:'hitfx',x:p.x,y:p.y},false);
+              }
+              if(q.bouncy && (q.bounceCount||0)<PHYS.bouncyArrowMaxBounces){
+                let nx=p.x-sx,ny=p.y-sy,d=Math.hypot(nx,ny);if(d<1e-6){nx=-q.vx;ny=-q.vy;d=Math.hypot(nx,ny)||1;}
+                this.bounceArrow(q,sx,sy,nx/d,ny/d);q.x=sx;q.y=sy;continue;
+              }
+              remove=true;break;
+            }
+          }
+          if(remove) break;
+        }
+      }
       if(isHost){
         q._syncTimer=(q._syncTimer||0)+dt;
-        if(remove){
-          NetworkManager.broadcast({t:'action_projectile_remove',id:q.id},true);
-        }else if(q._syncTimer>=PHYS.actionProjectileSyncRate){
-          q._syncTimer=0;
-          NetworkManager.broadcast({t:'action_projectile_sync',projectile:{id:q.id,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,angle:q.angle,power:q.power}},false);
-        }
+        if(remove) NetworkManager.broadcast({t:'action_projectile_remove',id:q.id},true);
+        else if(q._syncTimer>=PHYS.actionProjectileSyncRate){q._syncTimer=0;NetworkManager.broadcast({t:'action_projectile_sync',projectile:{id:q.id,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,angle:q.angle,power:q.power,kind:q.kind,bounceCount:q.bounceCount||0}},false);}
       }
       if(remove) this.projectiles.splice(i,1);
     }
   },
+
+  updateBouncyArrow(q,dt){
+    const maxBounces=PHYS.bouncyArrowMaxBounces;
+    let remaining=Math.max(0,dt),iterations=0;
+    q._bounceIgnoreTimer=Math.max(0,(q._bounceIgnoreTimer||0)-dt);
+    if(q._bounceIgnoreTimer<=0) q._bounceIgnoreId=null;
+    if(!q.playerHitCooldowns || typeof q.playerHitCooldowns!=='object') q.playerHitCooldowns={};
+    for(const id of Object.keys(q.playerHitCooldowns)){
+      q.playerHitCooldowns[id]=Math.max(0,(Number(q.playerHitCooldowns[id])||0)-dt);
+      if(q.playerHitCooldowns[id]<=0) delete q.playerHitCooldowns[id];
+    }
+    while(remaining>1e-5 && iterations<maxBounces+2){
+      iterations++;
+      const ox=q.x,oy=q.y,dx=q.vx*remaining,dy=q.vy*remaining,dist=Math.hypot(dx,dy);
+      if(dist<1e-6) break;
+      const samples=Math.max(1,Math.ceil(dist/3));
+      let hitT=1,hitType=null,hitNormal=null,hitPlayer=null;
+      outer: for(let si=1;si<=samples;si++){
+        const t=si/samples,sx=ox+dx*t,sy=oy+dy*t;
+        if(sx-(q.halfLength||12)<=0 || sx+(q.halfLength||12)>=this.map.width ||
+           sy-(q.halfWidth||5)<=0 || sy+(q.halfWidth||5)>=this.map.height){
+          q._removeAfterBounce=true;
+          break outer;
+        }
+        for(const plat of this.map.platforms||[]){
+          const hit=(Number(plat.rotation)||0)!==0 ? this.circleVsRotatedRect({x:sx,y:sy,radius:q.halfWidth||5},plat) : this.circleVsAxisAlignedRect({x:sx,y:sy,radius:q.halfWidth||5},plat);
+          if(hit){hitT=t;hitType='wall';hitNormal={x:hit.nx,y:hit.ny};break outer;}
+        }
+        for(const target of Object.values(this.players)){
+          if(!target.alive||target.spectator||target.id===q.ownerId) continue;
+          if(q._bounceIgnoreTimer>0 && target.id===q._bounceIgnoreId) continue;
+          if((q.playerHitCooldowns[target.id]||0)>0) continue;
+          const tx=(Number.isFinite(target.prevX)?target.prevX:target.x),ty=(Number.isFinite(target.prevY)?target.prevY:target.y);
+          const px=tx+(target.x-tx)*t,py=ty+(target.y-ty)*t;
+          if(this.projectileHitsPlayerAt(q,sx,sy,target,px,py)){
+            hitT=t;hitType='player';hitPlayer=target;
+            // bounceArrow expects a surface normal pointing away from the
+            // surface toward the projectile. The player-center vector above is
+            // the opposite orientation, so use player -> arrow here.
+            let nx=sx-px,ny=sy-py,n=Math.hypot(nx,ny);
+            if(n<1e-6){nx=q.vx;ny=q.vy;n=Math.hypot(nx,ny)||1;}
+            hitNormal={x:nx/n,y:ny/n};break outer;
+          }
+        }
+      }
+      if(!hitType){q.x=ox+dx;q.y=oy+dy;break;}
+      q.x=ox+dx*hitT;q.y=oy+dy*hitT;
+      if(hitPlayer){
+        const hitId=hitPlayer.id;
+        if(!Array.isArray(q.hitPlayers))q.hitPlayers=[];
+        if(!q.hitPlayers.includes(hitId)) q.hitPlayers.push(hitId);
+        const speed=Math.hypot(q.vx,q.vy)||1,nx=q.vx/speed,ny=q.vy/speed,knock=(420+900*(q.power||0))*(this.matchSettings.kb||1);
+        hitPlayer.vx+=nx*knock;hitPlayer.vy+=ny*knock;hitPlayer.damage+=8;hitPlayer.hitFlash=8;
+        this.spawnFx(hitPlayer,'impact');NetworkManager.broadcast({t:'hitfx',x:hitPlayer.x,y:hitPlayer.y},false);
+        // A bouncy arrow may hit the same opponent again after it has bounced away.
+        // Keep only a short re-hit lock so one contact cannot apply damage repeatedly
+        // during the few simulation samples that surround the same impact point.
+        q.playerHitCooldowns[hitId]=0.095;
+        q._bounceIgnoreId=hitId;q._bounceIgnoreTimer=0.075;
+      }
+      if((q.bounceCount||0)>=maxBounces){ q._removeAfterBounce=true; break; }
+      this.bounceArrow(q,q.x,q.y,hitNormal.x,hitNormal.y);
+      remaining*=Math.max(0,1-hitT);
+    }
+  },
+
+  bounceArrow(q,x,y,nx,ny){
+    if(!q)return;
+    const vn=q.vx*nx+q.vy*ny;
+    if(vn<0){q.vx-=2*vn*nx;q.vy-=2*vn*ny;}
+    q.vx*=0.985;q.vy*=0.985;q.angle=Math.atan2(q.vy,q.vx);q.bounceCount=(q.bounceCount||0)+1;q.x+=nx*1.5;q.y+=ny*1.5;
+    if((q._bounceFxTimer||0)<=0){
+      q._bounceFxTimer=PHYS.bouncyArrowBounceFxCooldown;
+      this.particles.burst(x,y,'#ff4b35',2,105,{gravity:30,life:.16,size:1.8,sizeEnd:.2,twinkle:true});
+      this.particles.burst(x,y,'#ff9a36',3,125,{gravity:40,life:.18,size:2.1,sizeEnd:.25,twinkle:true});
+      this.particles.burst(x,y,'#ffd447',2,92,{gravity:35,life:.14,size:1.6,sizeEnd:.2,twinkle:true});
+      NetworkManager.broadcast({t:'arrow_bounce_fx',x,y},false);
+    }
+  },
+
+  applyGrappleHookSling(owner,x,y,power,toPlayer){
+    if(!owner||!owner.alive)return;
+    const dx=x-owner.x,dy=y-owner.y,dist=Math.hypot(dx,dy)||1,powerNorm=Math.max(0,Math.min(1,Number(power)||0));
+    const base=PHYS.grappleHookMinSling+(PHYS.grappleHookMaxSling-PHYS.grappleHookMinSling)*Math.pow(powerNorm,1.15);
+    const distanceFactor=toPlayer?1:Math.min(1.25,0.78+dist/850),k=base*distanceFactor*PHYS.grappleHookWallBoost*(this.matchSettings.kb||1);
+    owner.vx=dx/dist*k+owner.vx*0.18;owner.vy=dy/dist*k+owner.vy*0.18;owner.grounded=false;owner.hitFlash=5;
+  },
+
+  spawnGrappleHookHitFx(x,y){
+    this.particles.burst(x,y,'#5dffcf',3,120,{gravity:0,life:.18,size:2.1,sizeEnd:.2,twinkle:true});
+    this.particles.burst(x,y,'#ffffff',2,90,{gravity:0,life:.12,size:1.5,sizeEnd:.15,twinkle:true});
+    this.camera.addShake(2.5);NetworkManager.broadcast({t:'grapple_hook_hit_fx',x,y},false);
+  },
+
   findNearestLivingPlayer(p){
     if(!p) return null;
     let closest=null, best=Infinity;
@@ -3390,14 +3638,102 @@ const Game = {
         // solver had to guess which side to eject them from. Bleed off excess
         // rope length over several fixed steps for both normal and PYPG grapple.
         const correction=Math.min(excess, Math.max(2, 760*dt));
-        p.x-=nx*correction;
-        p.y-=ny*correction;
+        // Rope-length correction is still a positional correction, so route it
+        // through the map-safe motion path instead of moving directly through a
+        // platform. The correction is tiny in normal frames and remains cheap.
+        this.movePlayerMapDelta(p,-nx*correction,-ny*correction,dt);
         if(radialVel>0){
           const rebound=Math.min(0.95,PHYS.grappleRebound+stretch*0.0012);
           p.vx-=nx*radialVel*(1+rebound);
           p.vy-=ny*radialVel*(1+rebound);
         }
       }
+    }
+  },
+
+
+  getCollisionSubsteps(p, dx, dy){
+    const radius=Math.max(1,Number(p?.radius)||26);
+    const safeTravel=Math.max(PHYS.collisionMinTravel, radius*PHYS.collisionSafeTravelFactor);
+    const distance=Math.hypot(dx,dy);
+    return Math.min(PHYS.collisionMaxSubsteps, Math.max(1, Math.ceil(distance/safeTravel)));
+  },
+
+  movePlayerMapContinuous(p, dt){
+    if(!p || !p.alive || p.spectator || !(dt>0)) return;
+    const originalPrevX=Number.isFinite(p.prevX)?p.prevX:p.x;
+    const originalPrevY=Number.isFinite(p.prevY)?p.prevY:p.y;
+    const totalDx=p.vx*dt, totalDy=p.vy*dt;
+    const steps=this.getCollisionSubsteps(p,totalDx,totalDy);
+    const subDt=dt/steps;
+
+    for(let i=0;i<steps;i++){
+      const sx=p.x, sy=p.y;
+      // collideWithMap uses prevX/prevY for one-way crossings. For substeps we
+      // temporarily expose the current slice start, then restore the full-tick
+      // previous position so projectile CCD and player/player CCD retain their
+      // original semantics.
+      p.prevX=sx; p.prevY=sy;
+      p.x += p.vx*subDt;
+      p.y += p.vy*subDt;
+      this.collideWithMap(p,subDt,true);
+      this.repairMapPenetration(p,1);
+    }
+
+    p.prevX=originalPrevX;
+    p.prevY=originalPrevY;
+    // One normal map pass re-establishes grounded/support semantics and keeps
+    // slope steering exactly on the same once-per-tick path as before.
+    this.collideWithMap(p,dt,false);
+    this.repairMapPenetration(p,PHYS.collisionSolverPasses);
+  },
+
+  movePlayerMapDelta(p, dx, dy, dt){
+    if(!p || !p.alive || p.spectator) return;
+    const originalPrevX=Number.isFinite(p.prevX)?p.prevX:p.x;
+    const originalPrevY=Number.isFinite(p.prevY)?p.prevY:p.y;
+    const steps=this.getCollisionSubsteps(p,dx,dy);
+    const stepX=dx/steps, stepY=dy/steps;
+    const subDt=Math.max(0,Number(dt)||0)/steps;
+
+    for(let i=0;i<steps;i++){
+      const sx=p.x, sy=p.y;
+      p.prevX=sx; p.prevY=sy;
+      p.x += stepX;
+      p.y += stepY;
+      this.collideWithMap(p,subDt,true);
+      this.repairMapPenetration(p,1);
+    }
+
+    p.prevX=originalPrevX;
+    p.prevY=originalPrevY;
+  },
+
+  repairMapPenetration(p, maxPasses=2){
+    if(!p || !p.alive || p.spectator || !this.map?.platforms?.length) return;
+    const passes=Math.max(1,Math.min(6,Number(maxPasses)||1));
+    const skin=Math.max(0,PHYS.collisionSkin||0);
+    for(let pass=0;pass<passes;pass++){
+      let changed=false;
+      for(const plat of this.map.platforms){
+        // One-way platforms are deliberately excluded: being below a one-way
+        // surface is a valid state and should never cause an emergency push.
+        if(plat.type==='oneway') continue;
+        if(plat.type!=='solid' && plat.type!=='bounce') continue;
+        const rotation=Number(plat.rotation)||0;
+        const hit=rotation!==0 ? this.circleVsRotatedRect(p,plat) : this.circleVsAxisAlignedRect(p,plat);
+        if(!hit || !(hit.depth>0)) continue;
+        const push=hit.depth+skin;
+        p.x += hit.nx*push;
+        p.y += hit.ny*push;
+        const vn=p.vx*hit.nx+p.vy*hit.ny;
+        if(vn<0){
+          p.vx -= hit.nx*vn;
+          p.vy -= hit.ny*vn;
+        }
+        changed=true;
+      }
+      if(!changed) break;
     }
   },
 
@@ -3646,7 +3982,9 @@ const Game = {
         const b0x=Number.isFinite(b.prevX)?b.prevX:b.x, b0y=Number.isFinite(b.prevY)?b.prevY:b.y;
         const endDx=b.x-a.x, endDy=b.y-a.y;
         const endDist=Math.hypot(endDx,endDy)||0.01;
-        const minD=a.radius+b.radius;
+        // A sub-pixel skin closes the tiny numerical gap at grazing contacts
+        // without visibly changing the player hitbox.
+        const minD=a.radius+b.radius+PHYS.collisionSkin;
         let toi=null;
         let nx=0, ny=0, overlap=0;
 
@@ -3682,14 +4020,24 @@ const Game = {
           b.x+=nx*(separationEps*0.5); b.y+=ny*(separationEps*0.5);
         }
 
-        // Heavy-player impacts break grapples before velocity transfer.
-        if(a.heavy && b.grappleAnchor){ b.grappleStamina=0; b.grappleAnchor=null; b.grappleTargetId=null; b.grappleLen=0; b.grappleRestLen=0; }
-        if(b.heavy && a.grappleAnchor){ a.grappleStamina=0; a.grappleAnchor=null; a.grappleTargetId=null; a.grappleLen=0; a.grappleRestLen=0; }
+        // Heavy-player impacts and active-dash impacts break grapples before velocity transfer.
+        // This intentionally reuses the heavy collision rule: the grappling player loses
+        // all stored grapple charge and is fully detached from the rope/target.
+        const aWasDashing=a.dashTime>0 && Number.isFinite(a.dashVelocity) && Math.abs(a.dashVelocity)>0;
+        const bWasDashing=b.dashTime>0 && Number.isFinite(b.dashVelocity) && Math.abs(b.dashVelocity)>0;
+        const breakGrapple = (victim)=>{
+          if(!victim.grappleAnchor) return;
+          victim.grappleStamina=0;
+          victim.grappleAnchor=null;
+          victim.grappleTargetId=null;
+          victim.grappleLen=0;
+          victim.grappleRestLen=0;
+        };
+        if(a.heavy || aWasDashing) breakGrapple(b);
+        if(b.heavy || bWasDashing) breakGrapple(a);
 
         const rvx=b.vx-a.vx, rvy=b.vy-a.vy;
         const relNormalSpeed=rvx*nx+rvy*ny;
-        const aWasDashing=a.dashTime>0 && Number.isFinite(a.dashVelocity) && Math.abs(a.dashVelocity)>0;
-        const bWasDashing=b.dashTime>0 && Number.isFinite(b.dashVelocity) && Math.abs(b.dashVelocity)>0;
         const dashImpact=(aWasDashing||bWasDashing) && relNormalSpeed<0;
 
         if(relNormalSpeed<0){
@@ -3742,15 +4090,27 @@ const Game = {
 
         if(toi<0.999999){
           const remain=1-toi;
-          a.x+=a.vx*dt*remain; a.y+=a.vy*dt*remain;
-          b.x+=b.vx*dt*remain; b.y+=b.vy*dt*remain;
+          // The post-impact movement used to bypass map collision until the very
+          // end of the player/player pass. A strong impact near a wall could then
+          // cross the wall completely before the next overlap check. Keep the same
+          // remaining-time motion, but send it through the adaptive map guard.
+          this.movePlayerMapDelta(a,a.vx*dt*remain,a.vy*dt*remain,dt*remain);
+          this.movePlayerMapDelta(b,b.vx*dt*remain,b.vy*dt*remain,dt*remain);
         }
       }
     }
 
-    // Final map pass resolves any new contact created by a player/player impact
-    // or by the remaining post-TOI movement. The map solver never snaps to an edge.
-    for(const id in this.players) if(!this.players[id].spectator) this.collideWithMap(this.players[id], dt, true);
+    // Final map passes resolve any new contact created by a player/player impact
+    // or by the remaining post-TOI movement. Multiple cheap passes handle cases
+    // where ejecting from one platform exposes a second overlapping platform.
+    for(let pass=0;pass<PHYS.collisionSolverPasses;pass++){
+      for(const id in this.players){
+        const p=this.players[id];
+        if(p.spectator) continue;
+        this.collideWithMap(p, dt, true);
+        this.repairMapPenetration(p,1);
+      }
+    }
   },
 
   checkDeaths(){
@@ -4005,7 +4365,7 @@ const Game = {
         p.spectator?1:0
       ];
     }
-    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, roundResult:(this.state==='roundResults'?this.netRoundResult:null), spawnAssignments:this.spawnAssignments, s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace})), mines:this.mines.map(m=>this.serializeMine(m))}, false);
+    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, roundResult:(this.state==='roundResults'?this.netRoundResult:null), spawnAssignments:this.spawnAssignments, s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace,kind:q.kind,bouncy:!!q.bouncy,bounceCount:q.bounceCount||0,playerHitCooldowns:q.playerHitCooldowns||{}})), mines:this.mines.map(m=>this.serializeMine(m))}, false);
     this.lastServerState = Date.now();
   },
   updateRemoteJumpPrediction(p, serverX, serverY, serverVX, serverVY, now){
@@ -4184,7 +4544,7 @@ const Game = {
           if(local){
             local.x += (q.x-local.x)*0.7; local.y += (q.y-local.y)*0.7;
             local.vx=q.vx; local.vy=q.vy; local.life=q.life; local.angle=q.angle;
-            local.power=q.power||0; local.deadly=!!q.deadly; local.spawnGrace=q.spawnGrace||0;
+            local.power=q.power||0; local.deadly=!!q.deadly; local.spawnGrace=q.spawnGrace||0; local.kind=q.kind||local.kind; local.bouncy=!!q.bouncy; local.bounceCount=Number(q.bounceCount)||local.bounceCount||0;
             if(q.halfLength!=null) local.halfLength=q.halfLength;
             if(q.halfWidth!=null) local.halfWidth=q.halfWidth;
           }else this.projectiles.push(Object.assign({},q));
@@ -4269,11 +4629,11 @@ const Game = {
         p.input.dash=!!v[19];
         p.input.grapple=!!v[20];
         p.input.down=!!v[22];
-        if(this.mode==='arrows' || this.mode==='death_arrows' || this.mode==='mines'){
+        if(this.mode==='arrows' || this.mode==='death_arrows' || this.mode==='bouncy_arrows' || this.mode==='grapple_hook' || this.mode==='mines' || this.mode==='death_mines'){
           p.actionAiming=!!v[23];
           if(Number.isFinite(v[24])) p.actionAngle=v[24];
           p.actionCharge=Math.max(0,Math.min(1,Number(v[25])||0));
-          if(this.mode==='mines') p.actionAngle=p.facing<0?Math.PI:0;
+          if(this.mode==='mines' || this.mode==='death_mines') p.actionAngle=p.facing<0?Math.PI:0;
           if(p.actionAiming) p.remoteActionActive=true;
           else if(!p.actionAiming) p.remoteActionActive=false;
         }
@@ -4303,7 +4663,13 @@ const Game = {
         if(p.netGrounded && p.netSupportPlatform>=0 && p.netSupportPlatform<this.map.platforms.length){
           const sp=this.map.platforms[p.netSupportPlatform];
           const nearSupport = p.x+p.radius>sp.x && p.x-p.radius<sp.x+sp.w && Math.abs((p.y+p.radius)-sp.y)<14;
-          if(nearSupport){ p.y=sp.y-p.radius; p.vy=Math.min(0,p.vy); }
+          if(nearSupport){
+            p.y=sp.y-p.radius; p.vy=Math.min(0,p.vy);
+            // Authoritative ground alignment is a small client-side positional
+            // correction. Re-check solid geometry immediately so that a late
+            // snapshot can never leave the remote player embedded in a wall.
+            this.repairMapPenetration(p,PHYS.collisionSolverPasses);
+          }
         }
 
         if(!v[8] && !p.grappleTargetId){ p.grappleAnchor=null; p.grappleLen=0; p.grappleRestLen=0; }
@@ -4331,7 +4697,8 @@ const Game = {
       if(id!==this.myId){
         const ax=Math.max(-3.5,Math.min(3.5,p.netErrorX*dt*3.0));
         const ay=Math.max(-3.5,Math.min(3.5,p.netErrorY*dt*3.0));
-        p.x += ax; p.y += ay;
+        this.movePlayerMapDelta(p,ax,ay,dt);
+        this.repairMapPenetration(p,PHYS.collisionSolverPasses);
         p.netErrorX -= ax; p.netErrorY -= ay;
       }
     }
@@ -4427,13 +4794,14 @@ const Game = {
           const newer=prev===null || (((seq-(prev||0)+65536)&65535)<32768 && seq!==prev);
           if(!newer) return;
           const isMine=GameModes[this.mode]?.mine && data.kind==='mine';
+          const isHook=GameModes[this.mode]?.hook && data.kind==='grapple_hook';
           const isProjectile=GameModes[this.mode]?.projectile && (!data.kind || data.kind==='projectile');
-          if(!isMine && !isProjectile) return;
-          p.lastActionEventSeq=seq; p.remoteActionActive=true; p.actionKind=isMine?'mine':'projectile';
+          if(!isMine && !isProjectile && !isHook) return;
+          p.lastActionEventSeq=seq; p.remoteActionActive=true; p.actionKind=isMine?'mine':(isHook?'grapple_hook':'projectile');
           p.actionAiming=((p.actionCooldown||0)<=0 && p.alive);
           p.actionChargeStartTime=performance.now(); p.actionCharge=0; p.actionPower=0; p._actionChargeFxAcc=0;
           p.actionAngle=isMine?(p.facing<0?Math.PI:0):(Number.isFinite(data.angle)?data.angle:(p.facing<0?Math.PI:0));
-          p.actionCooldownMax=isMine?PHYS.mineCooldown:PHYS.actionProjectileCooldown;
+          p.actionCooldownMax=isMine?PHYS.mineCooldown:(isHook?PHYS.grappleHookCooldown:PHYS.actionProjectileCooldown);
         }
         break;
       case 'action_fire':
@@ -4443,12 +4811,14 @@ const Game = {
           const newer=prev===null || (((seq-(prev||0)+65536)&65535)<32768 && seq!==prev);
           if(!newer) return;
           const fireMineNow=GameModes[this.mode]?.mine && (data.kind==='mine' || p.actionKind==='mine');
-          const fireProjectileNow=GameModes[this.mode]?.projectile && !fireMineNow;
+          const fireHookNow=GameModes[this.mode]?.hook && (data.kind==='grapple_hook' || p.actionKind==='grapple_hook');
+          const fireProjectileNow=GameModes[this.mode]?.projectile && !fireMineNow && !fireHookNow;
           const fireAngle=fireMineNow?(p.facing<0?Math.PI:0):(p.remoteActionActive && Number.isFinite(p.actionAngle)?p.actionAngle:data.angle);
-          const firePower=fireMineNow && p.remoteActionActive && Number.isFinite(p.actionPower) ? p.actionPower : Number(data.power)||0;
+          const firePower=p.remoteActionActive && Number.isFinite(p.actionPower) ? p.actionPower : Number(data.power)||0;
           p.lastActionEventSeq=seq; p.remoteActionActive=false; p.actionAiming=false;
           if(fireMineNow) this.fireMine(p,fireAngle,firePower);
-          else if(fireProjectileNow && Number.isFinite(fireAngle)) this.fireActionProjectile(p,fireAngle,Number(data.power)||0);
+          else if(fireHookNow && Number.isFinite(fireAngle)) this.fireActionProjectile(p,fireAngle,firePower);
+          else if(fireProjectileNow && Number.isFinite(fireAngle)) this.fireActionProjectile(p,fireAngle,firePower);
           p.actionKind=null;
         }
         break;
@@ -4476,7 +4846,7 @@ const Game = {
           const q=data.projectile;
           if(q.ownerId===this.myId){
             const me=this.players[this.myId];
-            if(me){ me.actionCooldown=PHYS.actionProjectileCooldown; me.actionCooldownMax=PHYS.actionProjectileCooldown; me.actionAiming=false; me.remoteActionActive=false; me.actionCharge=0; me.actionPower=0; }
+            if(me){ me.actionCooldown=GameModes[this.mode]?.hook?PHYS.grappleHookCooldown:PHYS.actionProjectileCooldown; me.actionCooldownMax=GameModes[this.mode]?.hook?PHYS.grappleHookCooldown:PHYS.actionProjectileCooldown; me.actionAiming=false; me.remoteActionActive=false; me.actionCharge=0; me.actionPower=0; }
           }
           if(!this.projectiles.some(existing=>existing.id===q.id)) this.projectiles.push(Object.assign({},q));
         }
@@ -4488,9 +4858,26 @@ const Game = {
             q.x=data.projectile.x; q.y=data.projectile.y;
             q.vx=data.projectile.vx; q.vy=data.projectile.vy;
             q.life=data.projectile.life; q.angle=data.projectile.angle;
-            q.power=data.projectile.power;
+            q.power=data.projectile.power; q.kind=data.projectile.kind||q.kind; q.bounceCount=Number(data.projectile.bounceCount)||q.bounceCount||0;
+            if(data.projectile.playerHitCooldowns && typeof data.projectile.playerHitCooldowns==='object') q.playerHitCooldowns=Object.assign({},data.projectile.playerHitCooldowns);
           }
         }
+        break;
+      case 'arrow_bounce_fx':
+        if(!this.isHost){
+          this.particles.burst(Number(data.x)||0,Number(data.y)||0,'#ff4b35',2,105,{gravity:30,life:.16,size:1.8,sizeEnd:.2,twinkle:true});
+          this.particles.burst(Number(data.x)||0,Number(data.y)||0,'#ff9a36',3,125,{gravity:40,life:.18,size:2.1,sizeEnd:.25,twinkle:true});
+          this.particles.burst(Number(data.x)||0,Number(data.y)||0,'#ffd447',2,92,{gravity:35,life:.14,size:1.6,sizeEnd:.2,twinkle:true});
+        }
+        break;
+      case 'grapple_hook_hit_fx':
+        if(!this.isHost){
+          this.particles.burst(Number(data.x)||0,Number(data.y)||0,'#5dffcf',3,120,{gravity:0,life:.18,size:2.1,sizeEnd:.2,twinkle:true});
+          this.particles.burst(Number(data.x)||0,Number(data.y)||0,'#ffffff',2,90,{gravity:0,life:.12,size:1.5,sizeEnd:.15,twinkle:true});
+        }
+        break;
+      case 'grapple_hook_remove':
+        if(!this.isHost && data.id!=null){const idx=this.projectiles.findIndex(q=>q.id===data.id);if(idx>=0)this.projectiles.splice(idx,1);}
         break;
       case 'action_projectile_remove':
         if(!this.isHost && data.id!=null){
@@ -4499,7 +4886,7 @@ const Game = {
         }
         break;
       case 'state': if(!this.isHost) this.applyServerState(data); break;
-      case 'tick': if(!this.isHost){ this.matchTime=data.matchTime; } break;
+      case 'tick': if(!this.isHost){ this.matchTime=data.matchTime; if(Number.isFinite(data.roundElapsed)) this.roundElapsed=Math.max(0,Number(data.roundElapsed)); else this.roundElapsed=Number(data.matchTime)||0; } break;
       case 'fx':
         if(!this.isHost && data.fx) this.spawnNetworkFx(data.fx);
         break;
@@ -4681,6 +5068,7 @@ const Game = {
         ctx.translate(-this.viewW/2, -this.viewH/2);
       }
       this.renderMap(ctx);
+      this.renderSpikewall(ctx);
       this.renderMines(ctx);
       this.trailParticles.render(ctx, this.camera);
       this.renderPlayers(ctx);
@@ -4730,6 +5118,58 @@ const Game = {
     for(let i=0;i<90;i++){ const x=(i*137.3+t*(18+(i%7)*5))%(this.viewW+30)-15; const y=(i*71.9+Math.sin(t*.7+i)*20)%this.viewH; const r=.7+(i%4)*.55; ctx.fillStyle=i%3===0?'#ffffff':'#c9793a'; ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill(); }
     ctx.globalAlpha=1;
   },
+  renderSpikewall(ctx){
+    const wall=this.getSpikewallState();
+    if(!wall || !this.camera) return;
+    const cam=this.camera, z=cam.zoom;
+    const h=Math.max(1,Number(this.map?.height)||900);
+    const w=wall.width;
+    const spikes=PHYS.spikewallSpikeLength;
+    const rightEdge=Math.max(Number(this.map?.width)||1600, wall.right, wall.mapWidth + this.viewW/Math.max(0.01,z) + 80);
+    ctx.save();
+    ctx.scale(z,z);
+    ctx.translate(-cam.x,-cam.y);
+
+    // Deep shadow makes the wall read clearly against every map background.
+    ctx.fillStyle='#00000055';
+    ctx.fillRect(wall.left+7,-40,Math.max(0,rightEdge-(wall.left+7)),h+80);
+
+    // Gray metal wall body.
+    const grad=ctx.createLinearGradient(wall.left,0,Math.max(wall.right,rightEdge),0);
+    grad.addColorStop(0,'#55585a');
+    grad.addColorStop(.42,'#8b8e90');
+    grad.addColorStop(.72,'#66696b');
+    grad.addColorStop(1,'#3d4042');
+    ctx.fillStyle=grad;
+    ctx.fillRect(wall.left, -40, Math.max(w,rightEdge-wall.left), h+80);
+
+    // Repeating vertical seams keep the wall visually readable while moving.
+    ctx.strokeStyle='#d6d8da55';
+    ctx.lineWidth=1.5;
+    for(let y=0;y<h;y+=46){
+      ctx.beginPath(); ctx.moveTo(wall.left+8,y); ctx.lineTo(wall.right-7,y); ctx.stroke();
+    }
+
+    // Spikes face left: the first teeth are visible right at the map edge when
+    // the wall appears, so the hazard never starts completely off-screen.
+    ctx.fillStyle='#9da0a2';
+    ctx.strokeStyle='#2b2d2f';
+    ctx.lineWidth=1.5;
+    const step=42;
+    for(let y=-12;y<h+step;y+=step){
+      ctx.beginPath();
+      ctx.moveTo(wall.left,y);
+      ctx.lineTo(wall.left-spikes,y+step*.5);
+      ctx.lineTo(wall.left,y+step);
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+    }
+
+    // A thin dark front edge emphasizes exactly where contact becomes lethal.
+    ctx.fillStyle='#282a2c';
+    ctx.fillRect(wall.left-2,-40,3,h+80);
+    ctx.restore();
+  },
+
   renderMap(ctx){
     const cam=this.camera, z=cam.zoom;
     ctx.save();
@@ -4846,7 +5286,7 @@ const Game = {
     return pts;
   },
   renderMines(ctx){
-    if(this.mode!=='mines' || !this.mines.length) return;
+    if((this.mode!=='mines' && this.mode!=='death_mines') || !this.mines.length) return;
     const cam=this.camera,z=cam.zoom; ctx.save(); ctx.scale(z,z); ctx.translate(-cam.x,-cam.y);
     const now=performance.now();
     for(const m of this.mines){
@@ -4868,7 +5308,7 @@ const Game = {
     ctx.restore();
   },
   renderMineTrajectory(ctx,p){
-    if(!p || !p.alive || this.mode!=='mines' || !p.actionAiming) return;
+    if(!p || !p.alive || (this.mode!=='mines' && this.mode!=='death_mines') || !p.actionAiming) return;
     const pts=this.getMineTrajectoryPoints(p);
     if(!pts.length) return;
     const stepEvery=2;
@@ -4886,18 +5326,18 @@ const Game = {
   },
 
   renderProjectiles(ctx){
-    if(!this.projectiles.length) return;
-    const cam=this.camera,z=cam.zoom; ctx.save(); ctx.scale(z,z); ctx.translate(-cam.x,-cam.y);
+    if(!this.projectiles.length)return;
+    const cam=this.camera,z=cam.zoom;ctx.save();ctx.scale(z,z);ctx.translate(-cam.x,-cam.y);
     for(const q of this.projectiles){
-      const deadly=q.deadly; const ang=q.angle ?? Math.atan2(q.vy,q.vx);
-      const halfL=q.halfLength ?? 12, halfW=q.halfWidth ?? 5;
-      ctx.save(); ctx.translate(q.x,q.y); ctx.rotate(ang);
-      ctx.shadowBlur=deadly?14:10; ctx.shadowColor=deadly?'#ff4040':'#ffe06a';
-      ctx.fillStyle=deadly?'#ff4a4a':'#ffe47a';
-      ctx.fillRect(-halfL,-halfW,halfL*2,halfW*2);
-      ctx.fillStyle='#ffffff66'; ctx.fillRect(-halfL+2,-halfW+2,halfL*2-4,2);
-      ctx.strokeStyle='#00000099'; ctx.lineWidth=2; ctx.strokeRect(-halfL,-halfW,halfL*2,halfW*2);
-      ctx.restore();
+      const ang=q.angle ?? Math.atan2(q.vy,q.vx),halfL=q.halfLength??12,halfW=q.halfWidth??5;
+      if(q.kind==='grapple_hook'){
+        const owner=this.players[q.ownerId];
+        if(owner&&owner.alive){
+          ctx.save();ctx.strokeStyle='#5dffcfaa';ctx.lineWidth=2.5;ctx.setLineDash([7,5]);ctx.beginPath();ctx.moveTo(owner.x,owner.y);ctx.lineTo(q.x,q.y);ctx.stroke();ctx.setLineDash([]);ctx.translate(q.x,q.y);ctx.rotate(ang);ctx.strokeStyle='#d6fff3';ctx.shadowColor='#5dffcf';ctx.shadowBlur=8;ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,7,-1,1.55);ctx.stroke();ctx.beginPath();ctx.moveTo(2,5);ctx.lineTo(8,9);ctx.stroke();ctx.restore();
+        }
+        continue;
+      }
+      const deadly=q.deadly;ctx.save();ctx.translate(q.x,q.y);ctx.rotate(ang);ctx.shadowBlur=deadly?14:(q.bouncy?8:10);ctx.shadowColor=deadly?'#ff4040':(q.bouncy?'#ffab4a':'#ffe06a');ctx.fillStyle=deadly?'#ff4a4a':(q.bouncy?'#ffcf70':'#ffe47a');ctx.fillRect(-halfL,-halfW,halfL*2,halfW*2);ctx.fillStyle='#ffffff66';ctx.fillRect(-halfL+2,-halfW+2,halfL*2-4,2);ctx.strokeStyle='#00000099';ctx.lineWidth=2;ctx.strokeRect(-halfL,-halfW,halfL*2,halfW*2);ctx.restore();
     }
     ctx.restore();
   },
@@ -5033,7 +5473,9 @@ const Game = {
         ctx.restore();
       }
       if(p.actionAiming && p.alive && (GameModes[this.mode]?.projectile || GameModes[this.mode]?.mine)){
-        if(GameModes[this.mode]?.mine) this.renderMineTrajectory(ctx,p);
+        // Mine aim and charge are public, but the predicted trajectory is private
+        // to the player who is actually throwing the mine.
+        if(GameModes[this.mode]?.mine && p.id===this.myId) this.renderMineTrajectory(ctx,p);
         const a=GameModes[this.mode]?.mine ? (p.facing<0?Math.PI:0) : this.getActionReticleAngle(p);
         const rr=p.radius+18;
         const charge=Math.max(0,Math.min(1,p.actionCharge||0));
@@ -5080,15 +5522,16 @@ const Game = {
   getCharacterSprite(p,cust,r){
     const heavy=!!p.heavy;
     const pattern=cust.gradientPattern||'radial-out';
+    const outlineId = cust.outline || 'none';
     const key=[
       +cust.hue||0,+cust.saturation||0,+cust.brightness||60,
       +cust.hue2||0,+cust.saturation2||0,+cust.brightness2||60,
-      pattern, cust.eyes||'classic',cust.mouth||'smile',cust.brows||'none',cust.hat||'none',heavy?'1':'0',Math.round(r*10)/10,p.preview?'preview':'gameplay'
+      pattern, cust.eyes||'classic',cust.mouth||'smile',cust.brows||'none',outlineId,heavy?'1':'0',Math.round(r*10)/10,p.preview?'preview':'gameplay'
     ].join('|');
     let sprite=this.characterSpriteCache.get(key);
     if(sprite) return sprite;
 
-    const pad=18, size=Math.ceil(r*2+pad*2);
+    const pad=24, size=Math.ceil(r*2+pad*2);
     const off=document.createElement('canvas'); off.width=size; off.height=size;
     const o=off.getContext('2d');
     const cx=size/2, cy=size/2;
@@ -5119,12 +5562,16 @@ const Game = {
       g.addColorStop(0,primary); g.addColorStop(.48,primaryDark); g.addColorStop(.5,secondary); g.addColorStop(1,secondaryHi); bodyFill=g;
     }
     o.fillStyle=bodyFill; o.beginPath(); o.arc(0,0,r,0,Math.PI*2); o.fill();
-    o.lineWidth=heavy?5:3; o.strokeStyle=secondary; o.stroke();
 
-    // Customizable face: separate eyes, mouth, eyebrows, and hat. These are
+    // Outlines are perimeter cosmetics, not separate head accessories.
+    // The secondary-color ring stays clean on the outside while the inner edge
+    // carries the selected pattern into the character body.
+    this.drawCharacterOutline(o, outlineId, r, secondary, secondaryHi);
+
+    // Customizable face: separate eyes, mouth, and eyebrows. These are
     // intentionally simple vector parts so every player's design stays lightweight
     // to network and fast to render through the sprite cache.
-    const eyes=cust.eyes||'classic', mouth=cust.mouth||'smile', brows=cust.brows||'none', hat=cust.hat||'none';
+    const eyes=cust.eyes||'classic', mouth=cust.mouth||'smile', brows=cust.brows||'none';
     const faceScale=Math.max(1,r/26);
     const fx=r*0.25, ey=-r*0.16;
     const fs=v=>v*faceScale;
@@ -5176,53 +5623,8 @@ const Game = {
     else if(mouth==='tiny'){ o.beginPath(); o.arc(fx,fs(8),fs(2.3),0,Math.PI*2); o.fill(); }
     else { o.beginPath(); o.arc(fx,fs(5),fs(7),0.12*Math.PI,0.88*Math.PI); o.stroke(); }
 
-    // Hat / head accessory
-    o.save();
-    if(hat==='cap'){
-      o.fillStyle=secondary; o.beginPath(); o.arc(0,-r*.72,r*.48,Math.PI,Math.PI*2); o.fill(); o.fillRect(-r*.48,-r*.74,r*.92,r*.13);
-      o.fillStyle=secondaryHi; o.beginPath(); o.ellipse(r*.24,-r*.57,r*.43,r*.11,0,0,Math.PI*2); o.fill();
-    }else if(hat==='tophat'){
-      o.fillStyle=secondary; o.fillRect(-r*.34,-r*1.00,r*.68,r*.43); o.fillRect(-r*.52,-r*.61,r*1.04,r*.10);
-      o.fillStyle='#12100c'; o.fillRect(-r*.36,-r*.74,r*.72,r*.07);
-    }else if(hat==='crown'){
-      // Secondary-color crown: the three points share the exact same width as the band,
-      // so every point sits cleanly on top of the rectangular base.
-      o.fillStyle=secondary;
-      const crownLeft=-r*.44, crownWidth=r*.88;
-      const crownBaseY=-r*.72, crownTopY=-r*.98;
-      o.fillRect(crownLeft,crownBaseY,crownWidth,r*.14);
-      const seg=crownWidth/3;
-      for(let k=0;k<3;k++){
-        const x0=crownLeft+k*seg, x1=x0+seg, xm=(x0+x1)/2;
-        o.beginPath(); o.moveTo(x0,crownBaseY); o.lineTo(xm,crownTopY); o.lineTo(x1,crownBaseY); o.closePath(); o.fill();
-      }
-      o.fillStyle='#ffe89a';
-      o.beginPath(); o.arc(-r*.27,-r*.64,r*.035,0,Math.PI*2); o.arc(0,-r*.64,r*.035,0,Math.PI*2); o.arc(r*.27,-r*.64,r*.035,0,Math.PI*2); o.fill();
-    }else if(hat==='halo'){
-      o.strokeStyle=secondaryHi; o.lineWidth=fs(3); o.shadowColor=secondary; o.shadowBlur=8; o.beginPath(); o.ellipse(0,-r*.92,r*.53,r*.16,0,0,Math.PI*2); o.stroke();
-    }else if(hat==='horns'){
-      o.fillStyle=secondary; o.beginPath(); o.moveTo(-r*.40,-r*.60); o.lineTo(-r*.25,-r*.98); o.lineTo(-r*.08,-r*.69); o.closePath(); o.moveTo(r*.08,-r*.69); o.lineTo(r*.25,-r*.98); o.lineTo(r*.40,-r*.60); o.closePath(); o.fill();
-      o.fillStyle='#f0dfc8'; o.beginPath(); o.moveTo(-r*.25,-r*.92); o.lineTo(-r*.19,-r*.76); o.lineTo(-r*.13,-r*.70); o.closePath(); o.moveTo(r*.25,-r*.92); o.lineTo(r*.19,-r*.76); o.lineTo(r*.13,-r*.70); o.closePath(); o.fill();
-    }else if(hat==='flower'){
-      o.fillStyle=secondary; for(let k=0;k<5;k++){const a=-Math.PI/2+k*Math.PI*2/5; o.beginPath(); o.arc(Math.cos(a)*r*.19, -r*.80+Math.sin(a)*r*.19, r*.16,0,Math.PI*2); o.fill();} o.fillStyle='#ffd45c'; o.beginPath(); o.arc(0,-r*.80,r*.11,0,Math.PI*2); o.fill();
-    }else if(hat==='beanie'){
-      o.fillStyle=secondary; o.beginPath(); o.arc(0,-r*.66,r*.45,Math.PI,Math.PI*2); o.fill(); o.fillRect(-r*.46,-r*.68,r*.92,r*.12);
-      o.fillStyle=secondaryHi; o.beginPath(); o.arc(0,-r*1.07,r*.065,0,Math.PI*2); o.fill();
-    }else if(hat==='wizard'){
-      o.fillStyle=secondary; o.beginPath(); o.moveTo(-r*.40,-r*.67); o.lineTo(0,-r*1.16); o.lineTo(r*.40,-r*.67); o.closePath(); o.fill(); o.fillRect(-r*.46,-r*.69,r*.92,r*.10);
-      o.fillStyle='#ffd45c'; o.beginPath(); o.arc(-r*.03,-r*.95,r*.035,0,Math.PI*2); o.arc(r*.10,-r*.82,r*.03,0,Math.PI*2); o.fill();
-    }else if(hat==='party'){
-      o.fillStyle=secondary; o.beginPath(); o.moveTo(-r*.28,-r*.66); o.lineTo(r*.05,-r*1.11); o.lineTo(r*.35,-r*.66); o.closePath(); o.fill(); o.fillStyle='#ffd45c'; o.beginPath(); o.arc(r*.06,-r*1.13,r*.045,0,Math.PI*2); o.fill();
-    }else if(hat==='bandana'){
-      o.fillStyle=secondary; o.beginPath(); o.moveTo(-r*.46,-r*.66); o.lineTo(0,-r*.83); o.lineTo(r*.46,-r*.66); o.lineTo(r*.34,-r*.57); o.lineTo(-r*.34,-r*.57); o.closePath(); o.fill();
-      o.fillStyle='#12100c'; o.beginPath(); o.moveTo(r*.32,-r*.62); o.lineTo(r*.50,-r*.56); o.lineTo(r*.35,-r*.48); o.closePath(); o.fill();
-    }else if(hat==='antenna'){
-      o.strokeStyle=secondaryHi; o.lineWidth=fs(2.5); o.beginPath(); o.moveTo(0,-r*.66); o.lineTo(0,-r*.98); o.stroke(); o.fillStyle='#ff5d5d'; o.beginPath(); o.arc(0,-r*1.05,r*.07,0,Math.PI*2); o.fill();
-    }else if(hat==='bunny'){
-      o.fillStyle=secondary; o.beginPath(); o.ellipse(-r*.20,-r*.88,r*.13,r*.36,0,0,Math.PI*2); o.ellipse(r*.20,-r*.88,r*.13,r*.36,0,0,Math.PI*2); o.fill(); o.fillStyle='#f2a9bb'; o.beginPath(); o.ellipse(-r*.20,-r*.88,r*.05,r*.22,0,0,Math.PI*2); o.ellipse(r*.20,-r*.88,r*.05,r*.22,0,0,Math.PI*2); o.fill();
-    }else if(hat==='cowboy'){
-      o.fillStyle=secondary; o.fillRect(-r*.44,-r*.72,r*.88,r*.10); o.beginPath(); o.arc(0,-r*.77,r*.38,Math.PI,Math.PI*2); o.fill(); o.fillRect(-r*.18,-r*.97,r*.36,r*.27); o.fillStyle='#8b5a33'; o.fillRect(-r*.20,-r*.78,r*.40,r*.055);
-    }
+    // The old hat slot is now a true perimeter-outline cosmetic.
+
     o.restore();
 
     sprite={canvas:off,size};
@@ -5232,6 +5634,118 @@ const Game = {
       this.characterSpriteCache.delete(first);
     }
     return sprite;
+  },
+  drawCharacterOutline(ctx,id,r,secondary,secondaryHi){
+    if(!id || id==='none') return;
+
+    // The outline sits ON the character boundary; it never extends past the
+    // model. Thickness is carved inward from the circle's edge.
+    const TAU=Math.PI*2;
+    const outer=Math.max(0,r-.15);
+    const depth=Math.max(4.8,Math.min(11.5,r*.29));
+    const innerBase=outer-.15;
+    const countMap={spikes:14,squares:8,ovals:10,diamonds:12,scallops:16,teeth:14,petals:10,stars:10};
+    const count=countMap[id]||0;
+
+    const pathWithRadial=(radialFn)=>{
+      const path=[]; const steps=256;
+      for(let i=0;i<=steps;i++){
+        const a=-Math.PI/2+TAU*i/steps;
+        const rr=Math.max(0.5,Math.min(outer,radialFn(a)));
+        path.push([Math.cos(a)*rr,Math.sin(a)*rr]);
+      }
+      return path;
+    };
+
+    const fillRing=(innerPath,fillStyle=secondary)=>{
+      ctx.save();
+      ctx.fillStyle=fillStyle;
+      ctx.beginPath();
+      ctx.arc(0,0,outer,0,TAU);
+      ctx.closePath();
+      if(innerPath){
+        innerPath.forEach(([x,y],i)=>i===0?ctx.moveTo(x,y):ctx.lineTo(x,y));
+        ctx.closePath();
+      }
+      ctx.fill('evenodd');
+      ctx.restore();
+    };
+
+    if(id==='circle' || id==='ring'){
+      fillRing(pathWithRadial(()=>innerBase-depth*.74));
+      ctx.save();
+      ctx.strokeStyle=secondaryHi; ctx.globalAlpha=.24; ctx.lineWidth=Math.max(1,r*.025);
+      ctx.beginPath(); ctx.arc(0,0,outer-.45,0,TAU); ctx.stroke();
+      ctx.restore();
+      return;
+    }
+
+    const innerPath=pathWithRadial((a)=>{
+      const theta=(a+Math.PI*2)%TAU;
+      const u=theta/TAU;
+      let inset=depth*.82;
+
+      if(id==='spikes'){
+        // Deep, clean V cuts that point into the body.
+        const f=(u*count)%1;
+        const tri=1-Math.abs(f-.5)*2;
+        inset=depth*(.12+.88*tri);
+      }else if(id==='teeth'){
+        // Straight Teeth: broad square tabs with a narrow, deep notch between
+        // each tab. The notch cuts decisively toward the avatar center instead
+        // of reading like a soft sawtooth or a plain ring.
+        const f=(u*count)%1;
+        const notchWidth=.22;
+        const centered=Math.abs(f-.5);
+        const notchDist=Math.abs(centered-.5+notchWidth*.5);
+        const inNotch = centered > .5-notchWidth;
+        if(inNotch){
+          inset=depth*(.88+.12*Math.max(0,1-notchDist/notchWidth));
+        }else{
+          // Keep the main tooth face broad and nearly square/straight.
+          const within=1-(centered/(.5-notchWidth));
+          inset=depth*(.12+.10*Math.max(0,within));
+        }
+      }else if(id==='squares'){
+        // Strong square/octagonal bites: long flat sections with pronounced
+        // 90-degree corners, so the pattern is unmistakable at gameplay size.
+        const c=Math.abs(Math.cos(theta));
+        const s=Math.abs(Math.sin(theta));
+        const flat=Math.max(c,s);
+        const corner=Math.pow(Math.min(1,Math.abs(c-s)*3.8),.55);
+        inset=depth*(.06+.58*(1-flat)+.68*corner);
+      }else if(id==='ovals'){
+        // Broad rounded lobes, deeper than the old subtle wave.
+        const wave=.5+.5*Math.cos(theta*2);
+        inset=depth*(.08+.82*wave);
+      }else if(id==='diamonds'){
+        const f=(u*count)%1;
+        const d=Math.abs(f-.5)*2;
+        inset=depth*(.06+.90*(1-d));
+      }else if(id==='scallops'){
+        const wave=.5+.5*Math.sin(u*count*TAU);
+        inset=depth*(.08+.74*wave);
+      }else if(id==='petals'){
+        const wave=Math.max(0,Math.sin(u*count*TAU));
+        inset=depth*(.06+.84*Math.pow(wave,1.15));
+      }else if(id==='stars'){
+        const f=(u*count)%1;
+        const star=1-Math.abs(f-.5)*2;
+        inset=depth*(.04+.88*Math.pow(star,.5));
+      }
+      return innerBase-inset;
+    });
+
+    fillRing(innerPath);
+
+    // A restrained highlight on the boundary keeps thick outlines crisp without
+    // adding any geometry outside the character silhouette.
+    ctx.save();
+    ctx.strokeStyle=secondaryHi;
+    ctx.globalAlpha=.20;
+    ctx.lineWidth=Math.max(1,r*.022);
+    ctx.beginPath(); ctx.arc(0,0,outer-.5,0,TAU); ctx.stroke();
+    ctx.restore();
   },
   drawCharacter(ctx,p){
     const cust=p.cust||{hue:200,hue2:40,saturation:80,saturation2:60,brightness:60,brightness2:60,gradientPattern:'radial-out'};
@@ -5358,17 +5872,18 @@ const UI = {
     const me = Game.players[Game.myId];
     const arrowWrap = document.getElementById('arrowwrap');
     const arrowFill = document.getElementById('arrowfill');
-    const actionIsArrow=(Game.mode==='arrows'||Game.mode==='death_arrows');
-    const actionIsMine=(Game.mode==='mines');
-    if(arrowWrap) arrowWrap.style.display = (actionIsArrow||actionIsMine) ? 'block' : 'none';
-    if(me && arrowFill && (actionIsArrow||actionIsMine)){
+    const actionIsArrow=(Game.mode==='arrows'||Game.mode==='death_arrows'||Game.mode==='bouncy_arrows');
+    const actionIsMine=(Game.mode==='mines'||Game.mode==='death_mines');
+    const actionIsHook=(Game.mode==='grapple_hook');
+    if(arrowWrap) arrowWrap.style.display = (actionIsArrow||actionIsMine||actionIsHook) ? 'block' : 'none';
+    if(me && arrowFill && (actionIsArrow||actionIsMine||actionIsHook)){
       const cdMax = me.actionCooldownMax || (actionIsMine?PHYS.mineCooldown:PHYS.actionProjectileCooldown);
       const pct = me.actionAiming ? Math.max(0,Math.min(100,(me.actionCharge||0)*100)) : Math.max(0, Math.min(100, 100 - ((me.actionCooldown||0)/cdMax)*100));
       arrowFill.style.width = pct+'%';
       arrowFill.classList.toggle('ready', pct>=100 && (me.actionCooldown||0)<=0 && !me.actionAiming);
       arrowFill.classList.toggle('charging', !!me.actionAiming);
       arrowFill.style.boxShadow = me.actionAiming ? `0 0 ${4+(me.actionCharge||0)*10}px rgba(255,216,107,${0.35+(me.actionCharge||0)*0.45})` : '';
-      document.getElementById('arrowlabel').textContent = me.actionAiming ? (actionIsMine?'Mine Charging':'Arrow Aiming') : (actionIsMine?'Mine':'Arrow');
+      document.getElementById('arrowlabel').textContent = me.actionAiming ? (actionIsMine?'Mine Charging':(actionIsHook?'Hook Charging':'Arrow Aiming')) : (actionIsMine?'Mine':(actionIsHook?'Grapple Hook':'Arrow'));
     }
 
     const fillWrap = document.getElementById('staminawrap');
@@ -5553,7 +6068,7 @@ const Lobby = {
     const roundActive=(Game.state==='playing'||Game.state==='countdown');
     p.spectator=!!roundActive; p.autoSpectator=!!roundActive; p.alive=!p.spectator;
     Game.players[pid]=p; this.ready[pid]=false;
-    NetworkManager.send(pid,{t:'join_accept',ok:true,code:this.code,index:this.index,title:this.title,protected:!!this.password,map:Game.map,mode:Game.mode,matchSettings:Game.matchSettings,players:this.serializePlayers(),hostName:Game.myName,currentRound:Game.roundNumber,roundState:Game.state,spectatorStates:this.getSpectatorStates()},true);
+    NetworkManager.send(pid,{t:'join_accept',ok:true,code:this.code,index:this.index,title:this.title,protected:!!this.password,map:Game.map,mode:Game.mode,matchSettings:Game.matchSettings,players:this.serializePlayers(),hostName:Game.myName,currentRound:Game.roundNumber,roundState:Game.state,matchTime:Game.matchTime,roundElapsed:Game.roundElapsed,spectatorStates:this.getSpectatorStates()},true);
     NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),title:this.title,index:this.index,hostName:Game.myName,spectatorStates:this.getSpectatorStates()},true);
     this.render();
   },
@@ -5570,7 +6085,7 @@ const Lobby = {
     if(!data.ok){document.getElementById('joinBrowserStatus').textContent=data.reason||'Could not join.'; NetworkManager.disconnectAll(); return;}
     document.getElementById('joinPassOverlay').classList.remove('active'); document.getElementById('btnLeaveLobby').textContent='LEAVE'; Chat.clear();
     this.index=Number(data.index)||Number(data.code)||1; this.code=String(this.index); this.title=String(data.title||'PLUNK Lobby').slice(0,32);
-    Game.map=ensureMapSpawn(data.map); Game.mode=data.mode; Game.matchSettings=data.matchSettings; this.players=data.players; this.syncGamePlayers(data.players); if(data.scores) Game.scores=data.scores; Game.roundNumber=Number(data.currentRound)||Game.roundNumber||1; if(data.spectatorStates) this.applySpectatorStates(data.spectatorStates);
+    Game.map=ensureMapSpawn(data.map); Game.mode=data.mode; Game.matchSettings=Object.assign({},Game.matchSettings,data.matchSettings||{}); Game.matchTime=Number(data.matchTime)||0; Game.roundElapsed=Number.isFinite(data.roundElapsed)?Math.max(0,Number(data.roundElapsed)):Game.matchTime; this.players=data.players; this.syncGamePlayers(data.players); if(data.scores) Game.scores=data.scores; Game.roundNumber=Number(data.currentRound)||Game.roundNumber||1; if(data.spectatorStates) this.applySpectatorStates(data.spectatorStates);
     document.getElementById('lobbyTitleDisplay').textContent=this.title;
     document.getElementById('lobbyHostName').textContent=data.hostName; Game.lobbyHostName=data.hostName;
     document.getElementById('lobbyMap').textContent=Game.map.name; document.getElementById('lobbyMode').textContent=GameModes[Game.mode].label;
@@ -5640,11 +6155,24 @@ const Lobby = {
   },
   renderSettings(){
     const hostMode=document.getElementById('lobbyModeSelect'),gravity=document.getElementById('lobbyGravity'),kb=document.getElementById('lobbyKB'),maxP=document.getElementById('lobbyMaxP'),roundMode=document.getElementById('lobbyRoundMode'),roundCount=document.getElementById('lobbyRoundCount'),pointTarget=document.getElementById('lobbyPointTarget'),mapSel=document.getElementById('lobbyMapSelect'),mapPrev=document.getElementById('lobbyMapPreview'); if(!hostMode||!gravity||!kb||!maxP||!roundMode||!roundCount||!pointTarget||!mapSel)return;
-    const savedName=getSavedUsername(); Game.myName=savedName; hostMode.value=Game.mode||'regular'; gravity.value=Game.matchSettings.gravity??1; kb.value=Game.matchSettings.kb??1; maxP.value=Game.matchSettings.maxPlayers??8; const playerSize=document.getElementById('lobbyPlayerSize'); if(playerSize)playerSize.value=Game.matchSettings.playerSize??1; roundMode.value=Game.roundConfig.mode||'rounds'; roundCount.value=Game.roundConfig.count??3; pointTarget.value=Game.roundConfig.target??3;
-    if(Game.map){const wanted=selectedMapOptionValue(Game.map);if([...mapSel.options].some(o=>o.value===wanted))mapSel.value=wanted;if(mapPrev)drawMapThumb(mapPrev,Game.map);} const scoreMode=roundMode.value==='score'; document.getElementById('lobbyRoundCountField')?.classList.toggle('hidden',scoreMode);document.getElementById('lobbyPointTargetField')?.classList.toggle('hidden',!scoreMode); const controls=[hostMode,gravity,kb,playerSize,maxP,roundMode,roundCount,pointTarget,mapSel].filter(Boolean);controls.forEach(el=>el.disabled=!Game.isHost); document.getElementById('hostControlBadge')?.classList.toggle('hidden',!Game.isHost); const hint=document.getElementById('settingsOwnerHint');if(hint)hint.textContent=Game.isHost?'Changes apply to everyone in the room immediately.':'The host controls these settings.';syncMapPickerButtons();const picker=document.getElementById('lobbyMapPicker');if(picker)picker.disabled=!Game.isHost;
+    const savedName=getSavedUsername(); Game.myName=savedName; hostMode.value=Game.mode||'regular'; gravity.value=Game.matchSettings.gravity??1; kb.value=Game.matchSettings.kb??1; maxP.value=Game.matchSettings.maxPlayers??8; const playerSize=document.getElementById('lobbyPlayerSize'); if(playerSize)playerSize.value=Game.matchSettings.playerSize??1; const spikewall=document.getElementById('lobbySpikewall'); if(spikewall)spikewall.checked=!!Game.matchSettings.spikewall; roundMode.value=Game.roundConfig.mode||'rounds'; roundCount.value=Game.roundConfig.count??3; pointTarget.value=Game.roundConfig.target??3;
+    if(Game.map){const wanted=selectedMapOptionValue(Game.map);if([...mapSel.options].some(o=>o.value===wanted))mapSel.value=wanted;if(mapPrev)drawMapThumb(mapPrev,Game.map);} const scoreMode=roundMode.value==='score'; document.getElementById('lobbyRoundCountField')?.classList.toggle('hidden',scoreMode);document.getElementById('lobbyPointTargetField')?.classList.toggle('hidden',!scoreMode); const controls=[hostMode,gravity,kb,playerSize,maxP,roundMode,roundCount,pointTarget,mapSel,document.getElementById('lobbySpikewall')].filter(Boolean);controls.forEach(el=>el.disabled=!Game.isHost);
+    hostMode.dispatchEvent(new Event('change'));
+    const lobbyPickerRoot=document.querySelector('[data-mode-picker="lobbyModeSelect"]');
+    const lobbyPickerMain=lobbyPickerRoot?.querySelector('.mode-picker-main');
+    const lobbyPickerValue=lobbyPickerRoot?.querySelector('.mode-picker-value');
+    const modeLabel=(GameModes[Game.mode]?.label||Game.mode||'Regular');
+    if(lobbyPickerValue) lobbyPickerValue.textContent=modeLabel;
+    if(lobbyPickerMain){ lobbyPickerMain.disabled=!Game.isHost; if(!Game.isHost){lobbyPickerRoot?.classList.remove('open'); lobbyPickerMain.setAttribute('aria-expanded','false');} }
+    const hostPickerRoot=document.querySelector('[data-mode-picker="hostMode"]');
+    const hostPickerMain=hostPickerRoot?.querySelector('.mode-picker-main');
+    const hostPickerValue=hostPickerRoot?.querySelector('.mode-picker-value');
+    if(hostPickerValue) hostPickerValue.textContent=GameModes[document.getElementById('hostMode')?.value||'regular']?.label||document.getElementById('hostMode')?.value||'Regular';
+    if(hostPickerMain){ hostPickerMain.disabled=false; }
+    document.getElementById('hostControlBadge')?.classList.toggle('hidden',!Game.isHost); const hint=document.getElementById('settingsOwnerHint');if(hint)hint.textContent=Game.isHost?'Changes apply to everyone in the room immediately.':'The host controls these settings.';syncMapPickerButtons();const picker=document.getElementById('lobbyMapPicker');if(picker)picker.disabled=!Game.isHost;
   },
   commitSettingsFromUI(){
-    if(!Game.isHost)return; Game.myName=getSavedUsername(); const hostPlayer=Game.players[Game.myId];if(hostPlayer)hostPlayer.name=Game.myName; Game.map=selectedMapFromSelect(document.getElementById('lobbyMapSelect')); Game.mode=document.getElementById('lobbyModeSelect').value; Game.matchSettings={gravity:Math.max(.1,Math.min(3,+document.getElementById('lobbyGravity').value||1)),kb:Math.max(.2,Math.min(3,+document.getElementById('lobbyKB').value||1)),playerSize:Math.max(.5,Math.min(2,+document.getElementById('lobbyPlayerSize').value||1)),maxPlayers:Math.max(Object.keys(Game.players).length,Math.min(8,+document.getElementById('lobbyMaxP').value||8))}; Game.roundConfig={mode:document.getElementById('lobbyRoundMode').value,count:Math.max(1,Math.min(99,+document.getElementById('lobbyRoundCount').value||3)),target:Math.max(1,Math.min(99,+document.getElementById('lobbyPointTarget').value||3))}; this.pushSettings();
+    if(!Game.isHost)return; Game.myName=getSavedUsername(); const hostPlayer=Game.players[Game.myId];if(hostPlayer)hostPlayer.name=Game.myName; Game.map=selectedMapFromSelect(document.getElementById('lobbyMapSelect')); Game.mode=document.getElementById('lobbyModeSelect').value; Game.matchSettings={gravity:Math.max(.1,Math.min(3,+document.getElementById('lobbyGravity').value||1)),kb:Math.max(.2,Math.min(3,+document.getElementById('lobbyKB').value||1)),playerSize:Math.max(.5,Math.min(2,+document.getElementById('lobbyPlayerSize').value||1)),maxPlayers:Math.max(Object.keys(Game.players).length,Math.min(8,+document.getElementById('lobbyMaxP').value||8)),spikewall:!!document.getElementById('lobbySpikewall')?.checked}; Game.roundConfig={mode:document.getElementById('lobbyRoundMode').value,count:Math.max(1,Math.min(99,+document.getElementById('lobbyRoundCount').value||3)),target:Math.max(1,Math.min(99,+document.getElementById('lobbyPointTarget').value||3))}; this.pushSettings();
   },
   render(){
     document.getElementById('btnLeaveLobby').textContent=Game.isHost?'CLOSE LOBBY':'LEAVE';
@@ -5733,6 +6261,7 @@ const Lobby = {
       if(!Number.isInteger(Game.spawnAssignments[pid])) Game.spawnAssignments[pid]=Object.keys(Game.players).indexOf(pid)%Math.max(1,spawns.length);
       const sp=spawns[(Game.spawnAssignments[pid]||0)%Math.max(1,spawns.length)]||{x:(Game.map?.width||1600)/2,y:100};
       p.x=sp.x;p.y=sp.y;p.vx=0;p.vy=0;p.damage=0;p.alive=true;p.grounded=false;p.supportPlatform=-1;
+      Game.repairMapPenetration(p,PHYS.collisionSolverPasses);
     }
     if(this.scores && this.scores[pid]==null) this.scores[pid]=0;
     if(pid===Game.myId) p.autoSpectator=false;
@@ -6308,16 +6837,16 @@ const FACE_OPTIONS={
     ['none','None'],['raised','Raised'],['angry','Angry'],['sad','Sad'],['flat','Flat'],
     ['worried','Worried'],['skeptic','Skeptic'],['sleepy','Sleepy'],['thick','Thick']
   ],
-  hat:[
-    ['none','None'],['cap','Cap'],['tophat','Top Hat'],['crown','Crown'],['halo','Halo'],['horns','Horns'],['flower','Flower'],
-    ['beanie','Beanie'],['wizard','Wizard'],['party','Party Hat'],['bandana','Bandana'],['antenna','Antenna'],['bunny','Bunny Ears'],['cowboy','Cowboy']
+  outline:[
+    ['none','None'],['circle','Clean Ring'],['spikes','Inward Spikes'],['squares','Inward Squares'],['ovals','Inward Ovals'],
+    ['diamonds','Inward Diamonds'],['scallops','Scalloped'],['teeth','Straight Teeth'],['petals','Petal Notches'],['stars','Star Notches']
   ]
 };
-const FACE_DEFAULTS={eyes:'classic',mouth:'smile',brows:'none',hat:'none'};
+const FACE_DEFAULTS={eyes:'classic',mouth:'smile',brows:'none',outline:'none'};
 function getFaceParts(){
   const c=Storage.get('customization',{});
   const mouth = c.mouth==='teeth' ? FACE_DEFAULTS.mouth : (c.mouth||FACE_DEFAULTS.mouth);
-  return {eyes:c.eyes||FACE_DEFAULTS.eyes,mouth,brows:c.brows||FACE_DEFAULTS.brows,hat:c.hat||FACE_DEFAULTS.hat};
+  return {eyes:c.eyes||FACE_DEFAULTS.eyes,mouth,brows:c.brows||FACE_DEFAULTS.brows,outline:c.outline||FACE_DEFAULTS.outline};
 }
 function cycleFacePart(kind){
   const c=Storage.get('customization',{});
@@ -6333,7 +6862,7 @@ function cycleFacePart(kind){
 function renderFaceControls(){
   const box=document.getElementById('custFaceControls'); if(!box) return;
   const parts=getFaceParts(); box.innerHTML='';
-  [['eyes','Eyes'],['mouth','Mouth'],['brows','Eyebrows'],['hat','Hat']].forEach(([kind,label])=>{
+  [['eyes','Eyes'],['mouth','Mouth'],['brows','Eyebrows'],['outline','Outlines']].forEach(([kind,label])=>{
     const btn=document.createElement('button'); btn.type='button'; btn.className='btn cust-face-btn';
     const current=(FACE_OPTIONS[kind]||[]).find(o=>o[0]===parts[kind]);
     btn.innerHTML=`<b>${label}</b><span>${current?current[1]:parts[kind]}</span>`;
@@ -6979,6 +7508,52 @@ window.addEventListener('DOMContentLoaded', ()=>{
   updateHostPreview(); updateLobbyPreview(); syncMapPickerButtons();
   refreshSavedMapSelectors().then(()=>{ updateHostPreview(); updateLobbyPreview(); });
 
+  function setupModePicker(selectId){
+    const select=document.getElementById(selectId), picker=document.querySelector(`[data-mode-picker=\"${selectId}\"]`);
+    if(!select || !picker) return null;
+    const main=picker.querySelector('.mode-picker-main'), valueEl=picker.querySelector('.mode-picker-value'), panel=picker.querySelector('.mode-picker-panel');
+    const groups={
+      regular:[['regular','Regular']],
+      Grapple:[['grapple','Grapple'],['pypg','PYPG'],['grapple_hook','Grapple Hook']],
+      Arrows:[['arrows','Arrows'],['death_arrows','Death Arrows'],['bouncy_arrows','Bouncy Arrows']],
+      Mines:[['mines','Mines'],['death_mines','Death Mines']]
+    };
+    const labelFor=v=>{ for(const entries of Object.values(groups)) for(const [k,l] of entries) if(k===v) return l; return GameModes[v]?.label||v; };
+    let folder=null;
+    const close=()=>{folder=null;picker.classList.remove('open');main.setAttribute('aria-expanded','false');};
+    const render=()=>{
+      valueEl.textContent=labelFor(select.value);
+      panel.innerHTML='';
+      if(folder){
+        const back=document.createElement('button'); back.type='button'; back.className='mode-picker-option mode-picker-back'; back.textContent='‹ BACK';
+        back.addEventListener('click',e=>{e.stopPropagation();folder=null;render();}); panel.appendChild(back);
+        const title=document.createElement('div'); title.className='mode-picker-subtitle'; title.textContent=folder; panel.appendChild(title);
+        for(const [v,l] of groups[folder]){
+          const b=document.createElement('button'); b.type='button'; b.className='mode-picker-option'; b.textContent=l; b.setAttribute('role','menuitem');
+          b.addEventListener('click',e=>{e.stopPropagation();select.value=v;select.dispatchEvent(new Event('change',{bubbles:true}));close();render();});
+          panel.appendChild(b);
+        }
+        return;
+      }
+      for(const [k,l] of groups.regular){
+        const b=document.createElement('button'); b.type='button'; b.className='mode-picker-option'; b.textContent=l;
+        b.addEventListener('click',e=>{e.stopPropagation();select.value=k;select.dispatchEvent(new Event('change',{bubbles:true}));close();render();}); panel.appendChild(b);
+      }
+      for(const folderName of ['Grapple','Arrows','Mines']){
+        const b=document.createElement('button'); b.type='button'; b.className='mode-picker-option folder'; b.textContent=folderName;
+        b.addEventListener('click',e=>{e.stopPropagation();folder=folderName;render();}); panel.appendChild(b);
+      }
+    };
+    main.addEventListener('click',e=>{e.stopPropagation();if(main.disabled)return;if(picker.classList.contains('open')) close(); else {picker.classList.add('open');main.setAttribute('aria-expanded','true');render();}});
+    select.addEventListener('change',()=>{valueEl.textContent=labelFor(select.value);});
+    picker._modePickerRefresh=()=>{valueEl.textContent=labelFor(select.value);main.disabled=!!select.disabled;if(main.disabled)close();};
+    render();picker._modePickerRefresh();
+    return picker;
+  }
+  const hostModePicker=setupModePicker('hostMode');
+  const lobbyModePicker=setupModePicker('lobbyModeSelect');
+  document.addEventListener('click',()=>{[hostModePicker,lobbyModePicker].forEach(p=>{if(p){p.classList.remove('open');p.querySelector('.mode-picker-main')?.setAttribute('aria-expanded','false');}});});
+
   const roundModeSel=document.getElementById('hostRoundMode');
   const roundCountField=document.getElementById('hostRoundCountField');
   const pointTargetField=document.getElementById('hostPointTargetField');
@@ -7027,7 +7602,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
     Game.myName=getSavedUsername();
     Game.map=ensureMapSpawn(selectedMapFromSelect(document.getElementById('hostMap')));
     Game.mode=document.getElementById('hostMode').value;
-    Game.matchSettings={gravity:+document.getElementById('hostGravity').value,kb:+document.getElementById('hostKB').value,playerSize:Math.max(0.5,Math.min(2,+document.getElementById('hostPlayerSize').value||1)),maxPlayers:+document.getElementById('hostMaxP').value};
+    Game.matchSettings={gravity:+document.getElementById('hostGravity').value,kb:+document.getElementById('hostKB').value,playerSize:Math.max(0.5,Math.min(2,+document.getElementById('hostPlayerSize').value||1)),maxPlayers:+document.getElementById('hostMaxP').value,spikewall:false};
     Game.roundConfig={mode:document.getElementById('hostRoundMode').value,count:Math.max(1,+document.getElementById('hostRoundCount').value||3),target:Math.max(1,+document.getElementById('hostPointTarget').value||3)};
     Lobby.createAsHost();
   });
@@ -7040,6 +7615,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('joinPassInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('joinPassConfirm')?.click();});
 
   document.getElementById('btnReady').addEventListener('click', ()=>Lobby.toggleReady());
+  document.getElementById('lobbySpikewall')?.addEventListener('change', ()=>Lobby.commitSettingsFromUI());
   document.getElementById('btnLobbySpectate')?.addEventListener('click', ()=>{ const me=Game.players[Game.myId]; if(me) Lobby.requestSpectator(!me.spectator); });
   const lobbyChatInput=document.getElementById('lobbyChatInput');
   lobbyChatInput.addEventListener('focus', ()=>{ InputManager.chatFocused=true; });
@@ -7090,7 +7666,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
       eyes:getFaceParts().eyes,
       mouth:getFaceParts().mouth,
       brows:getFaceParts().brows,
-      hat:getFaceParts().hat,
+      outline:getFaceParts().outline,
       dashEffect:document.getElementById('custDashEffect').value||oldCust.dashEffect||'basic',
       trailEffect:document.getElementById('custTrailEffect')?.value||oldCust.trailEffect||'none'
     };
@@ -7132,8 +7708,8 @@ quality: document.getElementById('setQuality').value,
   document.getElementById('edPropHazard')?.addEventListener('change', e=>MapEditor.applySelectedProperty('hazard',e.target.checked));
 
   function loadCustUI(){
-    const c = Storage.get('customization',{name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',eyes:'classic',mouth:'smile',brows:'none',hat:'none',dashEffect:'basic',trailEffect:'none'});
-    c.eyes=c.eyes||'classic'; c.mouth=c.mouth||'smile'; c.brows=c.brows||'none'; c.hat=c.hat||'none';
+    const c = Storage.get('customization',{name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',eyes:'classic',mouth:'smile',brows:'none',outline:'none',dashEffect:'basic',trailEffect:'none'});
+    c.eyes=c.eyes||'classic'; c.mouth=c.mouth||'smile'; c.brows=c.brows||'none'; c.outline=c.outline||'none';
     document.getElementById('custName').value=c.name||'Player';
     c.brightness=c.brightness??60; c.brightness2=c.brightness2??60;
     Storage.set('customization',c); Game.characterSpriteCache.clear(); updatePickerUi();
