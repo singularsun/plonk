@@ -291,15 +291,18 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .spherebox-card{background:#0d0906;border:2px solid #3a2a1a;border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:9px;}
 .spherebox-odds-wrap{position:fixed;bottom:12px;left:max(12px,calc(50vw - 448px));z-index:20;}
 .spherebox-odds-btn{font-size:10px!important;padding:6px 9px!important;min-width:0!important;}
-.spherebox-odds-panel{position:absolute;bottom:36px;left:0;width:184px;background:#110c08f5;border:1px solid #503622;border-radius:4px;padding:9px;box-shadow:0 12px 28px #000b;display:none;text-align:left;}
+.spherebox-odds-panel{position:absolute;bottom:36px;left:0;width:196px;background:#110c08f5;border:1px solid #503622;border-radius:4px;padding:9px;box-shadow:0 12px 28px #000b;display:none;text-align:left;}
 .spherebox-odds-panel.open{display:block;}
 .spherebox-odds-inline{position:relative;flex:0 0 auto;}
-.spherebox-odds-inline .spherebox-odds-panel{top:36px;bottom:auto;right:0;left:auto;}
+.spherebox-odds-inline .spherebox-odds-panel{top:36px;bottom:auto;left:0;right:auto;}
 .trail-effect-preview{position:relative;height:76px;border:1px solid #2d2117;border-radius:3px;background:#080604;overflow:hidden;display:flex;align-items:center;justify-content:center;}
 .trail-effect-preview canvas{display:block;width:100%;height:100%;background:transparent!important;border:0!important;}
 .trail-preview-label{position:absolute;right:6px;top:4px;font-size:7px;font-weight:900;letter-spacing:1px;color:#f0e6da99;text-shadow:0 1px 2px #000;}
 
-.spherebox-odds-row{display:flex;justify-content:space-between;gap:10px;font-size:10px;line-height:1.55;}
+.spherebox-odds-panel{width:250px!important;box-sizing:border-box;}
+.spherebox-odds-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:12px;font-size:10px;line-height:1.7;min-width:0;}
+.spherebox-odds-row span:first-child{text-align:left;white-space:nowrap;display:block;font-weight:900;letter-spacing:.35px;}
+.spherebox-odds-row span:last-child{text-align:right;white-space:nowrap;display:block;font-variant-numeric:tabular-nums;font-weight:900;}
 .spherebox-card h3{margin:0;color:var(--accent3);font-size:16px;}
 .spherebox-visual{height:92px;border:1px solid #3a2a1a;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900;background:radial-gradient(circle,#3a2a1a,#0a0705 72%);}
 .spherebox-visual.rainbow-box-visual{color:#fff;text-shadow:0 0 8px #fff6;}
@@ -550,7 +553,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.22 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.23 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -690,7 +693,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
         <div class="spherebox-odds-inline">
           <button class="btn spherebox-odds-btn" id="sphereboxOddsBtn" type="button">ODDS</button>
           <div class="spherebox-odds-panel" id="sphereboxOddsPanel">
-            <div style="font-weight:900;font-size:10px;margin-bottom:4px;letter-spacing:1px;">RARITY ODDS</div>
+            <div style="font-weight:900;font-size:10px;margin-bottom:5px;letter-spacing:1px;text-align:left;">RARITY ODDS</div>
             <div class="spherebox-odds-row rarity-common"><span>COMMON</span><span>1/1.5</span></div>
             <div class="spherebox-odds-row rarity-uncommon"><span>UNCOMMON</span><span>1/5</span></div>
             <div class="spherebox-odds-row rarity-rare"><span>RARE</span><span>1/20</span></div>
@@ -5472,10 +5475,16 @@ const Lobby = {
         p.on('error',e=>{if(!done){done=true;reject(e)}});
         setTimeout(()=>{if(!done){done=true;reject(new Error('Lobby discovery timed out.'))}},12000);
       });
+      let emptyStreak=0;
       for(let i=1;i<=999;i++){
         status.textContent='SCANNING';
         const info=await this.probeLobbyWithPeer(scanPeer,i);
-        if(!info) break;
+        if(!info){
+          emptyStreak++;
+          if(emptyStreak>=3) break;
+          continue;
+        }
+        emptyStreak=0;
         this.discoveryResults.push(info);
         this.renderDiscovery();
       }
