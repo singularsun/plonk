@@ -40,9 +40,13 @@ canvas{display:block;background:#000;}
 #screen-main>div:last-child{position:absolute!important;left:7.2vw!important;bottom:7vh!important;margin:0!important;max-width:330px;}
 
 .menu-col{position:absolute;right:7vw;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:10px;width:min(360px,30vw);min-width:260px;align-items:stretch;}
-.menu-col .btn{transform:translateX(0);transition:transform .16s cubic-bezier(.2,1.5,.35,1),background .1s ease,border-color .1s ease,box-shadow .16s ease;}
-.menu-col .btn:hover,.menu-col .btn:focus-visible{transform:translateX(-24px);box-shadow:0 8px 24px #0008;}
-@media(max-width:760px){.menu-col{right:5vw;left:5vw;top:auto;bottom:7vh;transform:none;width:auto;min-width:0;}.menu-col .btn:hover,.menu-col .btn:focus-visible{transform:translateX(-10px);}}
+.menu-col .btn{transform:translateX(0);background:#151009;border-color:#3a2a1a;color:var(--text);box-shadow:0 0 0 rgba(255,205,105,0);transition:transform .16s ease,background .14s ease,border-color .14s ease,box-shadow .18s ease,filter .18s ease;}
+.menu-col .btn:hover,.menu-col .btn:focus-visible{transform:translateX(-24px);background:linear-gradient(180deg,#9a653c,#734726);border-color:#ffd77a;color:#fff;box-shadow:0 0 0 1px #ffd77a44,0 0 14px #ffd77a55,0 7px 22px #0008;filter:brightness(1.08);}
+.menu-col .btn:active{transform:translateY(1px);}
+.menu-col .spherebox-main-button{background:#151009;border-color:#3a2a1a;color:var(--text);}
+.menu-col .btn.small{background:#151009;border-color:#3a2a1a;color:var(--text);}
+.menu-col .btn.small:hover,.menu-col .btn.small:focus-visible{background:linear-gradient(180deg,#9a653c,#734726);border-color:#ffd77a;color:#fff;box-shadow:0 0 0 1px #ffd77a33,0 0 12px #ffd77a44;filter:brightness(1.06);transform:translateX(0)!important;}
+@media(max-width:760px){.menu-col{right:5vw;left:5vw;top:auto;bottom:7vh;transform:none;width:auto;min-width:0;}.menu-col .btn:hover,.menu-col .btn:focus-visible{transform:translateX(-24px);}}
 .btn{position:relative;padding:15px 20px;border-radius:var(--radius);border:2px solid #3a2a1a;
   background:#151009;color:var(--text);font-size:15px;font-weight:700;
   letter-spacing:1px;cursor:pointer;transition:transform .1s ease,background .1s ease,border-color .1s ease;
@@ -243,6 +247,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   .lobby-split{grid-template-columns:1fr;}
 }
 @media(max-width:760px){
+  #editorToolbar{width:150px;}
   .two-col-layout,.lobby-split{grid-template-columns:1fr;}
   .setting-grid.compact{grid-template-columns:repeat(2,minmax(0,1fr));}
   .setting-grid,.setting-grid.compact{grid-template-columns:repeat(2,minmax(0,1fr));}
@@ -307,19 +312,45 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 /* map editor */
 #editorUI{position:absolute;top:0;left:0;width:100%;height:100%;display:none;z-index:8;pointer-events:none;}
 #editorUI.active{display:block;}
-#editorMovePrompt{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:none;z-index:12;pointer-events:none;background:#120d08eF;border:1px solid #d08a39;border-radius:4px;padding:8px 14px;color:#f2dfc8;font-size:12px;font-weight:900;letter-spacing:.45px;text-transform:none;box-shadow:0 6px 22px #0008;white-space:nowrap;}
+#editorMovePrompt{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:none;z-index:12;pointer-events:none;background:#120d08ee;border:1px solid #d08a39;border-radius:4px;padding:7px 12px;color:#f2dfc8;font-size:11px;font-weight:900;letter-spacing:.45px;box-shadow:0 6px 22px #0008;white-space:nowrap;}
 #editorMovePrompt.active{display:block;}
-#editorToolbar{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:6px;
-  background:var(--bg-panel);border:2px solid #3a2a1a;padding:10px;border-radius:var(--radius);pointer-events:auto;}
-#editorTop{position:absolute;top:10px;right:10px;display:flex;gap:6px;flex-wrap:wrap;max-width:620px;justify-content:flex-end;pointer-events:auto;}
+#editorToolbar{position:absolute;top:10px;left:10px;bottom:10px;width:178px;display:flex;flex-direction:column;gap:7px;
+  background:linear-gradient(180deg,#18110bf2,#0e0906f5);border:2px solid #3a2a1a;padding:10px;border-radius:5px;pointer-events:auto;box-shadow:0 12px 30px #0009;overflow:auto;}
+.editor-sidebar-title{font-size:10px;font-weight:900;letter-spacing:1.5px;color:var(--accent3);padding:2px 3px 1px;}
+.editor-sidebar-subtitle{font-size:8px;font-weight:900;letter-spacing:1.2px;color:#8e7964;padding:4px 3px 0;text-transform:uppercase;}
+.editor-tool-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.editor-shape-list{display:flex;flex-direction:column;gap:5px;}
+.editor-tool,.editor-shape{width:100%;min-height:34px;padding:8px 9px!important;font-size:10px!important;letter-spacing:.8px!important;text-align:left!important;border:1px solid #3a2a1a!important;background:#151009!important;display:flex;align-items:center;gap:7px;}
+.editor-tool:hover,.editor-shape:hover{background:#241a10!important;border-color:#76502f!important;}
+.editor-shape .shape-icon{width:18px;height:12px;border:1px solid #b98a56;display:inline-block;flex:0 0 auto;border-radius:1px;background:#2c2118;}
+.editor-shape.oneway .shape-icon{border-top:3px solid #6db8e8;background:#2c3e4a;}
+.editor-shape.bounce .shape-icon{border-top:3px solid #ffe07a;background:#b45e27;}
+.editor-shape.hazard .shape-icon{border-color:#ff6b6b;background:#8f2a2a;}
+.editor-shape.phase .shape-icon{border-color:#fff;background:#ffffff66;}
+.editor-shape.moving .shape-icon{border-style:dashed;background:#2c2118;}
+.editor-action-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.editor-action-row .hidden-by-state{display:none!important;}
+.editor-action-row #edGroup:not(.hidden-by-state),.editor-action-row #edUngroup:not(.hidden-by-state){display:flex;}
+.editor-sep{height:1px;border:0;background:#3a2a1a;width:100%;margin:2px 0;}
+#editorTop{position:absolute;top:10px;left:50%;right:auto;transform:translateX(-50%);display:flex;gap:6px;flex-wrap:wrap;max-width:min(820px,calc(100vw - 430px));justify-content:center;pointer-events:auto;z-index:14;}
+.editor-sel-box{position:absolute;left:0;top:0;pointer-events:none;border:1px dashed #e0a35c;background:#e0a35c18;display:none;z-index:11;}
+.editor-sel-box.active{display:block;}
 .editor-size-wrap{display:flex;align-items:center;gap:5px;background:var(--bg-panel);border:2px solid #3a2a1a;padding:4px 6px;border-radius:var(--radius);}
 .editor-size-label{font-size:9px;font-weight:900;letter-spacing:1px;color:var(--accent3);}
 .editor-size-wrap input{width:72px;padding:6px 7px;font-size:11px;}
 .editor-size-x{color:var(--text-dim);font-weight:900;}
 .editor-size-unit{font-size:8px;color:var(--text-dim);font-weight:900;letter-spacing:1px;}
-#editorProps{position:absolute;right:10px;bottom:10px;width:230px;background:var(--bg-panel);border:2px solid #3a2a1a;padding:10px;border-radius:var(--radius);pointer-events:auto;display:none;}
+/* Keep the editor header centered and contained between the side panels. */
+#editorTop input[type=text]{width:140px;min-width:100px;}
+#editorTop .btn{white-space:nowrap;}
+@media(max-width:900px){#editorTop{max-width:calc(100vw - 430px);}}
+@media(max-width:760px){#editorTop{left:160px;right:160px;transform:none;max-width:none;justify-content:center;top:8px;} #editorProps{top:8px;bottom:8px;width:150px;} }
+#editorProps{position:absolute;right:10px;top:10px;bottom:10px;width:230px;background:var(--bg-panel);border:2px solid #3a2a1a;padding:10px;border-radius:var(--radius);pointer-events:auto;display:none;}
 #editorProps.active{display:block;}
 #editorProps .prop-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+#editorProps .prop-toggle-column{grid-column:1/-1;display:flex;flex-direction:column;gap:6px;padding-top:2px;}
+#editorProps .prop-toggle-column .field{min-height:32px;}
+#editorProps .hidden-by-state{display:none!important;}
 #editorProps .prop-grid .field{min-width:0;}
 #editorProps .ed-hazard-field{display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:7px;min-height:34px;}
 #editorProps .ed-hazard-field label{margin:0;white-space:nowrap;cursor:pointer;}
@@ -396,7 +427,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .spherebox-reel-overlay{position:fixed;inset:0;background:rgba(5,3,2,.58);display:flex;align-items:center;justify-content:center;z-index:50;backdrop-filter:blur(1px);}
 .spherebox-reel-panel{width:min(920px,94vw);background:#110c08f7;border:2px solid #503622;border-radius:4px;padding:18px;box-shadow:0 24px 90px #000c;text-align:center;}
 .spherebox-reel-window{position:relative;height:126px;overflow:hidden;border:2px solid #62452d;background:#080604;border-radius:3px;margin:16px 0;}
-.spherebox-reel-strip{position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;gap:8px;padding:8px;will-change:transform;z-index:1;min-width:max-content;}
+.spherebox-reel-strip{position:absolute;left:0;top:0;height:100%;display:flex;align-items:center;gap:6px;padding:8px;will-change:transform;z-index:1;min-width:max-content;}
 .spherebox-reel-card{width:116px;height:104px;flex:0 0 116px;background:#120d09;border:1px solid #3a2a1a;border-radius:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;}
  .spherebox-roll-icon{width:40px;height:40px;flex:0 0 40px;border-radius:50%;position:relative;overflow:hidden;isolation:isolate;background:conic-gradient(from 215deg,var(--fx-c1),var(--fx-c2,var(--fx-c1)),var(--fx-c3,var(--fx-c2,var(--fx-c1))),var(--fx-c4,var(--fx-c3,var(--fx-c2,var(--fx-c1)))),var(--fx-c1));border:1.5px solid color-mix(in srgb,var(--fx-c1) 72%,#fff 28%);}
 .spherebox-roll-icon:before{content:'';position:absolute;left:50%;top:50%;width:23px;height:23px;transform:translate(-50%,-50%);border-radius:50%;background:linear-gradient(135deg,var(--fx-c1),var(--fx-c2,var(--fx-c1)) 28%,var(--fx-c3,var(--fx-c2,var(--fx-c1))) 58%,var(--fx-c4,var(--fx-c3,var(--fx-c2,var(--fx-c1)))) 82%,var(--fx-c1));}
@@ -542,6 +573,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .spherebox-main-button{width:100%;}
 .spherebox-hover-actions{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:7px;opacity:0;pointer-events:none;transform:scaleX(.96);transition:opacity .12s ease,transform .12s ease;}
 .spherebox-hover-actions .btn{min-width:0;padding:12px 8px;font-size:12px;}
+.spherebox-hover-actions .btn:hover,.spherebox-hover-actions .btn:focus-visible{transform:none!important;box-shadow:0 0 16px #c9793a55,0 6px 18px #0008;}
 .spherebox-menu-hover:hover .spherebox-main-button,.spherebox-menu-hover:focus-within .spherebox-main-button{opacity:0;pointer-events:none;}
 .spherebox-menu-hover:hover .spherebox-hover-actions,.spherebox-menu-hover:focus-within .spherebox-hover-actions{opacity:1;pointer-events:auto;transform:scaleX(1);}
 /* Explicit three-column customize layout: previews/details are not in the same column. */
@@ -642,14 +674,14 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   <div class="title-logo">PLUNK</div>
   <div class="title-sub">to plunk or not to plunk?</div>
   <div class="menu-col">
-    <button class="btn primary" data-go="create">CREATE GAME</button>
+    <button class="btn" data-go="create">CREATE GAME</button>
     <button class="btn" data-go="join">JOIN GAME</button>
     <button class="btn" data-go="editor">MAP EDITOR</button>
     <button class="btn" data-go="customize">CUSTOMIZE</button>
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.30 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.48 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -968,14 +1000,34 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 <!-- ============ MAP EDITOR ============ -->
 <div id="editorUI">
   <div id="editorMovePrompt">Click a point for the platform to move to.</div>
+  <div id="editorSelectBox" class="editor-sel-box"></div>
   <div id="editorToolbar">
-    <button class="btn small" data-tool="select">SELECT</button>
-    <button class="btn small" data-tool="platform">PLATFORM</button>
-    <button class="btn small" data-tool="spawn">SPAWN</button>
-    <button class="btn small" data-tool="erase">ERASE</button>
-    <hr style="width:100%;border-color:#3a2a1a;">
-    <button class="btn small" id="edUndo">UNDO</button>
-    <button class="btn small" id="edRedo">REDO</button>
+    <div class="editor-sidebar-title">MAP EDITOR</div>
+    <div class="editor-sidebar-subtitle">Tools</div>
+    <div class="editor-tool-grid">
+      <button class="btn small editor-tool" data-tool="select">SELECT</button>
+      <button class="btn small editor-tool" data-tool="erase">ERASE</button>
+    </div>
+    <div class="editor-sidebar-subtitle">Shapes</div>
+    <div class="editor-shape-list">
+      <button class="btn small editor-shape" data-tool="platform" data-preset="solid"><span class="shape-icon"></span>SOLID</button>
+      <button class="btn small editor-shape oneway" data-tool="platform" data-preset="oneway"><span class="shape-icon"></span>ONE-WAY</button>
+      <button class="btn small editor-shape bounce" data-tool="platform" data-preset="bounce"><span class="shape-icon"></span>BOUNCE</button>
+      <button class="btn small editor-shape hazard" data-tool="platform" data-preset="hazard"><span class="shape-icon"></span>HAZARD</button>
+      <button class="btn small editor-shape phase" data-tool="platform" data-preset="phase"><span class="shape-icon"></span>PHASE</button>
+      <button class="btn small editor-shape moving" data-tool="platform" data-preset="moving"><span class="shape-icon"></span>MOVING</button>
+      <button class="btn small editor-shape" data-tool="spawn"><span class="shape-icon" style="border-radius:50%;width:12px;height:12px;background:#5dff8f;border-color:#5dff8f;"></span>SPAWN</button>
+    </div>
+    <hr class="editor-sep">
+    <div class="editor-sidebar-subtitle">Actions</div>
+    <div class="editor-action-row">
+      <button class="btn small editor-tool" id="edDuplicate">DUPLICATE</button>
+      <button class="btn small editor-tool hidden-by-state" id="edGroup">GROUP</button>
+      <button class="btn small editor-tool hidden-by-state" id="edUngroup">UNGROUP</button>
+      <button class="btn small editor-tool" id="edUndo">UNDO</button>
+      <button class="btn small editor-tool" id="edRedo">REDO</button>
+    </div>
+    <div class="subhint" style="font-size:9px;line-height:1.35;margin-top:2px;">SHIFT drag selects an area. Drag a selection to move it as one.</div>
   </div>
   <div id="editorTop">
     <input type="text" id="edMapName" placeholder="Map Name" style="width:140px;">
@@ -1002,13 +1054,15 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
       <div class="field"><label>BOUNCINESS</label>
         <select id="edPropBounce"><option value="0">None</option><option value="0.25">Low</option><option value="0.5">Medium</option><option value="0.8">High</option><option value="1.2">Very High</option><option value="1.6">Extreme</option></select>
       </div>
-      <div class="field ed-hazard-field"><label for="edPropHazard">HAZARD</label><input type="checkbox" id="edPropHazard" aria-label="Hazard" /></div>
-      <div class="field ed-oneway-field"><label for="edPropOneway">ONE-WAY</label><input type="checkbox" id="edPropOneway" aria-label="One-way" /></div>
-      <div class="field ed-phase-field"><label for="edPropPhase">PHASE WALL</label><input type="checkbox" id="edPropPhase" aria-label="Phase wall" /></div>
-      <div class="field ed-moving-field"><label for="edPropMoving">MOVING</label><input type="checkbox" id="edPropMoving" aria-label="Moving platform" /></div>
-      <div class="field"><label>SPEED</label><input type="number" id="edPropMoveSpeed" min="0" step="1" value="0"></div>
-      <div class="field ed-repeat-field"><label for="edPropMoveRepeat">REPEAT</label><input type="checkbox" id="edPropMoveRepeat" aria-label="Repeat movement" /></div>
-      <div class="ed-move-target"><span>TARGET CENTER <strong id="edPropMoveTarget">—</strong></span><span>LENGTH <strong id="edPropMoveLength">—</strong></span></div>
+      <div class="prop-toggle-column">
+        <div class="field ed-hazard-field"><label for="edPropHazard">HAZARD</label><input type="checkbox" id="edPropHazard" aria-label="Hazard" /></div>
+        <div class="field ed-oneway-field"><label for="edPropOneway">ONE-WAY</label><input type="checkbox" id="edPropOneway" aria-label="One-way" /></div>
+        <div class="field ed-phase-field"><label for="edPropPhase">PHASE WALL</label><input type="checkbox" id="edPropPhase" aria-label="Phase wall" /></div>
+        <div class="field ed-moving-field"><label for="edPropMoving">MOVING</label><input type="checkbox" id="edPropMoving" aria-label="Moving platform" /></div>
+        <div class="field"><label>SPEED</label><input type="number" id="edPropMoveSpeed" min="0" step="1" value="0"></div>
+        <div class="field ed-repeat-field"><label for="edPropMoveRepeat">REPEAT</label><input type="checkbox" id="edPropMoveRepeat" aria-label="Repeat movement" /></div>
+        <div class="ed-move-target"><span>TARGET CENTER <strong id="edPropMoveTarget">—</strong></span><span>LENGTH <strong id="edPropMoveLength">—</strong></span></div>
+      </div>
     </div>
     <div id="edPropHint" style="margin-top:8px;font-size:10px;color:var(--text-dim);">Click a platform to edit it.</div>
   </div>
@@ -1311,7 +1365,6 @@ const PHYS = {
   bounceWAccel: 5000, // brief, very fast acceleration after pressing W/Up on a bounce
   bounceWMaxSpeed: 900, // maximum upward speed before the 70% height scale is applied
   bounceWBoostTime: 0.085, // the boost is deliberately brief so holding W cannot add height forever
-  playerCollisionImpactFrames: 2, // shorter hitstop for player-to-player collisions
   collisionSafeTravelFactor: 0.65, // max travel per map-collision slice as a fraction of player radius
   collisionMinTravel: 8,            // lower bound keeps tiny players from taking excessive slices
   collisionMaxSubsteps: 8,          // hard cap so a bad frame can never explode physics cost
@@ -2247,8 +2300,6 @@ const Game = {
   _nextMineId:1,
   movingPlatformState:{},
   menuFlyers:[],
-  impactFrames:0,
-  impactFrameBroadcastCooldown:0,
   lastHostSignal:0,
   hostWatchdogGraceUntil:0,
 
@@ -2472,7 +2523,7 @@ const Game = {
     // Keep round transitions from briefly jumping through the default camera
     // zoom before settling on the new spawn layout.
     this.camera.snapTo(Object.values(this.players), this.map.width, this.map.height, this.viewW, this.viewH);
-    this.matchTime=0; this.roundElapsed=0; this.physicsTick=0; this.hostPhysicsTick=0; this.impactFrames=0; this.impactFrameBroadcastCooldown=0;
+    this.matchTime=0; this.roundElapsed=0; this.physicsTick=0; this.hostPhysicsTick=0;
     UI.pulseBanner('');
     return true;
   },
@@ -2532,21 +2583,8 @@ const Game = {
     if(!this.lastTime) this.lastTime=ts;
     let dt = (ts-this.lastTime)/1000; this.lastTime=ts;
     dt = Math.min(dt, 0.1);
-    // Hitstop is checked BEFORE accumulating simulation time. This is important:
-    // the old implementation accumulated dt and then zeroed the accumulator,
-    // creating a visible timing hitch when normal physics resumed.
-    if((this.impactFrames||0)>0){
-      this.impactFrames = Math.max(0, this.impactFrames-1);
-      this.fpsTime += dt; this.fpsCounter++;
-      if(this.fpsTime>=0.5){ this.fps = Math.round(this.fpsCounter/this.fpsTime); this.fpsCounter=0; this.fpsTime=0; }
-      this.render();
-      requestAnimationFrame(this.loop);
-      return;
-    }
-
     this.accumulator += dt;
     if(this.state==='playing') this.roundElapsed=(this.roundElapsed||0)+dt;
-    this.impactFrameBroadcastCooldown = Math.max(0,(this.impactFrameBroadcastCooldown||0)-dt);
     this.fpsTime += dt; this.fpsCounter++;
     if(this.fpsTime>=0.5){ this.fps = Math.round(this.fpsCounter/this.fpsTime); this.fpsCounter=0; this.fpsTime=0; }
 
@@ -2722,32 +2760,6 @@ const Game = {
     if(this.countdownPunch>0) this.countdownPunch=Math.max(0,this.countdownPunch-dt*2.6);
     this.render();
     requestAnimationFrame(this.loop);
-  },
-
-  /**
-   * Briefly freezes gameplay on a hard collision.
-   * Relative speed is the magnitude of the velocity difference between the
-   * two colliding players, so a very fast player hitting a much slower player
-   * gets a larger hitstop than two players moving at similar speeds.
-   */
-  triggerImpactFrames(relativeSpeed, broadcast=true, frameOverride=null){
-    const speed = Math.max(0, Number(relativeSpeed)||0);
-    if(speed < 260) return 0;
-
-    // Keep the general impact system intact, while allowing player collisions
-    // to use a shorter, dedicated hitstop window.
-    const frames = Math.max(1, Math.round(Number.isFinite(Number(frameOverride)) ? Number(frameOverride) : 3));
-
-    this.impactFrames = Math.max(this.impactFrames||0, frames);
-
-    if(broadcast && this.isHost){
-      this.impactFrameBroadcastCooldown = Math.max(0, this.impactFrameBroadcastCooldown||0);
-      if(this.impactFrameBroadcastCooldown<=0){
-        this.impactFrameBroadcastCooldown = 0.08;
-        NetworkManager.broadcast({t:'impact_frames',frames}, true);
-      }
-    }
-    return frames;
   },
 
   /* ---------- host physics ---------- */
@@ -4368,11 +4380,13 @@ const Game = {
           b.vx+=deltaBN*nx; b.vy+=deltaBN*ny;
 
           const addDensityHit=(hitter,victim,incomingNormalSpeed,wasDashing,dx,dy)=>{
-            if(!hitter.heavy) return;
+            // Keep the existing collision behavior for normal/heavy bumps.
+            // Heavy only adds its density bonus when the heavy player is actively dashing.
+            if(!hitter.heavy || !wasDashing) return;
             const incoming=Math.max(0,Math.abs(incomingNormalSpeed));
             if(incoming<=40) return;
             const speedScale=Math.max(0.65,Math.min(1.65,incoming/650));
-            const dashScale=wasDashing?1.35:1;
+            const dashScale=1.35;
             const extraVelocity=incoming*0.50*speedScale*dashScale;
             victim.vx+=dx*extraVelocity; victim.vy+=dy*extraVelocity;
           };
@@ -4391,8 +4405,6 @@ const Game = {
             const dmg=impact*0.025;
             const aSmashScale=this.matchSettings?.smash?Math.max(0,getSmashKnockbackMultiplier(a)-1):0;
             const bSmashScale=this.matchSettings?.smash?Math.max(0,getSmashKnockbackMultiplier(b)-1):0;
-            if(dashImpact) this.triggerImpactFrames(Math.max(260,impact),this.isHost,PHYS.playerCollisionImpactFrames);
-            else this.triggerImpactFrames(impact,this.isHost,PHYS.playerCollisionImpactFrames);
             a.damage+=dmg; b.damage+=dmg;
             if(this.matchSettings?.smash){
               const smashBoost=Math.min(260,impact*0.34);
@@ -5250,11 +5262,6 @@ const Game = {
       case 'hitfx':
         if(!this.isHost) this.spawnNetworkFx({x:data.x,y:data.y,type:'impact',facing:1,hue:200});
         this.camera.addShake(5);
-        break;
-      case 'impact_frames':
-        if(!this.isHost){
-          this.impactFrames = Math.max(this.impactFrames||0, Number(data.frames)||0);
-        }
         break;
       case 'eliminated':
         if(!this.isHost){
@@ -6947,9 +6954,12 @@ const Lobby = {
 const EditorState = {
   active:false,
   tool:'select',
+  preset:'solid',
   undo:[], redo:[], map:null,
   dragging:null,
+  selecting:null,
   selected:null,
+  selectedSet:new Set(),
   placeStart:null,
   awaitingMoveTarget:null,
   hoverWorld:null,
@@ -6963,13 +6973,19 @@ const MapEditor = {
     EditorState.map.name = 'Custom Map';
     this.normalizeBlocks();
     EditorState.tool='select';
+    EditorState.preset='solid';
     EditorState.placeStart=null;
     EditorState.awaitingMoveTarget=null;
     document.getElementById('editorMovePrompt')?.classList.remove('active');
     EditorState.hoverWorld=null;
     EditorState.dragging=null;
+    EditorState.selecting=null;
     EditorState.selected=null;
-    EditorState.camera={x:0,y:0,zoom:1};
+    EditorState.selectedSet=new Set();
+    // Start centered with a little breathing room so the whole editor feels like a workspace.
+    const startZoom=Math.max(0.58,Math.min(0.78,Math.min(Game.viewW/Math.max(1,EditorState.map.width),Game.viewH/Math.max(1,EditorState.map.height))*0.88));
+    EditorState.camera={x:(EditorState.map.width||1600)/2,y:(EditorState.map.height||900)/2,zoom:startZoom};
+    this.clampCamera();
     document.getElementById('editorUI').classList.add('active');
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     document.getElementById('edMapName').value = EditorState.map.name;
@@ -6979,11 +6995,15 @@ const MapEditor = {
   },
   highlightTool(){
     document.querySelectorAll('[data-tool]').forEach(b=>{
-      b.classList.toggle('tool-active', b.getAttribute('data-tool')===EditorState.tool);
+      const t=b.getAttribute('data-tool');
+      const preset=b.getAttribute('data-preset');
+      const active=preset ? (t===EditorState.tool && preset===EditorState.preset) : (t===EditorState.tool);
+      b.classList.toggle('tool-active',active);
     });
   },
-  setTool(tool){
+  setTool(tool,preset=null){
     EditorState.tool=tool;
+    if(preset) EditorState.preset=preset;
     EditorState.placeStart=null;
     EditorState.awaitingMoveTarget=null;
     document.getElementById('editorMovePrompt')?.classList.remove('active');
@@ -7043,9 +7063,118 @@ const MapEditor = {
     const m=EditorState.map;
     const r=this.rectFromPoints(a,b,20);
     this.pushUndo();
-    if(EditorState.tool==='platform') m.platforms.push({...r,type:'solid',rotation:0,bounciness:0,hazard:false,oneway:false,phase:false,moving:false,moveTargetX:0,moveTargetY:0,moveSpeed:0,moveRepeat:false,moveStartX:r.x+r.w/2,moveStartY:r.y+r.h/2,moveAnchorCenter:true});
+    if(EditorState.tool==='platform'){
+      const preset=EditorState.preset||'solid';
+      const base={...r,type:'solid',rotation:0,bounciness:0,hazard:false,oneway:false,phase:false,moving:false,moveTargetX:null,moveTargetY:null,moveSpeed:0,moveRepeat:false,moveStartX:r.x+r.w/2,moveStartY:r.y+r.h/2,moveAnchorCenter:true};
+      if(preset==='oneway') base.oneway=true;
+      else if(preset==='bounce') base.bounciness=0.8;
+      else if(preset==='hazard') base.hazard=true;
+      else if(preset==='phase') base.phase=true;
+      else if(preset==='moving'){ base.moving=true; base.moveTargetX=base.moveStartX; base.moveTargetY=base.moveStartY; EditorState.awaitingMoveTarget=base; document.getElementById('editorMovePrompt')?.classList.add('active'); }
+      m.platforms.push(base); EditorState.selectedSet=new Set([base]); EditorState.selected=base; this.normalizeBlocks();
+    }
     EditorState.placeStart=null;
   },
+  getSelectedPlatforms(){ return [...EditorState.selectedSet].filter(o=>EditorState.map?.platforms?.includes(o)); },
+  getSelectionBounds(list){
+    if(!list?.length) return null;
+    let x1=Infinity,y1=Infinity,x2=-Infinity,y2=-Infinity;
+    for(const o of list){
+      if(EditorState.map?.platforms?.includes(o)){
+        const w=Number(o.w)||0,h=Number(o.h)||0;
+        x1=Math.min(x1,Number(o.x)||0); y1=Math.min(y1,Number(o.y)||0);
+        x2=Math.max(x2,(Number(o.x)||0)+w); y2=Math.max(y2,(Number(o.y)||0)+h);
+      }else if(EditorState.map?.hazards?.includes(o)){
+        x1=Math.min(x1,Number(o.x)||0); y1=Math.min(y1,Number(o.y)||0);
+        x2=Math.max(x2,(Number(o.x)||0)+(Number(o.w)||0)); y2=Math.max(y2,(Number(o.y)||0)+(Number(o.h)||0));
+      }
+    }
+    return {x1,y1,x2,y2};
+  },
+  selectPlatform(p,additive=false){
+    if(!p) return;
+    const groupId=p.groupId;
+    const targets=groupId ? EditorState.map.platforms.filter(q=>q.groupId===groupId) : [p];
+    if(!additive) EditorState.selectedSet=new Set();
+    const allSelected=targets.every(q=>EditorState.selectedSet.has(q));
+    if(additive && allSelected) targets.forEach(q=>EditorState.selectedSet.delete(q));
+    else targets.forEach(q=>EditorState.selectedSet.add(q));
+    EditorState.selected=EditorState.selectedSet.size?([...EditorState.selectedSet].at(-1)||p):null;
+  },
+  selectArea(a,b,additive=false){
+    const x1=Math.min(a.x,b.x),x2=Math.max(a.x,b.x),y1=Math.min(a.y,b.y),y2=Math.max(a.y,b.y);
+    const chosen=[];
+    for(const p of EditorState.map.platforms||[]){
+      const px=Number(p.x)||0,py=Number(p.y)||0,pw=Number(p.w)||0,ph=Number(p.h)||0;
+      if(px<=x2&&px+pw>=x1&&py<=y2&&py+ph>=y1) chosen.push(p);
+    }
+    for(const h of EditorState.map.hazards||[]){
+      const hx=Number(h.x)||0,hy=Number(h.y)||0,hw=Number(h.w)||0,hh=Number(h.h)||0;
+      if(hx<=x2&&hx+hw>=x1&&hy<=y2&&hy+hh>=y1) chosen.push(h);
+    }
+    if(!additive) EditorState.selectedSet=new Set();
+    for(const o of chosen){
+      if(o.groupId && EditorState.map.platforms.includes(o)){
+        for(const q of EditorState.map.platforms) if(q.groupId===o.groupId) EditorState.selectedSet.add(q);
+      }else EditorState.selectedSet.add(o);
+    }
+    EditorState.selected=EditorState.selectedSet.size?[...EditorState.selectedSet][EditorState.selectedSet.size-1]:null;
+  },
+  clearSelection(){ EditorState.selectedSet=new Set(); EditorState.selected=null; },
+  duplicateSelected(){
+    const all=[...EditorState.selectedSet].filter(o=>EditorState.map?.platforms?.includes(o)||EditorState.map?.hazards?.includes(o));
+    if(!all.length) return;
+    this.pushUndo();
+    const offset=40, clones=[];
+    for(const o of all){
+      const q=JSON.parse(JSON.stringify(o));
+      q.x=(Number(q.x)||0)+offset; q.y=(Number(q.y)||0)+offset;
+      if(EditorState.map.platforms.includes(o)){
+        delete q.groupId;
+        if(q.moving){
+          if(Number.isFinite(Number(q.moveStartX))) q.moveStartX+=offset;
+          else q.moveStartX=(Number(q.x)||0)+(Number(q.w)||0)/2;
+          if(Number.isFinite(Number(q.moveStartY))) q.moveStartY+=offset;
+          else q.moveStartY=(Number(q.y)||0)+(Number(q.h)||0)/2;
+          if(Number.isFinite(Number(q.moveTargetX))) q.moveTargetX+=offset;
+          if(Number.isFinite(Number(q.moveTargetY))) q.moveTargetY+=offset;
+        }
+        EditorState.map.platforms.push(q);
+      }else{
+        EditorState.map.hazards.push(q);
+      }
+      clones.push(q);
+    }
+    EditorState.selectedSet=new Set(clones); EditorState.selected=clones[clones.length-1]||null; this.normalizeBlocks(); this.updatePropertiesUI();
+  },
+  groupSelected(){
+    const list=this.getSelectedPlatforms(); if(list.length<2 || list.some(p=>p.groupId)) return;
+    this.pushUndo(); const gid='grp_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7); list.forEach(p=>p.groupId=gid); EditorState.selectedSet=new Set(list); this.updatePropertiesUI();
+  },
+  ungroupSelected(){
+    const ids=new Set(this.getSelectedPlatforms().map(p=>p.groupId).filter(Boolean)); if(!ids.size) return;
+    this.pushUndo(); this.getSelectedPlatforms().forEach(p=>{ if(p.groupId && ids.has(p.groupId)) delete p.groupId; }); this.updatePropertiesUI();
+  },
+  beginSelection(pt){ EditorState.selecting={start:pt,end:pt,additive:true}; this.updateSelectionBox(); },
+  updateSelectionBox(){
+    const box=document.getElementById('editorSelectBox'); const sel=EditorState.selecting; if(!box||!sel) { box?.classList.remove('active'); return; }
+    const a=this.worldToScreen(sel.start), b=this.worldToScreen(sel.end);
+    box.style.left=Math.min(a.x,b.x)+'px'; box.style.top=Math.min(a.y,b.y)+'px'; box.style.width=Math.abs(b.x-a.x)+'px'; box.style.height=Math.abs(b.y-a.y)+'px'; box.classList.add('active');
+  },
+  finishSelection(){
+    const sel=EditorState.selecting; if(!sel) return;
+    const dist=Math.hypot(sel.end.x-sel.start.x,sel.end.y-sel.start.y);
+    if(dist>4) this.selectArea(sel.start,sel.end,false);
+    else{
+      const w=sel.start, m=EditorState.map; let hit=null;
+      for(const p of [...m.platforms].reverse()) if(this.pointInRotatedRect(w.x,w.y,p)){ hit=p; break; }
+      if(!hit) for(const h of [...m.hazards].reverse()) if(w.x>=h.x&&w.x<=h.x+h.w&&w.y>=h.y&&w.y<=h.y+h.h){ hit=h; break; }
+      if(hit && m.platforms.includes(hit)) this.selectPlatform(hit,true);
+      else if(hit){ if(EditorState.selectedSet.has(hit)) EditorState.selectedSet.delete(hit); else EditorState.selectedSet.add(hit); EditorState.selected=EditorState.selectedSet.size?[...EditorState.selectedSet][EditorState.selectedSet.size-1]:null; }
+    }
+    EditorState.selecting=null; const box=document.getElementById('editorSelectBox'); box?.classList.remove('active'); this.updatePropertiesUI();
+  },
+
   bindEvents(){
     if(this._bound) return; this._bound=true;
     const canvas = Game.canvas;
@@ -7059,12 +7188,13 @@ const MapEditor = {
         EditorState.pan={active:true,startX:e.clientX,startY:e.clientY,camX:c.x,camY:c.y,button:e.button};
         return;
       }
-      this.handleDown(pointFromEvent(e));
+      this.handleDown(pointFromEvent(e),e);
     });
     canvas.addEventListener('mousemove', e=>{
       if(!EditorState.active) return;
       const pt=pointFromEvent(e);
       EditorState.hoverWorld=this.snapPoint(this.screenToWorld(pt));
+      if(EditorState.selecting){ EditorState.selecting.end=this.snapPoint(this.screenToWorld(pt)); this.updateSelectionBox(); return; }
       if(EditorState.pan.active){
         const c=EditorState.camera;
         c.x=EditorState.pan.camX-(e.clientX-EditorState.pan.startX)/c.zoom;
@@ -7088,12 +7218,16 @@ const MapEditor = {
     window.addEventListener('mouseup', ()=>{
       if(!EditorState.active) return;
       EditorState.pan.active=false;
+      if(EditorState.selecting){ this.finishSelection(); return; }
       this.handleUp();
     });
     canvas.addEventListener('contextmenu', e=>{ if(EditorState.active) e.preventDefault(); });
-    document.querySelectorAll('[data-tool]').forEach(b=>b.addEventListener('click', ()=>this.setTool(b.getAttribute('data-tool'))));
+    document.querySelectorAll('[data-tool]').forEach(b=>b.addEventListener('click', ()=>this.setTool(b.getAttribute('data-tool'),b.getAttribute('data-preset')||null)));
+    document.getElementById('edDuplicate')?.addEventListener('click', ()=>this.duplicateSelected());
+    document.getElementById('edGroup')?.addEventListener('click', ()=>this.groupSelected());
+    document.getElementById('edUngroup')?.addEventListener('click', ()=>this.ungroupSelected());
   },
-  handleDown(pt){
+  handleDown(pt,e=null){
     const m=EditorState.map;
     const w=this.snapPoint(this.screenToWorld(pt));
     if(EditorState.awaitingMoveTarget){
@@ -7129,30 +7263,26 @@ const MapEditor = {
       m.platforms=m.platforms.filter(p=>!this.pointInRotatedRect(w.x,w.y,p));
       m.hazards=m.hazards.filter(h=>!(w.x>h.x&&w.x<h.x+h.w&&w.y>h.y&&w.y<h.y+h.h));
       m.spawnPoints=m.spawnPoints.filter(s=>Math.hypot(s.x-w.x,s.y-w.y)>20);
-      EditorState.selected=null;
+      this.clearSelection();
       this.updatePropertiesUI();
       return;
     }
     if(EditorState.tool!=='platform' && EditorState.tool!=='spawn' && EditorState.tool!=='erase'){
-      EditorState.selected=null;
-      for(const p of m.platforms){
-        if(this.pointInRotatedRect(w.x,w.y,p)){
-          EditorState.selected=p;
-          this.pushUndo();
-          EditorState.dragging={kind:'move',obj:p,offX:w.x-p.x,offY:w.y-p.y};
-          break;
-        }
-      }
-      if(!EditorState.selected){
-        for(const h of m.hazards){
-          if(w.x>=h.x&&w.x<=h.x+h.w&&w.y>=h.y&&w.y<=h.y+h.h){
-            EditorState.selected=h;
-            this.pushUndo();
-            EditorState.dragging={kind:'move',obj:h,offX:w.x-h.x,offY:w.y-h.y};
-            break;
-          }
-        }
-      }
+      if(EditorState.selectedSet.has(EditorState.selected||null) && !e?.shiftKey){ /* drag current selection */ }
+      let hit=null;
+      for(const p of [...m.platforms].reverse()) if(this.pointInRotatedRect(w.x,w.y,p)){ hit=p; break; }
+      if(!hit){ for(const h of [...m.hazards].reverse()) if(w.x>=h.x&&w.x<=h.x+h.w&&w.y>=h.y&&w.y<=h.y+h.h){ hit=h; break; } }
+      if(e?.shiftKey){
+        this.beginSelection(w);
+      }else if(hit){
+        if(m.platforms.includes(hit) && !EditorState.selectedSet.has(hit)) this.selectPlatform(hit,false);
+        else if(!EditorState.selectedSet.has(hit)){ EditorState.selectedSet=new Set([hit]); EditorState.selected=hit; }
+        this.pushUndo();
+        const startPositions=[...EditorState.selectedSet].map(o=>({obj:o,x:Number(o.x)||0,y:Number(o.y)||0,moveStartX:Number(o.moveStartX),moveStartY:Number(o.moveStartY),moveTargetX:Number(o.moveTargetX),moveTargetY:Number(o.moveTargetY)}));
+        const anchorObj=(hit && EditorState.selectedSet.has(hit))?hit:EditorState.selected;
+        const anchorStart=anchorObj?{x:Number(anchorObj.x)||0,y:Number(anchorObj.y)||0}:{x:w.x,y:w.y};
+        EditorState.dragging={kind:'move',anchorX:anchorStart.x,anchorY:anchorStart.y,startPositions};
+      }else{ this.clearSelection(); }
       this.updatePropertiesUI();
     }
   },
@@ -7167,9 +7297,18 @@ const MapEditor = {
     const d=EditorState.dragging; if(!d) return;
     const w=this.snapPoint(this.screenToWorld(pt));
     if(d.kind==='move'){
-      const nx=this.snap(w.x-d.offX), ny=this.snap(w.y-d.offY);
-      if(d.obj?.moving){ d.obj.moveStartX=nx+d.obj.w/2; d.obj.moveStartY=ny+d.obj.h/2; d.obj.moveAnchorCenter=true; }
-      d.obj.x=nx; d.obj.y=ny;
+      const dx=this.snap(w.x-d.anchorX), dy=this.snap(w.y-d.anchorY);
+      for(const item of d.startPositions){
+        const o=item.obj; o.x=item.x+dx; o.y=item.y+dy;
+        if(o.moving){
+          if(Number.isFinite(item.moveStartX)) o.moveStartX=item.moveStartX+dx;
+          else o.moveStartX=o.x+o.w/2;
+          if(Number.isFinite(item.moveStartY)) o.moveStartY=item.moveStartY+dy;
+          else o.moveStartY=o.y+o.h/2;
+          if(Number.isFinite(item.moveTargetX)) o.moveTargetX=item.moveTargetX+dx;
+          if(Number.isFinite(item.moveTargetY)) o.moveTargetY=item.moveTargetY+dy;
+        }
+      }
       this.updatePropertiesUI();
     }
   },
@@ -7196,7 +7335,7 @@ const MapEditor = {
       if(p.moving && Number.isFinite(Number(p.moveTargetX)) && Number.isFinite(Number(p.moveTargetY))){
         const sx=Number.isFinite(Number(p.moveStartX))?Number(p.moveStartX):Number(p.x)+Number(p.w||0)/2, sy=Number.isFinite(Number(p.moveStartY))?Number(p.moveStartY):Number(p.y)+Number(p.h||0)/2;
         ctx.save();
-        ctx.strokeStyle=EditorState.selected===p?'#e0a35caa':'#d08a3966'; ctx.lineWidth=2/z; ctx.setLineDash([8/z,6/z]);
+        ctx.strokeStyle=EditorState.selectedSet.has(p)?'#e0a35caa':'#d08a3966'; ctx.lineWidth=2/z; ctx.setLineDash([8/z,6/z]);
         ctx.beginPath(); ctx.moveTo(sx,sy); ctx.lineTo(Number(p.moveTargetX),Number(p.moveTargetY)); ctx.stroke(); ctx.setLineDash([]);
         ctx.fillStyle='#d08a39'; ctx.beginPath(); ctx.arc(Number(p.moveTargetX),Number(p.moveTargetY),6/z,0,Math.PI*2); ctx.fill();
         ctx.fillStyle='#130d08'; ctx.beginPath(); ctx.arc(Number(p.moveTargetX),Number(p.moveTargetY),2/z,0,Math.PI*2); ctx.fill();
@@ -7212,14 +7351,14 @@ const MapEditor = {
       if(!isPhase && isBounce && !isOneway){ const t=Math.max(0,Math.min(1,bounce/1.6)); fill=`rgb(${Math.round(190+65*t)},${Math.round(150-78*t)},${Math.round(48-26*t)})`; }
       ctx.fillStyle=fill;
       ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
-      ctx.strokeStyle=isPhase?'#ffffff':(isBounce?'#f08a2b':(EditorState.selected===p?'#e0a35c':'#ffffff33'));
-      ctx.lineWidth=(EditorState.selected===p?3:(isBounce?2.5:2))/z;
+      ctx.strokeStyle=isPhase?'#ffffff':(isBounce?'#f08a2b':(EditorState.selectedSet.has(p)?'#e0a35c':'#ffffff33'));
+      ctx.lineWidth=(EditorState.selectedSet.has(p)?3:(isBounce?2.5:2))/z;
       ctx.strokeRect(-p.w/2,-p.h/2,p.w,p.h);
       if(!isPhase && isBounce && !isOneway){ ctx.fillStyle='#ffe07a'; ctx.fillRect(-p.w/2,-p.h/2,p.w,Math.max(3,Math.min(6,p.h*.18))); }
       if(isPhase){
         ctx.fillStyle='#ffffff';
         ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
-        ctx.strokeStyle=EditorState.selected===p?'#e0a35c':'#ffffff';
+        ctx.strokeStyle=EditorState.selectedSet.has(p)?'#e0a35c':'#ffffff';
         ctx.lineWidth=1.5/z;
         ctx.strokeRect(-p.w/2,-p.h/2,p.w,p.h);
       }
@@ -7250,13 +7389,18 @@ const MapEditor = {
     }
     ctx.restore();
 
-    // Spawn markers stay a fixed screen size regardless of editor zoom.
+    // Spawn markers are world-space objects, so their on-screen size scales with
+    // editor zoom exactly like they do in the game.
+    ctx.save();
+    ctx.translate(Game.viewW/2,Game.viewH/2);
+    ctx.scale(z,z);
+    ctx.translate(-c.x,-c.y);
     ctx.fillStyle='#5dff8f';
     for(const s of m.spawnPoints){
-      const sp=this.worldToScreen(s);
-      ctx.beginPath(); ctx.arc(sp.x,sp.y,7,0,Math.PI*2); ctx.fill();
-      ctx.strokeStyle='#173c26'; ctx.lineWidth=2; ctx.stroke();
+      ctx.beginPath(); ctx.arc(s.x,s.y,8,0,Math.PI*2); ctx.fill();
+      ctx.strokeStyle='#173c26'; ctx.lineWidth=2/z; ctx.stroke();
     }
+    ctx.restore();
 
     ctx.save();
     ctx.translate(Game.viewW/2,Game.viewH/2);
@@ -7272,10 +7416,6 @@ const MapEditor = {
     }
     ctx.restore();
 
-    ctx.fillStyle='#e0a35c'; ctx.font='12px monospace';
-    const placing=EditorState.placeStart?'  |  Click the opposite corner':'  |  Click a first corner';
-    ctx.fillText('Tool: '+EditorState.tool+'  |  Click objects to select  |  MMB/RMB drag: pan  |  Wheel: zoom'+placing, 200, 24);
-    ctx.fillText('Camera: '+Math.round(c.x)+','+Math.round(c.y)+'  Zoom: '+c.zoom.toFixed(2)+'x', 200, 42);
   },
   normalizeBlocks(){
     for(const p of (EditorState.map?.platforms||[])){
@@ -7309,7 +7449,17 @@ const MapEditor = {
   },
   updatePropertiesUI(){
     const panel=document.getElementById('editorProps'); if(!panel) return;
-    const p=EditorState.selected;
+    const selected=this.getSelectedPlatforms();
+    const groupBtn=document.getElementById('edGroup');
+    const ungroupBtn=document.getElementById('edUngroup');
+    const anyGrouped=selected.length>0 && selected.some(o=>!!o.groupId);
+    const allGrouped=selected.length>=1 && selected.every(o=>!!o.groupId);
+    const canGroup=selected.length>=2 && selected.every(o=>!o.groupId);
+    // GROUP is only available for a fully ungrouped multi-selection.
+    // UNGROUP is only available when the current selection actually belongs to groups.
+    if(groupBtn){ groupBtn.classList.toggle('hidden-by-state',!canGroup); groupBtn.disabled=!canGroup; }
+    if(ungroupBtn){ ungroupBtn.classList.toggle('hidden-by-state',!anyGrouped); ungroupBtn.disabled=!anyGrouped; }
+    const p=EditorState.selected || selected[0] || null;
     const active=!!p && EditorState.map?.platforms?.includes(p);
     panel.classList.toggle('active',active);
     if(!active) return;
@@ -7335,7 +7485,7 @@ const MapEditor = {
     const hint=document.getElementById('edPropHint');
     const movePrompt=document.getElementById('editorMovePrompt');
     if(movePrompt) movePrompt.classList.toggle('active',!!EditorState.awaitingMoveTarget);
-    if(hint){ if(EditorState.awaitingMoveTarget) hint.textContent='MOVING ENABLED — click the destination point on the map.'; else if(moving&&hasTarget) hint.textContent='Path set. Drag the platform to move its start point.'; else hint.textContent='Click a platform to edit it.'; }
+    if(hint){ if(EditorState.selectedSet.size>1) hint.textContent=`${EditorState.selectedSet.size} OBJECTS SELECTED, drag to move together; GROUP makes the selection one unit.`; else if(EditorState.awaitingMoveTarget) hint.textContent='MOVING ENABLED, click the destination point on the map.'; else if(moving&&hasTarget) hint.textContent='Path set. Drag the platform to move its start point.'; else if(p?.groupId) hint.textContent='GROUPED PLATFORM — clicking any member selects the whole group.'; else hint.textContent='Click a platform to edit it.'; }
   },
   applySelectedProperty(key,val){
     const p=EditorState.selected;
@@ -7380,11 +7530,11 @@ const MapEditor = {
     const names=maps.map(m=>m.name).join('\\n');
     const pick=prompt('Enter map name to load:\\n'+names);
     const found=maps.find(m=>m.name===pick);
-    if(found){ EditorState.map=ensureMapSpawn(found); document.getElementById('edMapName').value=found.name; EditorState.placeStart=null; EditorState.selected=null; this.normalizeBlocks(); this.clampCamera(); this.updateMapSizeUI(); this.updatePropertiesUI(); }
+    if(found){ EditorState.map=ensureMapSpawn(found); document.getElementById('edMapName').value=found.name; EditorState.placeStart=null; this.clearSelection(); this.normalizeBlocks(); this.clampCamera(); this.updateMapSizeUI(); this.updatePropertiesUI(); }
   },
-  clear(){ this.pushUndo(); EditorState.map={name:'Custom Map',width:1600,height:900,platforms:[],spawnPoints:[{x:400,y:400}],hazards:[],decorations:[],background:'default'}; EditorState.placeStart=null; EditorState.selected=null; this.clampCamera(); this.updateMapSizeUI(); this.updatePropertiesUI(); },
-  undo(){ if(!EditorState.undo.length) return; EditorState.redo.push(JSON.stringify(EditorState.map)); EditorState.map=JSON.parse(EditorState.undo.pop()); EditorState.placeStart=null; EditorState.selected=null; this.normalizeBlocks(); this.clampCamera(); this.updateMapSizeUI(); this.updatePropertiesUI(); },
-  redo(){ if(!EditorState.redo.length) return; EditorState.undo.push(JSON.stringify(EditorState.map)); EditorState.map=JSON.parse(EditorState.redo.pop()); EditorState.placeStart=null; EditorState.selected=null; this.normalizeBlocks(); this.clampCamera(); this.updateMapSizeUI(); this.updatePropertiesUI(); },
+  clear(){ this.pushUndo(); EditorState.map={name:'Custom Map',width:1600,height:900,platforms:[],spawnPoints:[{x:400,y:400}],hazards:[],decorations:[],background:'default'}; EditorState.placeStart=null; this.clearSelection(); this.clampCamera(); this.updateMapSizeUI(); this.updatePropertiesUI(); },
+  undo(){ if(!EditorState.undo.length) return; EditorState.redo.push(JSON.stringify(EditorState.map)); EditorState.map=JSON.parse(EditorState.undo.pop()); EditorState.placeStart=null; this.clearSelection(); this.normalizeBlocks(); this.clampCamera(); this.updateMapSizeUI(); this.updatePropertiesUI(); },
+  redo(){ if(!EditorState.redo.length) return; EditorState.undo.push(JSON.stringify(EditorState.map)); EditorState.map=JSON.parse(EditorState.redo.pop()); EditorState.placeStart=null; this.clearSelection(); this.normalizeBlocks(); this.clampCamera(); this.updateMapSizeUI(); this.updatePropertiesUI(); },
   exit(){ EditorState.active=false; document.getElementById('editorMovePrompt')?.classList.remove('active'); document.getElementById('editorUI').classList.remove('active'); UI.goto('main'); }
 };
 
@@ -8231,40 +8381,36 @@ function openSphereBox(boxKey){
   const finish=()=>{ if(done) return; done=true; if(timer) clearTimeout(timer); skip.disabled=true; SphereBoxes.opening=false; const amount=SphereBoxes.addEffect(id); const rare=['rare','epic','legendary','mythic'].includes(e.rarity); if(rare) AudioManager.rareDrop(e.rarity); finishSphereOpen(boxKey,id,amount,rare); };
   const doSpin=()=>{
     const win=overlay.querySelector('.spherebox-reel-window');
-    const cardW=124, baseTargetCenter=targetIndex*cardW+58, center=win.clientWidth/2;
-    // Keep the original reel's fast, punchy motion. Randomize the landing within
-    // the winning card, but keep only about 30% of the previous edge bias.
-    let stopOffset;
-    if(Math.random()<0.30){
-      const edgeBias=12+Math.random()*3;
-      stopOffset=(Math.random()<0.5?-1:1)*edgeBias;
-    }else{
-      stopOffset=(Math.random()-.5)*40;
-    }
-    const targetCenter=baseTargetCenter+stopOffset;
-    const targetX=center-targetCenter;
+    const center=win.clientWidth/2;
+    if(!win){ finish(); return; }
+
+    // Use the reel's known fixed card geometry instead of forcing the browser
+    // to measure every rendered card. The selected card is still given a truly
+    // uniform random landing point across its width, including near either edge.
+    const cardWidth=116, cardGap=6, cardPitch=cardWidth+cardGap, stripPad=8;
+    const landingOffset=0.5+Math.random()*(cardWidth-1);
+    const landingPoint=stripPad+targetIndex*cardPitch+landingOffset;
+    const targetX=center-landingPoint;
 
     strip.style.transition='none';
     strip.style.transform='translate3d(0,0,0)';
-    void strip.offsetWidth;
     requestAnimationFrame(()=>{
       AudioManager.crateSpin();
-      strip.style.transition='transform 6.25s cubic-bezier(.065,.84,.16,1)';
+      strip.style.transition='transform 6.5s cubic-bezier(.075,.82,.17,1)';
       strip.style.transform=`translate3d(${targetX}px,0,0)`;
     });
 
-    timer=setTimeout(finish,6400);
+    timer=setTimeout(finish,6650);
     strip.addEventListener('transitionend',()=>{ if(!done) finish(); },{once:true});
     skip.onclick=()=>{
       if(done) return;
       clearTimeout(timer);
       AudioManager.crateStop();
       strip.style.transition='none';
-      void strip.offsetWidth;
       strip.style.transform=`translate3d(${targetX}px,0,0)`;
       skip.disabled=true;
       hint.textContent='Result locked in!';
-      setTimeout(finish,650);
+      setTimeout(finish,500);
     };
   };
   doSpin();
