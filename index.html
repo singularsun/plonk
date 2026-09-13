@@ -680,7 +680,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.55 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.54 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -688,7 +688,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   <div class="panel wide-panel" style="width:min(940px,96vw);position:relative;">
     <span class="close-x" data-go="main">✕</span>
     <div class="split-heading" id="createGameHeading">
-      <div><h2>CREATE GAME</h2><div class="subhint">Name your lobby, optionally protect it with a password, then fine-tune the match. You can change these settings again from the lobby.</div></div>
+      <div><h2>CREATE GAME</h2><div class="subhint">Name your lobby and edit the settings. You can change these settings again from the lobby.</div></div>
     </div>
     <div class="two-col-layout">
       <section class="settings-column">
@@ -738,7 +738,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   <div class="panel join-browser-panel wide-panel" style="position:relative;">
     <span class="close-x" data-go="main">✕</span>
     <div class="join-browser-head">
-      <div><h2>JOIN GAME</h2><div class="subhint">Scan for active lobbies and choose one to join.</div></div>
+      <div><h2>JOIN GAME</h2><div class="subhint">Scan for active lobbies.</div></div>
       <div class="join-browser-actions"><button class="btn small primary" id="btnRefreshLobbies" type="button">SCAN FOR LOBBIES</button><button class="btn small" id="btnJoinMainMenu" type="button">MAIN MENU</button></div>
     </div>
     <div class="lobby-browser-status errbox" id="joinBrowserStatus"></div>
@@ -750,7 +750,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 <div class="join-pass-overlay" id="joinPassOverlay">
   <div class="join-pass-panel">
     <h2 style="margin-bottom:6px;">PASSWORD REQUIRED</h2>
-    <div class="subhint" id="joinPassHint" style="margin-bottom:12px;">This lobby is locked.</div>
+    <div class="subhint" id="joinPassHint" style="margin-bottom:12px;">This lobby requires a password.</div>
     <div class="field"><label>Password</label><input type="password" id="joinPassInput" class="game-text-input" maxlength="20" autocomplete="off" spellcheck="false"></div>
     <div class="errbox" id="joinPassErr" style="margin-top:6px;"></div>
     <div class="row" style="justify-content:flex-end;margin-top:10px;">
@@ -1807,7 +1807,7 @@ function finalizeBuiltinSpawns(map){
   // Prefer distinct X positions and reasonably spread points.
   candidates.sort((a,b)=>b.sp.y-a.sp.y);
   const chosen=[];
-  const minSep=95;
+  const minSep=115;
   const want=8;
   const spreadScore=(c)=>{
     if(!chosen.length) return 0;
@@ -1853,6 +1853,34 @@ function finalizeBuiltinSpawns(map){
 // trips and return trips line up much more closely instead of some objects
 // racing across the map while others barely move. The mover's original direction
 // is preserved, and grouped movers still share one authoritative track.
+function simplifyBuiltinMapHeights(){
+  // Keep the newer maps in a simple, reachable vertical band. Static pieces
+  // that sit too close to the ceiling are removed; moving pieces are lowered
+  // without changing their intended track type.
+  const MIN_REACHABLE_Y=560;
+  for(let mapIndex=8; mapIndex<BUILTIN_MAPS.length; mapIndex++){
+    const map=BUILTIN_MAPS[mapIndex];
+    map.platforms=(map.platforms||[]).filter(plat=>{
+      if(!plat || plat.type==='hazard' || plat.hazard || plat.moving) return true;
+      const y=Number(plat.y)||0;
+      return y>=MIN_REACHABLE_Y;
+    });
+    for(const plat of (map.platforms||[])){
+      if(!plat.moving) continue;
+      const startX=Number.isFinite(Number(plat.moveStartX)) ? Number(plat.moveStartX) : (Number(plat.x)||0)+(Number(plat.w)||0)/2;
+      const startY=Number.isFinite(Number(plat.moveStartY)) ? Number(plat.moveStartY) : (Number(plat.y)||0)+(Number(plat.h)||0)/2;
+      const targetX=Number(plat.moveTargetX), targetY=Number(plat.moveTargetY);
+      if(!Number.isFinite(targetX)||!Number.isFinite(targetY)) continue;
+      const loweredStartY=Math.max(MIN_REACHABLE_Y,startY);
+      const loweredTargetY=Math.max(MIN_REACHABLE_Y,targetY);
+      const deltaY=loweredStartY-startY;
+      if(Math.abs(deltaY)>0.001) plat.y=(Number(plat.y)||0)+deltaY;
+      plat.moveStartY=loweredStartY;
+      plat.moveTargetY=loweredTargetY;
+    }
+  }
+}
+
 function normalizeBuiltinMovement(){
   const COMMON_TRACK=450;
   const COMMON_SPEED=60;
@@ -1864,21 +1892,30 @@ function normalizeBuiltinMovement(){
       const sy=Number.isFinite(Number(plat.moveStartY)) ? Number(plat.moveStartY) : (Number(plat.y)||0)+(Number(plat.h)||0)/2;
       const tx=Number(plat.moveTargetX), ty=Number(plat.moveTargetY);
       if(!Number.isFinite(tx)||!Number.isFinite(ty)) continue;
-      const dx=tx-sx, dy=ty-sy, len=Math.hypot(dx,dy);
-      if(len<1) continue;
-      // A few large crusher-style hazards need more of their original sweep to
-      // retain the intended coverage; everything else gets the common track.
-      const isLargeHazard=!!plat.hazard && (Number(plat.w)||0)>=500;
-      const track=isLargeHazard ? Math.min(COMMON_TRACK, len) : COMMON_TRACK;
-      const ux=dx/len, uy=dy/len;
-      plat.moveStartX=sx; plat.moveStartY=sy;
-      plat.moveTargetX=sx+ux*track;
-      plat.moveTargetY=sy+uy*track;
+      const dx=tx-sx, dy=ty-sy;
+      if(Math.hypot(dx,dy)<1) continue;
+      // Make movement axis-aligned. Preserve the dominant original direction,
+      // using the common 450px track and slow 60px/s travel speed.
+      const horizontal=Math.abs(dx)>=Math.abs(dy);
+      const sign=horizontal ? Math.sign(dx||1) : Math.sign(dy||1);
+      const track=Math.min(COMMON_TRACK, horizontal ? Math.abs(dx) : Math.abs(dy));
+      plat.moveStartX=sx;
+      plat.moveStartY=sy;
+      if(horizontal){
+        plat.moveTargetX=sx+sign*track;
+        plat.moveTargetY=sy;
+      }else{
+        plat.moveTargetX=sx;
+        plat.moveTargetY=sy+sign*track;
+      }
       plat.moveSpeed=COMMON_SPEED;
       plat.moveRepeat=true;
     }
   }
 }
+
+simplifyBuiltinMapHeights();
+
 normalizeBuiltinMovement();
 
 // Final spawn pass MUST run after movement normalization so moving hazards are
@@ -7997,7 +8034,7 @@ const MapEditor = {
     const hint=document.getElementById('edPropHint');
     const movePrompt=document.getElementById('editorMovePrompt');
     if(movePrompt) movePrompt.classList.toggle('active',!!EditorState.awaitingMoveTarget);
-    if(hint){ if(EditorState.selectedSet.size>1) hint.textContent=`${EditorState.selectedSet.size} OBJECTS SELECTED — drag to move together; GROUP makes the selection one unit.`; else if(EditorState.awaitingMoveTarget) hint.textContent='MOVING ENABLED, click the destination point on the map.'; else if(moving&&hasTarget) hint.textContent='Path set. Set END X/Y or click the destination on the map.'; else if(p?.groupId) hint.textContent='GROUPED PLATFORM, clicking any member selects the whole group.'; else hint.textContent='Click a platform to edit it.'; }
+    if(hint){ if(EditorState.selectedSet.size>1) hint.textContent=`${EditorState.selectedSet.size} OBJECTS SELECTED — drag to move together; GROUP makes the selection one unit.`; else if(EditorState.awaitingMoveTarget) hint.textContent='MOVING ENABLED — click the destination point on the map.'; else if(moving&&hasTarget) hint.textContent='Path set. Set END X/Y or click the destination on the map.'; else if(p?.groupId) hint.textContent='GROUPED PLATFORM — clicking any member selects the whole group.'; else hint.textContent='Click a platform to edit it.'; }
   },
   applySelectedProperty(key,val){
     const p=EditorState.selected;
