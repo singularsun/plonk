@@ -680,7 +680,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.54 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.56 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -688,7 +688,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   <div class="panel wide-panel" style="width:min(940px,96vw);position:relative;">
     <span class="close-x" data-go="main">✕</span>
     <div class="split-heading" id="createGameHeading">
-      <div><h2>CREATE GAME</h2><div class="subhint">Name your lobby and edit the settings. You can change these settings again from the lobby.</div></div>
+      <div><h2>CREATE GAME</h2><div class="subhint">Name your lobby and change the settings. You can change these settings again from the lobby.</div></div>
     </div>
     <div class="two-col-layout">
       <section class="settings-column">
@@ -738,7 +738,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   <div class="panel join-browser-panel wide-panel" style="position:relative;">
     <span class="close-x" data-go="main">✕</span>
     <div class="join-browser-head">
-      <div><h2>JOIN GAME</h2><div class="subhint">Scan for active lobbies.</div></div>
+      <div><h2>JOIN GAME</h2><div class="subhint">Scan for active lobbies and choose one to join.</div></div>
       <div class="join-browser-actions"><button class="btn small primary" id="btnRefreshLobbies" type="button">SCAN FOR LOBBIES</button><button class="btn small" id="btnJoinMainMenu" type="button">MAIN MENU</button></div>
     </div>
     <div class="lobby-browser-status errbox" id="joinBrowserStatus"></div>
@@ -750,7 +750,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 <div class="join-pass-overlay" id="joinPassOverlay">
   <div class="join-pass-panel">
     <h2 style="margin-bottom:6px;">PASSWORD REQUIRED</h2>
-    <div class="subhint" id="joinPassHint" style="margin-bottom:12px;">This lobby requires a password.</div>
+    <div class="subhint" id="joinPassHint" style="margin-bottom:12px;">This lobby is locked.</div>
     <div class="field"><label>Password</label><input type="password" id="joinPassInput" class="game-text-input" maxlength="20" autocomplete="off" spellcheck="false"></div>
     <div class="errbox" id="joinPassErr" style="margin-top:6px;"></div>
     <div class="row" style="justify-content:flex-end;margin-top:10px;">
@@ -1044,8 +1044,8 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   <div id="editorProps">
     <div style="font-size:11px;font-weight:900;letter-spacing:1px;color:var(--accent3);margin-bottom:8px;">BLOCK PROPERTIES</div>
     <div class="prop-grid">
-      <div class="field"><label>X</label><input type="number" id="edPropX" step="1"></div>
-      <div class="field"><label>Y</label><input type="number" id="edPropY" step="1"></div>
+      <div class="field"><label>X COORDINATE</label><input type="number" id="edPropX" step="1"></div>
+      <div class="field"><label>Y COORDINATE</label><input type="number" id="edPropY" step="1"></div>
       <div class="field"><label>WIDTH</label><input type="number" id="edPropW" min="20" step="1"></div>
       <div class="field"><label>HEIGHT</label><input type="number" id="edPropH" min="20" step="1"></div>
       <div class="field"><label>ROTATION°</label><input type="number" id="edPropRot" step="1"></div>
@@ -1888,10 +1888,22 @@ function normalizeBuiltinMovement(){
     const map=BUILTIN_MAPS[mapIndex];
     for(const plat of (map.platforms||[])){
       if(!plat?.moving) continue;
-      const sx=Number.isFinite(Number(plat.moveStartX)) ? Number(plat.moveStartX) : (Number(plat.x)||0)+(Number(plat.w)||0)/2;
-      const sy=Number.isFinite(Number(plat.moveStartY)) ? Number(plat.moveStartY) : (Number(plat.y)||0)+(Number(plat.h)||0)/2;
-      const tx=Number(plat.moveTargetX), ty=Number(plat.moveTargetY);
+      const pw=Number(plat.w)||0, ph=Number(plat.h)||0;
+      const sx=Number.isFinite(Number(plat.moveStartX)) ? Number(plat.moveStartX) : (Number(plat.x)||0)+pw/2;
+      const sy=Number.isFinite(Number(plat.moveStartY)) ? Number(plat.moveStartY) : (Number(plat.y)||0)+ph/2;
+      let tx=Number(plat.moveTargetX), ty=Number(plat.moveTargetY);
       if(!Number.isFinite(tx)||!Number.isFinite(ty)) continue;
+      // Built-in maps authored before center-anchored movement stored the target
+      // as the platform's top-left corner. Convert that legacy target to the
+      // platform center exactly once so editor END X/Y and the movement marker
+      // always represent where the middle of the platform will be.
+      if(!plat.moveAnchorCenter){
+        tx += pw/2;
+        ty += ph/2;
+      }
+      plat.moveAnchorCenter=true;
+      plat.moveStartX=sx;
+      plat.moveStartY=sy;
       const dx=tx-sx, dy=ty-sy;
       if(Math.hypot(dx,dy)<1) continue;
       // Make movement axis-aligned. Preserve the dominant original direction,
@@ -1908,6 +1920,7 @@ function normalizeBuiltinMovement(){
         plat.moveTargetX=sx;
         plat.moveTargetY=sy+sign*track;
       }
+      plat.moveAnchorCenter=true;
       plat.moveSpeed=COMMON_SPEED;
       plat.moveRepeat=true;
     }
@@ -8009,8 +8022,10 @@ const MapEditor = {
     const active=!!p && EditorState.map?.platforms?.includes(p);
     panel.classList.toggle('active',active);
     if(!active) return;
-    document.getElementById('edPropX').value=Math.round(p.x);
-    document.getElementById('edPropY').value=Math.round(p.y);
+    const centerX=(Number(p.x)||0)+(Number(p.w)||0)/2;
+    const centerY=(Number(p.y)||0)+(Number(p.h)||0)/2;
+    document.getElementById('edPropX').value=Math.round(centerX);
+    document.getElementById('edPropY').value=Math.round(centerY);
     document.getElementById('edPropW').value=Math.round(p.w);
     document.getElementById('edPropH').value=Math.round(p.h);
     document.getElementById('edPropRot').value=Math.round(Number(p.rotation)||0);
@@ -8040,7 +8055,10 @@ const MapEditor = {
     const p=EditorState.selected;
     if(!p || !EditorState.map?.platforms?.includes(p)) return;
     this.pushUndo();
-    if(key==='x'||key==='y'||key==='w'||key==='h') p[key]=Number(val);
+    if(key==='x'){ const cx=Number(val); if(Number.isFinite(cx)) p.x=cx-(Number(p.w)||0)/2; }
+    else if(key==='y'){ const cy=Number(val); if(Number.isFinite(cy)) p.y=cy-(Number(p.h)||0)/2; }
+    else if(key==='w'){ const oldW=Number(p.w)||0, nw=Number(val); if(Number.isFinite(nw)){ const cx=(Number(p.x)||0)+oldW/2; p.w=nw; p.x=cx-nw/2; } }
+    else if(key==='h'){ const oldH=Number(p.h)||0, nh=Number(val); if(Number.isFinite(nh)){ const cy=(Number(p.y)||0)+oldH/2; p.h=nh; p.y=cy-nh/2; } }
     else if(key==='rotation') p.rotation=Number(val)||0;
     else if(key==='bounciness') p.bounciness=Math.max(0,Number(val)||0);
     else if(key==='hazard') p.hazard=!!val;
