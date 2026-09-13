@@ -312,7 +312,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 /* map editor */
 #editorUI{position:absolute;top:0;left:0;width:100%;height:100%;display:none;z-index:8;pointer-events:none;}
 #editorUI.active{display:block;}
-#editorMovePrompt{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:none;z-index:12;pointer-events:none;background:#120d08ee;border:1px solid #d08a39;border-radius:4px;padding:7px 12px;color:#f2dfc8;font-size:11px;font-weight:900;letter-spacing:.45px;box-shadow:0 6px 22px #0008;white-space:nowrap;}
+#editorMovePrompt{position:absolute;top:72px;left:50%;transform:translateX(-50%);display:none;z-index:12;pointer-events:none;background:#120d08ee;border:1px solid #d08a39;border-radius:4px;padding:7px 12px;color:#f2dfc8;font-size:11px;font-weight:900;letter-spacing:.45px;box-shadow:0 6px 22px #0008;white-space:nowrap;}
 #editorMovePrompt.active{display:block;}
 #editorToolbar{position:absolute;top:10px;left:10px;bottom:10px;width:178px;display:flex;flex-direction:column;gap:7px;
   background:linear-gradient(180deg,#18110bf2,#0e0906f5);border:2px solid #3a2a1a;padding:10px;border-radius:5px;pointer-events:auto;box-shadow:0 12px 30px #0009;overflow:auto;}
@@ -327,7 +327,6 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .editor-shape.bounce .shape-icon{border-top:3px solid #ffe07a;background:#b45e27;}
 .editor-shape.hazard .shape-icon{border-color:#ff6b6b;background:#8f2a2a;}
 .editor-shape.phase .shape-icon{border-color:#fff;background:#ffffff66;}
-.editor-shape.moving .shape-icon{border-style:dashed;background:#2c2118;}
 .editor-action-row{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
 .editor-action-row .hidden-by-state{display:none!important;}
 .editor-action-row #edGroup:not(.hidden-by-state),.editor-action-row #edUngroup:not(.hidden-by-state){display:flex;}
@@ -681,7 +680,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.48 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.55 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -1015,7 +1014,6 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
       <button class="btn small editor-shape bounce" data-tool="platform" data-preset="bounce"><span class="shape-icon"></span>BOUNCE</button>
       <button class="btn small editor-shape hazard" data-tool="platform" data-preset="hazard"><span class="shape-icon"></span>HAZARD</button>
       <button class="btn small editor-shape phase" data-tool="platform" data-preset="phase"><span class="shape-icon"></span>PHASE</button>
-      <button class="btn small editor-shape moving" data-tool="platform" data-preset="moving"><span class="shape-icon"></span>MOVING</button>
       <button class="btn small editor-shape" data-tool="spawn"><span class="shape-icon" style="border-radius:50%;width:12px;height:12px;background:#5dff8f;border-color:#5dff8f;"></span>SPAWN</button>
     </div>
     <hr class="editor-sep">
@@ -1060,8 +1058,10 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
         <div class="field ed-phase-field"><label for="edPropPhase">PHASE WALL</label><input type="checkbox" id="edPropPhase" aria-label="Phase wall" /></div>
         <div class="field ed-moving-field"><label for="edPropMoving">MOVING</label><input type="checkbox" id="edPropMoving" aria-label="Moving platform" /></div>
         <div class="field"><label>SPEED</label><input type="number" id="edPropMoveSpeed" min="0" step="1" value="0"></div>
+        <div class="field"><label>END X</label><input type="number" id="edPropMoveTargetX" step="1" value="0"></div>
+        <div class="field"><label>END Y</label><input type="number" id="edPropMoveTargetY" step="1" value="0"></div>
         <div class="field ed-repeat-field"><label for="edPropMoveRepeat">REPEAT</label><input type="checkbox" id="edPropMoveRepeat" aria-label="Repeat movement" /></div>
-        <div class="ed-move-target"><span>TARGET CENTER <strong id="edPropMoveTarget">—</strong></span><span>LENGTH <strong id="edPropMoveLength">—</strong></span></div>
+        <div class="ed-move-target"><span>PATH <strong id="edPropMoveTarget">—</strong></span><span>LENGTH <strong id="edPropMoveLength">—</strong></span></div>
       </div>
     </div>
     <div id="edPropHint" style="margin-top:8px;font-size:10px;color:var(--text-dim);">Click a platform to edit it.</div>
@@ -1547,6 +1547,98 @@ const BUILTIN_MAPS = [
     {x:1430,y:500,w:280,h:32,type:'solid',rotation:-22},
     {x:790,y:400,w:300,h:24,type:'oneway',rotation:5},
   ],[],[{x:760,y:1000,w:380,h:50,type:'lava'},{x:1540,y:790,w:110,h:150,type:'lava'}],'default'),
+
+  makeMap('Conveyor',2100,1050,[
+    {x:120,y:940,w:1860,h:48,type:'solid'},
+    {x:190,y:850,w:300,h:28,type:'oneway',moving:true,moveTargetX:900,moveTargetY:850,moveSpeed:150,moveRepeat:true},
+    {x:910,y:690,w:300,h:28,type:'bounce',bounciness:1.1,moving:true,moveTargetX:1450,moveTargetY:690,moveSpeed:150,moveRepeat:true},
+    {x:1450,y:850,w:300,h:28,type:'oneway',moving:true,moveTargetX:1880,moveTargetY:660,moveSpeed:150,moveRepeat:true},
+    {x:760,y:460,w:520,h:28,type:'solid'},
+    {x:1260,y:540,w:180,h:26,type:'hazard',hazard:true,moving:true,moveTargetX:1260,moveTargetY:860,moveSpeed:150,moveRepeat:true}
+  ],[],[{x:500,y:988,w:1100,h:62,type:'lava'}],'default'),
+  makeMap('Pendulum',2000,1050,[
+    {x:110,y:940,w:1780,h:50,type:'solid'},
+    {x:250,y:860,w:260,h:28,type:'solid',rotation:-12,moving:true,moveTargetX:520,moveTargetY:670,moveSpeed:150,moveRepeat:true},
+    {x:860,y:800,w:280,h:28,type:'oneway',rotation:10,moving:true,moveTargetX:1180,moveTargetY:600,moveSpeed:150,moveRepeat:true},
+    {x:1410,y:860,w:260,h:28,type:'bounce',bounciness:1.35,rotation:-10,moving:true,moveTargetX:1150,moveTargetY:640,moveSpeed:150,moveRepeat:true},
+    {x:770,y:400,w:460,h:28,type:'solid'},
+    {x:940,y:920,w:120,h:26,type:'hazard',hazard:true,moving:true,moveTargetX:940,moveTargetY:700,moveSpeed:150,moveRepeat:true}
+  ],[],[{x:620,y:985,w:760,h:60,type:'lava'}],'default'),
+  makeMap('Society',2200,1100,[
+    {x:140,y:1000,w:1920,h:48,type:'solid'},
+    {x:160,y:920,w:280,h:26,type:'oneway',moving:true,moveTargetX:720,moveTargetY:750,moveSpeed:150,moveRepeat:true},
+    {x:760,y:800,w:260,h:26,type:'oneway',moving:true,moveTargetX:1180,moveTargetY:920,moveSpeed:150,moveRepeat:true},
+    {x:1220,y:920,w:260,h:26,type:'oneway',moving:true,moveTargetX:1650,moveTargetY:730,moveSpeed:150,moveRepeat:true},
+    {x:1700,y:750,w:300,h:26,type:'bounce',bounciness:1.25,moving:true,moveTargetX:1860,moveTargetY:930,moveSpeed:150,moveRepeat:true},
+    {x:920,y:490,w:360,h:28,type:'solid',moving:true,moveTargetX:920,moveTargetY:320,moveSpeed:150,moveRepeat:true}
+  ],[],[{x:680,y:1048,w:840,h:52,type:'lava'}],'default'),
+  makeMap('Crusher',1900,1050,[
+    {x:100,y:940,w:1700,h:50,type:'solid'},
+    {x:170,y:860,w:230,h:28,type:'oneway'},
+    {x:520,y:860,w:230,h:28,type:'oneway'},
+    {x:870,y:860,w:230,h:28,type:'oneway'},
+    {x:1220,y:860,w:230,h:28,type:'oneway'},
+    {x:1570,y:860,w:180,h:28,type:'oneway'},
+    {x:300,y:570,w:180,h:170,type:'hazard',hazard:true,moving:true,moveTargetX:300,moveTargetY:880,moveSpeed:150,moveRepeat:true},
+    {x:850,y:520,w:180,h:170,type:'hazard',hazard:true,moving:true,moveTargetX:850,moveTargetY:880,moveSpeed:150,moveRepeat:true},
+    {x:1400,y:570,w:180,h:170,type:'hazard',hazard:true,moving:true,moveTargetX:1400,moveTargetY:880,moveSpeed:150,moveRepeat:true},
+  ],[],[{x:650,y:990,w:600,h:60,type:'lava'}],'default'),
+  makeMap('Orbit',1900,1050,[
+    {x:720,y:1020,w:460,h:46,type:'solid'},
+    {x:300,y:860,w:260,h:28,type:'oneway',moving:true,moveTargetX:520,moveTargetY:600,moveSpeed:150,moveRepeat:true},
+    {x:1340,y:860,w:260,h:28,type:'oneway',moving:true,moveTargetX:1120,moveTargetY:600,moveSpeed:150,moveRepeat:true},
+    {x:510,y:550,w:240,h:28,type:'bounce',bounciness:1.2,moving:true,moveTargetX:760,moveTargetY:400,moveSpeed:150,moveRepeat:true},
+    {x:1150,y:550,w:240,h:28,type:'bounce',bounciness:1.2,moving:true,moveTargetX:900,moveTargetY:400,moveSpeed:150,moveRepeat:true},
+    {x:800,y:230,w:300,h:26,type:'solid',moving:true,moveTargetX:800,moveTargetY:460,moveSpeed:150,moveRepeat:true},
+    {x:880,y:720,w:140,h:26,type:'hazard',hazard:true,moving:true,moveTargetX:1260,moveTargetY:720,moveSpeed:150,moveRepeat:true}
+  ],[],[{x:0,y:1000,w:700,h:50,type:'lava'},{x:1200,y:1000,w:700,h:50,type:'lava'}],'default'),
+  makeMap('Elevator',1500,1200,[
+    {x:120,y:1080,w:1260,h:50,type:'solid'},
+    {x:180,y:980,w:250,h:28,type:'solid',moving:true,moveTargetX:180,moveTargetY:360,moveSpeed:150,moveRepeat:true},
+    {x:625,y:1060,w:250,h:28,type:'oneway',moving:true,moveTargetX:625,moveTargetY:280,moveSpeed:150,moveRepeat:true},
+    {x:1070,y:980,w:250,h:28,type:'solid',moving:true,moveTargetX:1070,moveTargetY:400,moveSpeed:150,moveRepeat:true},
+    {x:470,y:750,w:560,h:28,type:'bounce',bounciness:1.0},
+    {x:650,y:620,w:200,h:120,type:'hazard',hazard:true,moving:true,moveTargetX:650,moveTargetY:950,moveSpeed:150,moveRepeat:true},
+    {x:480,y:220,w:540,h:28,type:'solid'}
+  ],[],[{x:430,y:1130,w:640,h:70,type:'lava'}],'default'),
+  makeMap('Flood',2100,1100,[
+    {x:100,y:980,w:1900,h:50,type:'solid'},
+    {x:140,y:880,w:500,h:28,type:'oneway'},
+    {x:1460,y:880,w:500,h:28,type:'oneway'},
+    {x:710,y:880,w:680,h:30,type:'hazard',hazard:true,moving:true,moveTargetX:710,moveTargetY:520,moveSpeed:150,moveRepeat:true},
+    {x:340,y:670,w:320,h:28,type:'solid',moving:true,moveTargetX:900,moveTargetY:670,moveSpeed:150,moveRepeat:true},
+    {x:1440,y:670,w:320,h:28,type:'solid',moving:true,moveTargetX:880,moveTargetY:670,moveSpeed:150,moveRepeat:true},
+    {x:820,y:360,w:460,h:26,type:'bounce',bounciness:1.25,moving:true,moveTargetX:820,moveTargetY:560,moveSpeed:150,moveRepeat:true}
+  ],[],[{x:580,y:1030,w:940,h:70,type:'lava'}],'default'),
+  makeMap('Mirror',2000,1050,[
+    {x:100,y:940,w:1800,h:50,type:'solid'},
+    {x:180,y:860,w:420,h:26,type:'oneway'},
+    {x:1400,y:860,w:420,h:26,type:'oneway'},
+    {x:790,y:920,w:420,h:26,type:'phase',phase:true},
+    {x:760,y:660,w:480,h:26,type:'solid',moving:true,moveTargetX:760,moveTargetY:400,moveSpeed:150,moveRepeat:true},
+    {x:300,y:540,w:260,h:28,type:'bounce',bounciness:1.35,moving:true,moveTargetX:620,moveTargetY:720,moveSpeed:150,moveRepeat:true},
+    {x:1440,y:540,w:260,h:28,type:'bounce',bounciness:1.35,moving:true,moveTargetX:1120,moveTargetY:720,moveSpeed:150,moveRepeat:true},
+    {x:930,y:510,w:140,h:180,type:'hazard',hazard:true,moving:true,moveTargetX:930,moveTargetY:780,moveSpeed:150,moveRepeat:true}
+  ],[],[{x:620,y:990,w:760,h:60,type:'lava'}],'default'),
+  makeMap('Saw',2000,1000,[
+    {x:100,y:900,w:1800,h:50,type:'solid'},
+    {x:180,y:780,w:300,h:26,type:'oneway',moving:true,moveTargetX:630,moveTargetY:780,moveSpeed:150,moveRepeat:true},
+    {x:690,y:650,w:300,h:26,type:'oneway',moving:true,moveTargetX:1140,moveTargetY:650,moveSpeed:150,moveRepeat:true},
+    {x:1200,y:780,w:300,h:26,type:'oneway',moving:true,moveTargetX:1650,moveTargetY:780,moveSpeed:150,moveRepeat:true},
+    {x:660,y:430,w:680,h:26,type:'solid'},
+    {x:460,y:510,w:120,h:150,type:'hazard',hazard:true,moving:true,moveTargetX:460,moveTargetY:820,moveSpeed:150,moveRepeat:true},
+    {x:940,y:510,w:120,h:150,type:'hazard',hazard:true,moving:true,moveTargetX:940,moveTargetY:820,moveSpeed:150,moveRepeat:true},
+    {x:1420,y:510,w:120,h:150,type:'hazard',hazard:true,moving:true,moveTargetX:1420,moveTargetY:820,moveSpeed:150,moveRepeat:true}
+  ],[],[{x:600,y:950,w:800,h:50,type:'lava'}],'default'),
+  makeMap('Pinch',1800,1000,[
+    {x:100,y:900,w:1600,h:50,type:'solid'},
+    {x:180,y:760,w:300,h:28,type:'oneway'},
+    {x:1320,y:760,w:300,h:28,type:'oneway'},
+    {x:520,y:640,w:760,h:28,type:'solid',moving:true,moveTargetX:520,moveTargetY:420,moveSpeed:150,moveRepeat:true},
+    {x:610,y:480,w:180,h:26,type:'hazard',hazard:true,moving:true,moveTargetX:610,moveTargetY:760,moveSpeed:150,moveRepeat:true},
+    {x:1010,y:480,w:180,h:26,type:'hazard',hazard:true,moving:true,moveTargetX:1010,moveTargetY:760,moveSpeed:150,moveRepeat:true},
+    {x:730,y:300,w:340,h:26,type:'bounce',bounciness:1.2,moving:true,moveTargetX:1060,moveTargetY:300,moveSpeed:150,moveRepeat:true}
+  ],[],[{x:520,y:950,w:760,h:50,type:'lava'}],'default')
 ];
 
 // Remove lava/hazard rectangles that are completely buried beneath a solid
@@ -1642,6 +1734,334 @@ authorBuiltinSpawns(BUILTIN_MAPS[7],[
   {platform:4,x:1510,lift:0},{platform:5,x:930,lift:1},
   {platform:0,x:230,lift:0},{platform:0,x:1480,lift:1}
 ]);
+
+
+
+// Refresh authored spawns after the built-in moving-map height pass.
+authorBuiltinSpawns(BUILTIN_MAPS[8],[
+  {platform:0,x:260,lift:0},{platform:0,x:460,lift:1},{platform:1,x:320,lift:0},{platform:1,x:700,lift:1},
+  {platform:2,x:980,lift:0},{platform:2,x:1260,lift:1},{platform:3,x:1600,lift:0},{platform:3,x:1820,lift:1}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[9],[
+  {platform:0,x:220,lift:0},{platform:0,x:520,lift:1},{platform:1,x:340,lift:0},{platform:2,x:950,lift:1},
+  {platform:3,x:1510,lift:0},{platform:4,x:900,lift:1},{platform:5,x:990,lift:0},{platform:1,x:700,lift:2}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[10],[
+  {platform:0,x:220,lift:0},{platform:0,x:520,lift:1},{platform:1,x:300,lift:0},{platform:1,x:700,lift:1},
+  {platform:2,x:1100,lift:0},{platform:2,x:1450,lift:1},{platform:3,x:1780,lift:0},{platform:4,x:1080,lift:1}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[11],[
+  {platform:0,x:180,lift:0},{platform:0,x:1640,lift:1},{platform:1,x:250,lift:0},{platform:2,x:600,lift:1},
+  {platform:3,x:940,lift:0},{platform:4,x:1300,lift:1},{platform:5,x:1460,lift:0},{platform:6,x:950,lift:1}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[12],[
+  {platform:0,x:760,lift:0},{platform:0,x:1140,lift:1},{platform:1,x:360,lift:0},{platform:1,x:540,lift:1},
+  {platform:2,x:1360,lift:0},{platform:2,x:1540,lift:1},{platform:3,x:620,lift:0},{platform:4,x:1280,lift:1}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[13],[
+  {platform:0,x:260,lift:0},{platform:0,x:1080,lift:1},{platform:1,x:280,lift:0},{platform:2,x:720,lift:1},
+  {platform:3,x:1100,lift:0},{platform:4,x:760,lift:1},{platform:5,x:690,lift:0},{platform:6,x:750,lift:1}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[14],[
+  {platform:0,x:240,lift:0},{platform:0,x:1780,lift:1},{platform:1,x:260,lift:0},{platform:2,x:1700,lift:1},
+  {platform:3,x:950,lift:0},{platform:4,x:500,lift:1},{platform:5,x:1550,lift:0},{platform:6,x:1050,lift:1}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[15],[
+  {platform:0,x:220,lift:0},{platform:0,x:1740,lift:1},{platform:1,x:320,lift:0},{platform:2,x:1560,lift:1},
+  {platform:3,x:1000,lift:0},{platform:4,x:1000,lift:1},{platform:5,x:440,lift:0},{platform:6,x:1560,lift:1}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[16],[
+  {platform:0,x:240,lift:0},{platform:0,x:1760,lift:1},{platform:1,x:300,lift:0},{platform:1,x:450,lift:1},
+  {platform:2,x:760,lift:0},{platform:2,x:910,lift:1},{platform:3,x:1240,lift:0},{platform:3,x:1430,lift:1}
+]);
+authorBuiltinSpawns(BUILTIN_MAPS[17],[
+  {platform:0,x:220,lift:0},{platform:0,x:1580,lift:1},{platform:1,x:300,lift:0},{platform:2,x:1500,lift:1},
+  {platform:3,x:700,lift:0},{platform:3,x:1080,lift:1},{platform:3,x:900,lift:2},{platform:3,x:1100,lift:3}
+]);
+
+
+// Final built-in spawn guarantee: every map gets eight distinct, hazard-free
+// spawn points. Prefer lower, reachable non-hazard platforms and spread players
+// across the available width so maps such as Crusher never collapse down to only
+// a couple of practical spawn locations.
+function finalizeBuiltinSpawns(map){
+  if(!map) return map;
+  const exclusions=buildBuiltinHazardExclusion(map,96);
+  const safePlatformIndices=(map.platforms||[]).map((p,i)=>({p,i})).filter(({p})=>p&&p.type!=='hazard'&&!p.hazard);
+  const candidates=[];
+  for(const {p,i} of safePlatformIndices){
+    const rot=Math.abs(Number(p.rotation)||0);
+    if(rot>1e-6) continue; // reliable spawn placement is on horizontal surfaces
+    const margin=Math.max(38,Math.min(70,(Number(p.w)||0)*0.12));
+    const left=Number(p.x)||0, right=(Number(p.x)||0)+(Number(p.w)||0);
+    if(right-left<80) continue;
+    const count=Math.max(2,Math.min(12,Math.ceil((right-left)/170)));
+    for(let k=0;k<count;k++){
+      const x=left+margin+(right-left-2*margin)*(k/(count-1));
+      const sp=spawnOnPlatform(map,i,x,0);
+      if(sp.x<55||sp.x>map.width-55||sp.y<55||sp.y>map.height-55) continue;
+      if(spawnNearBuiltinHazard(sp,exclusions)) continue;
+      candidates.push({sp,i});
+    }
+  }
+  // Prefer distinct X positions and reasonably spread points.
+  candidates.sort((a,b)=>b.sp.y-a.sp.y);
+  const chosen=[];
+  const minSep=95;
+  const want=8;
+  const spreadScore=(c)=>{
+    if(!chosen.length) return 0;
+    return Math.min(...chosen.map(q=>Math.hypot(c.sp.x-q.x,c.sp.y-q.y)));
+  };
+  while(chosen.length<want && candidates.length){
+    let bestIdx=0,bestScore=-Infinity;
+    for(let i=0;i<candidates.length;i++){
+      const c=candidates[i];
+      const sep=spreadScore(c);
+      if(sep<minSep && chosen.length<4) continue;
+      const score=sep + c.sp.y*0.02;
+      if(score>bestScore){bestScore=score;bestIdx=i;}
+    }
+    const [pick]=candidates.splice(bestIdx,1);
+    if(!pick) break;
+    if(chosen.every(q=>Math.hypot(pick.sp.x-q.x,pick.sp.y-q.y)>=minSep) || chosen.length<4) chosen.push(pick);
+  }
+  // If geometry is constrained, relax spacing but still never use a hazard.
+  if(chosen.length<want){
+    for(const c of candidates){
+      if(spawnNearBuiltinHazard(c.sp,exclusions)) continue;
+      if(chosen.every(q=>Math.hypot(c.sp.x-q.x,c.sp.y-q.y)>=48)) chosen.push(c);
+      if(chosen.length>=want) break;
+    }
+  }
+  // Absolute fallback: use safe points above the map's lowest safe surface.
+  if(chosen.length<want){
+    const lowestSafe=safePlatformIndices
+      .filter(({p})=>Math.abs(Number(p.rotation)||0)<1e-6)
+      .sort((a,b)=>(b.p.y||0)-(a.p.y||0))[0];
+    const p=lowestSafe?.p;
+    for(let k=0;k<want;k++){
+      let sp=p?spawnOnPlatform(map,lowestSafe.i,(p.x||0)+(p.w||0)*((k+1)/(want+1)),k%3):{x:map.width*(k+1)/(want+1),y:80};
+      if(!spawnNearBuiltinHazard(sp,exclusions)) chosen.push({sp});
+    }
+  }
+  map.spawnPoints=chosen.slice(0,want).map(c=>({x:Math.round(c.sp.x),y:Math.round(c.sp.y)}));
+  return map;
+}
+// Keep the built-in moving gameplay readable and synchronized. Most movers use
+// the same 450px track and the same deliberately slow speed, so their outbound
+// trips and return trips line up much more closely instead of some objects
+// racing across the map while others barely move. The mover's original direction
+// is preserved, and grouped movers still share one authoritative track.
+function normalizeBuiltinMovement(){
+  const COMMON_TRACK=450;
+  const COMMON_SPEED=60;
+  for(let mapIndex=8; mapIndex<BUILTIN_MAPS.length; mapIndex++){
+    const map=BUILTIN_MAPS[mapIndex];
+    for(const plat of (map.platforms||[])){
+      if(!plat?.moving) continue;
+      const sx=Number.isFinite(Number(plat.moveStartX)) ? Number(plat.moveStartX) : (Number(plat.x)||0)+(Number(plat.w)||0)/2;
+      const sy=Number.isFinite(Number(plat.moveStartY)) ? Number(plat.moveStartY) : (Number(plat.y)||0)+(Number(plat.h)||0)/2;
+      const tx=Number(plat.moveTargetX), ty=Number(plat.moveTargetY);
+      if(!Number.isFinite(tx)||!Number.isFinite(ty)) continue;
+      const dx=tx-sx, dy=ty-sy, len=Math.hypot(dx,dy);
+      if(len<1) continue;
+      // A few large crusher-style hazards need more of their original sweep to
+      // retain the intended coverage; everything else gets the common track.
+      const isLargeHazard=!!plat.hazard && (Number(plat.w)||0)>=500;
+      const track=isLargeHazard ? Math.min(COMMON_TRACK, len) : COMMON_TRACK;
+      const ux=dx/len, uy=dy/len;
+      plat.moveStartX=sx; plat.moveStartY=sy;
+      plat.moveTargetX=sx+ux*track;
+      plat.moveTargetY=sy+uy*track;
+      plat.moveSpeed=COMMON_SPEED;
+      plat.moveRepeat=true;
+    }
+  }
+}
+normalizeBuiltinMovement();
+
+// Final spawn pass MUST run after movement normalization so moving hazards are
+// checked across their actual full travel range. It replaces the authored spawn
+// list with eight distinct, safe surface positions rather than trying to repair
+// an already-short list.
+function pointInsidePlatformInflated(sp, plat, pad=24){
+  const px=Number(plat.x)||0, py=Number(plat.y)||0, pw=Number(plat.w)||0, ph=Number(plat.h)||0;
+  const rot=Math.abs(Number(plat.rotation)||0);
+  if(rot<1e-6){
+    return sp.x>(px-pad)&&sp.x<(px+pw+pad)&&sp.y>(py-pad)&&sp.y<(py+ph+pad);
+  }
+  // Conservative rotated-rectangle AABB check. Spawn candidates are placed on
+  // top surfaces, so this is only used to prevent obvious overlap with another
+  // object.
+  const r=Number(plat.rotation||0)*Math.PI/180, c=Math.cos(r), si=Math.sin(r);
+  const cx=px+pw/2, cy=py+ph/2;
+  const dx=sp.x-cx, dy=sp.y-cy;
+  const lx=dx*c+dy*si, ly=-dx*si+dy*c;
+  return Math.abs(lx)<pw/2+pad && Math.abs(ly)<ph/2+pad;
+}
+function spawnCandidateSafe(map, sp, supportIndex, exclusions){
+  if(!sp || !Number.isFinite(sp.x)||!Number.isFinite(sp.y)) return false;
+  if(sp.x<45||sp.x>map.width-45||sp.y<45||sp.y>map.height-45) return false;
+  if(spawnNearBuiltinHazard(sp,exclusions)) return false;
+  const pads=map.platforms||[];
+  for(let i=0;i<pads.length;i++){
+    if(i===supportIndex) continue;
+    const q=pads[i];
+    if(!q||q.type==='hazard'||q.hazard) continue;
+    if(pointInsidePlatformInflated(sp,q,18)) return false;
+  }
+  return true;
+}
+function guaranteeBuiltinSpawns(map){
+  if(!map) return map;
+  const exclusions=buildBuiltinHazardExclusion(map,96);
+  const candidates=[];
+  const plats=map.platforms||[];
+  for(let i=0;i<plats.length;i++){
+    const p=plats[i];
+    if(!p||p.type==='hazard'||p.hazard) continue;
+    const w=Number(p.w)||0;
+    if(w<110) continue;
+    const rot=Number(p.rotation)||0;
+    // Horizontal surfaces are the safest and most predictable spawn surfaces.
+    // Use slanted ones only when a map genuinely needs the extra room.
+    const samples=Math.max(4,Math.min(28,Math.floor(w/42)));
+    for(let k=0;k<samples;k++){
+      const q=(k+1)/(samples+1);
+      const x=(Number(p.x)||0)+w*q;
+      const sp=spawnOnPlatform(map,i,x,0);
+      if(spawnCandidateSafe(map,sp,i,exclusions)) candidates.push({sp,i});
+    }
+  }
+  // If horizontal-safe candidates are sparse, add a second, denser sampling pass.
+  if(candidates.length<12){
+    for(let i=0;i<plats.length;i++){
+      const p=plats[i];
+      if(!p||p.type==='hazard'||p.hazard||Math.abs(Number(p.rotation)||0)>1e-6) continue;
+      const w=Number(p.w)||0;
+      if(w<90) continue;
+      for(let k=1;k<30;k++){
+        const x=(Number(p.x)||0)+w*(k/30);
+        const sp=spawnOnPlatform(map,i,x,0);
+        if(spawnCandidateSafe(map,sp,i,exclusions) && !candidates.some(c=>Math.hypot(c.sp.x-sp.x,c.sp.y-sp.y)<26)) candidates.push({sp,i});
+      }
+    }
+  }
+  // Greedily maximize spacing. Start with lower/easier surfaces, then spread out.
+  candidates.sort((a,b)=>{
+    const dy=(b.sp.y-a.sp.y);
+    return Math.abs(dy)>0.01?dy:(a.sp.x-b.sp.x);
+  });
+  const chosen=[];
+  while(chosen.length<8 && candidates.length){
+    let best=-1, score=-Infinity;
+    for(let i=0;i<candidates.length;i++){
+      const c=candidates[i];
+      if(chosen.some(q=>Math.hypot(c.sp.x-q.x,c.sp.y-q.y)<55)) continue;
+      const sep=chosen.length?Math.min(...chosen.map(q=>Math.hypot(c.sp.x-q.x,c.sp.y-q.y))):10000;
+      const scoreHere=sep + c.sp.y*0.01;
+      if(scoreHere>score){score=scoreHere;best=i;}
+    }
+    if(best<0) break;
+    const pick=candidates.splice(best,1)[0];
+    chosen.push(pick.sp);
+  }
+  // Relax separation only; never relax the hazard/object checks.
+  if(chosen.length<8){
+    for(const c of candidates){
+      if(chosen.length>=8) break;
+      if(!spawnCandidateSafe(map,c.sp,c.i,exclusions)) continue;
+      if(chosen.every(q=>Math.hypot(c.sp.x-q.x,c.sp.y-q.y)>=32)) chosen.push(c.sp);
+    }
+  }
+  // Last resort: use safe horizontal positions above the map's lowest safe platform.
+  // These are still checked against the full hazard sweep and all other objects.
+  if(chosen.length<8){
+    const safeBases=plats.map((p,i)=>({p,i})).filter(({p})=>p&&p.type!=='hazard'&&!p.hazard&&Math.abs(Number(p.rotation)||0)<1e-6&&Number(p.w)>=180);
+    for(const {p,i} of safeBases){
+      if(chosen.length>=8) break;
+      for(let k=1;k<18 && chosen.length<8;k++){
+        const sp=spawnOnPlatform(map,i,(Number(p.x)||0)+(Number(p.w)||0)*(k/18),0);
+        if(spawnCandidateSafe(map,sp,i,exclusions) && chosen.every(q=>Math.hypot(sp.x-q.x,sp.y-q.y)>=28)) chosen.push(sp);
+      }
+    }
+  }
+  // Absolute guarantee for unusual tiny/partitioned maps: place any remaining
+  // points in a safe corridor over a non-hazard platform, never inside geometry.
+  if(chosen.length<8){
+    const base=plats.map((p,i)=>({p,i})).filter(({p})=>p&&p.type!=='hazard'&&!p.hazard&&Math.abs(Number(p.rotation)||0)<1e-6&&Number(p.w)>=120).sort((a,b)=>(b.p.y||0)-(a.p.y||0))[0];
+    if(base){
+      const p=base.p, i=base.i;
+      for(let k=1;k<40 && chosen.length<8;k++){
+        const x=(Number(p.x)||0)+(Number(p.w)||0)*(k/40);
+        const sp=spawnOnPlatform(map,i,x,0);
+        if(spawnCandidateSafe(map,sp,i,exclusions) && chosen.every(q=>Math.hypot(sp.x-q.x,sp.y-q.y)>=20)) chosen.push(sp);
+      }
+    }
+  }
+  map.spawnPoints=chosen.slice(0,8).map(sp=>({x:Math.round(sp.x),y:Math.round(sp.y)}));
+  return map;
+}
+for(const builtinMap of BUILTIN_MAPS) guaranteeBuiltinSpawns(builtinMap);
+
+/* Keep built-in player spawns safely away from static and moving hazards.
+   The safety pass considers the full swept area of moving hazards, so a spawn
+   is not placed somewhere that is safe only at the starting position. */
+function hazardSweepBounds(hz){
+  const x=Number(hz.x)||0, y=Number(hz.y)||0, w=Number(hz.w)||0, h=Number(hz.h)||0;
+  let minX=x, maxX=x+w, minY=y, maxY=y+h;
+  if(hz.moving){
+    const tx=Number.isFinite(Number(hz.moveTargetX))?Number(hz.moveTargetX):x;
+    const ty=Number.isFinite(Number(hz.moveTargetY))?Number(hz.moveTargetY):y;
+    minX=Math.min(minX,tx); maxX=Math.max(maxX,tx+w);
+    minY=Math.min(minY,ty); maxY=Math.max(maxY,ty+h);
+  }
+  return {minX,maxX,minY,maxY};
+}
+function buildBuiltinHazardExclusion(map,padding=96){
+  const hazards=[];
+  // Only actual map hazards count here. Generated arrow pads are mode-specific
+  // gameplay objects, not built-in map hazards, so they should not eliminate
+  // otherwise safe player spawn lanes.
+  for(const hz of (map.hazards||[])) hazards.push(hazardSweepBounds(hz));
+  for(const p of (map.platforms||[])) if(p.type==='hazard'||p.hazard) hazards.push(hazardSweepBounds(p));
+  return hazards.map(b=>({minX:b.minX-padding,maxX:b.maxX+padding,minY:b.minY-padding,maxY:b.maxY+padding}));
+}
+function spawnNearBuiltinHazard(sp,exclusions){
+  return exclusions.some(b=>sp.x>b.minX&&sp.x<b.maxX&&sp.y>b.minY&&sp.y<b.maxY);
+}
+function relocateBuiltinSpawns(map){
+  if(!map||!Array.isArray(map.spawnPoints)) return map;
+  const exclusions=buildBuiltinHazardExclusion(map,92);
+  const platforms=(map.platforms||[]).filter(p=>p&&p.type!=='hazard'&&!p.hazard);
+  const candidates=[];
+  for(const p of platforms){
+    if(Math.abs(Number(p.rotation)||0)>1e-6) continue;
+    const left=p.x+34,right=p.x+p.w-34;
+    if(right<left) continue;
+    for(let k=0;k<=12;k++){
+      const x=left+(right-left)*(k/12);
+      const sp=spawnOnPlatform(map,map.platforms.indexOf(p),x,0);
+      if(!spawnNearBuiltinHazard(sp,exclusions)&&sp.x>=40&&sp.x<=map.width-40&&sp.y>=40&&sp.y<=map.height-40) candidates.push(sp);
+    }
+  }
+  if(!candidates.length) return map;
+  const used=[];
+  for(const original of map.spawnPoints){
+    if(!spawnNearBuiltinHazard(original,exclusions)){used.push(original);continue;}
+    let best=null,bestScore=Infinity;
+    for(const c of candidates){
+      if(used.some(u=>Math.hypot(c.x-u.x,c.y-u.y)<80)) continue;
+      const score=Math.hypot(c.x-original.x,c.y-original.y);
+      if(score<bestScore){bestScore=score;best=c;}
+    }
+    if(!best) best=candidates.reduce((a,b)=>Math.hypot(a.x-original.x,a.y-original.y)<=Math.hypot(b.x-original.x,b.y-original.y)?a:b);
+    used.push({x:Math.round(best.x),y:Math.round(best.y)});
+  }
+  map.spawnPoints=used.slice(0,8);
+  return map;
+}
 
 /* Procedurally add directional arrow tiles for the Arrows / Death Arrows modes.
    Simplified approach: attach arrow pads on top of wide solid platforms rather
@@ -2386,6 +2806,12 @@ const Game = {
     for(let i=0;i<(this.map?.platforms?.length||0);i++) {
       const plat=this.map.platforms[i];
       if(!plat || !plat.moving) continue;
+      // A grouped mover has one authoritative motion state. The leader moves the
+      // entire group as a rigid body; followers must not create their own state.
+      if(plat.groupId){
+        const leaderIndex=this.map.platforms.findIndex((q)=>q?.groupId===plat.groupId&&q.moving&&Number.isFinite(Number(q.moveTargetX))&&Number.isFinite(Number(q.moveTargetY)));
+        if(leaderIndex!==i) continue;
+      }
       const sx=Number.isFinite(Number(plat.moveStartX))?Number(plat.moveStartX):(Number(plat.x)||0)+(Number(plat.w)||0)/2;
       const sy=Number.isFinite(Number(plat.moveStartY))?Number(plat.moveStartY):(Number(plat.y)||0)+(Number(plat.h)||0)/2;
       const tx=Number(plat.moveTargetX), ty=Number(plat.moveTargetY);
@@ -2393,6 +2819,19 @@ const Game = {
       plat.moveStartX=sx; plat.moveStartY=sy; plat.moveAnchorCenter=true;
       plat.x=sx-(Number(plat.w)||0)/2; plat.y=sy-(Number(plat.h)||0)/2;
       this.movingPlatformState[i]={t:0,dir:1,done:false};
+      if(plat.groupId){
+        const sx0=Number(plat.moveStartX), sy0=Number(plat.moveStartY);
+        const members=this.map.platforms.filter(q=>q?.groupId===plat.groupId);
+        for(const member of members){
+          if(member===plat) continue;
+          if(!member.moving) member.moving=true;
+          if(!Number.isFinite(Number(member.moveStartX))) member.moveStartX=(Number(member.x)||0)+(Number(member.w)||0)/2;
+          if(!Number.isFinite(Number(member.moveStartY))) member.moveStartY=(Number(member.y)||0)+(Number(member.h)||0)/2;
+          if(!Number.isFinite(Number(member.moveTargetX))) member.moveTargetX=Number(member.moveStartX)+(Number(plat.moveTargetX)-sx0);
+          if(!Number.isFinite(Number(member.moveTargetY))) member.moveTargetY=Number(member.moveStartY)+(Number(plat.moveTargetY)-sy0);
+          if(!(Number(member.moveSpeed)>0)) member.moveSpeed=Number(plat.moveSpeed)||0;
+        }
+      }
     }
   },
   updateMovingPlatforms(dt){
@@ -2426,10 +2865,16 @@ const Game = {
       const nx=nxCenter-(Number(plat.w)||0)/2, ny=nyCenter-(Number(plat.h)||0)/2;
       const moveX=nx-oldX, moveY=ny-oldY;
       plat.x=nx; plat.y=ny;
+      const groupMembers=plat.groupId ? this.map.platforms.map((q,j)=>q?.groupId===plat.groupId?j:null).filter(j=>j!==null) : [i];
+      for(const memberIndex of groupMembers){
+        if(memberIndex===i) continue;
+        const member=this.map.platforms[memberIndex];
+        if(member){ member.x+=moveX; member.y+=moveY; }
+      }
       if(Math.abs(moveX)>1e-7 || Math.abs(moveY)>1e-7){
         for(const pl of Object.values(this.players)){
           if(!pl || !pl.alive || pl.spectator) continue;
-          if(pl.supportPlatform===i){ pl.x+=moveX; pl.y+=moveY; }
+          if(groupMembers.includes(pl.supportPlatform)){ pl.x+=moveX; pl.y+=moveY; }
         }
       }
     }
@@ -2455,10 +2900,12 @@ const Game = {
       p.x=nx; p.y=ny;
       this.movingPlatformState[i]={t:Math.max(0,Math.min(1,Number(m.t)||0)),dir:Number(m.dir)<0?-1:1,done:!!m.done};
       const dx=nx-ox,dy=ny-oy;
+      const groupMembers=p.groupId ? this.map.platforms.map((q,j)=>q?.groupId===p.groupId?j:null).filter(j=>j!==null) : [i];
       if(Math.abs(dx)>0.001||Math.abs(dy)>0.001){
+        for(const memberIndex of groupMembers){ if(memberIndex===i) continue; const member=this.map.platforms[memberIndex]; if(member){member.x+=dx;member.y+=dy;} }
         for(const pl of Object.values(this.players)){
           if(!pl || !pl.alive || pl.spectator || pl.id===this.myId) continue;
-          if(pl.supportPlatform===i){ pl.x+=dx; pl.y+=dy; }
+          if(groupMembers.includes(pl.supportPlatform)){ pl.x+=dx; pl.y+=dy; }
         }
       }
     }
@@ -4164,13 +4611,26 @@ const Game = {
         const withinPrev=Math.abs(prevLx)<=plat.w/2+p.radius;
         const withinCur=Math.abs(lx)<=plat.w/2+p.radius;
         const prevBottom=prevLy+p.radius, curBottom=ly+p.radius;
-        if((withinPrev||withinCur) && localVy>=0 && prevBottom<=topLocalY+3 && curBottom>=topLocalY && curBottom<topLocalY+24){
+        // Catch a descending player as they cross the slanted top plane. The old
+        // upper-window check was too narrow, especially with the sub-stepped mover
+        // path, and could let a player pass straight through a slanted one-way.
+        if((withinPrev||withinCur) && localVy>=-20 && prevBottom<=topLocalY+4 && curBottom>=topLocalY-1){
           const targetLy=topLocalY-p.radius;
           const dyLocal=targetLy-ly;
-          p.x += dyLocal*(-sr);
-          p.y += dyLocal*(-cr);
+          // Local top-face normal (0,-1) transformed into world space is
+          // (+sin(rotation), -cos(rotation)). The previous x sign was reversed,
+          // which could inject a sideways correction on sloped one-way landings
+          // and, after repeated passes, fling the player out of the map.
+          const normalX=sr, normalY=-cr;
+          // Convert the local-Y correction back into world space. Increasing
+          // local Y points along (-sin(rot), cos(rot)), so a negative dyLocal
+          // (moving the player back up onto the top plane) must use that inverse
+          // transform rather than multiplying by the surface normal again.
+          p.x += (-sr)*dyLocal;
+          p.y += (cr)*dyLocal;
+          // Keep the current position exactly on the platform plane; this avoids
+          // accumulating tiny penetration errors that can retrigger the crossing.
           const bounce=Math.max(0,Number(plat.bounciness)||0);
-          const normalX=-sr, normalY=-cr;
           if(bounce>0){
             const baseBounceSpeed=(640 + 150*Math.min(1.6,bounce))*Math.sqrt(PHYS.bounceHeightScale);
             const jumpHeld=!!(p.input&&p.input.jump);
@@ -5550,7 +6010,16 @@ const Game = {
     ctx.fillStyle=bgGrad; ctx.fillRect(0,0,this.viewW/z,this.viewH/z);
     ctx.translate(-cam.x, -cam.y);
 
-    for(const plat of this.map.platforms){
+    // Render higher platforms last so an upper platform naturally occludes the
+    // top edge of any platform buried inside it. This makes stacked/layered maps
+    // read as a continuous set of surfaces instead of showing stray bright tops.
+    const renderPlatforms=[...(this.map.platforms||[])].sort((a,b)=>{
+      const ay=Number(a?.y)||0, by=Number(b?.y)||0;
+      if(ay!==by) return by-ay;
+      const ax=Number(a?.x)||0, bx=Number(b?.x)||0;
+      return ax-bx;
+    });
+    for(const plat of renderPlatforms){
       const rot=(Number(plat.rotation)||0)*Math.PI/180;
       const bounce=Math.max(0,Number(plat.bounciness)||0);
       const isBounce=bounce>0 || plat.type==='bounce';
@@ -6964,7 +7433,8 @@ const EditorState = {
   awaitingMoveTarget:null,
   hoverWorld:null,
   camera:{x:0,y:0,zoom:1},
-  pan:{active:false,startX:0,startY:0,camX:0,camY:0,button:1}
+  pan:{active:false,startX:0,startY:0,camX:0,camY:0,button:1},
+  platformMoving:false
 };
 const MapEditor = {
   open(){
@@ -6974,6 +7444,7 @@ const MapEditor = {
     this.normalizeBlocks();
     EditorState.tool='select';
     EditorState.preset='solid';
+    EditorState.platformMoving=false;
     EditorState.placeStart=null;
     EditorState.awaitingMoveTarget=null;
     document.getElementById('editorMovePrompt')?.classList.remove('active');
@@ -6997,13 +7468,24 @@ const MapEditor = {
     document.querySelectorAll('[data-tool]').forEach(b=>{
       const t=b.getAttribute('data-tool');
       const preset=b.getAttribute('data-preset');
-      const active=preset ? (t===EditorState.tool && preset===EditorState.preset) : (t===EditorState.tool);
+      const active = preset==='moving'
+        ? (EditorState.tool==='platform' && EditorState.platformMoving)
+        : (preset ? (t===EditorState.tool && preset===EditorState.preset) : (t===EditorState.tool));
       b.classList.toggle('tool-active',active);
+      if(preset==='moving') b.setAttribute('aria-pressed',EditorState.platformMoving?'true':'false');
     });
   },
   setTool(tool,preset=null){
     EditorState.tool=tool;
-    if(preset) EditorState.preset=preset;
+    if(preset==='moving') {
+      // MOVING is a modifier, not a wall type. Keep the currently selected wall
+      // type (solid / one-way / bounce / hazard / phase) and toggle movement on
+      // for newly placed walls. Existing walls still use the MOVING property.
+      EditorState.platformMoving=!EditorState.platformMoving;
+      if(EditorState.preset==='moving') EditorState.preset='solid';
+    }else if(preset) {
+      EditorState.preset=preset;
+    }
     EditorState.placeStart=null;
     EditorState.awaitingMoveTarget=null;
     document.getElementById('editorMovePrompt')?.classList.remove('active');
@@ -7070,7 +7552,15 @@ const MapEditor = {
       else if(preset==='bounce') base.bounciness=0.8;
       else if(preset==='hazard') base.hazard=true;
       else if(preset==='phase') base.phase=true;
-      else if(preset==='moving'){ base.moving=true; base.moveTargetX=base.moveStartX; base.moveTargetY=base.moveStartY; EditorState.awaitingMoveTarget=base; document.getElementById('editorMovePrompt')?.classList.add('active'); }
+      // Movement is independent from wall type, so one-way, bounce, hazard,
+      // phase, and solid walls can all be created as moving walls.
+      if(EditorState.platformMoving || preset==='moving'){
+        base.moving=true;
+        base.moveTargetX=base.moveStartX;
+        base.moveTargetY=base.moveStartY;
+        EditorState.awaitingMoveTarget=base;
+        document.getElementById('editorMovePrompt')?.classList.add('active');
+      }
       m.platforms.push(base); EditorState.selectedSet=new Set([base]); EditorState.selected=base; this.normalizeBlocks();
     }
     EditorState.placeStart=null;
@@ -7238,9 +7728,14 @@ const MapEditor = {
         obj.moveStartX=Number.isFinite(Number(obj.moveStartX))?Number(obj.moveStartX):Number(obj.x||0)+Number(obj.w||0)/2;
         obj.moveStartY=Number.isFinite(Number(obj.moveStartY))?Number(obj.moveStartY):Number(obj.y||0)+Number(obj.h||0)/2;
         obj.moveAnchorCenter=true;
-        obj.moveTargetX=w.x; obj.moveTargetY=w.y;
-        const len=Math.hypot(obj.moveTargetX-obj.moveStartX,obj.moveTargetY-obj.moveStartY);
-        obj.moveSpeed=Math.min(Math.max(0,Number(obj.moveSpeed)||0),len);
+        this.setMovingEndpoint(w.x,w.y);
+        const len=Math.hypot(w.x-Number(obj.moveStartX||0),w.y-Number(obj.moveStartY||0));
+        // A newly created mover has no speed yet; use a sensible default so every
+        // wall type, including one-way walls, actually starts moving after its
+        // endpoint is chosen. Existing speed values are preserved when nonzero.
+        const chosenSpeed=Number(obj.moveSpeed)||0;
+        obj.moveSpeed=chosenSpeed>0?Math.min(chosenSpeed,len):Math.max(1,Math.min(240,len));
+        if(obj.groupId) for(const q of m.platforms.filter(q=>q.groupId===obj.groupId)) q.moveSpeed=obj.moveSpeed;
       }
       EditorState.awaitingMoveTarget=null;
       document.getElementById('editorMovePrompt')?.classList.remove('active');
@@ -7424,8 +7919,8 @@ const MapEditor = {
       p.hazard=!!p.hazard;
       p.phase=!!p.phase;
       p.moving=!!p.moving;
-      p.moveTargetX=Number.isFinite(Number(p.moveTargetX))?Number(p.moveTargetX):0;
-      p.moveTargetY=Number.isFinite(Number(p.moveTargetY))?Number(p.moveTargetY):0;
+      p.moveTargetX=(p.moveTargetX!==null&&p.moveTargetX!==''&&Number.isFinite(Number(p.moveTargetX)))?Number(p.moveTargetX):null;
+      p.moveTargetY=(p.moveTargetY!==null&&p.moveTargetY!==''&&Number.isFinite(Number(p.moveTargetY)))?Number(p.moveTargetY):null;
       p.moveStartX=Number.isFinite(Number(p.moveStartX))?Number(p.moveStartX):(Number(p.x)||0)+(Number(p.w)||0)/2;
       p.moveStartY=Number.isFinite(Number(p.moveStartY))?Number(p.moveStartY):(Number(p.y)||0)+(Number(p.h)||0)/2;
       if(p.moving && !p.moveAnchorCenter){
@@ -7446,6 +7941,20 @@ const MapEditor = {
       p.oneway=!!(legacyOneway || p.oneway);
       p.type=wasBounce ? 'solid' : (p.oneway ? 'oneway' : 'solid');
     }
+  },
+  setMovingEndpoint(targetX,targetY){
+    const p=EditorState.selected;if(!p||!EditorState.map?.platforms?.includes(p))return;
+    const tx=Number(targetX),ty=Number(targetY);if(![tx,ty].every(Number.isFinite))return;
+    const members=p.groupId?EditorState.map.platforms.filter(q=>q.groupId===p.groupId):[p];
+    const baseSX=Number.isFinite(Number(p.moveStartX))?Number(p.moveStartX):(Number(p.x)||0)+(Number(p.w)||0)/2;
+    const baseSY=Number.isFinite(Number(p.moveStartY))?Number(p.moveStartY):(Number(p.y)||0)+(Number(p.h)||0)/2;
+    const dx=tx-baseSX,dy=ty-baseSY;
+    for(const q of members){
+      const qsx=Number.isFinite(Number(q.moveStartX))?Number(q.moveStartX):(Number(q.x)||0)+(Number(q.w)||0)/2;
+      const qsy=Number.isFinite(Number(q.moveStartY))?Number(q.moveStartY):(Number(q.y)||0)+(Number(q.h)||0)/2;
+      q.moving=true;q.moveStartX=qsx;q.moveStartY=qsy;q.moveTargetX=qsx+dx;q.moveTargetY=qsy+dy;q.moveAnchorCenter=true;
+    }
+    this.updatePropertiesUI();
   },
   updatePropertiesUI(){
     const panel=document.getElementById('editorProps'); if(!panel) return;
@@ -7476,16 +7985,19 @@ const MapEditor = {
     const targetEl=document.getElementById('edPropMoveTarget'), lengthEl=document.getElementById('edPropMoveLength');
     const moving=!!p.moving; if(movingEl) movingEl.checked=moving; if(repeatEl) repeatEl.checked=!!p.moveRepeat;
     const sx=Number.isFinite(Number(p.moveStartX))?Number(p.moveStartX):Number(p.x||0)+Number(p.w||0)/2, sy=Number.isFinite(Number(p.moveStartY))?Number(p.moveStartY):Number(p.y||0)+Number(p.h||0)/2;
-    const hasTarget=Number.isFinite(Number(p.moveTargetX))&&Number.isFinite(Number(p.moveTargetY));
+    const hasTarget=p.moveTargetX!==null&&p.moveTargetY!==null&&Number.isFinite(Number(p.moveTargetX))&&Number.isFinite(Number(p.moveTargetY));
     const len=hasTarget?Math.hypot(Number(p.moveTargetX)-sx,Number(p.moveTargetY)-sy):0;
-    if(speedEl){ speedEl.max=String(Math.floor(len)); speedEl.value=String(Math.min(Number(p.moveSpeed)||0,len)); speedEl.disabled=!moving||!hasTarget; }
-    if(repeatEl) repeatEl.disabled=!moving||!hasTarget;
-    if(targetEl) targetEl.textContent=hasTarget?`${Math.round(p.moveTargetX)}, ${Math.round(p.moveTargetY)}`:(moving?'CLICK MAP':'—');
-    if(lengthEl) lengthEl.textContent=hasTarget?`${Math.round(len)} PX`:'—';
+    const targetXEl=document.getElementById('edPropMoveTargetX'),targetYEl=document.getElementById('edPropMoveTargetY');
+    if(targetXEl)targetXEl.value=hasTarget?Math.round(p.moveTargetX):'';
+    if(targetYEl)targetYEl.value=hasTarget?Math.round(p.moveTargetY):'';
+    if(speedEl){speedEl.max=String(Math.floor(len||0));speedEl.value=String(Math.min(Number(p.moveSpeed)||0,len||0));speedEl.disabled=!moving||!hasTarget;}
+    if(repeatEl)repeatEl.disabled=!moving||!hasTarget;[targetXEl,targetYEl].forEach(el=>{if(el)el.disabled=!moving;});
+    if(targetEl)targetEl.textContent=hasTarget?`${Math.round(p.moveTargetX)}, ${Math.round(p.moveTargetY)}`:(moving?'SET ENDPOINT':'—');
+    if(lengthEl)lengthEl.textContent=hasTarget?`${Math.round(len)} PX`:'—';
     const hint=document.getElementById('edPropHint');
     const movePrompt=document.getElementById('editorMovePrompt');
     if(movePrompt) movePrompt.classList.toggle('active',!!EditorState.awaitingMoveTarget);
-    if(hint){ if(EditorState.selectedSet.size>1) hint.textContent=`${EditorState.selectedSet.size} OBJECTS SELECTED, drag to move together; GROUP makes the selection one unit.`; else if(EditorState.awaitingMoveTarget) hint.textContent='MOVING ENABLED, click the destination point on the map.'; else if(moving&&hasTarget) hint.textContent='Path set. Drag the platform to move its start point.'; else if(p?.groupId) hint.textContent='GROUPED PLATFORM — clicking any member selects the whole group.'; else hint.textContent='Click a platform to edit it.'; }
+    if(hint){ if(EditorState.selectedSet.size>1) hint.textContent=`${EditorState.selectedSet.size} OBJECTS SELECTED — drag to move together; GROUP makes the selection one unit.`; else if(EditorState.awaitingMoveTarget) hint.textContent='MOVING ENABLED, click the destination point on the map.'; else if(moving&&hasTarget) hint.textContent='Path set. Set END X/Y or click the destination on the map.'; else if(p?.groupId) hint.textContent='GROUPED PLATFORM, clicking any member selects the whole group.'; else hint.textContent='Click a platform to edit it.'; }
   },
   applySelectedProperty(key,val){
     const p=EditorState.selected;
@@ -7498,13 +8010,13 @@ const MapEditor = {
     else if(key==='oneway'){ p.oneway=!!val; p.type=p.oneway?'oneway':'solid'; }
     else if(key==='phase') p.phase=!!val;
     else if(key==='moving'){
-      p.moving=!!val;
-      if(p.moving){
-        p.moveStartX=(Number(p.x)||0)+(Number(p.w)||0)/2; p.moveStartY=(Number(p.y)||0)+(Number(p.h)||0)/2;
-        p.moveAnchorCenter=true; p.moveTargetX=0; p.moveTargetY=0; p.moveRepeat=!!p.moveRepeat; p.moveSpeed=Math.min(Math.max(0,Number(p.moveSpeed)||0),Math.hypot(p.moveTargetX-p.moveStartX,p.moveTargetY-p.moveStartY));
+      const members=p.groupId?EditorState.map.platforms.filter(q=>q.groupId===p.groupId):[p];
+      if(val){
+        for(const q of members){q.moving=true;q.moveStartX=(Number(q.x)||0)+(Number(q.w)||0)/2;q.moveStartY=(Number(q.y)||0)+(Number(q.h)||0)/2;q.moveAnchorCenter=true;q.moveTargetX=null;q.moveTargetY=null;q.moveSpeed=0;}
         EditorState.awaitingMoveTarget=p;
       }else{
-        p.moveTargetX=null; p.moveTargetY=null; p.moveSpeed=0; p.moveRepeat=false; EditorState.awaitingMoveTarget=null;
+        for(const q of members){q.moving=false;q.moveTargetX=null;q.moveTargetY=null;q.moveSpeed=0;q.moveRepeat=false;}
+        EditorState.awaitingMoveTarget=null;
       }
     }else if(key==='moveSpeed'){
       const sx=Number.isFinite(Number(p.moveStartX))?Number(p.moveStartX):Number(p.x||0)+(Number(p.w||0)/2), sy=Number.isFinite(Number(p.moveStartY))?Number(p.moveStartY):Number(p.y||0)+(Number(p.h||0)/2);
@@ -8695,6 +9207,9 @@ quality: document.getElementById('setQuality').value,
   document.getElementById('edPropPhase')?.addEventListener('change', e=>MapEditor.applySelectedProperty('phase',e.target.checked));
   document.getElementById('edPropMoving')?.addEventListener('change', e=>MapEditor.applySelectedProperty('moving',e.target.checked));
   document.getElementById('edPropMoveSpeed')?.addEventListener('change', e=>MapEditor.applySelectedProperty('moveSpeed',e.target.value));
+  const applyMoveEndpointFields=()=>MapEditor.setMovingEndpoint(document.getElementById('edPropMoveTargetX')?.value,document.getElementById('edPropMoveTargetY')?.value);
+  document.getElementById('edPropMoveTargetX')?.addEventListener('change',applyMoveEndpointFields);
+  document.getElementById('edPropMoveTargetY')?.addEventListener('change',applyMoveEndpointFields);
   document.getElementById('edPropMoveRepeat')?.addEventListener('change', e=>MapEditor.applySelectedProperty('moveRepeat',e.target.checked));
 
   function loadCustUI(){
