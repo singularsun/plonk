@@ -680,7 +680,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.56 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.57 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -688,7 +688,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   <div class="panel wide-panel" style="width:min(940px,96vw);position:relative;">
     <span class="close-x" data-go="main">✕</span>
     <div class="split-heading" id="createGameHeading">
-      <div><h2>CREATE GAME</h2><div class="subhint">Name your lobby and change the settings. You can change these settings again from the lobby.</div></div>
+      <div><h2>CREATE GAME</h2><div class="subhint">Name your lobby and edit the settings. You can change these settings again from the lobby.</div></div>
     </div>
     <div class="two-col-layout">
       <section class="settings-column">
@@ -750,7 +750,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 <div class="join-pass-overlay" id="joinPassOverlay">
   <div class="join-pass-panel">
     <h2 style="margin-bottom:6px;">PASSWORD REQUIRED</h2>
-    <div class="subhint" id="joinPassHint" style="margin-bottom:12px;">This lobby is locked.</div>
+    <div class="subhint" id="joinPassHint" style="margin-bottom:12px;">This lobby requires a password.</div>
     <div class="field"><label>Password</label><input type="password" id="joinPassInput" class="game-text-input" maxlength="20" autocomplete="off" spellcheck="false"></div>
     <div class="errbox" id="joinPassErr" style="margin-top:6px;"></div>
     <div class="row" style="justify-content:flex-end;margin-top:10px;">
@@ -1132,14 +1132,17 @@ const Storage = {
 /* ---------------------------- AUDIO ---------------------------- */
 const AudioManager = {
   ctx:null, musicGain:null, sfxGain:null, ambient:null, musicEl:null, musicSource:null,
-  musicTarget:0.40, musicFade:1, musicFadeTimer:null, musicStarted:false, musicFadeSeconds:0.9, lastHover:0,
+  battleGain:null, battleEl:null, battleSource:null, battleStarted:false, inBattleMusic:false,
+  musicTarget:0.40, musicFade:1, musicFadeTimer:null, battleFadeTimer:null, musicStarted:false, musicFadeSeconds:0.9, lastHover:0,
   init(){
     if(!this.ctx){
       this.ctx = new (window.AudioContext||window.webkitAudioContext)();
       this.musicGain = this.ctx.createGain();
       this.sfxGain = this.ctx.createGain();
+      this.battleGain = this.ctx.createGain();
       this.musicGain.connect(this.ctx.destination);
       this.sfxGain.connect(this.ctx.destination);
+      this.battleGain.connect(this.ctx.destination);
       const s = Storage.get('settings',{});
       this.setMusicVol((s.music??40)/100);
       this.setSfxVol((s.sfx??70)/100);
@@ -1212,6 +1215,57 @@ const AudioManager = {
     try{ el.currentTime=0; }catch(e){}
     this._setMusicFade(0);
     const r=el.play(); if(r&&typeof r.catch==='function') r.catch(()=>{});
+    this._fadeMusicTo(1,this.musicFadeSeconds);
+  },
+  _fadeBattleTo(target,duration=this.musicFadeSeconds){
+    if(!this.battleGain) return;
+    if(this.battleFadeTimer) clearInterval(this.battleFadeTimer);
+    const start=this.inBattleMusic ? (this._battleFadeLevel??1) : (this._battleFadeLevel??0);
+    const end=Math.max(0,Math.min(1,target));
+    const started=performance.now();
+    if(duration<=0){ this._battleFadeLevel=end; this.battleGain.gain.value=this.musicTarget*end; return; }
+    this.battleFadeTimer=setInterval(()=>{
+      const t=Math.max(0,Math.min(1,(performance.now()-started)/(duration*1000)));
+      const eased=t*t*(3-2*t);
+      this._battleFadeLevel=start+(end-start)*eased;
+      this.battleGain.gain.value=this.musicTarget*this._battleFadeLevel;
+      if(t>=1){ clearInterval(this.battleFadeTimer); this.battleFadeTimer=null; }
+    },30);
+  },
+  _ensureBattleMusic(){
+    if(!this.ctx || !this.battleGain || this.battleStarted) return;
+    try{
+      const el=new Audio('battlemusic.mp3');
+      el.preload='auto'; el.loop=true; el.volume=1;
+      this.battleEl=el;
+      this.battleSource=this.ctx.createMediaElementSource(el);
+      this.battleSource.connect(this.battleGain);
+      this.battleStarted=true;
+      this._battleFadeLevel=0;
+      this.battleGain.gain.value=0;
+    }catch(e){
+      this.battleStarted=false; this.battleEl=null; this.battleSource=null;
+    }
+  },
+  enterBattleMusic(){
+    this.init();
+    this.resume();
+    this._ensureBattleMusic();
+    const battle=this.battleEl;
+    if(!battle || !this.battleGain) return;
+    this.inBattleMusic=true;
+    if(this.musicFadeTimer) clearInterval(this.musicFadeTimer);
+    this._fadeMusicTo(0,this.musicFadeSeconds);
+    this._fadeBattleTo(1,this.musicFadeSeconds);
+    const r=battle.play(); if(r&&typeof r.catch==='function') r.catch(()=>{});
+  },
+  exitBattleMusic(){
+    if(!this.ctx || !this.musicStarted) return;
+    this.inBattleMusic=false;
+    if(this.battleEl){
+      this._fadeBattleTo(0,this.musicFadeSeconds);
+      setTimeout(()=>{ if(!this.inBattleMusic && this.battleEl){ try{ this.battleEl.pause(); this.battleEl.currentTime=0; }catch(e){} } }, Math.max(0,this.musicFadeSeconds*1000)+60);
+    }
     this._fadeMusicTo(1,this.musicFadeSeconds);
   },
   beep(freq, dur, type='sine', vol=1, sweepTo=null){
@@ -2963,6 +3017,7 @@ const Game = {
 
   /* ---------- lifecycle ---------- */
   beginCountdown(){
+    AudioManager.enterBattleMusic();
     this.state='countdown'; this.eliminationOrder=[]; this.projectiles=[]; this.mines=[];
     this.physicsTick=0; this.hostPhysicsTick=0; this.lastRecvStateSeq=null; this.stateSeq=0;
     this.roundElapsed=0;
@@ -5058,6 +5113,7 @@ const Game = {
         for(const id in this.players) finalSpectatorStates[id]=!!this.players[id].spectator;
         NetworkManager.broadcast({t:'matchend', results:finalResults, scores:this.scores, teamScores:this.teamScores, teamMode:!!this.matchSettings?.teams, round:this.roundNumber, transitionId, spectatorStates:finalSpectatorStates}, true);
         UI.showResults(finalResults, this.scores, this.roundNumber);
+        AudioManager.exitBattleMusic();
         AudioManager.victory();
       }, 900);
     }else{
@@ -7403,6 +7459,7 @@ const Lobby = {
   clientStartMatch(data){Game.map=data.map;Game.mode=data.mode;Game.matchSettings=data.matchSettings;Game.roundConfig=data.roundConfig||{mode:'rounds',count:3,target:3};Game.roundNumber=data.round||1;Game.scores=data.scores||{};Game.teamScores=data.teamScores||{red:0,blue:0};if(data.teamAssignments){for(const id in data.teamAssignments){if(Game.players[id])Game.players[id].team=normalizedTeam(data.teamAssignments[id]);}}Game.spawnAssignments=data.spawnAssignments||{};if(data.spectatorStates)this.applySpectatorStates(data.spectatorStates);Game.beginCountdown();},
   receiveMap(map){Game.map=map;},
   handleMatchExit(){
+    AudioManager.exitBattleMusic();
     Game.clearRoundEffects();
     Game.projectiles.length=0; Game.mines.length=0; Game.eliminationOrder=[];
     if(Game._roundTransitionTimer){clearTimeout(Game._roundTransitionTimer);Game._roundTransitionTimer=null;}
@@ -7419,6 +7476,7 @@ const Lobby = {
   },
   closeAsHost(){
     if(!Game.isHost)return;
+    AudioManager.exitBattleMusic();
     // Keep host leave immediate. The old lobby behavior closed the UI right away;
     // migration is best-effort in the background and must never hold the button hostage.
     const next=(Number(this.index)||0)+1;
@@ -7439,6 +7497,7 @@ const Lobby = {
     UI.goto('main');
   },
   goToLobby(){
+    AudioManager.exitBattleMusic();
     let cleared=false;
     // Only automatic spectators are released when returning to the lobby.
     // A manually selected spectator stays spectator until they explicitly turn it off.
