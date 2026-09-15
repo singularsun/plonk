@@ -115,9 +115,47 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .hud-player-percent{font-size:15px;line-height:1;font-weight:1000;color:#ffe3a1;text-shadow:1px 1px 0 #000;margin-top:3px;letter-spacing:.4px;}
 #smashStatus{position:absolute;top:10px;left:10px;display:none;min-width:190px;max-width:260px;padding:8px 11px;background:#000000aa;border:1px solid #3a2a1a;border-left:3px solid var(--accent3);border-radius:3px;box-shadow:0 8px 22px #0008;pointer-events:none;z-index:6;}
 #smashStatus.active{display:block;}
+#smashStatus.smash-dead{opacity:.58;filter:grayscale(1);border-left-color:#888!important;}
+#smashStatus.smash-dead .smash-name{color:#999;}
+#smashStatus.smash-dead .smash-name::before{content:'✕ ';color:#8f8f8f;font-weight:1000;}
 #smashStatus .smash-name{font-size:11px;font-weight:900;letter-spacing:1px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;}
 #smashStatus .smash-score{font-size:9px;color:var(--text-dim);margin-top:2px;letter-spacing:.5px;}
 #smashStatus .smash-percent{font-size:25px;line-height:.95;font-weight:1000;letter-spacing:.5px;color:#ffe3a1;margin-top:5px;text-shadow:2px 2px 0 #000;}
+#killFeed{position:absolute;top:10px;right:10px;width:300px;max-width:34vw;display:flex;flex-direction:column;align-items:flex-end;gap:5px;pointer-events:none;z-index:8;}
+.killfeed-row{display:flex;align-items:center;gap:7px;min-height:24px;padding:5px 8px;background:#0000009c;border-right:3px solid var(--accent3);border-radius:3px;box-shadow:0 5px 16px #0007;font-size:11px;font-weight:900;letter-spacing:.25px;transform-origin:right center;animation:killFeedIn .24s cubic-bezier(.16,1.35,.4,1) both;}
+.killfeed-row.fade{animation:killFeedOut .28s ease-in both;}
+.killfeed-killer{color:#ffe3a1;max-width:112px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.killfeed-arrow{color:#aaa;font-size:10px;}
+.killfeed-victim{color:#ff9b7a;max-width:112px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.killfeed-solo{color:#d2d2d2;}
+.killfeed-cause{font-size:9px;color:#888;letter-spacing:.7px;text-transform:uppercase;}
+@keyframes killFeedIn{0%{opacity:0;transform:translateX(25px) scale(.86)}70%{opacity:1;transform:translateX(-2px) scale(1.02)}100%{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes killFeedOut{0%{opacity:1;transform:translateX(0)}100%{opacity:0;transform:translateX(18px)}}
+#comboHud{--comboColor:#ffe08a;--comboGlow:#ffcc66;position:absolute;left:50%;bottom:48px;transform:translateX(-50%) scale(.86);min-width:190px;padding:10px 16px 11px;text-align:center;display:none;pointer-events:none;z-index:9;border:1px solid var(--comboColor);border-radius:6px;background:linear-gradient(180deg,#21160df0,#090705e8);box-shadow:0 12px 35px #0009,0 0 24px color-mix(in srgb,var(--comboGlow) 35%,transparent);overflow:visible;}
+#comboHud.active{display:block;animation:comboIn .3s cubic-bezier(.12,1.5,.32,1) both;}
+#comboHud.pulse{animation:comboPulse .24s cubic-bezier(.12,1.6,.35,1) both;}
+#comboHud .combo-label{font-size:9px;letter-spacing:3px;color:var(--comboColor);font-weight:1000;text-transform:uppercase;}
+#comboHud .combo-count{font-size:40px;line-height:.9;margin-top:3px;font-weight:1000;letter-spacing:1px;color:var(--comboColor);text-shadow:0 0 10px color-mix(in srgb,var(--comboGlow) 65%,transparent),3px 3px 0 #000;}
+#comboHud .combo-sub{font-size:9px;margin-top:4px;font-weight:900;letter-spacing:1.7px;color:#a9a09a;text-transform:uppercase;}
+#comboHud .combo-bar{height:4px;margin-top:7px;background:#000;border-radius:3px;overflow:hidden;}
+#comboHud .combo-bar > span{display:block;height:100%;width:100%;transform-origin:left center;background:linear-gradient(90deg,#c9793a,var(--comboColor),#fff);box-shadow:0 0 10px var(--comboGlow);}
+#comboHud.level-3{--comboColor:#ffe08a;--comboGlow:#ffcc66;box-shadow:0 12px 35px #0009,0 0 30px #ffba4a4d;}
+#comboHud.level-5{--comboColor:#ffb347;--comboGlow:#ff7a18;box-shadow:0 12px 35px #0009,0 0 42px #ff8a2f73;}
+#comboHud.level-10{--comboColor:#ff5a36;--comboGlow:#ff3a16;box-shadow:0 12px 35px #0009,0 0 52px #ff4e248c;}
+#comboHud.level-15{--comboColor:#ff315f;--comboGlow:#ff164d;box-shadow:0 12px 35px #0009,0 0 64px #ff164d99;}
+#comboHud.level-20{--comboColor:#c65cff;--comboGlow:#9e2dff;box-shadow:0 12px 35px #0009,0 0 78px #a43bffb0;}
+#comboParticles{position:absolute;inset:0;pointer-events:none;overflow:visible;z-index:0;}
+#comboHud>*{position:relative;z-index:2;}
+.combo-fire-particle{position:absolute;left:50%;bottom:-3px;width:6px;height:11px;border-radius:55% 45% 60% 40%;background:var(--particleColor,#ff9a3c);box-shadow:0 0 8px var(--particleGlow,#ff6b1a);opacity:0;transform:translate(-50%,0) scale(.55) rotate(20deg);animation:comboParticleOut var(--particleLife,.7s) ease-out forwards;mix-blend-mode:screen;}
+@keyframes comboParticleOut{0%{opacity:0;transform:translate(var(--sx),0) scale(.45) rotate(var(--rot));}18%{opacity:1;}70%{opacity:.92;}100%{opacity:0;transform:translate(var(--ex),var(--ey)) scale(.08) rotate(calc(var(--rot) + 90deg));}}
+
+#comboHud.level-10::before,#comboHud.level-10::after{opacity:1;animation:comboFlame .42s ease-in-out infinite alternate;}
+#comboHud.level-15::before,#comboHud.level-15::after{opacity:1;animation:comboFlame .31s ease-in-out infinite alternate;}
+#comboHud.level-20::before,#comboHud.level-20::after{opacity:1;font-size:29px;animation:comboFlame .22s ease-in-out infinite alternate;}
+@keyframes comboFlame{0%{transform:translateY(3px) rotate(-8deg) scale(.72)}100%{transform:translateY(-9px) rotate(8deg) scale(1.02)}}
+@keyframes comboIn{0%{opacity:0;transform:translateX(-50%) translateY(18px) scale(.72) rotate(-2deg)}65%{opacity:1;transform:translateX(-50%) translateY(-3px) scale(1.06) rotate(1deg)}100%{opacity:1;transform:translateX(-50%) translateY(0) scale(1) rotate(0)}}
+@keyframes comboPulse{0%{transform:translateX(-50%) scale(1)}45%{transform:translateX(-50%) scale(1.16) rotate(-1deg)}100%{transform:translateX(-50%) scale(1)}}
+@media(max-width:700px){#killFeed{width:230px;max-width:48vw}.killfeed-killer,.killfeed-victim{max-width:72px}#comboHud{min-width:160px;padding:9px 12px}.hud-player-percent{font-size:13px}}
 #timer{position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:20px;font-weight:800;
   background:#000000a0;padding:4px 16px;border-radius:2px;color:var(--text-dim);}
 #msgbanner{position:absolute;top:20%;left:50%;transform:translate(-50%,-50%);font-size:54px;font-weight:900;
@@ -218,7 +256,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .lobby-toggle-row input[type=checkbox]:checked,.lobby-spikewall-setting input[type=checkbox]:checked{background:#4a321d;border-color:var(--accent3);box-shadow:inset 0 0 0 1px #ffffff18,0 0 10px #c9793a22;}
 .lobby-toggle-row input[type=checkbox]:checked::after,.lobby-spikewall-setting input[type=checkbox]:checked::after{opacity:1;transform:scale(1);}
 .lobby-toggle-row:hover,.lobby-spikewall-setting:hover{border-color:#5a4128;background:linear-gradient(180deg,#21170f,#120c08);}
-.round-settings-grid{display:grid;grid-template-columns:minmax(150px,1.2fr) minmax(105px,.9fr) repeat(3,minmax(130px,1.3fr));gap:10px;align-items:end;width:100%;}
+.round-settings-grid{display:grid;grid-template-columns:minmax(140px,1.15fr) minmax(95px,.85fr) repeat(4,minmax(112px,1fr));gap:8px;align-items:end;width:100%;}
 .round-settings-grid .field,.round-count-slot{min-width:0;}
 .round-count-slot{grid-column:2;grid-row:1;}
 .round-settings-grid .lobby-rule-toggles{display:contents;}
@@ -226,14 +264,19 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(1){grid-column:3;}
 .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(2){grid-column:4;}
 .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(3){grid-column:5;}
-.round-settings-grid .hidden{display:none!important;}
+.round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(4){grid-column:6;}
+.round-settings-grid .hidden{display:none!important;}.create-round-rule-toggles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;width:100%;margin-top:7px;} .create-round-rule-toggles .rule-toggle{min-width:0;height:34px;min-height:34px;} .create-round-rule-toggles .lobby-toggle-row,.create-round-rule-toggles .lobby-spikewall-setting{box-sizing:border-box;} @media(max-width:900px){.create-round-rule-toggles{grid-template-columns:repeat(2,minmax(0,1fr));}}
+
 .round-settings-grid select,.round-settings-grid input[type=number]{width:100%;min-width:0;}
 .round-settings-grid .lobby-rule-toggles .lobby-toggle-row,.round-settings-grid .lobby-rule-toggles .lobby-spikewall-setting{width:100%;box-sizing:border-box;}
 /* Create Lobby: keep the modifier toggles directly beneath the round-rule controls. */
-#screen-create .round-settings-grid{grid-template-columns:minmax(150px,1.2fr) minmax(105px,.9fr) repeat(3,minmax(130px,1.3fr));}
-#screen-create .round-settings-grid .lobby-rule-toggles{grid-column:1/-1;display:flex;justify-content:flex-start;align-items:flex-start;gap:0;margin-top:3px;width:100%;}
-#screen-create .round-settings-grid .lobby-rule-toggles .rule-toggle{grid-row:auto!important;height:34px;min-height:34px;align-self:start;width:min(190px,30%);flex:0 1 190px;}
-#screen-create .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(1),#screen-create .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(2),#screen-create .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(3){grid-column:auto!important;}
+#screen-create .round-settings-grid{grid-template-columns:minmax(140px,1.15fr) minmax(95px,.85fr) repeat(4,minmax(112px,1fr));}
+#screen-create .round-settings-grid .lobby-rule-toggles{grid-column:auto;display:contents;margin-top:0;width:auto;}
+#screen-create .round-settings-grid .lobby-rule-toggles .rule-toggle{grid-row:auto!important;height:34px;min-height:34px;align-self:start;width:auto;flex:1 1 0;min-width:0;}
+#screen-create .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(1){grid-column:3!important;}
+#screen-create .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(2){grid-column:4!important;}
+#screen-create .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(3){grid-column:5!important;}
+#screen-create .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(4){grid-column:6!important;}
 
 .lobby-team-btn{padding:6px 8px!important;min-width:52px;font-size:9px!important;letter-spacing:.8px;}
 .lobby-team-btn.red{background:#2a1010;}
@@ -267,12 +310,17 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   #screen-create .round-settings-grid{grid-template-columns:1fr 1fr;}
   #screen-create .round-settings-grid .lobby-rule-toggles{grid-template-columns:1fr 1fr;display:grid;grid-column:1/-1;gap:7px;}
   #screen-create .round-settings-grid .lobby-rule-toggles .rule-toggle{grid-row:auto!important;height:34px;min-height:34px;}
+  #screen-create .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(1){grid-column:1!important;}
+  #screen-create .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(2){grid-column:2!important;}
+  #screen-create .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(3){grid-column:1!important;}
+  #screen-create .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(4){grid-column:2!important;}
 
   .round-settings-grid .lobby-rule-toggles{display:contents;}
   .round-settings-grid .lobby-rule-toggles .rule-toggle{grid-row:2;height:34px;min-height:34px;}
   .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(1){grid-column:1;}
   .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(2){grid-column:2;}
-  .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(3){grid-column:1/-1;}
+  .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(3){grid-column:1;}
+  .round-settings-grid .lobby-rule-toggles .rule-toggle:nth-child(4){grid-column:2;}
   .round-count-slot{grid-column:2;grid-row:1;}
   #editorToolbar{width:150px;}
   .two-col-layout,.lobby-split{grid-template-columns:1fr;}
@@ -698,6 +746,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .cust-face-btn.active{border-color:var(--accent3)!important;background:#20140b!important;box-shadow:inset 0 0 0 1px #b36d2d33;}
 @media(max-width:760px){.cust-face-picker{grid-template-rows:repeat(2,78px)!important;grid-auto-columns:80px!important;height:161px!important;}.cust-face-option{width:80px!important;height:78px!important;}.cust-face-option canvas{width:52px!important;height:52px!important;}}
 @media(max-width:560px){.cust-face-picker{grid-auto-columns:74px!important;height:149px!important;grid-template-rows:repeat(2,72px)!important;}.cust-face-option{width:74px!important;height:72px!important;}.cust-face-option canvas{width:48px!important;height:48px!important;}}
+</style>
 <style id="snappy-ui-hover-polish">
 /* Fast hover response + the same warm glow language used by the main menu. */
 .btn,.mode-picker-option,.map-catalog-tab,.map-catalog-card,.spherebox-card,.dash-effect-card,.spherebox-item,.cust-face-option,input[type=text],input[type=number],input[type=range],select{
@@ -735,7 +784,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.61 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.63 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -767,17 +816,18 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
           <div class="field"><label>Player Size</label><input type="number" id="hostPlayerSize" min="0.5" max="2" step="0.1" value="1"></div>
         </div>
         <h3>ROUND RULES</h3>
-        <div class="setting-grid">
+        <div class="setting-grid create-round-rule-fields">
           <div class="round-settings-grid">
             <div class="field"><label>Round Rule</label><select id="hostRoundMode"><option value="rounds">Fixed Rounds</option><option value="score">First to Points</option></select></div>
             <div class="field round-count-slot" id="hostRoundCountField"><label>Rounds</label><input type="number" id="hostRoundCount" min="1" max="99" value="3"></div>
             <div class="field round-count-slot hidden" id="hostPointTargetField"><label>Points</label><input type="number" id="hostPointTarget" min="1" max="99" value="3"></div>
-            <div class="lobby-rule-toggles">
-              <div class="lobby-toggle-row rule-toggle"><label for="hostTeams">TEAMS</label><input type="checkbox" id="hostTeams" aria-label="Enable Teams"></div>
-              <div class="lobby-spikewall-setting rule-toggle"><label for="hostSpikewall">SPIKEWALL</label><input type="checkbox" id="hostSpikewall" aria-label="Enable Spikewall"></div>
-              <div class="lobby-toggle-row rule-toggle"><label for="hostSmash">SMASH</label><input type="checkbox" id="hostSmash" aria-label="Enable Smash knockback"></div>
-            </div>
           </div>
+        </div>
+        <div class="create-round-rule-toggles">
+          <div class="lobby-toggle-row rule-toggle"><label for="hostTeams">TEAMS</label><input type="checkbox" id="hostTeams" aria-label="Enable Teams"></div>
+          <div class="lobby-spikewall-setting rule-toggle"><label for="hostSpikewall">SPIKEWALL</label><input type="checkbox" id="hostSpikewall" aria-label="Enable Spikewall"></div>
+          <div class="lobby-toggle-row rule-toggle"><label for="hostSmash">SMASH</label><input type="checkbox" id="hostSmash" aria-label="Enable Smash knockback"></div>
+          <div class="lobby-toggle-row rule-toggle"><label for="hostCombo">COMBO</label><input type="checkbox" id="hostCombo" aria-label="Enable combo system"></div>
         </div>
       </section>
       <section class="map-column">
@@ -859,6 +909,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
               <div class="lobby-toggle-row rule-toggle"><label for="lobbyTeams">TEAMS</label><input type="checkbox" id="lobbyTeams" aria-label="Enable Teams"></div>
               <div class="lobby-spikewall-setting rule-toggle"><label for="lobbySpikewall">SPIKEWALL</label><input type="checkbox" id="lobbySpikewall" aria-label="Enable Spikewall"></div>
               <div class="lobby-toggle-row rule-toggle"><label for="lobbySmash">SMASH</label><input type="checkbox" id="lobbySmash" aria-label="Enable Smash knockback"></div>
+              <div class="lobby-toggle-row rule-toggle"><label for="lobbyCombo">COMBO</label><input type="checkbox" id="lobbyCombo" aria-label="Enable combo system"></div>
             </div>
           </div>
         </div>
@@ -1027,6 +1078,13 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
 <!-- ============ IN-GAME HUD ============ -->
 <div id="hud">
   <div id="smashStatus" aria-live="polite"><div class="smash-name" id="smashName">Player</div><div class="smash-score" id="smashScore">0 POINTS</div><div class="smash-percent" id="smashPercent">0%</div></div>
+  <div id="killFeed" aria-live="polite"></div>
+  <div id="comboHud">
+    <div class="combo-label">COMBO</div>
+    <div id="comboCount" class="combo-count">x3</div>
+    <div id="comboSub" class="combo-sub">CHAIN ACTIVE</div>
+    <div class="combo-bar"><span id="comboBarFill"></span></div>
+  </div>
   <div class="playercards" id="playercards"></div>
   <div id="timer">0:00</div>
   <div id="cdflash"></div>
@@ -1568,6 +1626,7 @@ class Player{
     this.grounded=false; this.netGrounded=false; this.supportPlatform=-1; this.netSupportPlatform=-1; this.facing=1;
     this.damage=0; this.alive=true;
     this.spectator=false; this.autoSpectator=false; this.team=null;
+    this.lastHitBy=null; this.lastHitAt=0; this.comboCount=0; this.comboExpiresAt=0; this.comboStarted=false; this._comboHitLocks={};
     this.heavy=false; this.hitFlash=0;
     this.bounceBoostQueued=false;
     this.bounceJumpActive=false; this.bounceJumpPeakSpeed=0; this.bounceJumpHeldPrev=false; this.bounceWBoostTimer=0; this.bounceIgnorePlatform=-1;
@@ -2859,7 +2918,15 @@ function normalizedTeam(v){ return v==='blue'?'blue':(v==='red'?'red':null); }
 function getSmashKnockbackMultiplier(victim){
   if(!Game.matchSettings?.smash || !victim) return 1;
   const percent=Math.max(0,Number(victim.damage)||0);
-  return 1 + Math.min(1.75, percent*0.009);
+  return 1 + percent*0.009;
+}
+function getComboKnockbackMultiplier(attacker, upcomingHit=false){
+  if(!Game.matchSettings?.combo || !attacker) return 1;
+  const count=Math.max(0,Number(attacker.comboCount)||0)+(upcomingHit?1:0);
+  if(count<3) return 1;
+  // Combo knockback scales continuously with the active chain. There is intentionally
+  // no upper cap; the 2-second grace period controls how long the chain survives.
+  return 1 + Math.max(0,count-2)*0.11;
 }
 
 const Game = {
@@ -2868,7 +2935,7 @@ const Game = {
   state:'menu',
   players:{},
   myId:null, myName:getSavedUsername(),
-  map:null, mode:'regular', matchSettings:{gravity:1,kb:1,maxPlayers:8,spikewall:false,teams:false,smash:false},
+  map:null, mode:'regular', matchSettings:{gravity:1,kb:1,maxPlayers:8,spikewall:false,teams:false,smash:false,combo:false},
   particles:new ParticleSystem(),
   // Trail FX are intentionally capped much lower than gameplay particles.
   // Trails are persistent cosmetics, so a small bounded pool keeps frame time stable.
@@ -2884,6 +2951,8 @@ const Game = {
   roundNumber:1,
   roundConfig:{mode:'rounds',count:3,target:3},
   roundTransitionId:0,
+  roundSpawnSnapUntil:0,
+  _roundResultShownAt:0,
   _lastShownRoundResultTransition:0,
   _roundTransitionTimer:null,
   scores:{},
@@ -3152,9 +3221,20 @@ const Game = {
     this.state='playing'; this.eliminationOrder=[]; this.projectiles=[]; this.mines=[];
     this.netRoundResult=null;
     this.clearRoundEffects();
+    UI.hideRoundIntermission();
     UI.showHUD();
     this.resetMovingPlatforms();
     this.resetPlayers();
+    // For a short window after a round begins, authoritative spawn coordinates
+    // are rendered directly so every peer visibly starts in the exact same place.
+    const spawnSnapNow=performance.now();
+    this.roundSpawnSnapUntil=spawnSnapNow+180;
+    for(const p of Object.values(this.players)){
+      if(!p) continue;
+      p.renderX=p.x; p.renderY=p.y; p.renderTargetX=p.x; p.renderTargetY=p.y;
+      p.netServerX=p.x; p.netServerY=p.y; p.netServerVX=0; p.netServerVY=0;
+      p.netErrorX=0; p.netErrorY=0;
+    }
     // Keep round transitions from briefly jumping through the default camera
     // zoom before settling on the new spawn layout.
     this.camera.snapTo(Object.values(this.players), this.map.width, this.map.height, this.viewW, this.viewH);
@@ -3182,6 +3262,7 @@ const Game = {
       const assigned = Number.isInteger(this.spawnAssignments[id]) ? this.spawnAssignments[id] : 0;
       const sp = spawns[((assigned%spawns.length)+spawns.length)%spawns.length];
       if(p.spectator){
+        p.lastHitBy=null; p.lastHitAt=0; p.comboCount=0; p.comboExpiresAt=0; p.comboStarted=false; p._comboHitLocks={};
         p.vx=0; p.vy=0; p.damage=0; p.alive=false; p.grounded=false; p.supportPlatform=-1;
         p.grappleAnchor=null; p.grappleTargetId=null; p.grappleLen=0; p.grappleRestLen=0;
         p.actionAiming=false; p.remoteActionActive=false; p.actionCharge=0; p.actionPower=0; p.actionKind=null;
@@ -3189,6 +3270,7 @@ const Game = {
         continue;
       }
       p.x=sp.x; p.y=sp.y; p.vx=0; p.vy=0; p.damage=0; p.alive=true;
+      p.lastHitBy=null; p.lastHitAt=0; p.comboCount=0; p.comboExpiresAt=0; p.comboStarted=false; p._comboHitLocks={};
       // Give every spawn a deterministic starting facing so host and clients
       // agree immediately, even before the first authoritative state snapshot.
       p.facing = sp.x < (this.map.width||1600)/2 ? 1 : (sp.x > (this.map.width||1600)/2 ? -1 : 1);
@@ -3222,6 +3304,7 @@ const Game = {
     if(this.state==='playing') this.roundElapsed=(this.roundElapsed||0)+dt;
     this.fpsTime += dt; this.fpsCounter++;
     if(this.fpsTime>=0.5){ this.fps = Math.round(this.fpsCounter/this.fpsTime); this.fpsCounter=0; this.fpsTime=0; }
+    this.updateComboTimers();
 
     if(this.state==='playing'){
       const raw = InputManager.local();
@@ -3381,11 +3464,18 @@ const Game = {
 
     if(!this.isHost && this.state==='playing') this.applyClientCorrections(dt);
 
-    if(this.isHost && this.state==='playing'){
+    if(this.isHost && (this.state==='playing' || this.state==='roundResults')){
+      // Keep sending authoritative state briefly during round intermission too.
+      // While roundResults is active, broadcastState() carries netRoundResult, which
+      // gives clients a second transport path for the leaderboard if a reliable
+      // one-shot round_end/round_intermission packet is delayed or missed.
       this._snapTimer = (this._snapTimer||0)+dt;
-      if(this._snapTimer >= 1/60){ this._snapTimer=0; this.broadcastState(); }
-      this._secTimer = (this._secTimer||0)+dt;
-      if(this._secTimer>=1){ this._secTimer=0; this.matchTime++; NetworkManager.broadcast({t:'tick', matchTime:this.matchTime, roundElapsed:this.roundElapsed}, false); }
+      const snapRate = this.state==='roundResults' ? (1/20) : (1/60);
+      if(this._snapTimer >= snapRate){ this._snapTimer=0; this.broadcastState(); }
+      if(this.state==='playing'){
+        this._secTimer = (this._secTimer||0)+dt;
+        if(this._secTimer>=1){ this._secTimer=0; this.matchTime++; NetworkManager.broadcast({t:'tick', matchTime:this.matchTime, roundElapsed:this.roundElapsed}, false); }
+      }
     }
 
     this.updateRemoteRenderTargets(dt);
@@ -3509,13 +3599,15 @@ const Game = {
     else if(moveDir>0){ p.vx += accel*dt; p.facing=1; }
     else{ p.vx *= (p.grounded?PHYS.friction:PHYS.airFriction); }
     const maxS = (PHYS.maxSpeed / (p.heavy?1.25:1)) * chargeMoveFactor;
+    p._smashKnockbackTimer=Math.max(0,(p._smashKnockbackTimer||0)-dt);
+    const uncappedSmashKnockback=!!this.matchSettings?.smash && p._smashKnockbackTimer>0;
     if(p.dashTime>0 && Number.isFinite(p.dashVelocity)){
       // Dash momentum is locked to the direction chosen when the dash fired.
       // Turning during the dash may change the character's facing, but never
       // redirects the dash velocity.
       const dashDir = p.dashDirection || p.facing || 1;
       p.vx = dashDir * Math.abs(p.dashVelocity);
-    } else {
+    } else if(!uncappedSmashKnockback) {
       p.vx = Math.max(-maxS, Math.min(maxS, p.vx));
     }
 
@@ -3768,19 +3860,20 @@ const Game = {
       if(air){
         const upBias=ny*0.65-0.25;
         const len=Math.hypot(nx,upBias)||1;
-        const k=PHYS.mineAirKnockback*this.getMineKnockbackScale()*(this.matchSettings.kb||1)*getSmashKnockbackMultiplier(hitPlayer);
+        const k=PHYS.mineAirKnockback*this.getMineKnockbackScale()*(this.matchSettings.kb||1)*getSmashKnockbackMultiplier(hitPlayer)*getComboKnockbackMultiplier(this.players[mine.ownerId],true);
         hitPlayer.vx += (nx/len)*k;
         hitPlayer.vy += (upBias/len)*k;
         hitPlayer.damage += PHYS.mineAirDamage;
       }else{
         const upBias=Math.min(-0.45,ny-0.35);
         const len=Math.hypot(nx,upBias)||1;
-        const k=PHYS.mineGroundLaunchSpeed*this.getMineKnockbackScale()*(this.matchSettings.kb||1)*getSmashKnockbackMultiplier(hitPlayer);
+        const k=PHYS.mineGroundLaunchSpeed*this.getMineKnockbackScale()*(this.matchSettings.kb||1)*getSmashKnockbackMultiplier(hitPlayer)*getComboKnockbackMultiplier(this.players[mine.ownerId],true);
         hitPlayer.vx += (nx/len)*k;
         hitPlayer.vy += (upBias/len)*k;
         hitPlayer.damage += 12;
       }
       hitPlayer.hitFlash=8;
+      if(this.matchSettings?.combo && mine.ownerId) this.registerHit(mine.ownerId,hitPlayer.id,x,y,'mine');
       // Mines already have their own authoritative detonation event, so do not
       // also spawn the generic impact FX/network event here. That duplicate FX
       // path was one of the main sources of frame spikes during explosions.
@@ -3854,19 +3947,7 @@ const Game = {
         const segMinY=Math.min(oldY,newY), segMaxY=Math.max(oldY,newY);
         for(const p of players) {
           if(!p.alive) continue;
-          if(p.id===m.ownerId && m.ownerGrace>0){
-            const dirX=Number.isFinite(m.launchDirX)?m.launchDirX:(m.vx/(Math.hypot(m.vx,m.vy)||1));
-            const dirY=Number.isFinite(m.launchDirY)?m.launchDirY:(m.vy/(Math.hypot(m.vx,m.vy)||1));
-            const prevPX=Number.isFinite(p.prevX)?p.prevX:p.x, prevPY=Number.isFinite(p.prevY)?p.prevY:p.y;
-            const beforeDx=prevPX-oldX, beforeDy=prevPY-oldY;
-            const nowDx=p.x-newX, nowDy=p.y-newY;
-            const beforeAlong=beforeDx*dirX+beforeDy*dirY;
-            const nowAlong=nowDx*dirX+nowDy*dirY;
-            const beforeDist=Math.hypot(beforeDx,beforeDy), nowDist=Math.hypot(nowDx,nowDy);
-            const closingIntoMine=beforeDist-nowDist>0.75;
-            const stillBehind=nowAlong < 0;
-            if(stillBehind && !closingIntoMine) continue;
-          }
+          if(GameModes[this.mode]?.deathMine && p.id===m.ownerId) continue;
           const pr=m.radius+p.radius;
           const pPrevX=Number.isFinite(p.prevX)?p.prevX:p.x;
           const pPrevY=Number.isFinite(p.prevY)?p.prevY:p.y;
@@ -4165,11 +4246,18 @@ const Game = {
             if(this.projectileHitsPlayerAt(q,sx,sy,p)){
               const firstHit=!q.hitPlayers.includes(p.id); if(firstHit) q.hitPlayers.push(p.id);
               if(q.deadly){
-                p.alive=false;p.forceEliminate=false;if(!this.eliminationOrder.includes(p.id))this.eliminationOrder.push(p.id);
-                NetworkManager.broadcast({t:'eliminated',id:p.id,x:p.x,y:p.y},true);this.spawnFx(p,'death');AudioManager.death();
+                p.lastHitBy=q.ownerId||null; p.lastHitAt=performance.now();
+                if(this.matchSettings?.combo) this.registerHit(q.ownerId,p.id,sx,sy,'death arrow');
+                p.alive=false;p.forceEliminate=false;
+                if(!this.eliminationOrder.includes(p.id))this.eliminationOrder.push(p.id);
+                this.reportElimination(p);
+                NetworkManager.broadcast({t:'eliminated',id:p.id,x:p.x,y:p.y},true);
+                this.spawnFx(p,'death');AudioManager.death();
               }else if(firstHit){
-                const travelLen=Math.hypot(q.vx,q.vy)||1,nx=q.vx/travelLen,ny=q.vy/travelLen,knock=(420+900*(q.power||0))*(this.matchSettings.kb||1)*getSmashKnockbackMultiplier(hitPlayer);
-                p.vx+=nx*knock;p.vy+=ny*knock;p.damage+=8;p.hitFlash=8;this.spawnFx(p,'impact');NetworkManager.broadcast({t:'hitfx',x:p.x,y:p.y},false);
+                const travelLen=Math.hypot(q.vx,q.vy)||1,nx=q.vx/travelLen,ny=q.vy/travelLen,knock=(420+900*(q.power||0))*(this.matchSettings.kb||1)*getSmashKnockbackMultiplier(p)*getComboKnockbackMultiplier(this.players[q.ownerId],true);
+                p.vx+=nx*knock;p.vy+=ny*knock;p.damage+=8;p.hitFlash=8;
+                if(this.matchSettings?.combo) this.registerHit(q.ownerId,p.id,sx,sy,'arrow');
+                this.spawnFx(p,'impact');NetworkManager.broadcast({t:'hitfx',x:p.x,y:p.y},false);
               }
               if(!q.bouncy){ this.spawnProjectileEndFx(sx,sy,'arrow',false); NetworkManager.broadcast({t:'arrow_end_fx',x:sx,y:sy,miss:false},false); }
               if(q.bouncy && (q.bounceCount||0)<PHYS.bouncyArrowMaxBounces){
@@ -4242,8 +4330,9 @@ const Game = {
         const hitId=hitPlayer.id;
         if(!Array.isArray(q.hitPlayers))q.hitPlayers=[];
         if(!q.hitPlayers.includes(hitId)) q.hitPlayers.push(hitId);
-        const speed=Math.hypot(q.vx,q.vy)||1,nx=q.vx/speed,ny=q.vy/speed,knock=(420+900*(q.power||0))*(this.matchSettings.kb||1)*getSmashKnockbackMultiplier(hitPlayer);
+        const speed=Math.hypot(q.vx,q.vy)||1,nx=q.vx/speed,ny=q.vy/speed,knock=(420+900*(q.power||0))*(this.matchSettings.kb||1)*getSmashKnockbackMultiplier(hitPlayer)*getComboKnockbackMultiplier(this.players[q.ownerId],true);
         hitPlayer.vx+=nx*knock;hitPlayer.vy+=ny*knock;hitPlayer.damage+=8;hitPlayer.hitFlash=8;
+        if(this.matchSettings?.combo) this.registerHit(q.ownerId,hitPlayer.id,q.x,q.y,'arrow');
         this.spawnFx(hitPlayer,'impact');NetworkManager.broadcast({t:'hitfx',x:hitPlayer.x,y:hitPlayer.y},false);
         // A bouncy arrow may hit the same opponent again after it has bounced away.
         // Keep only a short re-hit lock so one contact cannot apply damage repeatedly
@@ -5098,11 +5187,35 @@ const Game = {
             const bSmashScale=this.matchSettings?.smash?Math.max(0,getSmashKnockbackMultiplier(b)-1):0;
             a.damage+=dmg; b.damage+=dmg;
             if(this.matchSettings?.smash){
-              const smashBoost=Math.min(260,impact*0.34);
+              const smashBoost=impact*0.34;
               a.vx-=nx*smashBoost*aSmashScale; a.vy-=ny*smashBoost*aSmashScale;
               b.vx+=nx*smashBoost*bSmashScale; b.vy+=ny*smashBoost*bSmashScale;
+              // Smash knockback is not subject to the normal movement-speed cap.
+              // Keep the uncapped velocity active briefly so the generic movement
+              // clamp cannot immediately erase the extra knockback.
+              a._smashKnockbackTimer=0.18; b._smashKnockbackTimer=0.18;
             }
             a.hitFlash=10; b.hitFlash=10;
+            if(this.matchSettings?.combo){
+              // Only the stronger side of the interaction earns combo charge.
+              // Approach speed is weighted by mass, with dash energy already reflected
+              // in effectiveVaN/effectiveVbN. Equal-force trades award neither side.
+              const aApproach=Math.max(0,effectiveVaN) * massA * (aWasDashing?1.12:1);
+              const bApproach=Math.max(0,-effectiveVbN) * massB * (bWasDashing?1.12:1);
+              let comboWinner=null, comboVictim=null;
+              if(aApproach>bApproach*1.02 && aApproach>20){ comboWinner=a; comboVictim=b; }
+              else if(bApproach>aApproach*1.02 && bApproach>20){ comboWinner=b; comboVictim=a; }
+              if(comboWinner && comboVictim){
+                this.registerHit(comboWinner.id,comboVictim.id,(a.x+b.x)*0.5,(a.y+b.y)*0.5,'player');
+                const comboScale=getComboKnockbackMultiplier(comboWinner);
+                if(comboScale>1){
+                  const extra=impact*0.28*(comboScale-1);
+                  const dir=comboWinner===a?1:-1;
+                  comboVictim.vx+=nx*dir*extra; comboVictim.vy+=ny*dir*extra;
+                  comboVictim._smashKnockbackTimer=Math.max(comboVictim._smashKnockbackTimer||0,.16);
+                }
+              }
+            }
             this.camera.addShake(Math.min(16,impact*0.022));
             this.spawnFx(a,'impact'); this.spawnFx(b,'impact');
             if(impact>=330){
@@ -5138,6 +5251,48 @@ const Game = {
     }
   },
 
+  registerHit(attackerId, victimId, x=null, y=null, kind='impact'){
+    if(!this.isHost || !this.matchSettings?.combo) return;
+    const attacker=this.players[attackerId], victim=this.players[victimId];
+    if(!attacker || !victim || attackerId===victimId || !victim.alive) return;
+    const now=performance.now();
+    attacker._comboHitLocks=attacker._comboHitLocks||{};
+    const lastPairHit=Number(attacker._comboHitLocks[victimId])||0;
+    if(now-lastPairHit<120) return;
+    attacker._comboHitLocks[victimId]=now;
+    victim.lastHitBy=attackerId;
+    victim.lastHitAt=now;
+    if(now > (attacker.comboExpiresAt||0)) attacker.comboCount=0;
+    attacker.comboCount=Math.max(0,Number(attacker.comboCount)||0)+1;
+    attacker.comboExpiresAt=now+2000;
+    attacker.comboStarted=attacker.comboCount>=3;
+    const payload={id:attackerId,count:attacker.comboCount,expiresAt:Date.now()+2000,kind};
+    if(attacker.id===this.myId) UI.showCombo(payload);
+    NetworkManager.broadcast({t:'combo_update',data:payload},true);
+    if(attacker.comboCount>=3){
+      const fxX=Number.isFinite(x)?x:attacker.x, fxY=Number.isFinite(y)?y:attacker.y;
+      this.particles.burst(fxX,fxY,'#ffd86b',Math.min(16,2+Math.floor(attacker.comboCount/2)),220,{gravity:50,life:.28,size:2.8,sizeEnd:.25,twinkle:true});
+    }
+  },
+  updateComboTimers(){
+    if(!this.matchSettings?.combo) return;
+    const now=performance.now();
+    for(const p of Object.values(this.players)){
+      if(!p || !p.comboCount || now <= (p.comboExpiresAt||0)) continue;
+      p.comboCount=0; p.comboStarted=false; p.comboExpiresAt=0;
+      if(p.id===this.myId) UI.hideCombo();
+      NetworkManager.broadcast({t:'combo_update',data:{id:p.id,count:0,expiresAt:Date.now(),kind:'expire'}},true);
+    }
+  },
+  reportElimination(p){
+    if(!this.isHost || !p) return;
+    const killerId=(p.lastHitBy && (performance.now()-(p.lastHitAt||0)<=3000)) ? p.lastHitBy : null;
+    const killer=this.players[killerId];
+    const payload={killerId:killer?.id||null,killerName:killer?.name||null,victimId:p.id,victimName:p.name||'Player',kind:killer?'elimination':'fall',ts:Date.now()};
+    UI.addKillFeed(payload);
+    NetworkManager.broadcast({t:'kill_feed',data:payload},true);
+  },
+
   checkDeaths(){
     for(const id in this.players){
       const p=this.players[id];
@@ -5146,6 +5301,7 @@ const Game = {
       if(outOfBounds || p.forceEliminate){
         p.alive=false; p.forceEliminate=false;
         this.eliminationOrder.push(id);
+        this.reportElimination(p);
         this.spawnFx(p,'death');
         AudioManager.death();
         NetworkManager.broadcast({t:'eliminated', id, x:p.x, y:p.y}, true);
@@ -5220,10 +5376,12 @@ const Game = {
     // Mirror the authoritative round-result payload into state snapshots as a
     // fallback for clients that miss the one-shot reliable round_end event.
     this.netRoundResult=payload;
+    // Dedicated reliable intermission event. This is the authoritative display
+    // trigger for non-hosts; round_end remains as a compatibility fallback.
+    NetworkManager.broadcast({t:'round_intermission', data:payload}, true);
     NetworkManager.broadcast({t:'round_end', data:payload}, true);
     setTimeout(()=>{ if(this.roundTransitionId===transitionId && this.state==='roundResults') NetworkManager.broadcast({t:'round_end', data:payload}, true); },180);
     setTimeout(()=>{ if(this.roundTransitionId===transitionId && this.state==='roundResults') NetworkManager.broadcast({t:'round_end', data:payload}, true); },420);
-    for(let k=0;k<6;k++) setTimeout(()=>{ if(this.roundTransitionId===transitionId && this.state==='roundResults'){ NetworkManager.broadcast({t:'round_result_sync',data:payload},true); NetworkManager.broadcast({t:'round_result_sync',data:payload},false); } },90+k*110);
     UI.showRoundResult(payload);
     if(seriesDone){
       const finalResults=this.buildResults();
@@ -5243,8 +5401,6 @@ const Game = {
         AudioManager.victory();
       }, 900);
     }else{
-      // Advance through one idempotent transition. The watchdog prevents a UI
-      // animation/timer failure from leaving the host stuck in roundResults.
       const nextRound=this.roundNumber+1;
       let started=false;
       const startNext=()=>{
@@ -5254,11 +5410,15 @@ const Game = {
         this.roundNumber=nextRound;
         this.beginRoundImmediate(nextRound,transitionId);
       };
+      // Keep the normal, short transition. The intermission packet itself owns the
+      // leaderboard; round_start only ends it and begins the next round.
       setTimeout(()=>{
         if(this.roundTransitionId!==transitionId || this.state!=='roundResults') return;
         const startFacings={};
         for(const id in this.players) startFacings[id]=this.players[id].facing||1;
-        const spectatorStates={}; for(const id in this.players) spectatorStates[id]=!!this.players[id].spectator; NetworkManager.broadcast({t:'round_start', round:nextRound, scores:this.scores, teamScores:this.teamScores, transitionId, facings:startFacings, spawnAssignments:this.spawnAssignments, spectatorStates, previousRoundResult:payload}, true);
+        const spectatorStates={};
+        for(const id in this.players) spectatorStates[id]=!!this.players[id].spectator;
+        NetworkManager.broadcast({t:'round_start', round:nextRound, scores:this.scores, teamScores:this.teamScores, transitionId, facings:startFacings, spawnAssignments:this.spawnAssignments, spectatorStates, previousRoundResult:payload}, true);
         UI.fadeToNextRound(startNext);
         this._roundTransitionTimer=setTimeout(startNext, 900);
       }, 650);
@@ -5415,7 +5575,7 @@ const Game = {
         p.spectator?1:0
       ];
     }
-    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, roundResult:(this.state==='roundResults'?this.netRoundResult:null), teamScores:this.teamScores, spawnAssignments:this.spawnAssignments, movingPlatforms:this.getMovingPlatformSnapshot(), s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace,kind:q.kind,bouncy:!!q.bouncy,bounceCount:q.bounceCount||0,playerHitCooldowns:q.playerHitCooldowns||{}})), mines:this.mines.map(m=>this.serializeMine(m))}, false);
+    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, roundResult:(this.state==='roundResults'?this.netRoundResult:null), scores:(this.state==='roundResults'?this.scores:null), teamScores:this.teamScores, spawnAssignments:this.spawnAssignments, movingPlatforms:this.getMovingPlatformSnapshot(), s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace,kind:q.kind,bouncy:!!q.bouncy,bounceCount:q.bounceCount||0,playerHitCooldowns:q.playerHitCooldowns||{}})), mines:this.mines.map(m=>this.serializeMine(m))}, false);
     this.lastServerState = Date.now();
   },
   updateRemoteJumpPrediction(p, serverX, serverY, serverVX, serverVY, now){
@@ -5476,6 +5636,11 @@ const Game = {
         // tied to the same current physics position used by the host. This lets
         // persistent effects use one coordinate path on every screen.
         p.renderX=p.x; p.renderY=p.y;
+        continue;
+      }
+      if(performance.now() < (this.roundSpawnSnapUntil||0)){
+        p.renderX=p.x; p.renderY=p.y;
+        p.renderTargetX=p.x; p.renderTargetY=p.y;
         continue;
       }
       if(id===this.myId){ p.renderX=p.x; p.renderY=p.y; continue; }
@@ -5558,6 +5723,23 @@ const Game = {
       // leaves non-hosts following the last surviving player instead of showing the
       // round leaderboard and then resetting with everyone else.
     }
+    // Round-result payloads are semantic transition messages even though they are
+    // carried inside a state snapshot. Process them BEFORE state-sequence filtering
+    // so an out-of-order/duplicate movement snapshot cannot suppress the leaderboard.
+    if(!this.isHost && msg.roundResult){
+      const rr=msg.roundResult;
+      const rrRound=Number(rr.round)||0;
+      const rrTransition=Number(rr.transitionId)||0;
+      if(!rr.final && rrRound>0 && rrTransition>0 && rrRound>=this.roundNumber-1 && (rrTransition>(this._roundIntermissionTransition||0) || this.state!=='roundResults')){
+        this.scores=rr.scores||this.scores;
+        if(rr.teamScores) this.teamScores=rr.teamScores;
+        if(rr.spectatorStates) this.applySpectatorStates(rr.spectatorStates);
+        this._roundIntermissionTransition=rrTransition;
+        this._roundIntermissionRound=rrRound;
+        UI.showRoundIntermission(rr);
+      }
+    }
+
     const seq = msg.seq;
     if(seq!=null){
       const prev=this.lastRecvStateSeq;
@@ -5567,23 +5749,6 @@ const Game = {
     }
     this.lastServerState = Date.now();
     this.hostPhysicsTick = msg.tick||this.hostPhysicsTick||0;
-    // Reliable round_end normally drives the leaderboard. If that one-shot event
-    // is missed, the host's state snapshots still carry the same authoritative
-    // result while the host is in roundResults, so non-hosts can never skip the
-    // leaderboard and stare at the last surviving player until the next round.
-    if(!this.isHost && msg.roundResult){
-      const rr=msg.roundResult;
-      const rrRound=Number(rr.round)||0;
-      const rrTransition=Number(rr.transitionId)||0;
-      if(rrRound>=this.roundNumber && rrTransition>(this.roundTransitionId||0)){
-        this.roundTransitionId=rrTransition;
-        this.roundNumber=rrRound;
-        this.scores=rr.scores||this.scores; if(rr.teamScores)this.teamScores=rr.teamScores;
-        if(rr.spectatorStates) this.applySpectatorStates(rr.spectatorStates);
-        this.clearRoundEffects();
-        UI.showRoundResult(rr);
-      }
-    }
     if(Array.isArray(msg.projectiles)){
       const byId=new Map(msg.projectiles.map(q=>[q.id,q]));
       if(!this.isHost){
@@ -5633,6 +5798,11 @@ const Game = {
       p.netErrorX=dx; p.netErrorY=dy;
       p.netGrounded=!!v[26];
       p.netSupportPlatform=Number.isInteger(v[27])?v[27]:-1;
+      const spawnLock=sampleNow<(this.roundSpawnSnapUntil||0);
+      if(spawnLock){
+        p.x=serverX; p.y=serverY; p.vx=serverVX; p.vy=serverVY;
+        p.netErrorX=0; p.netErrorY=0;
+      }
 
       // Keep a locally predicted jump, dash or grapple from being erased or
       // rubber-banded by a late host snapshot. This is the local player's own
@@ -5642,7 +5812,9 @@ const Game = {
       // action that's already correctly playing out locally.
       const locallyBoosted = !!p.input.jump || (p.vy < -180 && !p.grounded)
         || p.dashCharging || p.dashTime>0 || !!p.grappleAnchor;
-      if(error>95 && !locallyBoosted){
+      if(spawnLock){
+        // Exact authoritative spawn placement above takes precedence briefly.
+      }else if(error>95 && !locallyBoosted){
         p.x=serverX; p.y=serverY;
         p.vx=serverVX; p.vy=serverVY;
         p.netErrorX=0; p.netErrorY=0;
@@ -5955,6 +6127,17 @@ const Game = {
         if(!this.isHost) this.spawnNetworkFx({x:data.x,y:data.y,type:'impact',facing:1,hue:200});
         this.camera.addShake(5);
         break;
+      case 'kill_feed':
+        if(!this.isHost && data.data) UI.addKillFeed(data.data);
+        break;
+      case 'combo_update':
+        if(!this.isHost && data.data){
+          const cd=data.data;
+          const cp=this.players[cd.id];
+          if(cp){ cp.comboCount=Number(cd.count)||0; cp.comboExpiresAt=Number(cd.expiresAt)||0; cp.comboStarted=cp.comboCount>=3; }
+          if(cd.id===this.myId) UI.updateRemoteCombo(cd);
+        }
+        break;
       case 'eliminated':
         if(!this.isHost){
           const p=this.players[data.id]; if(p){ p.alive=false; this.spawnFx(p,'death'); }
@@ -5987,70 +6170,87 @@ const Game = {
       case 'spectator_roster': if(!this.isHost) Lobby.applySpectatorStates(data.states); break;
       case 'lobby_settings': if(!this.isHost) Lobby.applySettings(data); break;
       case 'match_start': if(!this.isHost) Lobby.clientStartMatch(data); break;
-      case 'round_end':
-        if(!this.isHost && data.data){
-          const incomingRound=Number(data.data.round)||0;
-          const incomingTransition=Number(data.data.transitionId)||0;
-          if(incomingRound < this.roundNumber-1) break;
-          if(incomingTransition <= (this._lastShownRoundResultTransition||0)) break;
-          this._lastShownRoundResultTransition=incomingTransition;
-          this.scores=data.data.scores||this.scores; if(data.data.teamScores)this.teamScores=data.data.teamScores;
-          this.roundNumber=incomingRound||this.roundNumber;
-          if(data.data.spectatorStates) this.applySpectatorStates(data.data.spectatorStates);
-          this.clearRoundEffects();
-          UI.showRoundResult(data.data);
-        }
-        break;
-      case 'round_result_sync':
+      case 'round_intermission':
         if(!this.isHost && data.data){
           const rr=data.data;
           const rrRound=Number(rr.round)||0;
           const rrTransition=Number(rr.transitionId)||0;
-          // Accept a result for the round that just ended even when the client
-          // has already observed the next-round state packet. The visible result
-          // is keyed by transition id so repeated sync packets are harmless.
-          if(rrTransition && rrTransition > (this._lastShownRoundResultTransition||0) && rrRound >= this.roundNumber-1){
-            this._lastShownRoundResultTransition=Math.max(this._lastShownRoundResultTransition||0,rrTransition);
-            this.scores=rr.scores||this.scores; if(rr.teamScores)this.teamScores=rr.teamScores;
-            if(rr.spectatorStates) this.applySpectatorStates(rr.spectatorStates);
-            this.clearRoundEffects();
-            if(this.state!=='roundResults') UI.showRoundResult(rr);
-          }
+          // This packet is the dedicated authoritative intermission trigger.
+          // Do not let round-number prediction suppress it.
+          if(rr.final || rrRound<=0 || rrTransition<=0) break;
+          if(rrTransition < (this._roundIntermissionTransition||0)) break;
+          this.scores=rr.scores||this.scores;
+          if(rr.teamScores) this.teamScores=rr.teamScores;
+          if(rr.spectatorStates) this.applySpectatorStates(rr.spectatorStates);
+          this.clearRoundEffects();
+          this._roundIntermissionTransition=rrTransition;
+          this._roundIntermissionRound=rrRound;
+          UI.showRoundResult(rr);
+        }
+        break;
+      case 'round_end':
+      case 'round_result_sync':
+        // Compatibility fallback only. The dedicated round_intermission packet
+        // above owns the normal non-host leaderboard display.
+        if(!this.isHost && data.data){
+          const rr=data.data;
+          const rrRound=Number(rr.round)||0;
+          const rrTransition=Number(rr.transitionId)||0;
+          if(rr.final || rrRound<=0 || rrTransition<=0) break;
+          if(rrTransition < (this._roundIntermissionTransition||0)) break;
+          this.scores=rr.scores||this.scores;
+          if(rr.teamScores) this.teamScores=rr.teamScores;
+          if(rr.spectatorStates) this.applySpectatorStates(rr.spectatorStates);
+          this.clearRoundEffects();
+          this._roundIntermissionTransition=rrTransition;
+          this._roundIntermissionRound=rrRound;
+          if(this.state!=='roundResults') UI.showRoundResult(rr);
         }
         break;
       case 'round_start':
         if(!this.isHost){
           const incomingRound=Number(data.round)||0;
           const incomingTransition=Number(data.transitionId)||0;
-          if(incomingRound < this.roundNumber || (incomingRound===this.roundNumber && incomingTransition < (this.roundTransitionId||0))) break;
-          // The previous round result travels with round_start as a redundant,
-          // reliable copy. This closes the race between the unreliable state
-          // channel and the reliable round messages: even if round_end was missed,
-          // the client must show the completed round before spawning the next one.
-          if(data.previousRoundResult && Number(data.previousRoundResult.round)===incomingRound-1){
-            this.scores=data.previousRoundResult.scores||this.scores; if(data.previousRoundResult.teamScores)this.teamScores=data.previousRoundResult.teamScores;
-            if(data.previousRoundResult.spectatorStates) this.applySpectatorStates(data.previousRoundResult.spectatorStates);
+          if(!incomingRound) break;
+          if(incomingRound < this.roundNumber) break;
+
+          // round_start is only the signal to LEAVE the intermission. The previous
+          // round's result is rendered first, before the client advances its round.
+          const previous=data.previousRoundResult;
+          if(previous && !previous.final && Number(previous.round)===incomingRound-1 && this.state!=='roundResults'){
+            this.scores=previous.scores||this.scores;
+            if(previous.teamScores) this.teamScores=previous.teamScores;
+            if(previous.spectatorStates) this.applySpectatorStates(previous.spectatorStates);
             this.clearRoundEffects();
-            UI.showRoundResult(data.previousRoundResult);
-            if(this._roundTransitionTimer) clearTimeout(this._roundTransitionTimer);
-            const resultTransition=Number(data.previousRoundResult.transitionId)||0;
-            this.roundTransitionId=Math.max(this.roundTransitionId||0,resultTransition);
+            this._roundIntermissionTransition=Number(previous.transitionId)||incomingTransition;
+            this._roundIntermissionRound=Number(previous.round)||incomingRound-1;
+            UI.showRoundResult(previous);
           }
-          this.scores=data.scores||this.scores; if(data.teamScores)this.teamScores=data.teamScores;
-          this.roundTransitionId=incomingTransition;
-          this._lastShownRoundResultTransition=Math.max(this._lastShownRoundResultTransition||0,incomingTransition);
-          this.roundNumber=incomingRound;
+
+          this._pendingRoundStart={round:incomingRound,transitionId:incomingTransition,data};
+          this.scores=data.scores||this.scores;
+          if(data.teamScores) this.teamScores=data.teamScores;
           if(data.spawnAssignments) this.spawnAssignments=data.spawnAssignments;
           if(data.spectatorStates) this.applySpectatorStates(data.spectatorStates);
-          if(data.facings){ for(const id in data.facings){ if(this.players[id]) this.players[id].facing=(data.facings[id]<0?-1:1); } }
-          // The reliable round_start packet is the single owner of the round transition.
-          // Start the round when the leaderboard fade finishes; never leave the results
-          // panel visible underneath an idle 900ms timer, which makes the leaderboard
-          // briefly reappear after its fade-out.
+          if(data.facings){
+            for(const id in data.facings){
+              if(this.players[id]) this.players[id].facing=(data.facings[id]<0?-1:1);
+            }
+          }
+
           if(this._roundTransitionTimer) clearTimeout(this._roundTransitionTimer);
-          UI.fadeToNextRound(()=>{
-            this.beginRoundImmediate(incomingRound,incomingTransition);
-          });
+          // Match the host's existing fade duration. Do NOT change roundNumber/state
+          // until the fade finishes, so gameplay state packets cannot hide the leaderboard.
+          this._roundTransitionTimer=setTimeout(()=>{
+            const pending=this._pendingRoundStart;
+            if(!pending || pending.round!==incomingRound || pending.transitionId!==incomingTransition) return;
+            this._pendingRoundStart=null;
+            UI.fadeToNextRound(()=>{
+              this.roundNumber=incomingRound;
+              this.roundTransitionId=incomingTransition;
+              this.beginRoundImmediate(incomingRound,incomingTransition);
+            });
+          },0);
         }
         break;
       case 'matchend':
@@ -7022,7 +7222,10 @@ const Game = {
 
 /* ---------------------------- UI ---------------------------- */
 const UI = {
+  killFeedEntries:[],
+  comboUi:{count:0,expiresAt:0},
   goto(name){
+    if(name!=='results') this._roundResultDomForced=false;
     stopCustomizePreviewLoop();
     stopCustomizeEffectShower();
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
@@ -7035,6 +7238,26 @@ const UI = {
   },
   showHUD(){
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    const resultsScreen=document.getElementById('screen-results');
+    const resultsPanel=resultsScreen?.querySelector('.panel');
+    if(resultsScreen){
+      // showRoundResult used to force inline visibility/display here. Clear those
+      // overrides whenever gameplay resumes so the normal .screen/.active CSS can
+      // actually hide the results screen.
+      resultsScreen.style.removeProperty('display');
+      resultsScreen.style.removeProperty('visibility');
+      resultsScreen.style.removeProperty('opacity');
+      resultsScreen.classList.remove('round-fade-out');
+    }
+    if(resultsPanel){
+      resultsPanel.style.removeProperty('visibility');
+      resultsPanel.style.removeProperty('opacity');
+      resultsPanel.classList.remove('round-fade-out');
+    }
+    this._roundResultDomForced=false;
+    document.getElementById('smashStatus')?.classList.remove('smash-dead');
+    this.clearKillFeed();
+    this.hideCombo();
     document.getElementById('hud').classList.add('active');
   },
   /* Sets the countdown banner text and (re)plays its pop-in animation, plus a
@@ -7063,15 +7286,41 @@ const UI = {
       cb?.();
     }, 340);
   },
+  showRoundIntermission(data){
+    this.showRoundResult(data);
+  },
+  hideRoundIntermission(){
+    const screen=document.getElementById('screen-results');
+    if(screen) screen.classList.remove('active');
+    const actions=document.querySelector('.results-actions');
+    if(actions) actions.classList.remove('between-round');
+  },
   showRoundResult(data){
     const list=document.getElementById('resultsList');
+    const resultsScreen=document.getElementById('screen-results');
+    const resultsPanel=resultsScreen?.querySelector('.panel');
+    if(resultsScreen){
+      resultsScreen.style.removeProperty('z-index');
+      resultsScreen.style.removeProperty('display');
+      resultsScreen.style.removeProperty('visibility');
+      resultsScreen.style.removeProperty('opacity');
+      resultsScreen.classList.remove('round-fade-out');
+    }
+    if(resultsPanel){
+      resultsPanel.style.removeProperty('visibility');
+      resultsPanel.style.removeProperty('opacity');
+      resultsPanel.classList.remove('round-fade-out');
+    }
+    this._roundResultDomForced=false;
     const teamMode=!!data.teamMode || !!Game.matchSettings?.teams;
     const sorted=teamMode ? ['red','blue'].map(team=>({team,score:(data.teamScores||Game.teamScores||{})[team]||0}))
       .sort((a,b)=>b.score-a.score)
       : Object.entries(data.scores||{}).filter(([id])=>!data.spectatorStates?.[id]).map(([id,score])=>({id,score,name:Game.players[id]?.name||id}))
       .sort((a,b)=>b.score-a.score);
     Game.state='roundResults';
+    Game._roundResultShownAt=performance.now();
     this.goto('results');
+    this.currentScreenRound=Number(data?.round)||0;
     const actions=document.querySelector('.results-actions');
     if(actions) actions.classList.toggle('between-round',!data.final);
     list.innerHTML=`<div class="round-leaderboard-title">${data.final?'MATCH COMPLETE':'ROUND LEADERBOARD'}</div>`+
@@ -7108,23 +7357,97 @@ const UI = {
       list.appendChild(div);
     });
   },
+  clearKillFeed(){
+    const box=document.getElementById('killFeed');
+    if(box) box.innerHTML='';
+    this.killFeedEntries=[];
+  },
+  addKillFeed(data){
+    const box=document.getElementById('killFeed'); if(!box||!data)return;
+    const killer=String(data.killerName||'').slice(0,28), victim=String(data.victimName||'Player').slice(0,28);
+    const row=document.createElement('div'); row.className='killfeed-row';
+    row.dataset.feedKey=String(data.ts||'')+'|'+String(data.victimId||victim);
+    if([...box.children].some(el=>el.dataset.feedKey===row.dataset.feedKey)) return;
+    row.innerHTML=killer
+      ? `<span class="killfeed-killer">${esc(killer)}</span><span class="killfeed-arrow">✕</span><span class="killfeed-victim">${esc(victim)}</span><span class="killfeed-cause">${esc(String(data.kind||'hit').replace(/_/g,' '))}</span>`
+      : `<span class="killfeed-solo">${esc(victim)} was eliminated</span>`;
+    box.appendChild(row);
+    while(box.children.length>5)box.firstElementChild.remove();
+    setTimeout(()=>{if(row.parentNode===box){row.classList.add('fade');setTimeout(()=>row.remove(),300);}},4200);
+  },
+  spawnComboParticles(count){
+    const root=document.getElementById('comboParticles');
+    if(!root) return;
+    const n=Math.min(18,Math.max(4,Math.floor(4+count*0.45)));
+    const hues=count<5?48:count<10?28:count<15?8:count<20?330:275;
+    for(let i=0;i<n;i++){
+      const el=document.createElement('span');
+      el.className='combo-fire-particle';
+      const sx=(Math.random()*90-45).toFixed(1)+'px';
+      const ex=(Math.random()*170-85).toFixed(1)+'px';
+      const ey=(-(22+Math.random()*48+Math.min(34,count))).toFixed(1)+'px';
+      const life=(.48+Math.random()*.42).toFixed(2)+'s';
+      const size=(4+Math.random()*5).toFixed(1)+'px';
+      el.style.setProperty('--sx',sx); el.style.setProperty('--ex',ex); el.style.setProperty('--ey',ey);
+      el.style.setProperty('--particleLife',life); el.style.setProperty('--rot',`${Math.round(Math.random()*80-40)}deg`);
+      el.style.setProperty('--particleColor',`hsl(${hues+Math.round(Math.random()*18-9)} 100% ${56+Math.round(Math.random()*15)}%)`);
+      el.style.setProperty('--particleGlow',`hsl(${hues} 100% 54%)`);
+      el.style.width=size; el.style.height=`${(8+Math.random()*8).toFixed(1)}px`;
+      root.appendChild(el);
+      setTimeout(()=>el.remove(),1000);
+    }
+  },
+  showCombo(data){
+    const box=document.getElementById('comboHud'), countEl=document.getElementById('comboCount'), sub=document.getElementById('comboSub'), fill=document.getElementById('comboBarFill');
+    if(!box||!countEl||!sub||!fill||!Game.matchSettings?.combo)return;
+    const count=Math.max(0,Number(data?.count)||0);
+    if(count<3){this.hideCombo();return;}
+    this.comboUi={count,expiresAt:Number(data.expiresAt)||Date.now()+2000};
+    box.classList.remove('active','pulse','level-3','level-5','level-10','level-15','level-20'); void box.offsetWidth; box.classList.add('active');
+    box.classList.add(count>=20?'level-20':count>=15?'level-15':count>=10?'level-10':count>=5?'level-5':'level-3');
+    let hue, light=64;
+    if(count<5){ hue=48; }
+    else if(count<10){ hue=28; }
+    else if(count<15){ hue=8; }
+    else if(count<20){ hue=330; }
+    else { hue=275; light=68; }
+    box.style.setProperty('--comboColor',`hsl(${hue} 100% ${light}%)`);
+    box.style.setProperty('--comboGlow',`hsl(${hue} 100% 56%)`);
+    countEl.textContent=`x${count}`;
+    sub.textContent=count>=10?'UNSTOPPABLE':count>=5?'RAMPAGE':count===3?'CHAIN STARTED':'CHAIN ACTIVE';
+    fill.style.transition='none'; fill.style.transform='scaleX(1)';
+    const remain=Math.max(50,this.comboUi.expiresAt-Date.now());
+    requestAnimationFrame(()=>{fill.style.transition=`transform ${remain/1000}s linear`;fill.style.transform='scaleX(0)';});
+    box.classList.add('pulse'); this.spawnComboParticles(count); setTimeout(()=>box.classList.remove('pulse'),260);
+  },
+  updateRemoteCombo(data){ if(!Game.matchSettings?.combo){this.hideCombo();return;} (Number(data?.count)||0)>=3?this.showCombo(data):this.hideCombo(); },
+  hideCombo(){
+    const box=document.getElementById('comboHud'), fill=document.getElementById('comboBarFill');
+    if(box)box.classList.remove('active','pulse','level-3','level-5','level-10','level-15','level-20');
+    if(fill){fill.style.transition='none';fill.style.transform='scaleX(0)';}
+    if(box){box.style.removeProperty('--comboColor');box.style.removeProperty('--comboGlow');}
+    this.comboUi={count:0,expiresAt:0};
+  },
   showHostGone(){ Game.state='menu'; this.goto('hostgone'); },
   updateHUD(){
+    if(!Game.matchSettings?.combo || this.comboUi.count>=3 && this.comboUi.expiresAt<=Date.now()) this.hideCombo();
     const cards = document.getElementById('playercards');
     cards.innerHTML='';
     const me=Game.players[Game.myId];
     const smashStatus=document.getElementById('smashStatus');
     if(smashStatus){
       const active=!!Game.matchSettings?.smash && !!me && !me.spectator;
+      const dead=active && !me.alive;
       smashStatus.classList.toggle('active',active);
+      smashStatus.classList.toggle('smash-dead',dead);
       if(active){
         const teamOrScore=Game.matchSettings?.teams && me.team ? `${TEAM_LABELS[me.team]} · ${Game.teamScores?.[me.team]||0} ROUNDS` : `${Game.scores?.[me.id]||0} ${(Game.scores?.[me.id]||0)===1?'POINT':'POINTS'}`;
         document.getElementById('smashName').textContent=me.name||'Player';
         document.getElementById('smashScore').textContent=teamOrScore;
         const pct=Math.max(0,Number(me.damage)||0), pe=document.getElementById('smashPercent');
         pe.textContent=`${Math.round(pct)}%`;
-        pe.style.color=pct>=100?'#ff7070':pct>=60?'#ffd36b':'#ffe3a1';
-        smashStatus.style.borderLeftColor=Game.matchSettings?.teams&&me.team?TEAM_COLORS[me.team]:'var(--accent3)';
+        pe.style.color=dead?'#999':(pct>=100?'#ff7070':pct>=60?'#ffd36b':'#ffe3a1');
+        smashStatus.style.borderLeftColor=dead?'#888':(Game.matchSettings?.teams&&me.team?TEAM_COLORS[me.team]:'var(--accent3)');
       }
     }
     const smashActive=!!Game.matchSettings?.smash;
@@ -7522,8 +7845,8 @@ const Lobby = {
   },
   renderSettings(){
     const hostMode=document.getElementById('lobbyModeSelect'),gravity=document.getElementById('lobbyGravity'),kb=document.getElementById('lobbyKB'),maxP=document.getElementById('lobbyMaxP'),roundMode=document.getElementById('lobbyRoundMode'),roundCount=document.getElementById('lobbyRoundCount'),pointTarget=document.getElementById('lobbyPointTarget'),mapSel=document.getElementById('lobbyMapSelect'),mapPrev=document.getElementById('lobbyMapPreview'); if(!hostMode||!gravity||!kb||!maxP||!roundMode||!roundCount||!pointTarget||!mapSel)return;
-    const savedName=getSavedUsername(); Game.myName=savedName; hostMode.value=Game.mode||'regular'; gravity.value=Game.matchSettings.gravity??1; kb.value=Game.matchSettings.kb??1; maxP.value=Game.matchSettings.maxPlayers??8; const teams=document.getElementById('lobbyTeams'); if(teams)teams.checked=!!Game.matchSettings.teams; const smash=document.getElementById('lobbySmash'); if(smash)smash.checked=!!Game.matchSettings.smash; const playerSize=document.getElementById('lobbyPlayerSize'); if(playerSize)playerSize.value=Game.matchSettings.playerSize??1; const spikewall=document.getElementById('lobbySpikewall'); if(spikewall)spikewall.checked=!!Game.matchSettings.spikewall; roundMode.value=Game.roundConfig.mode||'rounds'; roundCount.value=Game.roundConfig.count??3; pointTarget.value=Game.roundConfig.target??3;
-    if(Game.map){const wanted=selectedMapOptionValue(Game.map);if([...mapSel.options].some(o=>o.value===wanted))mapSel.value=wanted;if(mapPrev)drawMapThumb(mapPrev,Game.map);} const scoreMode=roundMode.value==='score'; document.getElementById('lobbyRoundCountField')?.classList.toggle('hidden',scoreMode);document.getElementById('lobbyPointTargetField')?.classList.toggle('hidden',!scoreMode); const controls=[hostMode,gravity,kb,playerSize,maxP,roundMode,roundCount,pointTarget,mapSel,document.getElementById('lobbySpikewall'),document.getElementById('lobbyTeams'),document.getElementById('lobbySmash')].filter(Boolean);controls.forEach(el=>el.disabled=!Game.isHost);
+    const savedName=getSavedUsername(); Game.myName=savedName; hostMode.value=Game.mode||'regular'; gravity.value=Game.matchSettings.gravity??1; kb.value=Game.matchSettings.kb??1; maxP.value=Game.matchSettings.maxPlayers??8; const teams=document.getElementById('lobbyTeams'); if(teams)teams.checked=!!Game.matchSettings.teams; const smash=document.getElementById('lobbySmash'); if(smash)smash.checked=!!Game.matchSettings.smash; const combo=document.getElementById('lobbyCombo'); if(combo)combo.checked=!!Game.matchSettings.combo; const playerSize=document.getElementById('lobbyPlayerSize'); if(playerSize)playerSize.value=Game.matchSettings.playerSize??1; const spikewall=document.getElementById('lobbySpikewall'); if(spikewall)spikewall.checked=!!Game.matchSettings.spikewall; roundMode.value=Game.roundConfig.mode||'rounds'; roundCount.value=Game.roundConfig.count??3; pointTarget.value=Game.roundConfig.target??3;
+    if(Game.map){const wanted=selectedMapOptionValue(Game.map);if([...mapSel.options].some(o=>o.value===wanted))mapSel.value=wanted;if(mapPrev)drawMapThumb(mapPrev,Game.map);} const scoreMode=roundMode.value==='score'; document.getElementById('lobbyRoundCountField')?.classList.toggle('hidden',scoreMode);document.getElementById('lobbyPointTargetField')?.classList.toggle('hidden',!scoreMode); const controls=[hostMode,gravity,kb,playerSize,maxP,roundMode,roundCount,pointTarget,mapSel,document.getElementById('lobbySpikewall'),document.getElementById('lobbyTeams'),document.getElementById('lobbySmash'),document.getElementById('lobbyCombo')].filter(Boolean);controls.forEach(el=>el.disabled=!Game.isHost);
     hostMode.dispatchEvent(new Event('change'));
     const lobbyPickerRoot=document.querySelector('[data-mode-picker="lobbyModeSelect"]');
     const lobbyPickerMain=lobbyPickerRoot?.querySelector('.mode-picker-main');
@@ -7543,7 +7866,7 @@ const Lobby = {
     const mapSel=document.getElementById('lobbyMapSelect');
     const chosenMap=(String(mapSel?.value||'').startsWith('requested:') && this._requestedMap) ? this._requestedMap : selectedMapFromSelect(mapSel);
     Game.map=ensureMapSpawn(chosenMap || BUILTIN_MAPS[0]);
-    Game.mode=document.getElementById('lobbyModeSelect').value; Game.matchSettings={gravity:Math.max(.1,Math.min(3,+document.getElementById('lobbyGravity').value||1)),kb:Math.max(.2,Math.min(3,+document.getElementById('lobbyKB').value||1)),playerSize:Math.max(.5,Math.min(2,+document.getElementById('lobbyPlayerSize').value||1)),maxPlayers:Math.max(Object.keys(Game.players).length,Math.min(8,+document.getElementById('lobbyMaxP').value||8)),spikewall:!!document.getElementById('lobbySpikewall')?.checked,teams:!!document.getElementById('lobbyTeams')?.checked,smash:!!document.getElementById('lobbySmash')?.checked}; Game.roundConfig={mode:document.getElementById('lobbyRoundMode').value,count:Math.max(1,Math.min(99,+document.getElementById('lobbyRoundCount').value||3)),target:Math.max(1,Math.min(99,+document.getElementById('lobbyPointTarget').value||3))}; this.pushSettings();
+    Game.mode=document.getElementById('lobbyModeSelect').value; Game.matchSettings={gravity:Math.max(.1,Math.min(3,+document.getElementById('lobbyGravity').value||1)),kb:Math.max(.2,Math.min(3,+document.getElementById('lobbyKB').value||1)),playerSize:Math.max(.5,Math.min(2,+document.getElementById('lobbyPlayerSize').value||1)),maxPlayers:Math.max(Object.keys(Game.players).length,Math.min(8,+document.getElementById('lobbyMaxP').value||8)),spikewall:!!document.getElementById('lobbySpikewall')?.checked,teams:!!document.getElementById('lobbyTeams')?.checked,smash:!!document.getElementById('lobbySmash')?.checked,combo:!!document.getElementById('lobbyCombo')?.checked}; Game.roundConfig={mode:document.getElementById('lobbyRoundMode').value,count:Math.max(1,Math.min(99,+document.getElementById('lobbyRoundCount').value||3)),target:Math.max(1,Math.min(99,+document.getElementById('lobbyPointTarget').value||3))}; this.pushSettings();
   },
   render(){
     document.getElementById('btnLeaveLobby').textContent=Game.isHost?'CLOSE LOBBY':'LEAVE';
@@ -9445,7 +9768,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
     Game.myName=getSavedUsername();
     Game.map=ensureMapSpawn(selectedMapFromSelect(document.getElementById('hostMap')));
     Game.mode=document.getElementById('hostMode').value;
-    Game.matchSettings={gravity:+document.getElementById('hostGravity').value,kb:+document.getElementById('hostKB').value,playerSize:Math.max(0.5,Math.min(2,+document.getElementById('hostPlayerSize').value||1)),maxPlayers:+document.getElementById('hostMaxP').value,spikewall:!!document.getElementById('hostSpikewall')?.checked,teams:!!document.getElementById('hostTeams')?.checked,smash:!!document.getElementById('hostSmash')?.checked};
+    Game.matchSettings={gravity:+document.getElementById('hostGravity').value,kb:+document.getElementById('hostKB').value,playerSize:Math.max(0.5,Math.min(2,+document.getElementById('hostPlayerSize').value||1)),maxPlayers:+document.getElementById('hostMaxP').value,spikewall:!!document.getElementById('hostSpikewall')?.checked,teams:!!document.getElementById('hostTeams')?.checked,smash:!!document.getElementById('hostSmash')?.checked,combo:!!document.getElementById('hostCombo')?.checked};
     Game.roundConfig={mode:document.getElementById('hostRoundMode').value,count:Math.max(1,+document.getElementById('hostRoundCount').value||3),target:Math.max(1,+document.getElementById('hostPointTarget').value||3)};
     Lobby.createAsHost();
   });
@@ -9460,6 +9783,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('btnReady').addEventListener('click', ()=>Lobby.toggleReady());
   document.getElementById('lobbySpikewall')?.addEventListener('change', ()=>Lobby.commitSettingsFromUI());
   document.getElementById('lobbySmash')?.addEventListener('change', ()=>Lobby.commitSettingsFromUI());
+  document.getElementById('lobbyCombo')?.addEventListener('change', ()=>Lobby.commitSettingsFromUI());
   document.getElementById('lobbyTeams')?.addEventListener('change', ()=>Lobby.toggleTeams(document.getElementById('lobbyTeams').checked));
   document.getElementById('btnLobbySpectate')?.addEventListener('click', ()=>{ const me=Game.players[Game.myId]; if(me) Lobby.requestSpectator(!me.spectator); });
   const lobbyChatInput=document.getElementById('lobbyChatInput');
@@ -9617,7 +9941,14 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
   }
   function initCustomizationSlots(){
     let slots=Storage.get('customizationSlots',null);
-    if(!Array.isArray(slots)){ slots=[null,null,null]; setCustomizationSlots(slots); }
+    if(!Array.isArray(slots)){
+      // Migration for players who already had an avatar before save slots existed:
+      // on their first Customize visit, preserve that existing avatar as Slot 1.
+      // Truly new players have no saved customization yet, so all three slots remain blank.
+      const legacy=Storage.get('customization',null);
+      slots = legacy && typeof legacy==='object' ? [JSON.parse(JSON.stringify(legacy)),null,null] : [null,null,null];
+      setCustomizationSlots(slots);
+    }
     activeCustSlot=Math.max(0,Math.min(2,+Storage.get('activeCustomizationSlot',0)||0));
     updateCustSlotButtons();
   }
