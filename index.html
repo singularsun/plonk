@@ -855,6 +855,15 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
 .cust-face-btn,.cust-exit-btn{transition-duration:.06s!important;}
 .cust-exit-btn:hover,.cust-exit-btn:focus-visible{box-shadow:0 0 0 1px #ff8e7b55,0 0 14px #e14b3455,0 7px 20px #0007!important;}
 </style>
+
+<style id="modifier-tags-only-and-right-final">
+.modifier-picker.has-enabled .modifier-picker-value{display:none!important;}
+#screen-lobby .lobby-round-settings{display:grid!important;grid-template-columns:minmax(140px,1.15fr) minmax(95px,.85fr) max-content minmax(0,1fr)!important;gap:8px!important;align-items:end!important;}
+#screen-lobby .lobby-round-settings>.modifier-picker{grid-column:3!important;grid-row:1!important;justify-self:start!important;display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;width:max-content!important;max-width:none!important;margin-top:0!important;}
+#screen-lobby .lobby-round-settings>.modifier-picker .modifier-picker-main{order:0!important;flex:0 0 auto!important;width:auto!important;min-width:132px!important;}
+#screen-lobby .lobby-round-settings>.modifier-picker .modifier-picker-enabled{order:1!important;justify-content:flex-start!important;margin:0 0 0 5px!important;max-width:min(620px,calc(100vw - 300px))!important;}
+</style>
+
 </head>
 <body>
 <div id="app">
@@ -872,7 +881,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.65 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.66 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -3615,18 +3624,23 @@ const Game = {
   },
   stepClientPredict(dt){
     this.updateMovingPlatforms(dt);
-    // A non-host predicts only its own player. Remote players are rendered from
-    // the host's snapshots/interpolation; simulating their dash locally consumed
-    // the replicated dash input before the authoritative dash serial arrived,
-    // which made other players' dash animation/effects disappear on clients.
-    const p=this.players[this.myId];
-    if(p && !p.spectator){
-      p.prevX=p.x; p.prevY=p.y;
-      this.integratePlayer(p,dt,p.input);
-      this.applyGrapple(p,dt);
+    // Every client runs the complete fixed-step world simulation locally. The
+    // host is still authoritative, but this means remote balls also collide,
+    // bounce, grapple and receive knockback immediately instead of waiting for
+    // another network snapshot.
+    for(const id in this.players){
+      const p=this.players[id];
+      if(p.spectator) continue;
+      p.prevX = p.x; p.prevY = p.y;
+      this.integratePlayer(p, dt, p.input);
+      this.applyGrapple(p, dt);
     }
-    // Do not resolve client-predicted player collisions or advance remote mines:
-    // the host remains authoritative for all non-local entities.
+    this.resolveCollisions(dt);
+    this.updateMines(dt);
+    this.killPlayersInSpikewall();
+    // Deaths and round completion are host-authoritative. Clients wait for the
+    // authoritative eliminated/round_end messages rather than making decisions
+    // from their prediction.
   },
 
   integratePlayer(p, dt, input){
@@ -6942,22 +6956,18 @@ const Game = {
       // Remote trails follow the same rendered position as the visible player.
       // Keep a short, distance-spaced visual history so network corrections do
       // not make the trail jitter or stretch unnaturally.
-      let visualTrail=p.trail;
+      let visualTrail=Array.isArray(p.trail)?p.trail:[];
       if(isRemote){
         if(!Array.isArray(p._smoothRenderTrail)) p._smoothRenderTrail=[];
         const hist=p._smoothRenderTrail;
-        const headX=Number(p.renderX)||0, headY=Number(p.renderY)||0;
-        const last=hist[0];
-        // Sample the exact displayed player position once per rendered frame.
-        // This matches the compact local trail much more closely than a slowly
-        // following history, which could stretch remote trails far behind fast players.
-        if(!last || Math.hypot(headX-last.x,headY-last.y)>=1.5){
-          hist.unshift({x:headX,y:headY});
-        }else if(last){
-          last.x=headX; last.y=headY;
-        }
-        if(hist.length>5) hist.length=5;
-        visualTrail=hist.map(t=>({x:t.x,y:t.y}));
+        const headX=Number(p.renderX)||p.x, headY=Number(p.renderY)||p.y;
+        const last=hist[hist.length-1];
+        // Add a sample every render frame, including when the player is still.
+        // This gives stationary remote trails fresh geometry so animated trail
+        // styles keep updating instead of freezing on their final movement point.
+        hist.push({x:headX,y:headY});
+        if(hist.length>4) hist.splice(0,hist.length-4);
+        visualTrail=hist;
       }
       const trailPlayer=isRemote
         ? Object.assign({},p,{x:Number(p.renderX)||p.x,y:Number(p.renderY)||p.y,trail:visualTrail})
@@ -6970,8 +6980,12 @@ const Game = {
         ctx.fillStyle=`hsla(${p.cust?.hue||200},80%,60%,${a})`;
         ctx.beginPath(); ctx.arc(t.x,t.y,p.radius*0.45,0,Math.PI*2); ctx.fill();
       }
+      // Advance all trail effects every animation frame, even at zero movement.
+      const trailNow=performance.now();
+      const trailDt=Math.min(50,Math.max(0,trailNow-(p._trailFxLastAt||trailNow)));
+      p._trailFxLastAt=trailNow;
       trailPlayer._trailFxTimer=p._trailFxTimer||0;
-      spawnTrailCosmetics.call(this,trailPlayer,1/60);
+      spawnTrailCosmetics.call(this,trailPlayer,trailDt);
       p._trailFxTimer=trailPlayer._trailFxTimer;
     }
     ctx.globalAlpha=1;
@@ -9806,14 +9820,17 @@ function baseWidthForTrail(e){return (e.size||3)*trailRarityScale(e);}
 function spawnTrailCosmetics(p,dt){
   if(!p||p.spectator||!p.alive)return;
   const id=p.cust?.trailEffect||'none',e=SphereBoxes.trailEffects[id]; if(!e)return;
-  p._trailFxTimer=Math.max(0,(p._trailFxTimer||0)-dt);
+  // Advance by elapsed render time, not movement distance, so stationary trails
+  // keep emitting and animating exactly like moving trails.
+  const elapsed=Math.min(.05,Math.max(0,Number(dt)||0)/1000);
+  p._trailFxTimer=(p._trailFxTimer||0)+elapsed;
   const interval=.16/Math.max(.8,Math.min(1.45,e.density||1));
-  if(p._trailFxTimer>0)return;
-  p._trailFxTimer=interval;
+  if(p._trailFxTimer<interval)return;
+  p._trailFxTimer%=interval;
   const colors=SphereBoxes.colors(e);
   const idx=Math.abs(Math.floor(performance.now()*.003+p.x*.008))%Math.max(1,colors.length);
-  const trail=p.trail||[];
-  const pt=trail[Math.min(trail.length-1,Math.max(1,Math.ceil(trail.length*.58)))]||p;
+  const trail=Array.isArray(p.trail)&&p.trail.length?p.trail:[p];
+  const pt=trail[Math.min(trail.length-1,Math.max(0,Math.ceil(trail.length*.58)))]||p;
   const n=e.rarity==='mythic'?2:e.rarity==='legendary'?2:(e.rarity==='epic'?1:1);
   for(let i=0;i<n;i++){
     const family=e.style||'rainbow';
@@ -10119,7 +10136,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
     const refresh=()=>{
       const active=[];
       for(const [k,label,desc,id] of defs){ const cb=document.getElementById(id); if(cb?.checked) active.push(label); }
-      valueEl.textContent=active.length?active.join(' · '):'None';
+      valueEl.textContent=''; valueEl.setAttribute('aria-label',active.length?active.join(' · '):'No modifiers selected');
       updateEnabledDisplay();
       main.disabled=(key==='lobby' && !Game.isHost);
       if(main.disabled){picker.classList.remove('open');main.setAttribute('aria-expanded','false');}
