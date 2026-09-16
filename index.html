@@ -28,6 +28,10 @@ canvas{display:block;background:#000;}
   align-items:center;justify-content:center;background:linear-gradient(rgba(10,7,5,.42),rgba(10,7,5,.58));backdrop-filter:blur(1px);
   animation:fadeIn .2s ease;overflow:auto;padding:20px;}
 .screen.active{display:flex;}
+#roundIntermissionOverlay{position:fixed;inset:0;z-index:1000;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(10,7,5,.42),rgba(10,7,5,.58));backdrop-filter:blur(1px);opacity:0;pointer-events:none;transition:opacity .34s ease;}
+#roundIntermissionOverlay.active{display:flex;opacity:1;}
+#roundIntermissionOverlay.fade-out{opacity:0;}
+#roundIntermissionOverlay .panel{width:min(480px,94vw);text-align:center;}
 #screen-main{background:transparent;}
 @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
 .round-fade-out{animation:roundFadeOut .34s ease forwards!important;}
@@ -281,6 +285,90 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .lobby-team-btn{padding:6px 8px!important;min-width:52px;font-size:9px!important;letter-spacing:.8px;}
 .lobby-team-btn.red{background:#2a1010;}
 .lobby-team-btn.blue{background:#101a2d;}
+/* Compact modifier selector: one larger control containing all current modifiers. */
+.modifier-picker{position:relative;width:100%;margin-top:7px;}
+.modifier-picker-main{width:100%;min-height:38px;display:flex;align-items:center;gap:8px;text-align:left;white-space:nowrap;overflow:hidden;}
+.modifier-picker-title{font-weight:1000;letter-spacing:1.1px;flex:0 0 auto;color:var(--accent3);}
+.modifier-picker-value{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text-dim);font-size:10px;font-weight:800;flex:1 1 auto;}
+.modifier-picker-caret{flex:0 0 auto;color:var(--text-dim);font-size:10px;}
+
+/* Modifiers: the menu opens to the right and scrolls horizontally. */
+.modifier-picker-panel{
+  position:absolute;
+  left:calc(100% + 5px);
+  top:0;
+  width:max-content;
+  min-width:650px;
+  max-width:min(820px,calc(100vw - 18px));
+  min-height:48px;
+  display:none;
+  z-index:60;
+  padding:5px;
+  background:#110c08f8;
+  border:1px solid #503622;
+  border-radius:4px;
+  box-shadow:0 14px 34px #000b;
+  overflow-x:auto;
+  overflow-y:hidden;
+  white-space:nowrap;
+  scrollbar-width:thin;
+  scrollbar-color:#503622 #0d0906;
+}
+.modifier-picker.open .modifier-picker-panel{
+  display:flex;
+  flex-direction:row;
+  align-items:stretch;
+  gap:3px;
+}
+.modifier-picker-panel::-webkit-scrollbar{height:8px;}
+.modifier-picker-panel::-webkit-scrollbar-track{background:#0d0906;border-radius:4px;}
+.modifier-picker-panel::-webkit-scrollbar-thumb{background:#503622;border-radius:4px;}
+.modifier-picker-panel .modifier-option{
+  flex:0 0 132px;
+  width:132px;
+  min-width:132px;
+  min-height:36px;
+  padding:6px 7px !important;
+  white-space:normal;
+  overflow:visible;
+}
+.modifier-picker-panel .modifier-option label{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  white-space:nowrap;
+}
+.modifier-picker-panel .modifier-option .modifier-desc{
+  white-space:normal;
+  line-height:1.2;
+}
+@media(max-width:900px){
+  .modifier-picker-panel{
+    min-width:min(780px,calc(100vw - 24px));
+    width:min(780px,calc(100vw - 24px));
+  }
+}
+@media(max-width:700px){
+  .modifier-picker-panel{
+    left:0;
+    top:calc(100% + 6px);
+    width:min(96vw,780px);
+    min-width:0;
+    max-width:96vw;
+  }
+}
+
+}
+.modifier-picker-panel{position:absolute;left:0;top:calc(100% + 4px);width:min(430px,100%);display:none;z-index:45;padding:7px;background:#110c08f8;border:1px solid #503622;border-radius:3px;box-shadow:0 12px 28px #000b;}
+.modifier-picker.open .modifier-picker-panel{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+.modifier-option{display:flex;align-items:center;gap:7px;min-height:34px;padding:6px 8px;background:#151009;border:1px solid #3a2a1a;border-radius:3px;cursor:pointer;}
+.modifier-option:hover{border-color:var(--accent);background:#241a10;}
+.modifier-option.disabled{opacity:.48;cursor:not-allowed;}
+.modifier-option input{width:17px;height:17px;margin:0;accent-color:var(--accent3);flex:0 0 auto;}
+.modifier-option-text{display:flex;flex-direction:column;min-width:0;}
+.modifier-option-name{font-size:10px;font-weight:1000;letter-spacing:.75px;color:var(--text);}
+.modifier-option-desc{font-size:8px;line-height:1.2;color:var(--text-dim);margin-top:2px;white-space:normal;}
+@media(max-width:760px){.modifier-picker-panel{width:100%;}.modifier-picker.open .modifier-picker-panel{grid-template-columns:1fr;}}
 .mode-picker{position:relative;width:100%;}
 .mode-picker-main{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;white-space:nowrap;overflow:hidden;}
 .mode-picker-value{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -784,7 +872,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.63 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.65 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -823,11 +911,12 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
             <div class="field round-count-slot hidden" id="hostPointTargetField"><label>Points</label><input type="number" id="hostPointTarget" min="1" max="99" value="3"></div>
           </div>
         </div>
-        <div class="create-round-rule-toggles">
-          <div class="lobby-toggle-row rule-toggle"><label for="hostTeams">TEAMS</label><input type="checkbox" id="hostTeams" aria-label="Enable Teams"></div>
-          <div class="lobby-spikewall-setting rule-toggle"><label for="hostSpikewall">SPIKEWALL</label><input type="checkbox" id="hostSpikewall" aria-label="Enable Spikewall"></div>
-          <div class="lobby-toggle-row rule-toggle"><label for="hostSmash">SMASH</label><input type="checkbox" id="hostSmash" aria-label="Enable Smash knockback"></div>
-          <div class="lobby-toggle-row rule-toggle"><label for="hostCombo">COMBO</label><input type="checkbox" id="hostCombo" aria-label="Enable combo system"></div>
+        <div class="modifier-picker" data-modifier-picker="host">
+          <div class="modifier-picker-enabled" aria-hidden="true"></div>
+          <button class="btn small modifier-picker-main" type="button" aria-haspopup="true" aria-expanded="false">
+            <span class="modifier-picker-title">MODIFIERS</span><span class="modifier-picker-value">None</span><span class="modifier-picker-caret">▾</span>
+          </button>
+          <div class="modifier-picker-panel" role="menu"></div>
         </div>
       </section>
       <section class="map-column">
@@ -905,11 +994,12 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
             <div class="field"><label>Round Rule</label><select id="lobbyRoundMode"><option value="rounds">Fixed Rounds</option><option value="score">First to Points</option></select></div>
             <div class="field round-count-slot" id="lobbyRoundCountField"><label>Rounds</label><input type="number" id="lobbyRoundCount" min="1" max="99" value="3"></div>
             <div class="field round-count-slot hidden" id="lobbyPointTargetField"><label>Points</label><input type="number" id="lobbyPointTarget" min="1" max="99" value="3"></div>
-            <div class="lobby-rule-toggles">
-              <div class="lobby-toggle-row rule-toggle"><label for="lobbyTeams">TEAMS</label><input type="checkbox" id="lobbyTeams" aria-label="Enable Teams"></div>
-              <div class="lobby-spikewall-setting rule-toggle"><label for="lobbySpikewall">SPIKEWALL</label><input type="checkbox" id="lobbySpikewall" aria-label="Enable Spikewall"></div>
-              <div class="lobby-toggle-row rule-toggle"><label for="lobbySmash">SMASH</label><input type="checkbox" id="lobbySmash" aria-label="Enable Smash knockback"></div>
-              <div class="lobby-toggle-row rule-toggle"><label for="lobbyCombo">COMBO</label><input type="checkbox" id="lobbyCombo" aria-label="Enable combo system"></div>
+            <div class="modifier-picker lobby-modifier-picker" data-modifier-picker="lobby">
+              <div class="modifier-picker-enabled" aria-hidden="true"></div>
+              <button class="btn small modifier-picker-main" type="button" aria-haspopup="true" aria-expanded="false">
+                <span class="modifier-picker-title">MODIFIERS</span><span class="modifier-picker-value">None</span><span class="modifier-picker-caret">▾</span>
+              </button>
+              <div class="modifier-picker-panel" role="menu"></div>
             </div>
           </div>
         </div>
@@ -1074,6 +1164,8 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <button class="btn primary" data-go="main">RETURN TO LOBBY</button>
   </div>
 </div>
+
+<div id="roundIntermissionOverlay" aria-live="polite"><div class="panel"><h2>ROUND LEADERBOARD</h2><div id="roundIntermissionContent"></div></div></div>
 
 <!-- ============ IN-GAME HUD ============ -->
 <div id="hud">
@@ -1425,6 +1517,11 @@ const AudioManager = {
   },
   jump(){ this.beep(420,0.14,'square',0.25,700); },
   dash(){ this.beep(600,0.1,'triangle',0.2,900); },
+  parry(){
+    this.beep(1450,0.055,'sawtooth',0.26,420);
+    setTimeout(()=>this.beep(720,0.11,'triangle',0.19,120),24);
+    setTimeout(()=>this.beep(1850,0.035,'square',0.11,980),18);
+  },
   impact(power){ this.beep(160-Math.min(80,power*20),0.15,'square',Math.min(0.6,0.2+power*0.1),40); },
   death(){ this.beep(300,0.4,'sawtooth',0.35,20); },
   grapple(){ this.beep(700,0.08,'triangle',0.2,300); },
@@ -1546,10 +1643,10 @@ const PHYS = {
   bounceWAccel: 5000, // brief, very fast acceleration after pressing W/Up on a bounce
   bounceWMaxSpeed: 900, // maximum upward speed before the 70% height scale is applied
   bounceWBoostTime: 0.085, // the boost is deliberately brief so holding W cannot add height forever
-  collisionSafeTravelFactor: 0.65, // max travel per map-collision slice as a fraction of player radius
-  collisionMinTravel: 8,            // lower bound keeps tiny players from taking excessive slices
-  collisionMaxSubsteps: 8,          // hard cap so a bad frame can never explode physics cost
-  collisionSkin: 0.04,              // tiny numerical cushion; visually imperceptible
+  collisionSafeTravelFactor: 0.42, // tighter travel budget prevents thin-wall tunneling at high speed
+  collisionMinTravel: 2.5,          // tiny players need smaller motion slices; still bounded
+  collisionMaxSubsteps: 256,         // enough headroom for uncapped Smash/combo velocities
+  collisionSkin: 0.35,              // tiny numerical cushion; visually imperceptible
   collisionSolverPasses: 3,         // extra penetration cleanup for post-impact contacts
   fastFallMultiplier: 2.3,    // extra gravity multiplier while holding the down key in the air
   bounceDamp: 0.6,
@@ -1573,6 +1670,8 @@ const PHYS = {
   dashPowerCurve: 3.2,            // very steep nonlinear curve: most power arrives at the final charge
   dashCdBase: 0.4,               // cooldown after an uncharged tap dash
   dashCdMaxBonus: 0.9,            // extra cooldown added at max charge
+  parryWindow: 333,               // 1/3 second reaction window after a dash impact
+  parryDashCooldownMultiplier: 3, // normal dash cooldown is tripled when Parry is enabled
   actionProjectileSpeed: 520,
   actionProjectileMaxSpeed: 1250,
   actionProjectileLife: Infinity,
@@ -1626,7 +1725,7 @@ class Player{
     this.grounded=false; this.netGrounded=false; this.supportPlatform=-1; this.netSupportPlatform=-1; this.facing=1;
     this.damage=0; this.alive=true;
     this.spectator=false; this.autoSpectator=false; this.team=null;
-    this.lastHitBy=null; this.lastHitAt=0; this.comboCount=0; this.comboExpiresAt=0; this.comboStarted=false; this._comboHitLocks={};
+    this.lastHitBy=null; this.lastHitAt=0; this.comboCount=0; this.comboExpiresAt=0; this.comboStarted=false; this._comboHitLocks={}; this.parryWindowUntil=0; this.parryTargetId=null; this.parrySpeed=0; this.parryUsed=false;
     this.heavy=false; this.hitFlash=0;
     this.bounceBoostQueued=false;
     this.bounceJumpActive=false; this.bounceJumpPeakSpeed=0; this.bounceJumpHeldPrev=false; this.bounceWBoostTimer=0; this.bounceIgnorePlatform=-1;
@@ -2935,7 +3034,7 @@ const Game = {
   state:'menu',
   players:{},
   myId:null, myName:getSavedUsername(),
-  map:null, mode:'regular', matchSettings:{gravity:1,kb:1,maxPlayers:8,spikewall:false,teams:false,smash:false,combo:false},
+  map:null, mode:'regular', matchSettings:{gravity:1,kb:1,maxPlayers:8,spikewall:false,teams:false,smash:false,combo:false,parry:false},
   particles:new ParticleSystem(),
   // Trail FX are intentionally capped much lower than gameplay particles.
   // Trails are persistent cosmetics, so a small bounded pool keeps frame time stable.
@@ -3211,13 +3310,18 @@ const Game = {
     }
   },
 
-  beginRoundImmediate(expectedRound=null, transitionId=null){
+  beginRoundImmediate(expectedRound=null, transitionId=null, authoritativeSpawns=null){
     if(expectedRound!=null && expectedRound < this.roundNumber) return false;
     if(transitionId!=null && transitionId < (this.roundTransitionId||0)) return false;
     if(this._cdInt){ clearInterval(this._cdInt); this._cdInt=null; }
     if(this._roundTransitionTimer){ clearTimeout(this._roundTransitionTimer); this._roundTransitionTimer=null; }
     if(expectedRound!=null) this.roundNumber=expectedRound;
     if(transitionId!=null) this.roundTransitionId=transitionId;
+    if(!this.isHost && authoritativeSpawns) {
+      this.roundSpawnPositions = authoritativeSpawns;
+      this.authoritativeSpawnRound = Number(expectedRound)||this.roundNumber;
+      this.remotePredictionDisabledUntil = performance.now() + 2600;
+    }
     this.state='playing'; this.eliminationOrder=[]; this.projectiles=[]; this.mines=[];
     this.netRoundResult=null;
     this.clearRoundEffects();
@@ -3231,7 +3335,7 @@ const Game = {
     this.roundSpawnSnapUntil=spawnSnapNow+180;
     for(const p of Object.values(this.players)){
       if(!p) continue;
-      p.renderX=p.x; p.renderY=p.y; p.renderTargetX=p.x; p.renderTargetY=p.y;
+      p.renderX=p.x; p.renderY=p.y; p.renderTargetX=p.x; p.renderTargetY=p.y; p._smoothRenderTrail=[];
       p.netServerX=p.x; p.netServerY=p.y; p.netServerVX=0; p.netServerVY=0;
       p.netErrorX=0; p.netErrorY=0;
     }
@@ -3261,15 +3365,21 @@ const Game = {
       const p = this.players[id];
       const assigned = Number.isInteger(this.spawnAssignments[id]) ? this.spawnAssignments[id] : 0;
       const sp = spawns[((assigned%spawns.length)+spawns.length)%spawns.length];
+      const auth = (!this.isHost && this.authoritativeSpawnRound===this.roundNumber && this.roundSpawnPositions && this.roundSpawnPositions[id])
+        ? this.roundSpawnPositions[id] : null;
       if(p.spectator){
-        p.lastHitBy=null; p.lastHitAt=0; p.comboCount=0; p.comboExpiresAt=0; p.comboStarted=false; p._comboHitLocks={};
+        p.lastHitBy=null; p.lastHitAt=0; p.comboCount=0; p.comboExpiresAt=0; p.comboStarted=false; p._comboHitLocks={}; p.parryWindowUntil=0; p.parryTargetId=null; p.parrySpeed=0; p.parryUsed=false;
         p.vx=0; p.vy=0; p.damage=0; p.alive=false; p.grounded=false; p.supportPlatform=-1;
         p.grappleAnchor=null; p.grappleTargetId=null; p.grappleLen=0; p.grappleRestLen=0;
         p.actionAiming=false; p.remoteActionActive=false; p.actionCharge=0; p.actionPower=0; p.actionKind=null;
-        p.renderX=p.x; p.renderY=p.y; p.renderTargetX=p.x; p.renderTargetY=p.y;
+        p.renderX=p.x; p.renderY=p.y; p.renderTargetX=p.x; p.renderTargetY=p.y; p._smoothRenderTrail=[];
         continue;
       }
-      p.x=sp.x; p.y=sp.y; p.vx=0; p.vy=0; p.damage=0; p.alive=true;
+      p.x=auth && Number.isFinite(Number(auth.x)) ? Number(auth.x) : sp.x;
+      p.y=auth && Number.isFinite(Number(auth.y)) ? Number(auth.y) : sp.y;
+      p.vx=auth && Number.isFinite(Number(auth.vx)) ? Number(auth.vx) : 0;
+      p.vy=auth && Number.isFinite(Number(auth.vy)) ? Number(auth.vy) : 0;
+      p.damage=0; p.alive=true;
       p.lastHitBy=null; p.lastHitAt=0; p.comboCount=0; p.comboExpiresAt=0; p.comboStarted=false; p._comboHitLocks={};
       // Give every spawn a deterministic starting facing so host and clients
       // agree immediately, even before the first authoritative state snapshot.
@@ -3278,7 +3388,7 @@ const Game = {
       // Spawn points are map-authored, but custom maps can contain accidental
       // overlaps. Eject the player from solids before the round starts so the
       // first physics tick never begins embedded in geometry.
-      this.repairMapPenetration(p, PHYS.collisionSolverPasses);
+      if(!auth) this.repairMapPenetration(p, PHYS.collisionSolverPasses);
       p.heavy=false; p.grappleAnchor=null; p.grappleTargetId=null; p.grappleLen=0; p.grappleRestLen=0; p.grounded=false; p.netGrounded=false; p.supportPlatform=-1; p.netSupportPlatform=-1; p.grappleStamina=p.grappleStaminaMax; p.lastMoveDir=0;
       p.bounceBoostQueued=false;
       p.bounceJumpActive=false; p.bounceJumpPeakSpeed=0; p.bounceJumpHeldPrev=false; p.bounceWBoostTimer=0; p.bounceIgnorePlatform=-1;
@@ -3505,23 +3615,18 @@ const Game = {
   },
   stepClientPredict(dt){
     this.updateMovingPlatforms(dt);
-    // Every client runs the complete fixed-step world simulation locally. The
-    // host is still authoritative, but this means remote balls also collide,
-    // bounce, grapple and receive knockback immediately instead of waiting for
-    // another network snapshot.
-    for(const id in this.players){
-      const p=this.players[id];
-      if(p.spectator) continue;
-      p.prevX = p.x; p.prevY = p.y;
-      this.integratePlayer(p, dt, p.input);
-      this.applyGrapple(p, dt);
+    // A non-host predicts only its own player. Remote players are rendered from
+    // the host's snapshots/interpolation; simulating their dash locally consumed
+    // the replicated dash input before the authoritative dash serial arrived,
+    // which made other players' dash animation/effects disappear on clients.
+    const p=this.players[this.myId];
+    if(p && !p.spectator){
+      p.prevX=p.x; p.prevY=p.y;
+      this.integratePlayer(p,dt,p.input);
+      this.applyGrapple(p,dt);
     }
-    this.resolveCollisions(dt);
-    this.updateMines(dt);
-    this.killPlayersInSpikewall();
-    // Deaths and round completion are host-authoritative. Clients wait for the
-    // authoritative eliminated/round_end messages rather than making decisions
-    // from their prediction.
+    // Do not resolve client-predicted player collisions or advance remote mines:
+    // the host remains authoritative for all non-local entities.
   },
 
   integratePlayer(p, dt, input){
@@ -3651,7 +3756,9 @@ const Game = {
     // Dash: hold to charge through three power levels, then release to fire.
     // A quick tap still produces the familiar low-power poke.
     const dashHeldNow = !!input.dash && p.alive;
-    if(dashHeldNow && !p._dashHeldPrev && p.dashCd<=0 && !p.dashCharging){
+    const dashPressedEdge = dashHeldNow && !p._dashHeldPrev;
+    const parriedThisTick = dashPressedEdge && this.matchSettings?.parry && this.performParry(p);
+    if(dashHeldNow && !parriedThisTick && !p._dashHeldPrev && p.dashCd<=0 && !p.dashCharging){
       p.dashCharging=true; p.dashCharge=0; p._dashChargeFxAcc=0; p._dashChargeSfxLevel=0;
     }
     if(p.dashCharging){
@@ -3690,6 +3797,61 @@ const Game = {
     if(p.trail.length>7) p.trail.shift();
   },
 
+  armParryWindow(victim, attacker){
+    if(!this.isHost || !this.matchSettings?.parry || !victim || !attacker) return;
+    if(victim.spectator || !victim.alive || attacker.spectator || !attacker.alive) return;
+    if(!(attacker.dashTime>0) || !Number.isFinite(attacker.dashVelocity) || Math.abs(attacker.dashVelocity)<=0) return;
+    const expiresAt=Date.now()+PHYS.parryWindow;
+    victim.parryWindowUntil=expiresAt;
+    victim.parryTargetId=attacker.id;
+    victim.parrySpeed=Math.abs(attacker.dashVelocity);
+    victim.parryUsed=false;
+    if(victim.id!==this.myId){
+      NetworkManager.send(victim.id,{t:'parry_window',attackerId:attacker.id,speed:victim.parrySpeed,expiresAt},true);
+    }
+  },
+
+  performParry(p){
+    if(!p || !this.matchSettings?.parry || !p.alive || p.spectator) return false;
+    if(p.parryUsed || !(p.parryWindowUntil>0) || Date.now()>p.parryWindowUntil) return false;
+    const target=this.players[p.parryTargetId];
+    const speed=Math.max(1,Number(p.parrySpeed)||0);
+    if(!target || !target.alive || target.id===p.id || speed<=0){
+      p.parryWindowUntil=0; p.parryTargetId=null; p.parrySpeed=0; p.parryUsed=false;
+      return false;
+    }
+    const dir=p.x<=target.x ? 1 : -1;
+    p.vx=dir*speed;
+    p.dashVelocity=speed;
+    p.dashDirection=dir;
+    p.dashTime=14;
+    p.dashCharging=false;
+    p.dashCharge=0;
+    p._dashChargeSfxLevel=0;
+    p.dashCd=(PHYS.dashCdBase+PHYS.dashCdMaxBonus)*PHYS.parryDashCooldownMultiplier;
+    p.dashCdMax=p.dashCd;
+    p.dashSerial=((p.dashSerial||0)+1)&65535;
+    p.parryUsed=true; p.parryWindowUntil=0; p.parryTargetId=null; p.parrySpeed=0;
+    p.input.dashPressed=false;
+    AudioManager.parry();
+    this.spawnParryFx(p,dir);
+    if(this.isHost){
+      NetworkManager.broadcast({t:'parry_counter',victimId:p.id,targetId:target.id,x:p.x,y:p.y,dir,speed},true);
+    }
+    return true;
+  },
+
+  spawnParryFx(p,dir=1){
+    if(!p) return;
+    const x=p.x+dir*p.radius*0.65,y=p.y;
+    this.particles.burst(x,y,'#ffffff',16,420,{gravity:0,life:.22,size:3.2,sizeEnd:.1,twinkle:true,shape:'spark'});
+    this.particles.burst(x,y,'#ffdf72',12,300,{gravity:30,life:.32,size:2.8,sizeEnd:.1,twinkle:true,shape:'shard'});
+    for(let i=0;i<7;i++){
+      const yy=y+(Math.random()-.5)*p.radius*1.8;
+      this.particles.spawn(x+Math.random()*8,yy,{vx:dir*(280+Math.random()*420),vy:(Math.random()-.5)*180,life:.16+Math.random()*.12,size:2.2,sizeEnd:.05,color:'#fff4c7',gravity:0,drag:.9,twinkle:true,shape:'shard',spin:(Math.random()-.5)*7});
+    }
+  },
+
   /* Fires the dash the moment the dash key is released (or immediately, if it
      was only tapped). Power and cooldown scale with the three charge levels. */
   fireDash(p){
@@ -3698,7 +3860,7 @@ const Game = {
     const power = PHYS.dashBaseSpeed + Math.pow(chargeNorm, PHYS.dashPowerCurve)*PHYS.dashMaxBonus;
     p.vx = p.facing * power;
     p.dashVelocity = power;
-    p.dashCd = PHYS.dashCdBase + chargeNorm*PHYS.dashCdMaxBonus;
+    p.dashCd = (PHYS.dashCdBase + chargeNorm*PHYS.dashCdMaxBonus) * (this.matchSettings?.parry ? PHYS.parryDashCooldownMultiplier : 1);
     p.dashCdMax = p.dashCd;
     // Revert to the original dash duration; all charge levels use the same
     // momentum duration, including max charge.
@@ -4079,7 +4241,12 @@ const Game = {
     const vy=(a1y-a0y)-(b1y-b0y);
     const rr=radius*radius;
     const c=rx*rx+ry*ry-rr;
-    if(c<=0) return {t:0,nx:0,ny:0};
+    if(c<=0){
+      let nx=rx, ny=ry, d=Math.hypot(nx,ny);
+      if(d<1e-7){ nx=vx; ny=vy; d=Math.hypot(nx,ny); }
+      if(d<1e-7){ nx=1; ny=0; d=1; }
+      return {t:0,nx:nx/d,ny:ny/d};
+    }
     const a=vx*vx+vy*vy;
     if(a<1e-10) return null;
     const b=2*(rx*vx+ry*vy);
@@ -4660,8 +4827,11 @@ const Game = {
 
   getCollisionSubsteps(p, dx, dy){
     const radius=Math.max(1,Number(p?.radius)||26);
-    const safeTravel=Math.max(PHYS.collisionMinTravel, radius*PHYS.collisionSafeTravelFactor);
+    const safeTravel=Math.max(1.25, radius*PHYS.collisionSafeTravelFactor);
     const distance=Math.hypot(dx,dy);
+    // When a player is extremely fast (notably from uncapped Smash/combo knockback),
+    // scale the number of map-collision slices with actual travel distance rather
+    // than letting one large slice skip a thin platform or wall.
     return Math.min(PHYS.collisionMaxSubsteps, Math.max(1, Math.ceil(distance/safeTravel)));
   },
 
@@ -5087,16 +5257,32 @@ const Game = {
         const a=arr[i], b=arr[j];
         const a0x=Number.isFinite(a.prevX)?a.prevX:a.x, a0y=Number.isFinite(a.prevY)?a.prevY:a.y;
         const b0x=Number.isFinite(b.prevX)?b.prevX:b.x, b0y=Number.isFinite(b.prevY)?b.prevY:b.y;
+        const startDx=b0x-a0x, startDy=b0y-a0y;
+        const startDist=Math.hypot(startDx,startDy);
         const endDx=b.x-a.x, endDy=b.y-a.y;
-        const endDist=Math.hypot(endDx,endDy)||0.01;
-        // A sub-pixel skin closes the tiny numerical gap at grazing contacts
-        // without visibly changing the player hitbox.
+        const endDist=Math.hypot(endDx,endDy);
+        // A small skin closes numerical grazing gaps without materially enlarging
+        // the visible player hitbox. More importantly, explicitly handle players
+        // that begin a step overlapped (for example after a network correction or
+        // a strong knockback). The old solver sent that case through the sweep with
+        // a zero normal and therefore could neither separate nor exchange velocity.
         const minD=a.radius+b.radius+PHYS.collisionSkin;
         let toi=null;
         let nx=0, ny=0, overlap=0;
+        const normalFrom=(dx,dy,fx,fy)=>{
+          const d=Math.hypot(dx,dy);
+          if(d>1e-7) return [dx/d,dy/d];
+          const fd=Math.hypot(fx,fy);
+          if(fd>1e-7) return [fx/fd,fy/fd];
+          return [1,0];
+        };
 
-        if(endDist<minD){
-          nx=endDx/endDist; ny=endDy/endDist;
+        if(startDist<minD){
+          [nx,ny]=normalFrom(startDx,startDy,b.vx-a.vx,b.vy-a.vy);
+          overlap=minD-startDist;
+          toi=0;
+        }else if(endDist<minD){
+          [nx,ny]=normalFrom(endDx,endDy,b.vx-a.vx,b.vy-a.vy);
           overlap=minD-endDist;
           toi=1;
         }else{
@@ -5146,6 +5332,12 @@ const Game = {
         const rvx=b.vx-a.vx, rvy=b.vy-a.vy;
         const relNormalSpeed=rvx*nx+rvy*ny;
         const dashImpact=(aWasDashing||bWasDashing) && relNormalSpeed<0;
+        if(this.matchSettings?.parry && dashImpact){
+          // A dash that connects with a non-dashing player arms that victim's
+          // 1/3-second counter window. Dash-vs-dash is treated as a clash, not a parry.
+          if(aWasDashing && !bWasDashing) this.armParryWindow(b,a);
+          else if(bWasDashing && !aWasDashing) this.armParryWindow(a,b);
+        }
 
         if(relNormalSpeed<0){
           const vaN=a.vx*nx+a.vy*ny;
@@ -5236,6 +5428,46 @@ const Game = {
           this.movePlayerMapDelta(b,b.vx*dt*remain,b.vy*dt*remain,dt*remain);
         }
       }
+    }
+
+    // Final player-player cleanup. The swept pass above catches tunneling, but
+    // corrections, grapple pulls, post-impact movement, or remote reconciliation
+    // can still leave two bodies slightly intersecting at the end of the tick.
+    // Resolve those overlaps repeatedly so a tiny player cannot remain embedded
+    // long enough to visually phase through another body.
+    for(let pass=0; pass<4; pass++){
+      let anyOverlap=false;
+      for(let i=0;i<arr.length;i++){
+        for(let j=i+1;j<arr.length;j++){
+          const a=arr[i], b=arr[j];
+          if(!a.alive || !b.alive || a.spectator || b.spectator) continue;
+          const dx=b.x-a.x, dy=b.y-a.y;
+          const d=Math.hypot(dx,dy);
+          const minD=a.radius+b.radius+PHYS.collisionSkin;
+          if(d>=minD) continue;
+          anyOverlap=true;
+          let nx=1,ny=0;
+          if(d>1e-7){ nx=dx/d; ny=dy/d; }
+          else {
+            const rvx=b.vx-a.vx, rvy=b.vy-a.vy, rv=Math.hypot(rvx,rvy);
+            if(rv>1e-7){ nx=rvx/rv; ny=rvy/rv; }
+          }
+          const massA=a.heavy?PHYS.heavyMass:1, massB=b.heavy?PHYS.heavyMass:1;
+          const total=massA+massB;
+          const push=(minD-d)+0.04;
+          a.x-=nx*push*(massB/total); a.y-=ny*push*(massB/total);
+          b.x+=nx*push*(massA/total); b.y+=ny*push*(massA/total);
+          const rvx=b.vx-a.vx, rvy=b.vy-a.vy;
+          const vn=rvx*nx+rvy*ny;
+          if(vn<0){
+            const impulse=-vn;
+            const shareA=2*massB/total, shareB=2*massA/total;
+            a.vx-=nx*impulse*shareA; a.vy-=ny*impulse*shareA;
+            b.vx+=nx*impulse*shareB; b.vy+=ny*impulse*shareB;
+          }
+        }
+      }
+      if(!anyOverlap) break;
     }
 
     // Final map passes resolve any new contact created by a player/player impact
@@ -5418,7 +5650,8 @@ const Game = {
         for(const id in this.players) startFacings[id]=this.players[id].facing||1;
         const spectatorStates={};
         for(const id in this.players) spectatorStates[id]=!!this.players[id].spectator;
-        NetworkManager.broadcast({t:'round_start', round:nextRound, scores:this.scores, teamScores:this.teamScores, transitionId, facings:startFacings, spawnAssignments:this.spawnAssignments, spectatorStates, previousRoundResult:payload}, true);
+        const nextSpawnPositions=this.getNextRoundSpawnPositions();
+        NetworkManager.broadcast({t:'round_start', round:nextRound, scores:this.scores, teamScores:this.teamScores, transitionId, facings:startFacings, spawnAssignments:this.spawnAssignments, spawnPositions:nextSpawnPositions, spectatorStates, previousRoundResult:payload}, true);
         UI.fadeToNextRound(startNext);
         this._roundTransitionTimer=setTimeout(startNext, 900);
       }, 650);
@@ -5555,6 +5788,20 @@ const Game = {
   },
 
   /* ---------- networking glue ---------- */
+  getNextRoundSpawnPositions(){
+    const out={};
+    const spawns=Array.isArray(this.map?.spawnPoints)?this.map.spawnPoints:[];
+    if(!spawns.length) return out;
+    for(const id of Object.keys(this.players)){
+      const p=this.players[id];
+      if(!p || p.spectator) continue;
+      const idx=Number.isInteger(this.spawnAssignments?.[id]) ? this.spawnAssignments[id] : 0;
+      const sp=spawns[((idx%spawns.length)+spawns.length)%spawns.length];
+      out[id]={x:Number(sp.x)||0,y:Number(sp.y)||0,vx:0,vy:0};
+    }
+    return out;
+  },
+
   broadcastState(){
     const snap = {};
     this.stateSeq = ((this.stateSeq||0) + 1) & 65535;
@@ -5575,7 +5822,7 @@ const Game = {
         p.spectator?1:0
       ];
     }
-    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, roundResult:(this.state==='roundResults'?this.netRoundResult:null), scores:(this.state==='roundResults'?this.scores:null), teamScores:this.teamScores, spawnAssignments:this.spawnAssignments, movingPlatforms:this.getMovingPlatformSnapshot(), s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace,kind:q.kind,bouncy:!!q.bouncy,bounceCount:q.bounceCount||0,playerHitCooldowns:q.playerHitCooldowns||{}})), mines:this.mines.map(m=>this.serializeMine(m))}, false);
+    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, roundResult:(this.state==='roundResults'?this.netRoundResult:null), scores:(this.state==='roundResults'?this.scores:null), teamScores:this.teamScores, spawnAssignments:this.spawnAssignments, spawnPositions:(this.state==='roundResults' ? this.getNextRoundSpawnPositions() : null), movingPlatforms:this.getMovingPlatformSnapshot(), s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace,kind:q.kind,bouncy:!!q.bouncy,bounceCount:q.bounceCount||0,playerHitCooldowns:q.playerHitCooldowns||{}})), mines:this.mines.map(m=>this.serializeMine(m))}, false);
     this.lastServerState = Date.now();
   },
   updateRemoteJumpPrediction(p, serverX, serverY, serverVX, serverVY, now){
@@ -5638,6 +5885,11 @@ const Game = {
         p.renderX=p.x; p.renderY=p.y;
         continue;
       }
+      if(now < (this.remotePredictionDisabledUntil||0)){
+        p.renderX=p.x; p.renderY=p.y;
+        p.renderTargetX=p.x; p.renderTargetY=p.y;
+        continue;
+      }
       if(performance.now() < (this.roundSpawnSnapUntil||0)){
         p.renderX=p.x; p.renderY=p.y;
         p.renderTargetX=p.x; p.renderTargetY=p.y;
@@ -5655,14 +5907,15 @@ const Game = {
       const vx=Number.isFinite(p.netServerVX)?p.netServerVX:0;
       const vy=Number.isFinite(p.netServerVY)?p.netServerVY:0;
 
-      let tx=sx + vx*age;
-      let ty=sy + vy*age;
+      const predictionLocked = now < (this.remotePredictionDisabledUntil||0);
+      let tx = predictionLocked ? sx : sx + vx*age;
+      let ty = predictionLocked ? sy : sy + vy*age;
 
       // For airborne remote players, predict the host's jump between snapshots
       // using the last authoritative vertical velocity plus learned gravity.
       // The host snapshots continually re-anchor the arc, while the measured
       // peak/start positions provide the observed total jump height.
-      if(p.netJumpActive && !p.netGrounded){
+      if(!predictionLocked && p.netJumpActive && !p.netGrounded){
         const g=Math.max(50,Number(p.netJumpGravity)||PHYS.baseGravity*(this.matchSettings.gravity||1));
         ty = sy + vy*age + 0.5*g*age*age;
       }
@@ -5679,31 +5932,34 @@ const Game = {
 
       p.renderTargetX=tx; p.renderTargetY=ty;
 
-      // Follow the authoritative/extrapolated path immediately. New snapshots
-      // naturally update the trajectory every frame; only large discontinuities
-      // are softened to avoid a visible teleport after packet loss or a respawn.
+      // Interpolate the remote player's visual position every render frame.
+      // The target is already extrapolated from the newest host snapshot, so this
+      // adds several smooth visual frames between network updates without adding
+      // latency to the authoritative/gameplay position. Keep the visual point
+      // aligned with the same target used by aim/reticle rendering.
       if(!Number.isFinite(p.renderX) || !Number.isFinite(p.renderY)){
         p.renderX=tx; p.renderY=ty;
         continue;
       }
-      const errX=tx-p.renderX, errY=ty-p.renderY;
-      const err=Math.hypot(errX,errY);
-      if(err>120){
+
+      const renderDt=Math.max(0.001,Math.min(0.050,Number(dt)||1/60));
+      const jumpSnap = Math.hypot(tx-p.renderX,ty-p.renderY) > Math.max(48,p.radius*3.5);
+
+      if(jumpSnap){
+        // Large corrections are usually respawns, teleports, or packet-loss
+        // recovery. Snap these so interpolation never leaves a player far behind.
         p.renderX=tx; p.renderY=ty;
       }else{
-        // Advance from the last rendered point using the host's velocity, then
-        // apply only the small residual correction. This keeps motion fluid at
-        // the browser frame rate without accumulating network-induced trailing.
-        p.renderX += vx*dt + errX*Math.min(1,dt*18);
-        if(remoteGrounded){
-          // Grounded remote players should visually stick to the support surface.
-          // Keep horizontal prediction smooth, but never carry vertical motion
-          // forward between snapshots while the host says they are grounded.
-          p.renderY += errY*Math.min(1,dt*30);
-          p.renderY = ty;
-        }else{
-          p.renderY += vy*dt + errY*Math.min(1,dt*18);
-        }
+        // ~22 ms visual response gives multiple interpolated frames at 60 Hz
+        // while staying much tighter than a long ease-out.
+        const alpha=1-Math.exp(-renderDt/0.022);
+        p.renderX += (tx-p.renderX)*alpha;
+        p.renderY += (ty-p.renderY)*alpha;
+
+        // Prevent tiny floating-point drift from making the visual trail/reticle
+        // disagree with the eventual target.
+        if(Math.abs(tx-p.renderX)<0.05) p.renderX=tx;
+        if(Math.abs(ty-p.renderY)<0.05) p.renderY=ty;
       }
     }
   },
@@ -5814,15 +6070,24 @@ const Game = {
         || p.dashCharging || p.dashTime>0 || !!p.grappleAnchor;
       if(spawnLock){
         // Exact authoritative spawn placement above takes precedence briefly.
-      }else if(error>95 && !locallyBoosted){
+      }else if(error>Math.max(28, p.radius*2.2) && !locallyBoosted){
+        // Network corrections larger than roughly two body radii are not useful to
+        // smooth through: for small players that old 95px threshold allowed the
+        // visual/physical proxy to drift many hitboxes away from the host. Snap the
+        // proxy back to the authoritative position instead.
         p.x=serverX; p.y=serverY;
         p.vx=serverVX; p.vy=serverVY;
         p.netErrorX=0; p.netErrorY=0;
       } else {
-        const correction = locallyBoosted ? 0.12 : 0.38;
+        // Apply stronger correction to smaller players. The correction is still
+        // bounded, but it scales with the hitbox so a 0.5x player does not spend
+        // dozens of frames visibly inside another player's authoritative path.
+        const radiusScale=Math.max(1,26/Math.max(8,p.radius));
+        const correction = locallyBoosted ? Math.min(0.24,0.12+0.025*(radiusScale-1))
+                                          : Math.min(0.78,0.42+0.10*(radiusScale-1));
         p.x += dx*correction; p.y += dy*correction;
-        p.vx += (serverVX-p.vx)*(locallyBoosted ? 0.08 : 0.30);
-        p.vy += (serverVY-p.vy)*(locallyBoosted ? 0.08 : 0.30);
+        p.vx += (serverVX-p.vx)*(locallyBoosted ? 0.10 : 0.38);
+        p.vy += (serverVY-p.vy)*(locallyBoosted ? 0.10 : 0.38);
       }
 
       p.damage=v[4];
@@ -5929,6 +6194,25 @@ const Game = {
   handleNetData(pid, data){
     if(!this.isHost && pid===NetworkManager.hostId){ this.lastHostSignal=Date.now(); }
     switch(data.t){
+      case 'parry_window':
+        if(!this.isHost){
+          const victim=this.players[this.myId];
+          if(victim && data.expiresAt){
+            victim.parryWindowUntil=Number(data.expiresAt)||0;
+            victim.parryTargetId=data.attackerId||null;
+            victim.parrySpeed=Math.abs(Number(data.speed)||0);
+            victim.parryUsed=false;
+          }
+        }
+        break;
+      case 'parry_counter':
+        if(!this.isHost && data.victimId!==this.myId){
+          const pp=this.players[data.victimId];
+          if(pp){ pp.vx=(Number(data.dir)||1)*Math.abs(Number(data.speed)||0); }
+          this.spawnParryFx(pp||{x:Number(data.x)||0,y:Number(data.y)||0,radius:26},Number(data.dir)||1);
+          AudioManager.parry();
+        }
+        break;
       case 'input':
         if(this.isHost){
           const p=this.players[pid]; if(!p) return;
@@ -6175,8 +6459,6 @@ const Game = {
           const rr=data.data;
           const rrRound=Number(rr.round)||0;
           const rrTransition=Number(rr.transitionId)||0;
-          // This packet is the dedicated authoritative intermission trigger.
-          // Do not let round-number prediction suppress it.
           if(rr.final || rrRound<=0 || rrTransition<=0) break;
           if(rrTransition < (this._roundIntermissionTransition||0)) break;
           this.scores=rr.scores||this.scores;
@@ -6185,7 +6467,7 @@ const Game = {
           this.clearRoundEffects();
           this._roundIntermissionTransition=rrTransition;
           this._roundIntermissionRound=rrRound;
-          UI.showRoundResult(rr);
+          UI.showRoundIntermission(rr);
         }
         break;
       case 'round_end':
@@ -6212,45 +6494,59 @@ const Game = {
           const incomingRound=Number(data.round)||0;
           const incomingTransition=Number(data.transitionId)||0;
           if(!incomingRound) break;
-          if(incomingRound < this.roundNumber) break;
 
-          // round_start is only the signal to LEAVE the intermission. The previous
-          // round's result is rendered first, before the client advances its round.
           const previous=data.previousRoundResult;
-          if(previous && !previous.final && Number(previous.round)===incomingRound-1 && this.state!=='roundResults'){
+          const previousIsThisTransition=previous && !previous.final && Number(previous.round)===incomingRound-1;
+          // round_start is also a guaranteed fallback: even if the dedicated
+          // intermission event was lost, its previousRoundResult must create the
+          // visible intermission before the next round can begin.
+          if(previousIsThisTransition){
             this.scores=previous.scores||this.scores;
             if(previous.teamScores) this.teamScores=previous.teamScores;
             if(previous.spectatorStates) this.applySpectatorStates(previous.spectatorStates);
             this.clearRoundEffects();
             this._roundIntermissionTransition=Number(previous.transitionId)||incomingTransition;
             this._roundIntermissionRound=Number(previous.round)||incomingRound-1;
-            UI.showRoundResult(previous);
+            UI.showRoundIntermission(previous);
           }
 
           this._pendingRoundStart={round:incomingRound,transitionId:incomingTransition,data};
           this.scores=data.scores||this.scores;
           if(data.teamScores) this.teamScores=data.teamScores;
           if(data.spawnAssignments) this.spawnAssignments=data.spawnAssignments;
+          if(data.spawnPositions) this.roundSpawnPositions=data.spawnPositions;
+          this.remotePredictionDisabledUntil=performance.now()+2600;
           if(data.spectatorStates) this.applySpectatorStates(data.spectatorStates);
           if(data.facings){
-            for(const id in data.facings){
-              if(this.players[id]) this.players[id].facing=(data.facings[id]<0?-1:1);
+            for(const id in data.facings){ if(this.players[id]) this.players[id].facing=(data.facings[id]<0?-1:1); }
+          }
+          if(data.spawnPositions){
+            for(const id of Object.keys(data.spawnPositions)){
+              const pp=this.players[id], sp=data.spawnPositions[id];
+              if(!pp || pp.spectator || !sp) continue;
+              if(Number.isFinite(Number(sp.x))) pp.x=Number(sp.x);
+              if(Number.isFinite(Number(sp.y))) pp.y=Number(sp.y);
+              pp.vx=0; pp.vy=0;
+              pp.renderX=pp.x; pp.renderY=pp.y;
+              pp.renderTargetX=pp.x; pp.renderTargetY=pp.y;
+              pp.netServerX=pp.x; pp.netServerY=pp.y;
+              pp.netServerVX=0; pp.netServerVY=0;
             }
           }
 
           if(this._roundTransitionTimer) clearTimeout(this._roundTransitionTimer);
-          // Match the host's existing fade duration. Do NOT change roundNumber/state
-          // until the fade finishes, so gameplay state packets cannot hide the leaderboard.
+          // Keep the leaderboard visible for the same total handoff window the
+          // host gets. Fade only after the results have definitely been painted.
           this._roundTransitionTimer=setTimeout(()=>{
             const pending=this._pendingRoundStart;
             if(!pending || pending.round!==incomingRound || pending.transitionId!==incomingTransition) return;
             this._pendingRoundStart=null;
-            UI.fadeToNextRound(()=>{
+            UI.fadeRoundIntermission(()=>{
               this.roundNumber=incomingRound;
               this.roundTransitionId=incomingTransition;
-              this.beginRoundImmediate(incomingRound,incomingTransition);
+              this.beginRoundImmediate(incomingRound,incomingTransition,pending.data?.spawnPositions||this.roundSpawnPositions);
             });
-          },0);
+          },650);
         }
         break;
       case 'matchend':
@@ -6637,24 +6933,57 @@ const Game = {
       if(!p || p.spectator) continue;
       const alpha=p.alive ? 1 : 0.15;
       ctx.globalAlpha=alpha;
+      const isRemote=p.id!==this.myId && Number.isFinite(p.renderX) && Number.isFinite(p.renderY);
+      const trailDx=isRemote ? p.renderX-p.x : 0;
+      const trailDy=isRemote ? p.renderY-p.y : 0;
+      // Remote player bodies/effects are drawn from the predicted render position.
+      // Translate every trail point by that exact same offset so the trail head never
+      // remains stuck behind the visibly predicted player.
+      // Remote trails follow the same rendered position as the visible player.
+      // Keep a short, distance-spaced visual history so network corrections do
+      // not make the trail jitter or stretch unnaturally.
+      let visualTrail=p.trail;
+      if(isRemote){
+        if(!Array.isArray(p._smoothRenderTrail)) p._smoothRenderTrail=[];
+        const hist=p._smoothRenderTrail;
+        const headX=Number(p.renderX)||0, headY=Number(p.renderY)||0;
+        const last=hist[0];
+        // Sample the exact displayed player position once per rendered frame.
+        // This matches the compact local trail much more closely than a slowly
+        // following history, which could stretch remote trails far behind fast players.
+        if(!last || Math.hypot(headX-last.x,headY-last.y)>=1.5){
+          hist.unshift({x:headX,y:headY});
+        }else if(last){
+          last.x=headX; last.y=headY;
+        }
+        if(hist.length>5) hist.length=5;
+        visualTrail=hist.map(t=>({x:t.x,y:t.y}));
+      }
+      const trailPlayer=isRemote
+        ? Object.assign({},p,{x:Number(p.renderX)||p.x,y:Number(p.renderY)||p.y,trail:visualTrail})
+        : p;
       const trailId=p.cust?.trailEffect||'none';
       const trailEffect=SphereBoxes.trailEffects[trailId];
-      if(trailEffect) drawTrailEffect(ctx,p,trailEffect,alpha);
-      for(let i=0;i<p.trail.length;i++){
-        const t=p.trail[i]; const a=(i/p.trail.length)*0.08;
+      if(trailEffect) drawTrailEffect(ctx,trailPlayer,trailEffect,alpha);
+      for(let i=0;i<visualTrail.length;i++){
+        const t=visualTrail[i]; const a=(i/visualTrail.length)*0.08;
         ctx.fillStyle=`hsla(${p.cust?.hue||200},80%,60%,${a})`;
         ctx.beginPath(); ctx.arc(t.x,t.y,p.radius*0.45,0,Math.PI*2); ctx.fill();
       }
-      spawnTrailCosmetics.call(this,p,1/60);
+      trailPlayer._trailFxTimer=p._trailFxTimer||0;
+      spawnTrailCosmetics.call(this,trailPlayer,1/60);
+      p._trailFxTimer=trailPlayer._trailFxTimer;
     }
     ctx.globalAlpha=1;
     for(const id in this.players){
       const p=this.players[id];
       if(p.spectator) continue;
       const alpha = p.alive ? 1 : 0.15;
-      const drawX = p.x;
-      const drawY = p.y;
-      const visualX = p.x, visualY = p.y;
+      // Remote characters use the same predicted render position as the arrow
+      // aiming marker, so the marker never appears ahead of the character.
+      const drawX = (p.id!==this.myId && Number.isFinite(p.renderX)) ? p.renderX : p.x;
+      const drawY = (p.id!==this.myId && Number.isFinite(p.renderY)) ? p.renderY : p.y;
+      const visualX = drawX, visualY = drawY;
       ctx.globalAlpha = alpha;
       if(p.dashCharging && p.alive){
         const chg = p.dashCharge||0;
@@ -6800,7 +7129,12 @@ const Game = {
         ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(ex-9,ey); ctx.lineTo(ex+9,ey); ctx.moveTo(ex,ey-9); ctx.lineTo(ex,ey+9); ctx.stroke();
         ctx.restore();
       }
-      this.drawCharacter(ctx,p);
+      // Use the exact same visual position as the dash ring / aiming reticle for remote players.
+      // drawCharacter() translates using p.x/p.y, so pass a lightweight visual-position proxy
+      // instead of allowing the sprite and name to fall behind the already-predicted effects.
+      const drawPlayer = (p.id!==this.myId && Number.isFinite(visualX) && Number.isFinite(visualY))
+        ? Object.assign({},p,{x:visualX,y:visualY}) : p;
+      this.drawCharacter(ctx,drawPlayer);
       ctx.globalAlpha=1;
     }
     ctx.restore();
@@ -7237,6 +7571,7 @@ const UI = {
     AudioManager.init(); AudioManager.resume();
   },
   showHUD(){
+    document.getElementById('roundIntermissionOverlay')?.classList.remove('active','fade-out');
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     const resultsScreen=document.getElementById('screen-results');
     const resultsPanel=resultsScreen?.querySelector('.panel');
@@ -7287,13 +7622,44 @@ const UI = {
     }, 340);
   },
   showRoundIntermission(data){
-    this.showRoundResult(data);
+    // Keep the existing results screen as the host's renderer, but give non-hosts
+    // an independent intermission surface that cannot be hidden by HUD/gameplay UI.
+    if(Game.isHost){ this.showRoundResult(data); return; }
+    const overlay=document.getElementById('roundIntermissionOverlay');
+    const content=document.getElementById('roundIntermissionContent');
+    if(!overlay||!content){ this.showRoundResult(data); return; }
+    const teamMode=!!data.teamMode || !!Game.matchSettings?.teams;
+    const rows=teamMode
+      ? ['red','blue'].map(team=>({team,score:(data.teamScores||{})[team]||0})).sort((a,b)=>b.score-a.score)
+      : Object.entries(data.scores||{}).filter(([id])=>!data.spectatorStates?.[id]).map(([id,score])=>({id,score,name:Game.players[id]?.name||id})).sort((a,b)=>b.score-a.score);
+    let out='<div style="font-size:15px;color:var(--text-dim);margin-bottom:10px;">ROUND '+(Number(data.round)||'')+'</div>';
+    if(data.winnerTeam) out+='<div style="font-size:24px;font-weight:900;color:'+TEAM_COLORS[data.winnerTeam]+';margin-bottom:10px;">'+TEAM_LABELS[data.winnerTeam]+' WINS THE ROUND!</div>';
+    else if(data.winnerName) out+='<div style="font-size:24px;font-weight:900;color:var(--accent3);margin-bottom:10px;">'+esc(data.winnerName)+' WINS THE ROUND!</div>';
+    rows.forEach((r,i)=>{
+      if(teamMode) out+='<div class="player-card" style="display:flex;align-items:center;gap:8px;margin-top:8px;"><b>#'+(i+1)+'</b><span style="flex:1;text-align:left;font-weight:900;color:'+TEAM_COLORS[r.team]+';">'+TEAM_LABELS[r.team]+'</span><span style="font-weight:900;color:'+TEAM_COLORS[r.team]+';">'+r.score+' '+(r.score===1?'ROUND':'ROUNDS')+'</span></div>';
+      else out+='<div class="player-card" style="display:flex;align-items:center;gap:8px;margin-top:8px;"><b>#'+(i+1)+'</b><span style="flex:1;text-align:left;font-weight:900;">'+esc(r.name||r.id)+'</span><span style="font-weight:900;color:var(--accent3);">'+r.score+' '+(r.score===1?'POINT':'POINTS')+'</span></div>';
+    });
+    content.innerHTML=out;
+    overlay.classList.remove('fade-out');
+    overlay.classList.add('active');
+    this._forcedRoundIntermissionRound=Number(data.round)||0;
+    this._forcedRoundIntermissionTransition=Number(data.transitionId)||0;
   },
   hideRoundIntermission(){
+    const overlay=document.getElementById('roundIntermissionOverlay');
+    if(overlay){ overlay.classList.remove('active','fade-out'); }
     const screen=document.getElementById('screen-results');
     if(screen) screen.classList.remove('active');
     const actions=document.querySelector('.results-actions');
     if(actions) actions.classList.remove('between-round');
+    this._forcedRoundIntermissionRound=0;
+    this._forcedRoundIntermissionTransition=0;
+  },
+  fadeRoundIntermission(cb){
+    const overlay=document.getElementById('roundIntermissionOverlay');
+    if(!overlay || !overlay.classList.contains('active')){ cb?.(); return; }
+    overlay.classList.add('fade-out');
+    setTimeout(()=>{ this.hideRoundIntermission(); cb?.(); },340);
   },
   showRoundResult(data){
     const list=document.getElementById('resultsList');
@@ -7845,9 +8211,15 @@ const Lobby = {
   },
   renderSettings(){
     const hostMode=document.getElementById('lobbyModeSelect'),gravity=document.getElementById('lobbyGravity'),kb=document.getElementById('lobbyKB'),maxP=document.getElementById('lobbyMaxP'),roundMode=document.getElementById('lobbyRoundMode'),roundCount=document.getElementById('lobbyRoundCount'),pointTarget=document.getElementById('lobbyPointTarget'),mapSel=document.getElementById('lobbyMapSelect'),mapPrev=document.getElementById('lobbyMapPreview'); if(!hostMode||!gravity||!kb||!maxP||!roundMode||!roundCount||!pointTarget||!mapSel)return;
-    const savedName=getSavedUsername(); Game.myName=savedName; hostMode.value=Game.mode||'regular'; gravity.value=Game.matchSettings.gravity??1; kb.value=Game.matchSettings.kb??1; maxP.value=Game.matchSettings.maxPlayers??8; const teams=document.getElementById('lobbyTeams'); if(teams)teams.checked=!!Game.matchSettings.teams; const smash=document.getElementById('lobbySmash'); if(smash)smash.checked=!!Game.matchSettings.smash; const combo=document.getElementById('lobbyCombo'); if(combo)combo.checked=!!Game.matchSettings.combo; const playerSize=document.getElementById('lobbyPlayerSize'); if(playerSize)playerSize.value=Game.matchSettings.playerSize??1; const spikewall=document.getElementById('lobbySpikewall'); if(spikewall)spikewall.checked=!!Game.matchSettings.spikewall; roundMode.value=Game.roundConfig.mode||'rounds'; roundCount.value=Game.roundConfig.count??3; pointTarget.value=Game.roundConfig.target??3;
-    if(Game.map){const wanted=selectedMapOptionValue(Game.map);if([...mapSel.options].some(o=>o.value===wanted))mapSel.value=wanted;if(mapPrev)drawMapThumb(mapPrev,Game.map);} const scoreMode=roundMode.value==='score'; document.getElementById('lobbyRoundCountField')?.classList.toggle('hidden',scoreMode);document.getElementById('lobbyPointTargetField')?.classList.toggle('hidden',!scoreMode); const controls=[hostMode,gravity,kb,playerSize,maxP,roundMode,roundCount,pointTarget,mapSel,document.getElementById('lobbySpikewall'),document.getElementById('lobbyTeams'),document.getElementById('lobbySmash'),document.getElementById('lobbyCombo')].filter(Boolean);controls.forEach(el=>el.disabled=!Game.isHost);
+    const savedName=getSavedUsername(); Game.myName=savedName; hostMode.value=Game.mode||'regular'; gravity.value=Game.matchSettings.gravity??1; kb.value=Game.matchSettings.kb??1; maxP.value=Game.matchSettings.maxPlayers??8; const teams=document.getElementById('lobbyTeams'); if(teams)teams.checked=!!Game.matchSettings.teams; const smash=document.getElementById('lobbySmash'); if(smash)smash.checked=!!Game.matchSettings.smash; const combo=document.getElementById('lobbyCombo'); if(combo)combo.checked=!!Game.matchSettings.combo; const parry=document.getElementById('lobbyParry'); if(parry)parry.checked=!!Game.matchSettings.parry; const playerSize=document.getElementById('lobbyPlayerSize'); if(playerSize)playerSize.value=Game.matchSettings.playerSize??1; const spikewall=document.getElementById('lobbySpikewall'); if(spikewall)spikewall.checked=!!Game.matchSettings.spikewall; roundMode.value=Game.roundConfig.mode||'rounds'; roundCount.value=Game.roundConfig.count??3; pointTarget.value=Game.roundConfig.target??3;
+    if(Game.map){const wanted=selectedMapOptionValue(Game.map);if([...mapSel.options].some(o=>o.value===wanted))mapSel.value=wanted;if(mapPrev)drawMapThumb(mapPrev,Game.map);} const scoreMode=roundMode.value==='score'; document.getElementById('lobbyRoundCountField')?.classList.toggle('hidden',scoreMode);document.getElementById('lobbyPointTargetField')?.classList.toggle('hidden',!scoreMode); const controls=[hostMode,gravity,kb,playerSize,maxP,roundMode,roundCount,pointTarget,mapSel,document.getElementById('lobbySpikewall'),document.getElementById('lobbyTeams'),document.getElementById('lobbySmash'),document.getElementById('lobbyCombo'),document.getElementById('lobbyParry')].filter(Boolean);controls.forEach(el=>el.disabled=!Game.isHost);
     hostMode.dispatchEvent(new Event('change'));
+    // These picker constants are initialized later in this script. Calling renderSettings
+    // before that initialization used to hit the temporal dead zone and abort lobby creation.
+    const hostPickerEl=document.querySelector('[data-modifier-picker="host"]');
+    const lobbyPickerEl=document.querySelector('[data-modifier-picker="lobby"]');
+    hostPickerEl?._modifierRefresh?.();
+    lobbyPickerEl?._modifierRefresh?.();
     const lobbyPickerRoot=document.querySelector('[data-mode-picker="lobbyModeSelect"]');
     const lobbyPickerMain=lobbyPickerRoot?.querySelector('.mode-picker-main');
     const lobbyPickerValue=lobbyPickerRoot?.querySelector('.mode-picker-value');
@@ -7866,7 +8238,7 @@ const Lobby = {
     const mapSel=document.getElementById('lobbyMapSelect');
     const chosenMap=(String(mapSel?.value||'').startsWith('requested:') && this._requestedMap) ? this._requestedMap : selectedMapFromSelect(mapSel);
     Game.map=ensureMapSpawn(chosenMap || BUILTIN_MAPS[0]);
-    Game.mode=document.getElementById('lobbyModeSelect').value; Game.matchSettings={gravity:Math.max(.1,Math.min(3,+document.getElementById('lobbyGravity').value||1)),kb:Math.max(.2,Math.min(3,+document.getElementById('lobbyKB').value||1)),playerSize:Math.max(.5,Math.min(2,+document.getElementById('lobbyPlayerSize').value||1)),maxPlayers:Math.max(Object.keys(Game.players).length,Math.min(8,+document.getElementById('lobbyMaxP').value||8)),spikewall:!!document.getElementById('lobbySpikewall')?.checked,teams:!!document.getElementById('lobbyTeams')?.checked,smash:!!document.getElementById('lobbySmash')?.checked,combo:!!document.getElementById('lobbyCombo')?.checked}; Game.roundConfig={mode:document.getElementById('lobbyRoundMode').value,count:Math.max(1,Math.min(99,+document.getElementById('lobbyRoundCount').value||3)),target:Math.max(1,Math.min(99,+document.getElementById('lobbyPointTarget').value||3))}; this.pushSettings();
+    Game.mode=document.getElementById('lobbyModeSelect').value; Game.matchSettings={gravity:Math.max(.1,Math.min(3,+document.getElementById('lobbyGravity').value||1)),kb:Math.max(.2,Math.min(3,+document.getElementById('lobbyKB').value||1)),playerSize:Math.max(.5,Math.min(2,+document.getElementById('lobbyPlayerSize').value||1)),maxPlayers:Math.max(Object.keys(Game.players).length,Math.min(8,+document.getElementById('lobbyMaxP').value||8)),spikewall:!!document.getElementById('lobbySpikewall')?.checked,teams:!!document.getElementById('lobbyTeams')?.checked,smash:!!document.getElementById('lobbySmash')?.checked,combo:!!document.getElementById('lobbyCombo')?.checked,parry:!!document.getElementById('lobbyParry')?.checked}; Game.roundConfig={mode:document.getElementById('lobbyRoundMode').value,count:Math.max(1,Math.min(99,+document.getElementById('lobbyRoundCount').value||3)),target:Math.max(1,Math.min(99,+document.getElementById('lobbyPointTarget').value||3))}; this.pushSettings();
   },
   render(){
     document.getElementById('btnLeaveLobby').textContent=Game.isHost?'CLOSE LOBBY':'LEAVE';
@@ -9718,7 +10090,67 @@ window.addEventListener('DOMContentLoaded', ()=>{
   }
   const hostModePicker=setupModePicker('hostMode');
   const lobbyModePicker=setupModePicker('lobbyModeSelect');
-  document.addEventListener('click',()=>{[hostModePicker,lobbyModePicker].forEach(p=>{if(p){p.classList.remove('open');p.querySelector('.mode-picker-main')?.setAttribute('aria-expanded','false');}});});
+
+  function setupModifierPicker(key){
+    const picker=document.querySelector(`[data-modifier-picker=\"${key}\"]`);
+    if(!picker) return null;
+    const main=picker.querySelector('.modifier-picker-main');
+    const valueEl=picker.querySelector('.modifier-picker-value');
+    const panel=picker.querySelector('.modifier-picker-panel');
+    const defs=[
+      ['teams','TEAMS', 'Team-based matches', key==='host'?'hostTeams':'lobbyTeams'],
+      ['spikewall','SPIKEWALL', 'Adds the spike-wall hazard', key==='host'?'hostSpikewall':'lobbySpikewall'],
+      ['smash','SMASH', 'Damage increases future knockback', key==='host'?'hostSmash':'lobbySmash'],
+      ['combo','COMBO', 'Build hit chains for extra knockback', key==='host'?'hostCombo':'lobbyCombo'],
+      ['parry','PARRY', 'Dash counter after a 1/3-second reaction window', key==='host'?'hostParry':'lobbyParry']
+    ];
+    const enabledDisplay=picker.querySelector('.modifier-picker-enabled');
+    const updateEnabledDisplay=()=>{
+      if(!enabledDisplay) return;
+      enabledDisplay.innerHTML='';
+      const active=defs.filter(([k,label,desc,id])=>document.getElementById(id)?.checked);
+      active.forEach(([k,label])=>{
+        const span=document.createElement('span');
+        span.textContent=label;
+        enabledDisplay.appendChild(span);
+      });
+      picker.classList.toggle('has-enabled',active.length>0);
+    };
+    const refresh=()=>{
+      const active=[];
+      for(const [k,label,desc,id] of defs){ const cb=document.getElementById(id); if(cb?.checked) active.push(label); }
+      valueEl.textContent=active.length?active.join(' · '):'None';
+      updateEnabledDisplay();
+      main.disabled=(key==='lobby' && !Game.isHost);
+      if(main.disabled){picker.classList.remove('open');main.setAttribute('aria-expanded','false');}
+    };
+    panel.innerHTML='';
+    for(const [k,label,desc,id] of defs){
+      const cb=document.createElement('input'); cb.type='checkbox'; cb.id=id; cb.setAttribute('aria-label',label);
+      const existing=document.getElementById(id);
+      if(existing) cb.checked=existing.checked;
+      else cb.checked=!!Game.matchSettings?.[k];
+      // The original checkbox is replaced by this menu checkbox.
+      existing?.remove();
+      const row=document.createElement('label'); row.className='modifier-option'; row.setAttribute('for',id);
+      const text=document.createElement('span'); text.className='modifier-option-text';
+      const name=document.createElement('span'); name.className='modifier-option-name'; name.textContent=label;
+      const d=document.createElement('span'); d.className='modifier-option-desc'; d.textContent=desc;
+      text.append(name,d); row.append(cb,text); panel.appendChild(row);
+      cb.addEventListener('change',()=>{
+        if(key==='lobby' && k==='teams'){ Lobby.toggleTeams(cb.checked); }
+        else if(key==='lobby'){ Lobby.commitSettingsFromUI(); }
+        refresh();
+      });
+    }
+    main.addEventListener('click',e=>{e.stopPropagation();if(main.disabled)return;const open=!picker.classList.contains('open');document.querySelectorAll('.modifier-picker.open').forEach(p=>p.classList.remove('open'));picker.classList.toggle('open',open);main.setAttribute('aria-expanded',String(open));});
+    picker._modifierRefresh=refresh;
+    refresh();
+    return picker;
+  }
+  const hostModifierPicker=setupModifierPicker('host');
+  const lobbyModifierPicker=setupModifierPicker('lobby');
+  document.addEventListener('click',()=>{[hostModePicker,lobbyModePicker].forEach(p=>{if(p){p.classList.remove('open');p.querySelector('.mode-picker-main')?.setAttribute('aria-expanded','false');}}); document.querySelectorAll('.modifier-picker').forEach(p=>{p.classList.remove('open');p.querySelector('.modifier-picker-main')?.setAttribute('aria-expanded','false');});});
 
   const roundModeSel=document.getElementById('hostRoundMode');
   const roundCountField=document.getElementById('hostRoundCountField');
@@ -9768,7 +10200,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
     Game.myName=getSavedUsername();
     Game.map=ensureMapSpawn(selectedMapFromSelect(document.getElementById('hostMap')));
     Game.mode=document.getElementById('hostMode').value;
-    Game.matchSettings={gravity:+document.getElementById('hostGravity').value,kb:+document.getElementById('hostKB').value,playerSize:Math.max(0.5,Math.min(2,+document.getElementById('hostPlayerSize').value||1)),maxPlayers:+document.getElementById('hostMaxP').value,spikewall:!!document.getElementById('hostSpikewall')?.checked,teams:!!document.getElementById('hostTeams')?.checked,smash:!!document.getElementById('hostSmash')?.checked,combo:!!document.getElementById('hostCombo')?.checked};
+    Game.matchSettings={gravity:+document.getElementById('hostGravity').value,kb:+document.getElementById('hostKB').value,playerSize:Math.max(0.5,Math.min(2,+document.getElementById('hostPlayerSize').value||1)),maxPlayers:+document.getElementById('hostMaxP').value,spikewall:!!document.getElementById('hostSpikewall')?.checked,teams:!!document.getElementById('hostTeams')?.checked,smash:!!document.getElementById('hostSmash')?.checked,combo:!!document.getElementById('hostCombo')?.checked,parry:!!document.getElementById('hostParry')?.checked};
     Game.roundConfig={mode:document.getElementById('hostRoundMode').value,count:Math.max(1,+document.getElementById('hostRoundCount').value||3),target:Math.max(1,+document.getElementById('hostPointTarget').value||3)};
     Lobby.createAsHost();
   });
@@ -9781,10 +10213,6 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('joinPassInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('joinPassConfirm')?.click();});
 
   document.getElementById('btnReady').addEventListener('click', ()=>Lobby.toggleReady());
-  document.getElementById('lobbySpikewall')?.addEventListener('change', ()=>Lobby.commitSettingsFromUI());
-  document.getElementById('lobbySmash')?.addEventListener('change', ()=>Lobby.commitSettingsFromUI());
-  document.getElementById('lobbyCombo')?.addEventListener('change', ()=>Lobby.commitSettingsFromUI());
-  document.getElementById('lobbyTeams')?.addEventListener('change', ()=>Lobby.toggleTeams(document.getElementById('lobbyTeams').checked));
   document.getElementById('btnLobbySpectate')?.addEventListener('click', ()=>{ const me=Game.players[Game.myId]; if(me) Lobby.requestSpectator(!me.spectator); });
   const lobbyChatInput=document.getElementById('lobbyChatInput');
   lobbyChatInput.addEventListener('focus', ()=>{ InputManager.chatFocused=true; });
@@ -9999,3 +10427,126 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
 </script>
 </body>
 </html>
+
+<style id="modifier-panel-final-fix">
+.modifier-picker-panel{contain:layout paint;}
+.modifier-picker-panel > *{flex-shrink:0;}
+.modifier-picker-panel .modifier-option{box-sizing:border-box;}
+.modifier-picker-panel .modifier-option *{max-width:100%;}
+</style>
+
+<style id="modifier-compact-final">
+.modifier-picker-panel{gap:3px!important;}
+.modifier-picker-panel .modifier-option{margin:0!important;}
+.modifier-picker-panel .modifier-option + .modifier-option{margin-left:0!important;}
+/* Create Game: the modifier drawer opens upward from the control. */
+#screen-create .modifier-picker-panel{
+  top:auto!important;
+  bottom:calc(100% + 5px)!important;
+  left:0!important;
+}
+/* Keep the lobby drawer opening to the right as requested. */
+#screen-lobby .modifier-picker-panel{
+  top:0!important;
+  bottom:auto!important;
+  left:calc(100% + 5px)!important;
+}
+</style>
+
+<style id="modifier-two-column-final">
+
+/* Modifier picker: flush edges + two-column expanded layout */
+.modifier-picker-panel{
+  padding:0!important;
+  gap:0!important;
+  display:none!important;
+  white-space:normal!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  min-width:0!important;
+  width:286px!important;
+  max-width:286px!important;
+  box-sizing:border-box!important;
+}
+.modifier-picker.open .modifier-picker-panel{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-items:stretch!important;
+  gap:0!important;
+}
+.modifier-picker-panel .modifier-option{
+  box-sizing:border-box!important;
+  width:100%!important;
+  min-width:0!important;
+  flex:none!important;
+  min-height:36px!important;
+  margin:0!important;
+  padding:6px 7px!important;
+  white-space:normal!important;
+}
+.modifier-picker-panel .modifier-option + .modifier-option{
+  margin-left:0!important;
+}
+#screen-create .modifier-picker-panel{
+  top:auto!important;
+  bottom:calc(100% + 5px)!important;
+  left:0!important;
+}
+#screen-lobby .modifier-picker-panel{
+  top:0!important;
+  bottom:auto!important;
+  left:calc(100% + 5px)!important;
+}
+
+</style>
+
+
+<style id="modifier-enabled-left-display">
+.modifier-picker{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  width:max-content!important;
+  max-width:100%!important;
+}
+.modifier-picker-main{
+  flex:0 0 auto!important;
+  width:auto!important;
+  min-width:132px!important;
+  white-space:nowrap!important;
+}
+.modifier-picker-enabled{
+  display:none;
+  flex:0 1 auto;
+  align-items:center;
+  justify-content:flex-end;
+  gap:4px;
+  margin-right:5px;
+  min-width:0;
+  max-width:min(620px,calc(100vw - 160px));
+  overflow:hidden;
+  white-space:nowrap;
+  direction:ltr;
+  pointer-events:none;
+}
+.modifier-picker.has-enabled .modifier-picker-enabled{
+  display:flex;
+}
+.modifier-picker-enabled span{
+  display:inline-block;
+  flex:0 0 auto;
+  padding:4px 7px;
+  border:1px solid #503622;
+  border-radius:3px;
+  background:#1a100b;
+  color:#d8b894;
+  font-size:10px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:.45px;
+  text-transform:uppercase;
+  box-sizing:border-box;
+}
+</style>
+
