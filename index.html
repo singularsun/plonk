@@ -97,9 +97,9 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .player-menu-wrap{position:relative;flex:0 0 auto;}
 .player-menu-toggle{width:28px;height:28px;padding:0!important;display:flex;align-items:center;justify-content:center;font-size:19px!important;line-height:1;color:var(--text-dim);background:#151009;border:1px solid #3a2a1a;}
 .player-menu-toggle:hover,.player-menu-toggle:focus-visible{color:var(--text);background:#241a10;border-color:var(--accent);}
-.player-menu{position:absolute;top:50%;right:calc(100% + 5px);transform:translateY(-50%);z-index:20;min-width:max-content;padding:5px;background:#110c08f8;border:1px solid #503622;border-radius:3px;box-shadow:0 10px 28px #000b;display:none;}
-.player-menu.open{display:flex;flex-direction:row;gap:4px;align-items:center;}
-.player-menu .btn{width:auto;min-width:72px;padding:8px 9px;font-size:10px;text-align:center;}
+.player-menu{position:absolute;top:50%;right:calc(100% + 4px);transform:translateY(-50%);z-index:20;min-width:0;width:max-content;padding:4px;background:#110c08f8;border:1px solid #503622;border-radius:3px;box-shadow:0 10px 28px #000b;display:none;}
+.player-menu.open{display:grid;grid-template-columns:repeat(4,max-content);gap:4px;align-items:center;}
+.player-menu .btn{width:max-content;min-width:0;padding:7px 9px;font-size:9px;line-height:1.1;letter-spacing:.45px;text-align:center;white-space:nowrap;}
 .player-spectator-chip{font-size:9px;color:var(--text-dim);font-weight:800;letter-spacing:.7px;margin-left:7px;}
 .pcard.spectator{opacity:.5;border-color:#777!important;}
 .pcard.spectator .pname{color:#999;}
@@ -212,7 +212,9 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
   background:#00000066;border-radius:2px;padding:6px;}
 #chatlog div{word-break:break-word;}
 #chatInputWrap{pointer-events:auto;display:flex;gap:4px;margin-top:4px;}
-#chatInput{flex:1;font-size:12px;padding:6px 8px;}
+#chatInput{flex:1;font-size:12px;padding:6px 8px;min-width:0;}
+.chat-mute-btn{flex:0 0 auto;padding:6px 8px!important;font-size:10px!important;}
+.chat-mute-btn.muted{border-color:var(--accent);color:var(--accent3);}
 
 /* wider left-right UI */
 .wide-panel{max-height:92vh;overflow:auto;}
@@ -881,7 +883,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.66 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.76 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -1017,7 +1019,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
             <div id="lobbyChatPanel">
               <h3 style="margin:0 0 5px 0;">CHAT</h3>
               <div id="lobbyChatLog"></div>
-              <div id="lobbyChatInputWrap"><input type="text" id="lobbyChatInput" maxlength="120" placeholder="Type a message..."><button class="btn small" id="lobbyChatSend">SEND</button></div>
+              <div id="lobbyChatInputWrap"><input type="text" id="lobbyChatInput" maxlength="120" placeholder="Type a message..."><button class="btn small" id="lobbyChatSend">SEND</button><button class="btn small hidden chat-mute-btn" id="lobbyChatMute" type="button">MUTE</button></div>
             </div>
           </div>
           <div class="map-preview-wrap">
@@ -1217,6 +1219,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div id="chatlog"></div>
     <div id="chatInputWrap">
       <input type="text" id="chatInput" maxlength="120" placeholder="Press Enter to chat...">
+      <button class="btn small hidden chat-mute-btn" id="chatMuteBtn" type="button">MUTE</button>
     </div>
   </div>
 </div>
@@ -1359,184 +1362,24 @@ const Storage = {
 
 /* ---------------------------- AUDIO ---------------------------- */
 const AudioManager = {
-  ctx:null, musicGain:null, sfxGain:null, ambient:null, musicEl:null, musicSource:null,
-  battleGain:null, battleEl:null, battleSource:null, battleStarted:false, inBattleMusic:false,
-  musicTarget:0.40, musicFade:1, musicFadeTimer:null, battleFadeTimer:null, musicStarted:false, musicFadeSeconds:0.9, lastHover:0,
-  init(){
-    if(!this.ctx){
-      this.ctx = new (window.AudioContext||window.webkitAudioContext)();
-      this.musicGain = this.ctx.createGain();
-      this.sfxGain = this.ctx.createGain();
-      this.battleGain = this.ctx.createGain();
-      this.musicGain.connect(this.ctx.destination);
-      this.sfxGain.connect(this.ctx.destination);
-      this.battleGain.connect(this.ctx.destination);
-      const s = Storage.get('settings',{});
-      this.setMusicVol((s.music??40)/100);
-      this.setSfxVol((s.sfx??70)/100);
-    }
-    this.resume();
-  },
-  resume(){
-    if(this.ctx && this.ctx.state==='suspended') this.ctx.resume().catch(()=>{});
-    // Music begins only after the user has interacted with the page. The global
-    // pointerdown handler below is the single user-gesture entry point.
-  },
-  setMusicVol(v){
-    this.musicTarget=Math.max(0,Math.min(1,Number(v)||0));
-    this.applyMusicGain();
-  },
-  applyMusicGain(){
-    if(!this.musicGain) return;
-    this.musicGain.gain.value=this.musicTarget*this.musicFade;
-  },
-  setSfxVol(v){ if(this.sfxGain) this.sfxGain.gain.value = Math.max(0,Math.min(1,v)); },
-  startMusic(){
-    if(!this.ctx || this.musicStarted) return;
-    try{
-      const el=new Audio('music.mp3');
-      el.preload='auto'; el.loop=false;
-      this.musicEl=el;
-      this.musicSource=this.ctx.createMediaElementSource(el);
-      this.musicSource.connect(this.musicGain);
-      el.addEventListener('timeupdate',()=>this._checkMusicFade(),{passive:true});
-      el.addEventListener('loadedmetadata',()=>this._checkMusicFade(),{passive:true});
-      el.addEventListener('ended',()=>this._restartMusicWithFade());
-      this.musicStarted=true;
-      this.musicFade=0;
-      this.applyMusicGain();
-      const play=()=>{
-        this._fadeMusicTo(1,this.musicFadeSeconds);
-        const r=el.play();
-        if(r&&typeof r.catch==='function') r.catch(()=>{});
-      };
-      play();
-    }catch(e){ this.musicStarted=false; this.musicEl=null; this.musicSource=null; }
-  },
-  _checkMusicFade(){
-    const el=this.musicEl;
-    if(!el || !Number.isFinite(el.duration) || el.duration<=0) return;
-    const remain=el.duration-el.currentTime;
-    if(remain<=this.musicFadeSeconds && el.played.length){
-      const target=Math.max(0,remain/this.musicFadeSeconds);
-      this._setMusicFade(target);
-    }
-  },
-  _setMusicFade(v){
-    this.musicFade=Math.max(0,Math.min(1,Number(v)||0));
-    this.applyMusicGain();
-  },
-  _fadeMusicTo(target,duration){
-    if(this.musicFadeTimer) clearInterval(this.musicFadeTimer);
-    const start=this.musicFade, end=Math.max(0,Math.min(1,target));
-    if(duration<=0){ this._setMusicFade(end); return; }
-    const started=performance.now();
-    this.musicFadeTimer=setInterval(()=>{
-      const t=Math.max(0,Math.min(1,(performance.now()-started)/(duration*1000)));
-      const eased=t*t*(3-2*t);
-      this._setMusicFade(start+(end-start)*eased);
-      if(t>=1){ clearInterval(this.musicFadeTimer); this.musicFadeTimer=null; }
-    },30);
-  },
-  _restartMusicWithFade(){
-    const el=this.musicEl; if(!el) return;
-    try{ el.currentTime=0; }catch(e){}
-    this._setMusicFade(0);
-    const r=el.play(); if(r&&typeof r.catch==='function') r.catch(()=>{});
-    this._fadeMusicTo(1,this.musicFadeSeconds);
-  },
-  _fadeBattleTo(target,duration=this.musicFadeSeconds){
-    if(!this.battleGain) return;
-    if(this.battleFadeTimer) clearInterval(this.battleFadeTimer);
-    const start=this.inBattleMusic ? (this._battleFadeLevel??1) : (this._battleFadeLevel??0);
-    const end=Math.max(0,Math.min(1,target));
-    const started=performance.now();
-    if(duration<=0){ this._battleFadeLevel=end; this.battleGain.gain.value=this.musicTarget*end; return; }
-    this.battleFadeTimer=setInterval(()=>{
-      const t=Math.max(0,Math.min(1,(performance.now()-started)/(duration*1000)));
-      const eased=t*t*(3-2*t);
-      this._battleFadeLevel=start+(end-start)*eased;
-      this.battleGain.gain.value=this.musicTarget*this._battleFadeLevel;
-      if(t>=1){ clearInterval(this.battleFadeTimer); this.battleFadeTimer=null; }
-    },30);
-  },
-  _ensureBattleMusic(){
-    if(!this.ctx || !this.battleGain || this.battleStarted) return;
-    try{
-      const el=new Audio('battlemusic.mp3');
-      el.preload='auto'; el.loop=true; el.volume=1;
-      this.battleEl=el;
-      this.battleSource=this.ctx.createMediaElementSource(el);
-      this.battleSource.connect(this.battleGain);
-      this.battleStarted=true;
-      this._battleFadeLevel=0;
-      this.battleGain.gain.value=0;
-    }catch(e){
-      this.battleStarted=false; this.battleEl=null; this.battleSource=null;
-    }
-  },
-  enterBattleMusic(){
-    this.init();
-    this.resume();
-    this._ensureBattleMusic();
-    const battle=this.battleEl;
-    if(!battle || !this.battleGain) return;
-    this.inBattleMusic=true;
-    if(this.musicFadeTimer) clearInterval(this.musicFadeTimer);
-    this._fadeMusicTo(0,this.musicFadeSeconds);
-    this._fadeBattleTo(1,this.musicFadeSeconds);
-    const r=battle.play(); if(r&&typeof r.catch==='function') r.catch(()=>{});
-  },
-  exitBattleMusic(){
-    if(!this.ctx || !this.musicStarted) return;
-    this.inBattleMusic=false;
-    if(this.battleEl){
-      this._fadeBattleTo(0,this.musicFadeSeconds);
-      setTimeout(()=>{ if(!this.inBattleMusic && this.battleEl){ try{ this.battleEl.pause(); this.battleEl.currentTime=0; }catch(e){} } }, Math.max(0,this.musicFadeSeconds*1000)+60);
-    }
-    this._fadeMusicTo(1,this.musicFadeSeconds);
-  },
-  beep(freq, dur, type='sine', vol=1, sweepTo=null){
-    if(!this.ctx) return;
-    const t0 = this.ctx.currentTime;
-    const osc = this.ctx.createOscillator();
-    const g = this.ctx.createGain();
-    osc.type = type; osc.frequency.setValueAtTime(freq, t0);
-    if(sweepTo) osc.frequency.exponentialRampToValueAtTime(Math.max(1,sweepTo), t0+dur);
-    g.gain.setValueAtTime(vol, t0);
-    g.gain.exponentialRampToValueAtTime(0.001, t0+dur);
-    osc.connect(g); g.connect(this.sfxGain);
-    osc.start(t0); osc.stop(t0+dur);
-  },
-  hover(){
-    const now=performance.now();
-    if(now-this.lastHover<55) return;
-    this.lastHover=now;
-    this.beep(760,0.035,'triangle',0.055,860);
-  },
-  charge(level){
-    const f=[420,580,780][Math.max(0,Math.min(2,level-1))]||420;
-    this.beep(f,0.07,'sine',0.07,f*1.3);
-  },
-  crateSpin(){ this.beep(180,0.16,'sawtooth',0.06,90); },
-  crateStop(){ this.beep(620,0.13,'triangle',0.12,980); },
-  rareDrop(rarity){
-    const base=rarity==='mythic'?520:rarity==='legendary'?440:rarity==='epic'?350:270;
-    [base,base*1.25,base*1.5].forEach((f,i)=>setTimeout(()=>this.beep(f,0.16,'triangle',0.12),i*70));
-  },
-  jump(){ this.beep(420,0.14,'square',0.25,700); },
-  dash(){ this.beep(600,0.1,'triangle',0.2,900); },
-  parry(){
-    this.beep(1450,0.055,'sawtooth',0.26,420);
-    setTimeout(()=>this.beep(720,0.11,'triangle',0.19,120),24);
-    setTimeout(()=>this.beep(1850,0.035,'square',0.11,980),18);
-  },
-  impact(power){ this.beep(160-Math.min(80,power*20),0.15,'square',Math.min(0.6,0.2+power*0.1),40); },
-  death(){ this.beep(300,0.4,'sawtooth',0.35,20); },
-  grapple(){ this.beep(700,0.08,'triangle',0.2,300); },
-  click(){ this.beep(700,0.05,'square',0.15); },
-  countdown(n){ this.beep(n===0?900:500,0.15,'square',0.3); },
-  victory(){ [523,659,784,1046].forEach((f,i)=>setTimeout(()=>this.beep(f,0.3,'triangle',0.3),i*140)); }
+  ctx:null,musicGain:null,sfxGain:null,ambient:null,musicEl:null,musicSource:null,battleGain:null,battleEl:null,battleSource:null,battleStarted:false,inBattleMusic:false,
+  musicTarget:.40,musicFade:1,musicFadeTimer:null,battleFadeTimer:null,musicStarted:false,musicFadeSeconds:.9,lastHover:0,_battlePauseTimer:null,_musicRestartTimer:null,_transitionId:0,_battleFadeLevel:0,
+  init(){if(!this.ctx){this.ctx=new(window.AudioContext||window.webkitAudioContext)();this.musicGain=this.ctx.createGain();this.sfxGain=this.ctx.createGain();this.battleGain=this.ctx.createGain();this.musicGain.connect(this.ctx.destination);this.sfxGain.connect(this.ctx.destination);this.battleGain.connect(this.ctx.destination);const s=Storage.get('settings',{});this.setMusicVol((s.music??40)/100);this.setSfxVol((s.sfx??70)/100);}this.resume();},
+  resume(){if(this.ctx&&this.ctx.state==='suspended')this.ctx.resume().catch(()=>{});},
+  setMusicVol(v){this.musicTarget=Math.max(0,Math.min(1,Number(v)||0));this.applyMusicGain();},
+  applyMusicGain(){if(this.musicGain)this.musicGain.gain.value=this.musicTarget*this.musicFade;if(this.battleGain)this.battleGain.gain.value=this.musicTarget*(this._battleFadeLevel||0);},
+  setSfxVol(v){if(this.sfxGain)this.sfxGain.gain.value=Math.max(0,Math.min(1,v));},
+  startMusic(){if(!this.ctx||this.musicStarted)return;try{const el=new Audio('music.mp3');el.preload='auto';el.loop=false;this.musicEl=el;this.musicSource=this.ctx.createMediaElementSource(el);this.musicSource.connect(this.musicGain);el.addEventListener('timeupdate',()=>this._checkMusicFade(),{passive:true});el.addEventListener('loadedmetadata',()=>this._checkMusicFade(),{passive:true});el.addEventListener('ended',()=>this._restartMusicWithFade());this.musicStarted=true;this.musicFade=0;this.applyMusicGain();const r=el.play();if(r&&typeof r.catch==='function')r.catch(()=>{});if(!this.inBattleMusic)this._fadeMusicTo(1,this.musicFadeSeconds);}catch(e){this.musicStarted=false;this.musicEl=null;this.musicSource=null;}},
+  _checkMusicFade(){if(this.inBattleMusic)return;const el=this.musicEl;if(!el||!Number.isFinite(el.duration)||el.duration<=0)return;const remain=el.duration-el.currentTime;if(remain<=this.musicFadeSeconds&&el.played.length)this._setMusicFade(Math.max(0,remain/this.musicFadeSeconds));},
+  _setMusicFade(v){this.musicFade=Math.max(0,Math.min(1,Number(v)||0));this.applyMusicGain();},
+  _fadeMusicTo(target,duration=this.musicFadeSeconds){if(this.musicFadeTimer)clearInterval(this.musicFadeTimer);const start=this.musicFade,end=Math.max(0,Math.min(1,target));if(duration<=0){this._setMusicFade(end);return;}const began=performance.now();this.musicFadeTimer=setInterval(()=>{const t=Math.max(0,Math.min(1,(performance.now()-began)/(duration*1000))),e=t*t*(3-2*t);this._setMusicFade(start+(end-start)*e);if(t>=1){clearInterval(this.musicFadeTimer);this.musicFadeTimer=null;}},30);},
+  _restartMusicWithFade(){if(this.inBattleMusic)return;const el=this.musicEl;if(!el)return;try{el.currentTime=0;}catch(e){}this._setMusicFade(0);const r=el.play();if(r&&typeof r.catch==='function')r.catch(()=>{});this._fadeMusicTo(1,this.musicFadeSeconds);},
+  _fadeBattleTo(target,duration=this.musicFadeSeconds){if(!this.battleGain)return;if(this.battleFadeTimer)clearInterval(this.battleFadeTimer);const start=this._battleFadeLevel||0,end=Math.max(0,Math.min(1,target));if(duration<=0){this._battleFadeLevel=end;this.applyMusicGain();return;}const began=performance.now();this.battleFadeTimer=setInterval(()=>{const t=Math.max(0,Math.min(1,(performance.now()-began)/(duration*1000))),e=t*t*(3-2*t);this._battleFadeLevel=start+(end-start)*e;this.applyMusicGain();if(t>=1){clearInterval(this.battleFadeTimer);this.battleFadeTimer=null;}},30);},
+  _ensureBattleMusic(){if(!this.ctx||!this.battleGain||this.battleStarted)return;try{const el=new Audio('battlemusic.mp3');el.preload='auto';el.loop=true;el.volume=1;this.battleEl=el;this.battleSource=this.ctx.createMediaElementSource(el);this.battleSource.connect(this.battleGain);this.battleStarted=true;this._battleFadeLevel=0;this.applyMusicGain();}catch(e){this.battleStarted=false;this.battleEl=null;this.battleSource=null;}},
+  enterBattleMusic(){this.init();this.resume();this._ensureBattleMusic();const battle=this.battleEl;if(!battle||!this.battleGain)return;this.inBattleMusic=true;++this._transitionId;if(this._battlePauseTimer)clearTimeout(this._battlePauseTimer);if(this._musicRestartTimer)clearTimeout(this._musicRestartTimer);if(this.musicEl){try{this.musicEl.pause();}catch(e){}this._setMusicFade(0);}this._fadeBattleTo(1,this.musicFadeSeconds);const r=battle.play();if(r&&typeof r.catch==='function')r.catch(()=>{});},
+  exitBattleMusic(){if(!this.ctx)return;this.inBattleMusic=false;const id=++this._transitionId;if(this._battlePauseTimer)clearTimeout(this._battlePauseTimer);if(this._musicRestartTimer)clearTimeout(this._musicRestartTimer);this._fadeMusicTo(0,0);this._fadeBattleTo(0,this.musicFadeSeconds);this._battlePauseTimer=setTimeout(()=>{if(id===this._transitionId&&!this.inBattleMusic&&this.battleEl)try{this.battleEl.pause();this.battleEl.currentTime=0;}catch(e){}},this.musicFadeSeconds*1000+60);this._musicRestartTimer=setTimeout(()=>{if(id!==this._transitionId||this.inBattleMusic)return;this.startMusic();const el=this.musicEl;if(!el)return;try{if(el.paused){const r=el.play();if(r&&typeof r.catch==='function')r.catch(()=>{});}}catch(e){}this._setMusicFade(0);this._fadeMusicTo(1,this.musicFadeSeconds);},this.musicFadeSeconds*1000);},
+  beep(freq,dur,type='sine',vol=1,sweepTo=null){if(!this.ctx)return;const t0=this.ctx.currentTime,osc=this.ctx.createOscillator(),g=this.ctx.createGain();osc.type=type;osc.frequency.setValueAtTime(freq,t0);if(sweepTo)osc.frequency.exponentialRampToValueAtTime(Math.max(1,sweepTo),t0+dur);g.gain.setValueAtTime(vol,t0);g.gain.exponentialRampToValueAtTime(.001,t0+dur);osc.connect(g);g.connect(this.sfxGain);osc.start(t0);osc.stop(t0+dur);},
+  hover(){const now=performance.now();if(now-this.lastHover<55)return;this.lastHover=now;this.beep(760,.035,'triangle',.055,860);},charge(level){const f=[420,580,780][Math.max(0,Math.min(2,level-1))]||420;this.beep(f,.07,'sine',.07,f*1.3);},crateSpin(){this.beep(180,.16,'sawtooth',.06,90);},crateStop(){this.beep(620,.13,'triangle',.12,980);},rareDrop(rarity){const base=rarity==='mythic'?520:rarity==='legendary'?440:rarity==='epic'?350:270;[base,base*1.25,base*1.5].forEach((f,i)=>setTimeout(()=>this.beep(f,.16,'triangle',.12),i*70));},jump(){this.beep(420,.14,'square',.25,700);},dash(){this.beep(600,.1,'triangle',.2,900);},parry(){this.beep(1450,.055,'sawtooth',.26,420);setTimeout(()=>this.beep(720,.11,'triangle',.19,120),24);setTimeout(()=>this.beep(1850,.035,'square',.11,980),18);},impact(power){this.beep(160-Math.min(80,power*20),.15,'square',Math.min(.6,.2+power*.1),40);},death(){this.beep(300,.4,'sawtooth',.35,20);},grapple(){this.beep(700,.08,'triangle',.2,300);},click(){this.beep(700,.05,'square',.15);},countdown(n){this.beep(n===0?900:500,.15,'square',.3);},victory(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>this.beep(f,.3,'triangle',.3),i*140));}
 };
 
 /* ---------------------------- PARTICLES ---------------------------- */
@@ -2343,6 +2186,102 @@ function guaranteeBuiltinSpawns(map){
   map.spawnPoints=chosen.slice(0,8).map(sp=>({x:Math.round(sp.x),y:Math.round(sp.y)}));
   return map;
 }
+
+// Larger, simpler built-in layouts.
+// Keep the older/iconic arenas intact, while giving several later maps much more
+// breathing room and far fewer moving objects. The existing spawn-guarantee pass
+// below will regenerate eight safe spawns after these layouts are installed.
+(function rebuildSimpleLargeBuiltins(){
+  const byName=Object.fromEntries(BUILTIN_MAPS.map(m=>[m.name,m]));
+
+  const apply=(name,width,height,platforms,hazards=[])=>{
+    const map=byName[name];
+    if(!map) return;
+    map.width=width;
+    map.height=height;
+    map.platforms=platforms;
+    map.hazards=hazards;
+    map.spawnPoints=[];
+  };
+
+  apply('Conveyor',2400,1150,[
+    {x:90,y:1010,w:2220,h:56,type:'solid'},
+    {x:250,y:820,w:520,h:30,type:'oneway'},
+    {x:940,y:680,w:520,h:30,type:'oneway'},
+    {x:1630,y:820,w:520,h:30,type:'oneway'},
+    {x:940,y:450,w:520,h:30,type:'solid'},
+    {x:1420,y:680,w:300,h:28,type:'oneway',moving:true,moveTargetX:1820,moveTargetY:680,moveSpeed:60,moveRepeat:true}
+  ],[
+    {x:720,y:1070,w:960,h:80,type:'lava'}
+  ]);
+
+  apply('Pendulum',2400,1150,[
+    {x:90,y:1010,w:2220,h:56,type:'solid'},
+    {x:220,y:830,w:500,h:30,type:'oneway'},
+    {x:950,y:740,w:500,h:30,type:'oneway'},
+    {x:1680,y:830,w:500,h:30,type:'oneway'},
+    {x:950,y:470,w:500,h:30,type:'solid'},
+    {x:1080,y:740,w:280,h:28,type:'solid',moving:true,moveTargetX:1360,moveTargetY:740,moveSpeed:60,moveRepeat:true}
+  ],[
+    {x:880,y:1070,w:640,h:80,type:'lava'}
+  ]);
+
+  apply('Society',2600,1250,[
+    {x:90,y:1100,w:2420,h:60,type:'solid'},
+    {x:220,y:900,w:520,h:30,type:'oneway'},
+    {x:1030,y:780,w:540,h:30,type:'oneway'},
+    {x:1870,y:900,w:520,h:30,type:'oneway'},
+    {x:1040,y:490,w:520,h:30,type:'solid'},
+    {x:1180,y:700,w:280,h:28,type:'oneway',moving:true,moveTargetX:1460,moveTargetY:700,moveSpeed:60,moveRepeat:true}
+  ],[
+    {x:930,y:1160,w:740,h:90,type:'lava'}
+  ]);
+
+  apply('Orbit',2500,1250,[
+    {x:90,y:1100,w:2320,h:60,type:'solid'},
+    {x:230,y:900,w:500,h:30,type:'oneway'},
+    {x:1770,y:900,w:500,h:30,type:'oneway'},
+    {x:780,y:760,w:940,h:30,type:'solid'},
+    {x:900,y:500,w:700,h:30,type:'oneway'},
+    {x:1110,y:310,w:280,h:28,type:'oneway',moving:true,moveTargetX:1110,moveTargetY:620,moveSpeed:60,moveRepeat:true}
+  ],[
+    {x:730,y:1160,w:1040,h:90,type:'lava'}
+  ]);
+
+  apply('Flood',2600,1250,[
+    {x:90,y:1090,w:2420,h:60,type:'solid'},
+    {x:180,y:900,w:600,h:30,type:'oneway'},
+    {x:1820,y:900,w:600,h:30,type:'oneway'},
+    {x:790,y:760,w:1020,h:30,type:'solid'},
+    {x:1010,y:500,w:580,h:30,type:'bounce',bounciness:1.15},
+    {x:1120,y:760,w:300,h:28,type:'hazard',hazard:true,moving:true,moveTargetX:1120,moveTargetY:520,moveSpeed:60,moveRepeat:true}
+  ],[
+    {x:900,y:1150,w:800,h:100,type:'lava'}
+  ]);
+
+  apply('Saw',2500,1150,[
+    {x:90,y:1010,w:2320,h:60,type:'solid'},
+    {x:190,y:840,w:500,h:30,type:'oneway'},
+    {x:1000,y:730,w:500,h:30,type:'oneway'},
+    {x:1810,y:840,w:500,h:30,type:'oneway'},
+    {x:900,y:470,w:700,h:30,type:'solid'},
+    {x:1190,y:700,w:120,h:160,type:'hazard',hazard:true,moving:true,moveTargetX:1190,moveTargetY:820,moveSpeed:60,moveRepeat:true}
+  ],[
+    {x:840,y:1070,w:820,h:80,type:'lava'}
+  ]);
+
+  apply('Pinch',2400,1150,[
+    {x:90,y:1010,w:2220,h:60,type:'solid'},
+    {x:200,y:830,w:520,h:30,type:'oneway'},
+    {x:1680,y:830,w:520,h:30,type:'oneway'},
+    {x:820,y:700,w:760,h:30,type:'solid'},
+    {x:980,y:470,w:440,h:30,type:'oneway'},
+    {x:1160,y:700,w:120,h:170,type:'hazard',hazard:true,moving:true,moveTargetX:1160,moveTargetY:840,moveSpeed:60,moveRepeat:true}
+  ],[
+    {x:760,y:1070,w:880,h:80,type:'lava'}
+  ]);
+})();
+
 for(const builtinMap of BUILTIN_MAPS) guaranteeBuiltinSpawns(builtinMap);
 
 /* Keep built-in player spawns safely away from static and moving hazards.
@@ -2427,39 +2366,88 @@ function injectArrows(baseMap, deadly){
 /* ---------------------------- CAMERA ---------------------------- */
 class Camera{
   constructor(){ this.x=0;this.y=0;this.zoom=1;this.targetZoom=1; this.shake=0; }
-  _calcView(players, mapW, mapH, viewW, viewH){
-    const alive = players.filter(p=>p.alive);
-    const targets = alive.length? alive : players;
+  _calcView(players, mapW, mapH, viewW, viewH, dt=1/60){
+    if(!players.length) return null;
+
+    // Frame every living, non-spectating player who is still inside the map.
+    // Players who have fallen outside the map are deliberately ignored so
+    // they cannot pull the camera away from the remaining players.
+    const inMap = players.filter(p=>{
+      if(!p || p.spectator || !p.alive) return false;
+      const x=Number(p.x), y=Number(p.y);
+      return Number.isFinite(x) && Number.isFinite(y) && x>=0 && x<=mapW && y>=0 && y<=mapH;
+    });
+
+    const targets = inMap.length ? inMap :
+      players.filter(p=>p && !p.spectator && Number.isFinite(Number(p.x)) && Number.isFinite(Number(p.y)) &&
+        Number(p.x)>=0 && Number(p.x)<=mapW && Number(p.y)>=0 && Number(p.y)<=mapH);
     if(!targets.length) return null;
+
+    // Use a small, heavily softened look-ahead. This preserves the benefit of
+    // predictive framing without letting sudden velocity changes jerk the camera.
+    const predictionTime = Math.min(0.13, Math.max(0.08, 0.095 + Math.min(0.025, dt*0.7)));
+    const predicted = targets.map(p=>{
+      const x=Number(p.x)||0, y=Number(p.y)||0;
+      const vx=Number(p.vx)||0, vy=Number(p.vy)||0;
+      return {
+        x:Math.max(0,Math.min(mapW,x+vx*predictionTime*0.45)),
+        y:Math.max(0,Math.min(mapH,y+vy*predictionTime*0.45))
+      };
+    });
+
     let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
-    for(const p of targets){ minX=Math.min(minX,p.x); maxX=Math.max(maxX,p.x); minY=Math.min(minY,p.y); maxY=Math.max(maxY,p.y); }
-    const cx=(minX+maxX)/2, cy=(minY+maxY)/2;
-    const spreadX=(maxX-minX)+500, spreadY=(maxY-minY)+400;
-    let z = Math.min(viewW/spreadX, viewH/spreadY, 1.15);
-    z = Math.max(0.45, z);
-    let tx = cx - (viewW/2)/z;
-    let ty = cy - (viewH/2)/z;
-    tx = Math.max(0, Math.min(tx, Math.max(0,mapW-viewW/z)));
-    ty = Math.max(0, Math.min(ty, Math.max(0,mapH-viewH/z)));
+    for(const p of predicted){
+      minX=Math.min(minX,p.x); maxX=Math.max(maxX,p.x);
+      minY=Math.min(minY,p.y); maxY=Math.max(maxY,p.y);
+    }
+
+    const cx=(minX+maxX)/2;
+    const cy=(minY+maxY)/2;
+
+    // Stay zoomed in when players are close together, but smoothly zoom out
+    // enough to keep every remaining player in the shot when they spread out.
+    const spreadX=Math.max(260,(maxX-minX)+320);
+    const spreadY=Math.max(220,(maxY-minY)+280);
+    const playerFit=Math.min(viewW/spreadX, viewH/spreadY);
+
+    const z=Math.max(0.45, Math.min(1.15, playerFit));
+    const worldViewW=viewW/z, worldViewH=viewH/z;
+
+    let tx=cx-worldViewW/2;
+    let ty=cy-worldViewH/2;
+
+    const camMaxX=Math.max(0,mapW-worldViewW);
+    const camMaxY=Math.max(0,mapH-worldViewH);
+    tx=Math.max(0,Math.min(tx,camMaxX));
+    ty=Math.max(0,Math.min(ty,camMaxY));
+
     return {z,tx,ty};
   }
   snapTo(players, mapW, mapH, viewW, viewH){
-    const v=this._calcView(players,mapW,mapH,viewW,viewH);
+    const v=this._calcView(players,mapW,mapH,viewW,viewH,1/60);
     if(!v) return;
     this.x=v.tx; this.y=v.ty; this.zoom=v.z; this.targetZoom=v.z;
     this.shake=0;
   }
-  follow(players, mapW, mapH, viewW, viewH){
-    const v=this._calcView(players,mapW,mapH,viewW,viewH);
+  follow(players, mapW, mapH, viewW, viewH, dt=1/60){
+    const v=this._calcView(players,mapW,mapH,viewW,viewH,dt);
     if(!v) return;
-    this.targetZoom += (v.z-this.targetZoom)*0.06;
+
+    // Frame-rate independent easing. The target has only a small predictive lead,
+    // while the camera itself eases toward the new framing instead of snapping.
+    const zoomAlpha=1-Math.exp(-8.5*dt);
+    const moveAlpha=1-Math.exp(-9.5*dt);
+
+    this.targetZoom += (v.z-this.targetZoom)*zoomAlpha;
     this.zoom = this.targetZoom;
-    this.x += (v.tx-this.x)*0.12;
-    this.y += (v.ty-this.y)*0.12;
+    this.x += (v.tx-this.x)*moveAlpha;
+    this.y += (v.ty-this.y)*moveAlpha;
+
     if(this.shake>0){
       this.x += (Math.random()-0.5)*this.shake;
       this.y += (Math.random()-0.5)*this.shake;
-      this.shake *= 0.85; if(this.shake<0.3) this.shake=0;
+      this.shake *= Math.pow(0.85, Math.max(1,dt*60));
+      if(this.shake<0.3) this.shake=0;
     }
   }
   addShake(v){ if(Storage.get('settings',{}).shake!==false) this.shake = Math.min(30,this.shake+v); }
@@ -2532,7 +2520,11 @@ const InputManager = {
       }
     });
   },
-  openChat(){ document.getElementById('chatInput').focus(); },
+  openChat(){
+    const input=document.getElementById('chatInput');
+    if(!input || input.disabled) return;
+    input.focus();
+  },
   local(){
     const kb=this.keybinds;
     return {
@@ -2729,23 +2721,70 @@ const ChatFilter = {
 };
 const Chat = {
   lastSent:0,
+
+  mutedSet(){
+    if(!(Game.mutedPlayers instanceof Set)) Game.mutedPlayers=new Set(Array.isArray(Game.mutedPlayers)?Game.mutedPlayers:[]);
+    return Game.mutedPlayers;
+  },
+  isPlayerMuted(pid){ return !!pid && this.mutedSet().has(pid); },
+  mutedPlayerIds(){ return Array.from(this.mutedSet()); },
+  playerName(pid){ return String(Game.players?.[pid]?.name || Lobby.players?.find?.(p=>p.id===pid)?.name || 'Player').slice(0,32); },
+
+  syncMuteUI(){
+    const host=!!Game.isHost;
+    const muted=host ? false : this.isPlayerMuted(Game.myId);
+    const gameInput=document.getElementById('chatInput');
+    const lobbyInput=document.getElementById('lobbyChatInput');
+    const gameMute=document.getElementById('chatMuteBtn');
+    const lobbyMute=document.getElementById('lobbyChatMute');
+
+    [gameInput,lobbyInput].forEach(input=>{
+      if(!input)return;
+      input.disabled=muted;
+      input.placeholder=muted ? 'You have been muted by the host.' :
+        (input.id==='chatInput' ? 'Press Enter to chat...' : 'Type a message...');
+      if(muted){
+        input.value='';
+        if(document.activeElement===input) input.blur();
+      }
+    });
+
+    [gameMute,lobbyMute].forEach(btn=>{
+      if(!btn)return;
+      btn.classList.add('hidden');
+    });
+  },
+
+  setPlayerMuted(pid,value,broadcast=true){
+    if(!Game.isHost || !pid || pid===Game.myId || !Game.players?.[pid]) return false;
+    const muted=this.mutedSet();
+    if(value) muted.add(pid); else muted.delete(pid);
+    const next=!!value;
+    if(broadcast) NetworkManager.broadcast({t:'player_mute',id:pid,muted:next},true);
+    Lobby.render();
+    return true;
+  },
+
   send(text){
+    if(!Game.isHost && this.isPlayerMuted(Game.myId)) return false;
     const raw=String(text||'');
     if(Game.isHost && raw.trim().toLowerCase()==='!exit' && ['playing','countdown','roundResults','results'].includes(Game.state)){
       Lobby.exitMatchToLobby();
-      return;
+      return true;
     }
     const now = Date.now();
-    if(now-this.lastSent < 500) return;
+    if(now-this.lastSent < 500) return false;
     this.lastSent = now;
     text = ChatFilter.clean(text);
     const msg = {t:'chat', name: Game.myName, color: Game.myColor(), text, ts: now};
     this.append(msg);
     if(NetworkManager.isHost) NetworkManager.broadcast(msg, true);
     else NetworkManager.sendToHost(msg, true);
+    return true;
   },
+
   sendMapRequest(map){
-    if(Game.isHost || !map) return false;
+    if(Game.isHost || !map || this.isPlayerMuted(Game.myId)) return false;
     const now=Date.now();
     if(now-this.lastSent < 500) return false;
     this.lastSent=now;
@@ -2754,13 +2793,13 @@ const Chat = {
     catch(e){ return false; }
     const name=String(safeMap.name||'Requested Map').slice(0,64);
     const requesterId=String(Game.myId||'').slice(0,120);
-    // Keep the visible chat request tiny; send the full map as its own reliable packet.
     const chatMsg={t:'chat',name:Game.myName,color:Game.myColor(),text:'Requests '+name,ts:now};
     this.append(chatMsg);
     NetworkManager.sendToHost({t:'map_request',name,map:safeMap,requesterId,requesterName:Game.myName,requesterColor:Game.myColor(),ts:now},true);
     return true;
   },
   receive(msg, fromPid){
+    if(NetworkManager.isHost && fromPid!==NetworkManager.myId && this.isPlayerMuted(fromPid)) return;
     const safe=Object.assign({},msg,{text:ChatFilter.clean(msg.text)});
     if(msg?.mapRequest?.map){
       safe.mapRequest={requesterId:String(msg.mapRequest.requesterId||fromPid||'').slice(0,120),name:String(msg.mapRequest.name||msg.mapRequest.map.name||'Requested Map').slice(0,64),map:ensureMapSpawn(JSON.parse(JSON.stringify(msg.mapRequest.map)))};
@@ -2776,32 +2815,16 @@ const Chat = {
     const makeRow=()=>{
       const div=document.createElement('div');
       const span=document.createElement('span');
-      span.style.color = msg.color||'#fff'; span.style.fontWeight='800';
-      span.textContent = '['+esc(msg.name)+']: ';
+      span.style.color = msg.color||'#fff'; span.style.fontWeight='800'; span.textContent = esc(msg.name)+': ';
       div.appendChild(span);
       if(msg.mapRequest?.map){
-        const prefix=document.createElement('span'); prefix.textContent='Requests '; div.appendChild(prefix);
-        const btn=document.createElement('button'); btn.type='button'; btn.className='chat-map-request-btn'; btn.textContent=String(msg.mapRequest.name||msg.mapRequest.map.name||'MAP');
-        btn.title=Game.isHost?'Click to use this requested map':'Map requested from host';
-        if(Game.isHost){
-          btn.addEventListener('click',e=>{
-            e.stopPropagation();
-            Lobby.acceptMapRequest(msg.mapRequest);
-          });
-        }else{ btn.disabled=true; }
-        div.appendChild(btn);
-      }else{
-        const textNode=document.createElement('span');
-        textNode.style.whiteSpace='pre-wrap';
-        textNode.textContent=String(msg.text||'');
-        div.appendChild(textNode);
-      }
+        const prefix=document.createElement('span');prefix.textContent='Requests ';div.appendChild(prefix);
+        const btn=document.createElement('button');btn.type='button';btn.className='chat-map-request-btn';btn.textContent=String(msg.mapRequest.name||msg.mapRequest.map.name||'MAP');btn.title=Game.isHost?'Click to use this requested map':'Map requested from host';if(Game.isHost)btn.addEventListener('click',e=>{e.stopPropagation();Lobby.acceptMapRequest(msg.mapRequest);});else btn.disabled=true;div.appendChild(btn);
+      }else{const textNode=document.createElement('span');textNode.style.whiteSpace='pre-wrap';textNode.textContent=String(msg.text);div.appendChild(textNode);}
       return div;
     };
-    const log = document.getElementById('chatlog');
-    if(log){ const div=makeRow(); log.appendChild(div); log.scrollTop=log.scrollHeight; while(log.children.length>60) log.removeChild(log.firstChild); }
-    const lobbyLog=document.getElementById('lobbyChatLog');
-    if(lobbyLog){ const row=makeRow(); lobbyLog.appendChild(row); lobbyLog.scrollTop=lobbyLog.scrollHeight; while(lobbyLog.children.length>60) lobbyLog.removeChild(lobbyLog.firstChild); }
+    const log=document.getElementById('chatlog');if(log){const div=makeRow();log.appendChild(div);log.scrollTop=log.scrollHeight;while(log.children.length>60)log.removeChild(log.firstChild);}
+    const lobbyLog=document.getElementById('lobbyChatLog');if(lobbyLog){const row=makeRow();lobbyLog.appendChild(row);lobbyLog.scrollTop=lobbyLog.scrollHeight;while(lobbyLog.children.length>60)lobbyLog.removeChild(lobbyLog.firstChild);}
   }
 };
 function esc(s){ const d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
@@ -3051,6 +3074,8 @@ const Game = {
   camera:new Camera(),
 
   isHost:false,
+  chatMuted:false,
+  mutedPlayers:{},
   accumulator:0, lastTime:0,
   physicsTick:0, hostPhysicsTick:0, stateSeq:0, lastRecvStateSeq:null,
   matchTime:0,
@@ -3089,6 +3114,7 @@ const Game = {
     this.initMenuFlyers();
     this.paintMenuFrame();
     requestAnimationFrame(this.loop);
+    Chat.syncMuteUI();
     NetworkManager.onData = (pid,data)=>this.handleNetData(pid,data);
     NetworkManager.onPeerLeave = (pid)=>this.handlePeerLeave(pid);
     this.lastHostSignal=Date.now();
@@ -5388,7 +5414,7 @@ const Game = {
           const relativeSpeed=Math.max(Math.hypot(rvx,rvy),Math.abs(effectiveRelativeNormal));
           const impact=relativeSpeed;
           if(impact>50){
-            const dmg=impact*0.025;
+            const dmg=impact*0.010;
             const aSmashScale=this.matchSettings?.smash?Math.max(0,getSmashKnockbackMultiplier(a)-1):0;
             const bSmashScale=this.matchSettings?.smash?Math.max(0,getSmashKnockbackMultiplier(b)-1):0;
             a.damage+=dmg; b.damage+=dmg;
@@ -5545,6 +5571,11 @@ const Game = {
       if(!p.alive) continue;
       const outOfBounds = p.y > this.map.height+250 || p.y < -900 || p.x < -400 || p.x > this.map.width+400;
       if(outOfBounds || p.forceEliminate){
+        if(outOfBounds){
+          p.offMapX=p.x;
+          p.offMapY=p.y;
+          p.offMapMarkerUntil=performance.now()+1400;
+        }
         p.alive=false; p.forceEliminate=false;
         this.eliminationOrder.push(id);
         this.reportElimination(p);
@@ -6442,6 +6473,13 @@ const Game = {
           if(!this.eliminationOrder.includes(data.id)) this.eliminationOrder.push(data.id);
         }
         break;
+      case 'player_mute':
+        if(!this.isHost && data.id===this.myId){
+          if(data.muted) Chat.mutedSet().add(data.id); else Chat.mutedSet().delete(data.id);
+          Chat.syncMuteUI();
+        }
+        if(this.isHost) Lobby.render();
+        break;
       case 'chat': Chat.receive(data, pid); break;
       case 'map_request':
         if(this.isHost) Lobby.receiveMapRequest(pid,data);
@@ -6609,7 +6647,7 @@ const Game = {
     if(this.isHost){
       delete this.players[pid];
       Lobby.removePlayer(pid);
-      NetworkManager.broadcast({t:'lobby_update', players:Lobby.serializePlayers()}, true);
+      NetworkManager.broadcast({t:'lobby_update', players:Lobby.serializePlayers(),mutedPlayers:Chat.mutedPlayerIds()}, true);
     } else if(pid===NetworkManager.hostId){
       if(NetworkManager.reconnectingHost) return;
       if(this.state==='playing'||this.state==='countdown'){
@@ -6623,12 +6661,19 @@ const Game = {
 
   /* ---------- render ---------- */
   updateCameraAndHud(dt){
-    const cameraPlayers=Object.values(this.players).filter(p=>!p.spectator && p.alive);
-    if(cameraPlayers.length){
-      this.camera.follow(cameraPlayers, this.map.width, this.map.height, this.viewW, this.viewH);
+    const everyone=Object.values(this.players).filter(p=>!p.spectator);
+    const inMapAlive=everyone.filter(p=>{
+      if(!p || !p.alive) return false;
+      const x=Number(p.x), y=Number(p.y);
+      return Number.isFinite(x) && Number.isFinite(y) &&
+        x>=0 && x<=this.map.width && y>=0 && y<=this.map.height;
+    });
+
+    if(inMapAlive.length){
+      this.camera.follow(inMapAlive, this.map.width, this.map.height, this.viewW, this.viewH, dt);
     }else{
-      const fallback=[{x:(this.map.width||1600)/2,y:(this.map.height||900)/2}];
-      this.camera.follow(fallback, this.map.width, this.map.height, this.viewW, this.viewH);
+      const fallback=[{x:(this.map.width||1600)/2,y:(this.map.height||900)/2,alive:true,spectator:false}];
+      this.camera.follow(fallback, this.map.width, this.map.height, this.viewW, this.viewH, dt);
     }
     UI.updateHUD();
   },
@@ -6650,6 +6695,7 @@ const Game = {
       this.renderPlayers(ctx);
       this.renderProjectiles(ctx);
       this.particles.render(ctx, this.camera);
+      this.renderOffMapMarkers(ctx);
     } else if(EditorState.active){
       MapEditor.render(ctx);
     } else {
@@ -6657,6 +6703,100 @@ const Game = {
     }
     ctx.restore();
   },
+
+  renderOffMapMarkers(ctx){
+    if(!this.camera || !this.viewW || !this.viewH || !this.map) return;
+
+    const now=performance.now();
+    const mapW=Math.max(1,Number(this.map.width)||1600);
+    const mapH=Math.max(1,Number(this.map.height)||900);
+    const cam=this.camera;
+    const z=Math.max(0.01,cam.zoom);
+    const margin=34;
+    const edgePad=10;
+
+    for(const id in this.players){
+      const p=this.players[id];
+      if(!p || p.spectator) continue;
+
+      const markerActive = !!p.alive ||
+        (Number(p.offMapMarkerUntil)||0)>now;
+      if(!markerActive) continue;
+
+      const wx = (Number(p.offMapX)||0);
+      const wy = (Number(p.offMapY)||0);
+      const currentX = Number.isFinite(p.x)?p.x:wx;
+      const currentY = Number.isFinite(p.y)?p.y:wy;
+
+      const outsideNow=currentX<0 || currentX>mapW || currentY<0 || currentY>mapH;
+      const outsideRemembered=wx<0 || wx>mapW || wy<0 || wy>mapH;
+      if(!outsideNow && !outsideRemembered) continue;
+
+      const x=Number.isFinite(currentX)?currentX:wx;
+      const y=Number.isFinite(currentY)?currentY:wy;
+      const sx=(x-cam.x)*z;
+      const sy=(y-cam.y)*z;
+
+      // If the projected point is actually visible, no marker is needed.
+      if(sx>=margin && sx<=this.viewW-margin && sy>=margin && sy<=this.viewH-margin) continue;
+
+      let dx=sx-this.viewW/2;
+      let dy=sy-this.viewH/2;
+      if(Math.abs(dx)<0.001 && Math.abs(dy)<0.001) continue;
+
+      const maxX=Math.max(edgePad,this.viewW/2-margin);
+      const maxY=Math.max(edgePad,this.viewH/2-margin);
+      const scale=Math.min(
+        maxX/Math.max(0.001,Math.abs(dx)),
+        maxY/Math.max(0.001,Math.abs(dy))
+      );
+      const px=this.viewW/2+dx*scale;
+      const py=this.viewH/2+dy*scale;
+      const ang=Math.atan2(dy,dx);
+      const hue=Number.isFinite(Number(p.cust?.hue))?Number(p.cust.hue):200;
+      const label=String(p.name||'Player').slice(0,18);
+
+      ctx.save();
+      ctx.translate(px,py);
+      ctx.rotate(ang);
+      ctx.globalAlpha=0.94;
+
+      // Directional marker.
+      ctx.shadowColor=`hsl(${hue},85%,65%)`;
+      ctx.shadowBlur=12;
+      ctx.fillStyle=`hsl(${hue},85%,65%)`;
+      ctx.beginPath();
+      ctx.moveTo(13,0);
+      ctx.lineTo(-7,-8);
+      ctx.lineTo(-3,0);
+      ctx.lineTo(-7,8);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.shadowBlur=0;
+      ctx.strokeStyle='#fff';
+      ctx.lineWidth=1.4;
+      ctx.stroke();
+
+      // Player name tag behind the arrow.
+      ctx.rotate(-ang);
+      ctx.fillStyle='#000000c4';
+      const textW=Math.min(150,Math.max(58,ctx.measureText(label).width+32));
+      ctx.fillRect(-textW/2,13,textW,18);
+      ctx.strokeStyle=`hsl(${hue},70%,55%)`;
+      ctx.lineWidth=1;
+      ctx.strokeRect(-textW/2,13,textW,18);
+
+      ctx.fillStyle='#fff';
+      ctx.font='900 9px Segoe UI,Arial,sans-serif';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      ctx.fillText(label,0,22);
+
+      ctx.restore();
+    }
+  },
+
   paintMenuFrame(){
     if(!this.ctx || !this.viewW || !this.viewH) return;
     this.ctx.save();
@@ -7916,14 +8056,14 @@ const UI = {
     NetworkManager.packetsIn=0; NetworkManager.packetsOut=0;
     document.getElementById('dbgLast').textContent = Game.lastServerState? (Date.now()-Game.lastServerState) : '-';
   },
-  applyLobbyUpdate(data){ if(data.title){Lobby.title=String(data.title).slice(0,32);document.getElementById('lobbyTitleDisplay').textContent=Lobby.title;} if(data.index){Lobby.index=Number(data.index);Lobby.code=String(Lobby.index);} if(data.hostName){Game.lobbyHostName=data.hostName;document.getElementById('lobbyHostName').textContent=data.hostName;} Lobby.players=data.players; if(!Game.isHost)Lobby.syncGamePlayers(data.players); Lobby.render(); }
+  applyLobbyUpdate(data){ if(Array.isArray(data.mutedPlayers)){Game.mutedPlayers=new Set(data.mutedPlayers);Chat.syncMuteUI();} if(data.title){Lobby.title=String(data.title).slice(0,32);document.getElementById('lobbyTitleDisplay').textContent=Lobby.title;} if(data.index){Lobby.index=Number(data.index);Lobby.code=String(Lobby.index);} if(data.hostName){Game.lobbyHostName=data.hostName;document.getElementById('lobbyHostName').textContent=data.hostName;} Lobby.players=data.players; if(!Game.isHost)Lobby.syncGamePlayers(data.players); Lobby.render(); }
 };
 
 /* ---------------------------- LOBBY ---------------------------- */
 const Lobby = {
   players:[], code:null, index:null, title:'', password:'', ready:{}, banned:{}, discoveryResults:[], pendingJoin:null, intentionalLeave:false, teamAutoNext:'red', _requestedMap:null, _pendingMapRequest:null,
   serializePlayers(){
-    return Object.values(Game.players).map(p=>({id:p.id,name:p.name,cust:p.cust,clientIdentity:p.clientIdentity||null,ready:!!this.ready[p.id],host:p.id===Game.myId,spectator:!!p.spectator,autoSpectator:!!p.autoSpectator,team:normalizedTeam(p.team)}));
+    return Object.values(Game.players).map(p=>({id:p.id,name:p.name,cust:p.cust,clientIdentity:p.clientIdentity||null,ready:!!this.ready[p.id],host:p.id===Game.myId,spectator:!!p.spectator,autoSpectator:!!p.autoSpectator,team:normalizedTeam(p.team),muted:Chat.isPlayerMuted(p.id)}));
   },
   activeTeamPlayers(){ return Object.values(Game.players).filter(p=>!p.spectator); },
   assignInitialTeams(){
@@ -7945,7 +8085,7 @@ const Lobby = {
     if(p.spectator) return;
     const t=normalizedTeam(team); if(!t) return;
     p.team=t;
-    NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),title:this.title,index:this.index,hostName:Game.myName,spectatorStates:this.getSpectatorStates()},true);
+    NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),mutedPlayers:Chat.mutedPlayerIds(),title:this.title,index:this.index,hostName:Game.myName,spectatorStates:this.getSpectatorStates()},true);
     this.render();
   },
   receiveMapRequest(pid,data){
@@ -8010,6 +8150,8 @@ const Lobby = {
     return {t:'lobby_discovery', index:this.index, title:this.title||'PLUNK Lobby', hostName:Game.myName||'Player', mapName:Game.map?.name||'-', mode:GameModes[Game.mode]?.label||Game.mode||'-', players:Object.keys(Game.players).length, maxPlayers:Game.matchSettings.maxPlayers||8, passwordProtected:!!this.password};
   },
   createAsHost(){
+    Game.chatMuted=false; Game.mutedPlayers=new Set();
+    Chat.syncMuteUI();
     this.intentionalLeave=false; this.players=[]; this.ready={}; this.banned={}; this._requestedMap=null; this._pendingMapRequest=null;
     // Keep spaces inside the host-entered lobby name; only trim outer whitespace.
     const rawLobbyTitle=String(document.getElementById('hostLobbyTitle').value||'').replace(/[\r\n\t]+/g,' ').replace(/\s+$/,'').replace(/^\s+/,'');
@@ -8019,7 +8161,7 @@ const Lobby = {
     document.getElementById('hostErr').textContent='';
     NetworkManager.createHostAuto(999).then(({id,index})=>{
       this.index=index; this.code=String(index);
-      Game.isHost=true; NetworkManager.isHost=true; Game.myId=id; Game.lobbyHostName=Game.myName;
+      Game.isHost=true; NetworkManager.isHost=true; Game.myId=id; Game.chatMuted=false; Game.mutedPlayers=new Set(); Chat.syncMuteUI(); Game.lobbyHostName=Game.myName;
       document.getElementById('btnLeaveLobby').textContent='CLOSE LOBBY';
       const cust=Storage.get('customization',{hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',dashEffect:'basic',trailEffect:'none'});
       const hostPlayer=new Player(id,Game.myName,cust,{x:0,y:0});
@@ -8133,8 +8275,8 @@ const Lobby = {
     p.spectator=!!roundActive; p.autoSpectator=!!roundActive; p.alive=!p.spectator;
     p.team=(Game.matchSettings?.teams && !p.spectator)?this.assignJoiningTeam():null;
     Game.players[pid]=p; this.ready[pid]=false;
-    NetworkManager.send(pid,{t:'join_accept',ok:true,code:this.code,index:this.index,title:this.title,protected:!!this.password,map:Game.map,mode:Game.mode,matchSettings:Game.matchSettings,players:this.serializePlayers(),hostName:Game.myName,currentRound:Game.roundNumber,roundState:Game.state,matchTime:Game.matchTime,roundElapsed:Game.roundElapsed,spectatorStates:this.getSpectatorStates()},true);
-    NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),title:this.title,index:this.index,hostName:Game.myName,spectatorStates:this.getSpectatorStates()},true);
+    NetworkManager.send(pid,{t:'join_accept',ok:true,code:this.code,index:this.index,title:this.title,protected:!!this.password,map:Game.map,mode:Game.mode,matchSettings:Game.matchSettings,players:this.serializePlayers(),hostName:Game.myName,currentRound:Game.roundNumber,roundState:Game.state,matchTime:Game.matchTime,roundElapsed:Game.roundElapsed,spectatorStates:this.getSpectatorStates(),mutedPlayers:Chat.mutedPlayerIds()},true);
+    NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),mutedPlayers:Chat.mutedPlayerIds(),title:this.title,index:this.index,hostName:Game.myName,spectatorStates:this.getSpectatorStates()},true);
     this.render();
   },
   syncGamePlayers(list){
@@ -8149,7 +8291,7 @@ const Lobby = {
   handleJoinAccept(data){
     if(!data.ok){document.getElementById('joinBrowserStatus').textContent=data.reason||'Could not join.'; NetworkManager.disconnectAll(); return;}
     document.getElementById('joinPassOverlay').classList.remove('active'); document.getElementById('btnLeaveLobby').textContent='LEAVE'; Chat.clear();
-    this.index=Number(data.index)||Number(data.code)||1; this.code=String(this.index); this.title=String(data.title||'PLUNK Lobby').slice(0,32);
+    this.index=Number(data.index)||Number(data.code)||1; this.code=String(this.index); this.title=String(data.title||'PLUNK Lobby').slice(0,32); Game.chatMuted=false; Game.mutedPlayers=new Set(Array.isArray(data.mutedPlayers)?data.mutedPlayers:[]); Chat.syncMuteUI();
     Game.map=ensureMapSpawn(data.map); Game.mode=data.mode; Game.matchSettings=Object.assign({},Game.matchSettings,data.matchSettings||{}); Game.matchTime=Number(data.matchTime)||0; Game.roundElapsed=Number.isFinite(data.roundElapsed)?Math.max(0,Number(data.roundElapsed)):Game.matchTime; this.players=data.players; this.syncGamePlayers(data.players); if(data.scores) Game.scores=data.scores; Game.roundNumber=Number(data.currentRound)||Game.roundNumber||1; if(data.spectatorStates) this.applySpectatorStates(data.spectatorStates);
     document.getElementById('lobbyTitleDisplay').textContent=this.title;
     document.getElementById('lobbyHostName').textContent=data.hostName; Game.lobbyHostName=data.hostName;
@@ -8208,8 +8350,8 @@ const Lobby = {
     },450);
   },
   removePlayer(pid){ this.players=this.players.filter(p=>p.id!==pid); delete this.ready[pid]; this.render(); },
-  setReady(pid,ready){this.ready[pid]=!!ready;NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),title:this.title,index:this.index,hostName:Game.myName,spectatorStates:this.getSpectatorStates()},true);this.render();},
-  settingsPayload(){return {hostName:Game.myName,map:Game.map,mode:Game.mode,matchSettings:Object.assign({},Game.matchSettings),roundConfig:Object.assign({},Game.roundConfig),title:this.title,index:this.index,passwordProtected:!!this.password,spectatorStates:this.getSpectatorStates()};},
+  setReady(pid,ready){this.ready[pid]=!!ready;NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),mutedPlayers:Chat.mutedPlayerIds(),title:this.title,index:this.index,hostName:Game.myName,spectatorStates:this.getSpectatorStates()},true);this.render();},
+  settingsPayload(){return {hostName:Game.myName,map:Game.map,mode:Game.mode,matchSettings:Object.assign({},Game.matchSettings),roundConfig:Object.assign({},Game.roundConfig),title:this.title,index:this.index,passwordProtected:!!this.password,spectatorStates:this.getSpectatorStates(),mutedPlayers:Chat.mutedPlayerIds()};},
   pushSettings(){
     if(!Game.isHost)return;
     Game.lobbyHostName=Game.myName; document.getElementById('lobbyHostName').textContent=Game.myName; document.getElementById('lobbyMap').textContent=Game.map.name; document.getElementById('lobbyMode').textContent=GameModes[Game.mode].label; document.getElementById('lobbyTitleDisplay').textContent=this.title||'PLUNK Lobby';
@@ -8217,6 +8359,7 @@ const Lobby = {
   },
   applySettings(data){
     const cfg=data.settings||data;
+    if(Array.isArray(cfg.mutedPlayers)){Game.mutedPlayers=new Set(cfg.mutedPlayers);Chat.syncMuteUI();}
     if(cfg.map){
       Game.map=ensureMapSpawn(cfg.map);
       if(!mapIsBuiltIn?.(Game.map) && !SAVED_CUSTOM_MAPS.some(m=>m.name===Game.map.name && m.width===Game.map.width && m.height===Game.map.height)) this._requestedMap=Game.map;
@@ -8277,14 +8420,16 @@ const Lobby = {
         const menuWrap=document.createElement('div'); menuWrap.className='player-menu-wrap';
         const toggle=document.createElement('button'); toggle.className='btn player-menu-toggle'; toggle.type='button'; toggle.textContent='⋯'; toggle.setAttribute('aria-label',`Player actions for ${p.name||'player'}`);
         const menu=document.createElement('div'); menu.className='player-menu';
-        const kick=document.createElement('button'); kick.className='btn small'; kick.textContent='KICK'; kick.type='button';
-        const ban=document.createElement('button'); ban.className='btn small danger'; ban.textContent='BAN'; ban.type='button';
-        const spec=document.createElement('button'); spec.className='btn small'; spec.textContent=p.spectator?'PLAY':'SPECTATE'; spec.type='button';
+        const kick=document.createElement('button'); kick.className='btn small'; kick.textContent='KICK'; kick.type='button'; kick.title='Kick player';
+        const ban=document.createElement('button'); ban.className='btn small danger'; ban.textContent='BAN'; ban.type='button'; ban.title='Ban player';
+        const spec=document.createElement('button'); spec.className='btn small'; spec.textContent=p.spectator?'Play':'Spec'; spec.type='button'; spec.title=p.spectator?'Let player play':'Make player a spectator';
+        const mute=document.createElement('button'); mute.className='btn small'; mute.textContent=p.muted?'UNMUTE':'MUTE'; mute.type='button'; mute.title=p.muted?'Allow this player to chat':'Prevent this player from chatting';
         kick.addEventListener('click',e=>{e.stopPropagation();menu.classList.remove('open');this.kickPlayer(p.id);});
         ban.addEventListener('click',e=>{e.stopPropagation();menu.classList.remove('open');this.banPlayer(p.id);});
         spec.addEventListener('click',e=>{e.stopPropagation();menu.classList.remove('open');this.setSpectator(p.id,!p.spectator,false);});
+        mute.addEventListener('click',e=>{e.stopPropagation();menu.classList.remove('open');Chat.setPlayerMuted(p.id,!p.muted,true);});
         toggle.addEventListener('click',e=>{e.stopPropagation(); this.closePlayerMenus(menu); menu.classList.toggle('open');});
-        menu.appendChild(kick); menu.appendChild(ban); menu.appendChild(spec); menuWrap.appendChild(toggle); menuWrap.appendChild(menu); div.appendChild(menuWrap);
+        menu.appendChild(kick); menu.appendChild(ban); menu.appendChild(spec); menu.appendChild(mute); menuWrap.appendChild(toggle); menuWrap.appendChild(menu); div.appendChild(menuWrap);
       } box.appendChild(div);
     }
     const me=Game.players[Game.myId];
@@ -8298,7 +8443,7 @@ const Lobby = {
     if(!Game.isHost||!Game.players[pid])return;
     delete Game.players[pid]; delete this.ready[pid]; delete NetworkManager.pings[pid];
     NetworkManager.disconnectPeer(pid);
-    NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),title:this.title,index:this.index,hostName:Game.myName,spectatorStates:this.getSpectatorStates()},true);
+    NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),mutedPlayers:Chat.mutedPlayerIds(),title:this.title,index:this.index,hostName:Game.myName,spectatorStates:this.getSpectatorStates()},true);
     this.render();
   },
   handlePageExit(){
@@ -10231,6 +10376,11 @@ window.addEventListener('DOMContentLoaded', ()=>{
 
   document.getElementById('btnReady').addEventListener('click', ()=>Lobby.toggleReady());
   document.getElementById('btnLobbySpectate')?.addEventListener('click', ()=>{ const me=Game.players[Game.myId]; if(me) Lobby.requestSpectator(!me.spectator); });
+  const chatMuteBtn=document.getElementById('chatMuteBtn');
+  const lobbyChatMute=document.getElementById('lobbyChatMute');
+  chatMuteBtn?.remove();
+  lobbyChatMute?.remove();
+
   const lobbyChatInput=document.getElementById('lobbyChatInput');
   lobbyChatInput.addEventListener('focus', ()=>{ InputManager.chatFocused=true; });
   lobbyChatInput.addEventListener('blur', ()=>{ InputManager.chatFocused=false; });
@@ -10242,6 +10392,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
     }
   });
   document.getElementById('lobbyChatSend').addEventListener('click', ()=>{
+    if(lobbyChatInput.disabled) return;
     const txt=lobbyChatInput.value;
     if(txt.trim()){
       Chat.send(txt);
