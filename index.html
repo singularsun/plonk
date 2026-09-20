@@ -65,6 +65,21 @@ canvas{display:block;background:#000;}
 #btnRematch{padding:20px 34px;font-size:17px;min-width:230px;min-height:58px;}
 .results-actions.between-round{display:none!important;}
 .round-leaderboard-title{font-size:18px;color:var(--accent3);letter-spacing:2px;font-weight:900;margin-bottom:10px;}
+.damage-pop-dom{font-size:11px;color:#ffe09a;font-weight:1000;letter-spacing:.8px;margin-top:2px;}
+.final-results-panel{width:min(820px,94vw)!important;}
+.final-results-layout{display:grid!important;grid-template-columns:minmax(270px,1fr) minmax(330px,1.15fr);gap:18px;align-items:stretch;text-align:left;}
+.final-results-leaderboard{display:flex;flex-direction:column;gap:8px;min-width:0;}
+.final-results-winners{display:flex;align-items:stretch;justify-content:center;min-width:0;}
+.round-winner-preview-wrap{position:relative;width:100%;min-width:0;padding:10px 10px 14px;background:linear-gradient(180deg,#21170d,#0d0906d9);border:1px solid #6b4a1f;border-radius:6px;box-shadow:0 0 22px #ffcf5a22,0 10px 24px #0008;overflow:hidden;text-align:center;}
+.round-winner-preview-wrap::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 50% 24%,#ffd76a20,transparent 42%);pointer-events:none;}
+.round-winner-preview-wrap .winner-label{font-size:10px;font-weight:1000;letter-spacing:2px;color:#ffd86b;text-transform:uppercase;position:relative;z-index:1;}
+.round-winner-preview-row{display:flex;flex-wrap:nowrap;gap:12px;align-items:flex-start;justify-content:center;overflow-x:auto;overflow-y:hidden;padding:10px 2px 2px;position:relative;z-index:1;scrollbar-width:thin;}
+.round-winner-card{position:relative;flex:0 0 150px;min-height:82px;padding:8px 8px 10px;background:#120c08aa;border:1px solid #6b4a1f;border-radius:5px;box-shadow:0 0 12px #ffcf5a16;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.round-winner-card .winner-crown{font-family:Georgia,'Times New Roman',serif;font-size:38px;line-height:.78;font-weight:900;color:#ffd45c;text-shadow:0 0 6px #ffd45c66,0 2px 0 #8d5d12;margin-bottom:8px;}
+.round-winner-card .winner-name{font-size:14px;font-weight:1000;color:#fff4d2;white-space:nowrap;max-width:132px;overflow:hidden;text-overflow:ellipsis;text-shadow:0 2px 3px #000;}
+.round-winner-card .winner-team{font-size:9px;font-weight:1000;letter-spacing:1px;margin-top:4px;}
+@media(max-width:700px){.final-results-panel{width:min(96vw,820px)!important}.final-results-layout{grid-template-columns:1fr;}.round-winner-preview-row{justify-content:flex-start;}}
+
 .dash-effect-preview.multicolor .core{background:conic-gradient(from 0deg,#fff,#ff4d4d,#ffd45a,#62ff8a,#5db6ff,#c77dff,#fff);}
 .dash-effect-preview.multicolor .orb{background:var(--orb-color,var(--fx-color));}
 
@@ -206,6 +221,15 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 #arrowfill{background:linear-gradient(90deg,#9b7433,#ffd86b);}
 #arrowfill.ready{background:linear-gradient(90deg,#d59b39,#ffe9a2);box-shadow:0 0 8px #ffd86b99;}
 #arrowfill.charging{background:linear-gradient(90deg,#ffb34d,#fff3c6);}
+.hudbar-wrap.action-fail{animation:actionFailShake .18s ease-out;}
+.hudbar-wrap.action-fail .hudbar-track{border-color:#ff6b5fcc!important;box-shadow:0 0 10px #ff6b5f55;}
+@keyframes actionFailShake{
+  0%{transform:translateX(0);}
+  22%{transform:translateX(-5px);}
+  45%{transform:translateX(4px);}
+  68%{transform:translateX(-2px);}
+  100%{transform:translateX(0);}
+}
 #chatbox{position:absolute;bottom:10px;right:10px;width:260px;max-height:200px;display:flex;flex-direction:column;
   gap:2px;pointer-events:none;}
 #chatlog{max-height:150px;overflow-y:auto;font-size:12px;display:flex;flex-direction:column;gap:2px;
@@ -883,7 +907,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.76 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.79 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -1161,8 +1185,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <h2>MATCH RESULTS</h2>
     <div id="resultsList" style="display:flex;flex-direction:column;gap:8px;margin:16px 0;"></div>
     <div class="row results-actions" style="justify-content:center;">
-      <button class="btn primary" id="btnRematch">REMATCH / LOBBY</button>
-      <button class="btn" data-go="main">MAIN MENU</button>
+      <button class="btn primary" id="btnRematch">BACK TO LOBBY</button>
     </div>
   </div>
 </div>
@@ -1479,7 +1502,8 @@ class ParticleSystem{
    acceleration, bouncy collisions. */
 const PHYS = {
   step: 1/60,
-  baseGravity: 1235,
+  baseGravity: 1111.5, // 0.9x previous base gravity
+  baseKnockbackScale: 1.20, // 1.2x previous base player-to-player knockback
   friction: 0.975,      // grounded friction — high value = very slidey
   airFriction: 0.992,
   accel: 980,
@@ -1612,6 +1636,7 @@ class Player{
     this.grappleSerial=0; this.netGrappleSerial=0; this.grappleEventSeq=0; this.lastGrappleEventSeq=null;
     this.pendingGrappleTargetId=null; this.remoteGrappleActive=false; this.remoteGrappleEventSeq=null;
     this.actionAiming=false; this.actionAngle=-Math.PI/2; this.actionAimStartAngle=-Math.PI/2; this.actionAimStartTime=0; this.actionEventSeq=0; this.lastActionEventSeq=null; this.pendingActionAngle=null; this.remoteActionActive=false; this.actionCooldown=0; this.actionCooldownMax=PHYS.actionProjectileCooldown; this.actionCharge=0; this.actionChargeStartTime=0; this.actionPower=0; this.actionKind=null;
+    this._jumpTrackActive=false; this._jumpStartY=this.y; this._jumpPeakY=this.y; this._jumpApexFxDone=false; this._wallTouchFxAt=0;
   }
 }
 
@@ -2365,33 +2390,33 @@ function injectArrows(baseMap, deadly){
 
 /* ---------------------------- CAMERA ---------------------------- */
 class Camera{
-  constructor(){ this.x=0;this.y=0;this.zoom=1;this.targetZoom=1; this.shake=0; }
+  constructor(){
+    this.x=0;this.y=0;this.zoom=1;this.targetZoom=1; this.shake=0;
+    // Extra camera room is available only on an edge that a living player has
+    // actually crossed. Normal play stays clamped to the map as much as possible.
+    this.edgeGrace=320;
+    this.edgeRamp=165;
+    this.maxZoomOut=0.34;
+  }
   _calcView(players, mapW, mapH, viewW, viewH, dt=1/60){
     if(!players.length) return null;
 
-    // Frame every living, non-spectating player who is still inside the map.
-    // Players who have fallen outside the map are deliberately ignored so
-    // they cannot pull the camera away from the remaining players.
-    const inMap = players.filter(p=>{
+    // Keep every living, non-spectating player as a target. Off-map players are
+    // included so the camera can follow them, but their position only unlocks
+    // extra camera space on the side(s) they actually crossed.
+    const targets=players.filter(p=>{
       if(!p || p.spectator || !p.alive) return false;
-      const x=Number(p.x), y=Number(p.y);
-      return Number.isFinite(x) && Number.isFinite(y) && x>=0 && x<=mapW && y>=0 && y<=mapH;
+      return Number.isFinite(Number(p.x)) && Number.isFinite(Number(p.y));
     });
-
-    const targets = inMap.length ? inMap :
-      players.filter(p=>p && !p.spectator && Number.isFinite(Number(p.x)) && Number.isFinite(Number(p.y)) &&
-        Number(p.x)>=0 && Number(p.x)<=mapW && Number(p.y)>=0 && Number(p.y)<=mapH);
     if(!targets.length) return null;
 
-    // Use a small, heavily softened look-ahead. This preserves the benefit of
-    // predictive framing without letting sudden velocity changes jerk the camera.
-    const predictionTime = Math.min(0.13, Math.max(0.08, 0.095 + Math.min(0.025, dt*0.7)));
-    const predicted = targets.map(p=>{
+    const predictionTime=Math.min(0.105,Math.max(0.065,0.078+Math.min(0.027,dt*0.65)));
+    const predicted=targets.map(p=>{
       const x=Number(p.x)||0, y=Number(p.y)||0;
       const vx=Number(p.vx)||0, vy=Number(p.vy)||0;
       return {
-        x:Math.max(0,Math.min(mapW,x+vx*predictionTime*0.45)),
-        y:Math.max(0,Math.min(mapH,y+vy*predictionTime*0.45))
+        x:x+vx*predictionTime*0.40,
+        y:y+vy*predictionTime*0.40
       };
     });
 
@@ -2404,22 +2429,55 @@ class Camera{
     const cx=(minX+maxX)/2;
     const cy=(minY+maxY)/2;
 
-    // Stay zoomed in when players are close together, but smoothly zoom out
-    // enough to keep every remaining player in the shot when they spread out.
     const spreadX=Math.max(260,(maxX-minX)+320);
     const spreadY=Math.max(220,(maxY-minY)+280);
-    const playerFit=Math.min(viewW/spreadX, viewH/spreadY);
+    const playerFit=Math.min(viewW/spreadX,viewH/spreadY);
 
-    const z=Math.max(0.45, Math.min(1.15, playerFit));
+    // Keep the normal map framing until a player actually moves outside.
+    // The extra zoom-out range is eased in from the amount they have crossed,
+    // rather than switching on the instant they touch the border.
+    const outsideDepth=Math.max(
+      0,
+      ...targets.map(p=>{
+        const x=Number(p.x), y=Number(p.y);
+        return Math.max(-x,x-mapW,-y,y-mapH);
+      })
+    );
+    const outsideBlend=Math.min(1, outsideDepth/this.edgeRamp);
+    const easedOutside=outsideBlend*outsideBlend*(3-2*outsideBlend);
+    const minZoom=0.45+(this.maxZoomOut-0.45)*easedOutside;
+    const z=Math.max(minZoom,Math.min(1.15,playerFit));
     const worldViewW=viewW/z, worldViewH=viewH/z;
 
     let tx=cx-worldViewW/2;
     let ty=cy-worldViewH/2;
 
-    const camMaxX=Math.max(0,mapW-worldViewW);
-    const camMaxY=Math.max(0,mapH-worldViewH);
-    tx=Math.max(0,Math.min(tx,camMaxX));
-    ty=Math.max(0,Math.min(ty,camMaxY));
+    // Start with the normal in-map camera bounds.
+    let camMinX=0;
+    let camMaxX=Math.max(0,mapW-worldViewW);
+    let camMinY=0;
+    let camMaxY=Math.max(0,mapH-worldViewH);
+
+    // Unlock only the side(s) that currently have a living player beyond them.
+    // The available extra room grows smoothly with how far the player has
+    // crossed the border, so the camera does not make a sharp step outward.
+    const outLeft=Math.max(0,...targets.map(p=>-Number(p.x)));
+    const outRight=Math.max(0,...targets.map(p=>Number(p.x)-mapW));
+    const outTop=Math.max(0,...targets.map(p=>-Number(p.y)));
+    const outBottom=Math.max(0,...targets.map(p=>Number(p.y)-mapH));
+    const extend=d=>{
+      const t=Math.min(1,Math.max(0,d/this.edgeRamp));
+      const e=t*t*(3-2*t);
+      return this.edgeGrace*e;
+    };
+
+    if(outLeft>0)  camMinX=-extend(outLeft);
+    if(outRight>0) camMaxX=Math.max(camMaxX,mapW-worldViewW+extend(outRight));
+    if(outTop>0)   camMinY=-extend(outTop);
+    if(outBottom>0)camMaxY=Math.max(camMaxY,mapH-worldViewH+extend(outBottom));
+
+    tx=Math.max(camMinX,Math.min(tx,camMaxX));
+    ty=Math.max(camMinY,Math.min(ty,camMaxY));
 
     return {z,tx,ty};
   }
@@ -2433,24 +2491,29 @@ class Camera{
     const v=this._calcView(players,mapW,mapH,viewW,viewH,dt);
     if(!v) return;
 
-    // Frame-rate independent easing. The target has only a small predictive lead,
-    // while the camera itself eases toward the new framing instead of snapping.
-    const zoomAlpha=1-Math.exp(-8.5*dt);
-    const moveAlpha=1-Math.exp(-9.5*dt);
+    const outsideDepth=Math.max(0,...players.filter(p=>p&&p.alive&&!p.spectator).map(p=>{
+      const x=Number(p.x), y=Number(p.y);
+      return Math.max(-x,x-mapW,-y,y-mapH);
+    }));
+    const outsideT=Math.min(1,outsideDepth/210);
+    const zoomRate=8.2-2.3*outsideT;
+    const moveRate=10.8-4.2*outsideT;
+    const zoomAlpha=1-Math.exp(-zoomRate*dt);
+    const moveAlpha=1-Math.exp(-moveRate*dt);
 
     this.targetZoom += (v.z-this.targetZoom)*zoomAlpha;
-    this.zoom = this.targetZoom;
+    this.zoom=this.targetZoom;
     this.x += (v.tx-this.x)*moveAlpha;
     this.y += (v.ty-this.y)*moveAlpha;
 
     if(this.shake>0){
       this.x += (Math.random()-0.5)*this.shake;
       this.y += (Math.random()-0.5)*this.shake;
-      this.shake *= Math.pow(0.85, Math.max(1,dt*60));
+      this.shake *= Math.pow(0.85,Math.max(1,dt*60));
       if(this.shake<0.3) this.shake=0;
     }
   }
-  addShake(v){ if(Storage.get('settings',{}).shake!==false) this.shake = Math.min(30,this.shake+v); }
+  addShake(v){ if(Storage.get('settings',{}).shake!==false) this.shake=Math.min(30,this.shake+v); }
 }
 
 /* ---------------------------- KEYBINDS ---------------------------- */
@@ -3100,6 +3163,8 @@ const Game = {
   _nextMineId:1,
   movingPlatformState:{},
   menuFlyers:[],
+  damagePops:[],
+  impactFreezeUntil:0,
   lastHostSignal:0,
   hostWatchdogGraceUntil:0,
 
@@ -3436,6 +3501,7 @@ const Game = {
       p.dashSerial=0; p.netDashSerial=0; p.grappleSerial=0; p.netGrappleSerial=0; p._dashChargeSfxLevel=0;
       p.grappleEventSeq=0; p.lastGrappleEventSeq=null; p.pendingGrappleTargetId=null; p.remoteGrappleActive=false; p.remoteGrappleEventSeq=null;
       p.actionAiming=false; p.actionAngle=-Math.PI/2; p.actionAimStartAngle=-Math.PI/2; p.actionAimStartTime=0; p.actionEventSeq=0; p.lastActionEventSeq=null; p.pendingActionAngle=null; p.remoteActionActive=false; p.actionCooldown=0; p.actionCooldownMax=GameModes[this.mode]?.mine?PHYS.mineCooldown:PHYS.actionProjectileCooldown; p.actionCharge=0; p.actionChargeStartTime=0; p.actionPower=0; p.actionKind=null; p._actionChargeFxAcc=0;
+      p._jumpTrackActive=false; p._jumpStartY=p.y; p._jumpPeakY=p.y; p._jumpApexFxDone=false; p._wallTouchFxAt=0;
       p.remoteJumpHeld=false; p.remoteJumpHoldSeq=0; p.remoteJumpReleaseSeq=0;
     }
   },
@@ -3519,6 +3585,7 @@ const Game = {
               }
             }else{
               me._lastActionHeld=false;
+              if(me.alive && (me.actionCooldown||0)>0) this.showActionFailureFeedback(me,'action');
             }
           }
           if(me.actionAiming){
@@ -3624,11 +3691,12 @@ const Game = {
     }
 
     this.updateRemoteRenderTargets(dt);
+    this.updateDamagePops(dt);
     this.trailParticles.update(dt);
     this.particles.update(dt);
     if(this.state==='playing'||this.state==='countdown') this.updateCameraAndHud(dt);
     if(this.countdownPunch>0) this.countdownPunch=Math.max(0,this.countdownPunch-dt*2.6);
-    this.render();
+    if(performance.now() >= (this.impactFreezeUntil||0)) this.render();
     requestAnimationFrame(this.loop);
   },
 
@@ -3694,6 +3762,12 @@ const Game = {
         }
       }
     }
+
+    // Track the state immediately before this fixed-step movement. A normal
+    // landing is detected only when an airborne player becomes grounded after
+    // collision resolution, so bounce pads keep their existing FX.
+    const wasGroundedBeforeMove=!!p.grounded;
+    const fallSpeedBeforeMove=Math.max(0,Number(p.vy)||0);
 
     // A jump request is buffered briefly. This matters most for non-host
     // players because their input has network travel time before the host
@@ -3763,8 +3837,9 @@ const Game = {
       p.grounded=false;
       p.jumpBuffer=0;
       p.jumpSerial = ((p.jumpSerial||0) + 1) & 65535;
+      p._jumpTrackActive=true; p._jumpStartY=p.y; p._jumpPeakY=p.y; p._jumpApexFxDone=false;
       input.jumpPressed=false; // consume the one-shot locally
-      this.spawnFx(p,'jump');
+      this.spawnFx(p,'jump',false,{tier:jumpHeld?2:1});
     }
 
     // Normal jumping is intentionally untouched. Bounce-specific W acceleration
@@ -3793,13 +3868,20 @@ const Game = {
     // speed cap above so their extra W boost stays tight and predictable.
     if(jumpHeld && !p.grounded && p.vy < 0 && !p.bounceJumpActive) grav *= PHYS.jumpHoldGravityScale;
 
+    const jumpAscendingBeforeMove=!!p._jumpTrackActive && p.vy<0;
+
     // Dash: hold to charge through three power levels, then release to fire.
     // A quick tap still produces the familiar low-power poke.
     const dashHeldNow = !!input.dash && p.alive;
     const dashPressedEdge = dashHeldNow && !p._dashHeldPrev;
     const parriedThisTick = dashPressedEdge && this.matchSettings?.parry && this.performParry(p);
-    if(dashHeldNow && !parriedThisTick && !p._dashHeldPrev && p.dashCd<=0 && !p.dashCharging){
-      p.dashCharging=true; p.dashCharge=0; p._dashChargeFxAcc=0; p._dashChargeSfxLevel=0;
+    if(dashPressedEdge && !parriedThisTick){
+      if(p.dashCd<=0 && !p.dashCharging){
+        p.dashCharging=true; p.dashCharge=0; p._dashChargeFxAcc=0; p._dashChargeSfxLevel=0;
+      }else if(p.dashCd>0){
+        // No dash is consumed here; this is only immediate player feedback.
+        this.showActionFailureFeedback(p,'dash');
+      }
     }
     if(p.dashCharging){
       if(dashHeldNow){
@@ -3832,6 +3914,26 @@ const Game = {
     // permanently high-frequency simulation.
     p.vy += grav*dt;
     this.movePlayerMapContinuous(p, dt);
+
+    if(p._jumpTrackActive){
+      p._jumpPeakY=Math.min(Number(p._jumpPeakY)||p.y,p.y);
+      if(jumpAscendingBeforeMove && p.vy>=0 && !p.grounded && !p._jumpApexFxDone){
+        const jumpPowerNow=PHYS.jumpVel/(p.heavy?1.2:1);
+        const expectedHeight=(jumpPowerNow*jumpPowerNow)/(2*Math.max(1,PHYS.baseGravity*(this.matchSettings.gravity||1)));
+        const reached=Math.max(0,(Number(p._jumpStartY)||p.y)-p.y);
+        const ratio=expectedHeight>1e-6?reached/expectedHeight:0;
+        const tier=ratio<0.36?1:(ratio<0.74?2:3);
+        this.spawnFx(p,'jump',false,{tier,apex:true,height:reached});
+        p._jumpApexFxDone=true;
+        p._jumpTrackActive=false;
+      }
+    }
+
+    const landedNormally=!wasGroundedBeforeMove && p.grounded &&
+      fallSpeedBeforeMove>150 && !p.bounceJumpActive;
+    if(landedNormally){
+      this.spawnFx(p,'land',false,{fallSpeed:fallSpeedBeforeMove});
+    }
 
     p.trail.push({x:p.x,y:p.y});
     if(p.trail.length>7) p.trail.shift();
@@ -3892,11 +3994,41 @@ const Game = {
     }
   },
 
+  /* Small, local-only feedback for an action that could not start because
+     its cooldown is still active. It deliberately does not alter gameplay state
+     or broadcast anything to other players. */
+  showActionFailureFeedback(p,kind='dash'){
+    if(!p || p.id!==this.myId) return;
+    const now=performance.now();
+    const last=Number(p._lastActionFailureFxAt)||0;
+    if(now-last<120) return;
+    p._lastActionFailureFxAt=now;
+
+    const x=Number(p.x)||0, y=Number(p.y)||0;
+    const color=kind==='dash'?'#ff8366':'#ffd36b';
+    this.particles.burst(x,y,color,5,115,{gravity:35,life:.16,size:2.4,sizeEnd:.2,twinkle:true,shape:'shard'});
+    this.particles.burst(x,y,'#ffffff',2,80,{gravity:0,life:.11,size:1.7,sizeEnd:.1,twinkle:true,shape:'spark'});
+
+    const wrap=document.getElementById(kind==='dash'?'dashwrap':'arrowwrap');
+    if(wrap){
+      clearTimeout(wrap._actionFailTimer);
+      wrap.classList.remove('action-fail');
+      void wrap.offsetWidth;
+      wrap.classList.add('action-fail');
+      wrap._actionFailTimer=setTimeout(()=>wrap.classList.remove('action-fail'),190);
+    }
+
+    // A quiet descending beep makes repeated blocked presses readable without
+    // competing with the normal gameplay sounds.
+    AudioManager.beep(kind==='dash'?175:220,.055,'square',.045,kind==='dash'?115:150);
+  },
+
   /* Fires the dash the moment the dash key is released (or immediately, if it
      was only tapped). Power and cooldown scale with the three charge levels. */
   fireDash(p){
     const charge = Math.max(0,Math.min(PHYS.dashMaxLevel,p.dashCharge||0));
     const chargeNorm = charge/PHYS.dashMaxLevel;
+    const perfectRelease = charge >= PHYS.dashMaxLevel-0.08;
     const power = PHYS.dashBaseSpeed + Math.pow(chargeNorm, PHYS.dashPowerCurve)*PHYS.dashMaxBonus;
     p.vx = p.facing * power;
     p.dashVelocity = power;
@@ -3909,7 +4041,7 @@ const Game = {
     p.dashCharging = false;
     p.dashCharge = 0;
     p.dashSerial = ((p.dashSerial||0) + 1) & 65535;
-    this.spawnFx(p,'dash',false,{charge});
+    this.spawnFx(p,'dash',false,{charge,perfectRelease});
   },
 
   /* Purely cosmetic charge-up sparkle. Every peer simulates every player's dash
@@ -4463,8 +4595,9 @@ const Game = {
               }else if(firstHit){
                 const travelLen=Math.hypot(q.vx,q.vy)||1,nx=q.vx/travelLen,ny=q.vy/travelLen,knock=(420+900*(q.power||0))*(this.matchSettings.kb||1)*getSmashKnockbackMultiplier(p)*getComboKnockbackMultiplier(this.players[q.ownerId],true);
                 p.vx+=nx*knock;p.vy+=ny*knock;p.damage+=8;p.hitFlash=8;
+                if(knock>=1000) this.triggerImpactFrame(26);
                 if(this.matchSettings?.combo) this.registerHit(q.ownerId,p.id,sx,sy,'arrow');
-                this.spawnFx(p,'impact');NetworkManager.broadcast({t:'hitfx',x:p.x,y:p.y},false);
+                this.spawnFx(p,'impact');NetworkManager.broadcast({t:'hitfx',x:p.x,y:p.y,impact:knock},false);
               }
               if(!q.bouncy){ this.spawnProjectileEndFx(sx,sy,'arrow',false); NetworkManager.broadcast({t:'arrow_end_fx',x:sx,y:sy,miss:false},false); }
               if(q.bouncy && (q.bounceCount||0)<PHYS.bouncyArrowMaxBounces){
@@ -4539,8 +4672,9 @@ const Game = {
         if(!q.hitPlayers.includes(hitId)) q.hitPlayers.push(hitId);
         const speed=Math.hypot(q.vx,q.vy)||1,nx=q.vx/speed,ny=q.vy/speed,knock=(420+900*(q.power||0))*(this.matchSettings.kb||1)*getSmashKnockbackMultiplier(hitPlayer)*getComboKnockbackMultiplier(this.players[q.ownerId],true);
         hitPlayer.vx+=nx*knock;hitPlayer.vy+=ny*knock;hitPlayer.damage+=8;hitPlayer.hitFlash=8;
+        if(knock>=1000) this.triggerImpactFrame(26);
         if(this.matchSettings?.combo) this.registerHit(q.ownerId,hitPlayer.id,q.x,q.y,'arrow');
-        this.spawnFx(hitPlayer,'impact');NetworkManager.broadcast({t:'hitfx',x:hitPlayer.x,y:hitPlayer.y},false);
+        this.spawnFx(hitPlayer,'impact');NetworkManager.broadcast({t:'hitfx',x:hitPlayer.x,y:hitPlayer.y,impact:knock},false);
         // A bouncy arrow may hit the same opponent again after it has bounced away.
         // Keep only a short re-hit lock so one contact cannot apply damage repeatedly
         // during the few simulation samples that surround the same impact point.
@@ -5072,7 +5206,7 @@ const Game = {
               p.bounceWBoostTimer=jumpHeld ? PHYS.bounceWBoostTime : 0;
               p.bounceIgnorePlatform=platIndex;
               if(!postPlayer){ p.grounded=false; p.supportPlatform=-1; }
-              this.spawnFx(p,'bounce');
+              p._jumpTrackActive=false; this.spawnFx(p,'bounce');
             }else{
               p.vy=0;
               if(!postPlayer){ p.grounded=true; p.supportPlatform=platIndex; }
@@ -5131,7 +5265,7 @@ const Game = {
             p.bounceWBoostTimer=jumpHeld ? PHYS.bounceWBoostTime : 0;
             p.bounceIgnorePlatform=platIndex;
             if(!postPlayer){ p.grounded=false; p.supportPlatform=-1; }
-            this.spawnFx(p,'bounce');
+            p._jumpTrackActive=false; this.spawnFx(p,'bounce');
           }else{
             const vn=p.vx*normalX+p.vy*normalY;
             p.vx -= normalX*vn;
@@ -5143,6 +5277,14 @@ const Game = {
       }
       const hit=rotation!==0 ? this.circleVsRotatedRect(p,plat) : this.circleVsAxisAlignedRect(p,plat);
       if(!hit) continue;
+      const wallApproachSpeed=-(p.vx*hit.nx+p.vy*hit.ny);
+      if(Math.abs(hit.nx)>Math.abs(hit.ny)+0.10 && wallApproachSpeed>55){
+        const now=performance.now();
+        if(now-(p._wallTouchFxAt||0)>95){
+          p._wallTouchFxAt=now;
+          this.spawnFx(p,'walltouch',false,{nx:hit.nx,ny:hit.ny,impactSpeed:wallApproachSpeed});
+        }
+      }
       // A fresh top bounce may not immediately re-trigger the same top face while
       // rising, but its side faces remain valid collision surfaces.
       if(p.bounceIgnorePlatform===platIndex && p.vy<0 && hit.top) continue;
@@ -5181,7 +5323,7 @@ const Game = {
             p.grounded=false;
             p.supportPlatform=-1;
           }
-          this.spawnFx(p,'bounce');
+          p._jumpTrackActive=false; this.spawnFx(p,'bounce');
         }else if(bounce>0 && Math.abs(hit.nx)>Math.abs(hit.ny)){
           // Bouncy side faces reflect the incoming normal velocity. The bottom
           // face deliberately falls through to the ordinary-solid behavior below,
@@ -5387,7 +5529,8 @@ const Game = {
           const effectiveVbN=bWasDashing?vbN*dashEnergyMultiplier:vbN;
           const newVaN=((massA-massB)*effectiveVaN+2*massB*effectiveVbN)/totalMass;
           const newVbN=((massB-massA)*effectiveVbN+2*massA*effectiveVaN)/totalMass;
-          const deltaAN=newVaN-vaN, deltaBN=newVbN-vbN;
+          const deltaAN=(newVaN-vaN)*PHYS.baseKnockbackScale;
+          const deltaBN=(newVbN-vbN)*PHYS.baseKnockbackScale;
           a.vx+=deltaAN*nx; a.vy+=deltaAN*ny;
           b.vx+=deltaBN*nx; b.vy+=deltaBN*ny;
 
@@ -5415,11 +5558,18 @@ const Game = {
           const impact=relativeSpeed;
           if(impact>50){
             const dmg=impact*0.010;
-            const aSmashScale=this.matchSettings?.smash?Math.max(0,getSmashKnockbackMultiplier(a)-1):0;
-            const bSmashScale=this.matchSettings?.smash?Math.max(0,getSmashKnockbackMultiplier(b)-1):0;
+            // Calculate Smash knockback from the damage that existed BEFORE this
+            // collision adds its new damage. This prevents a single fully charged
+            // dash from getting an extra knockback spike from its own damage pop.
+            const aDamageBefore=Math.max(0,Number(a.damage)||0);
+            const bDamageBefore=Math.max(0,Number(b.damage)||0);
+            const aSmashScale=this.matchSettings?.smash?(0.07+aDamageBefore*0.00125):0;
+            const bSmashScale=this.matchSettings?.smash?(0.07+bDamageBefore*0.00125):0;
             a.damage+=dmg; b.damage+=dmg;
             if(this.matchSettings?.smash){
-              const smashBoost=impact*0.34;
+              this.spawnDamagePop(a.x,a.y-a.radius-18,dmg,true);
+              this.spawnDamagePop(b.x,b.y-b.radius-18,dmg,true);
+              const smashBoost=impact;
               a.vx-=nx*smashBoost*aSmashScale; a.vy-=ny*smashBoost*aSmashScale;
               b.vx+=nx*smashBoost*bSmashScale; b.vy+=ny*smashBoost*bSmashScale;
               // Smash knockback is not subject to the normal movement-speed cap.
@@ -5449,7 +5599,7 @@ const Game = {
               }
             }
             this.camera.addShake(Math.min(16,impact*0.022));
-            this.spawnFx(a,'impact'); this.spawnFx(b,'impact');
+            this.spawnFx(a,'impact',false,{impact,nx,ny}); this.spawnFx(b,'impact',false,{impact,nx:-nx,ny:-ny});
             if(impact>=330){
               const ixp=(a.x+b.x)*0.5, iyp=(a.y+b.y)*0.5;
               this.particles.burst(ixp,iyp,'#fff',Math.min(18,4+Math.floor(impact/120)),260,{gravity:40,life:.18,size:3.6,sizeEnd:.2,twinkle:true});
@@ -5607,6 +5757,107 @@ const Game = {
     }
   },
 
+  triggerImpactFrame(ms=30){
+    const now=performance.now();
+    if(now-(this._lastImpactFrameAt||0)<70) return;
+    const duration=Math.max(14,Math.min(42,Number(ms)||30));
+    this._lastImpactFrameAt=now;
+    this.impactFreezeUntil=Math.max(this.impactFreezeUntil||0,now+duration);
+  },
+  spawnDamagePop(x,y,amount,broadcast=true){
+    if(!this.matchSettings?.smash) return;
+    const value=Math.max(0,Number(amount)||0);
+    if(value<=0) return;
+    if(!Array.isArray(this.damagePops)) this.damagePops=[];
+    this.damagePops.push({x:Number(x)||0,y:Number(y)||0,amount:value,life:.62,maxLife:.62,driftX:(Math.random()-.5)*18});
+    if(this.damagePops.length>28) this.damagePops.splice(0,this.damagePops.length-28);
+    if(broadcast && this.isHost){
+      NetworkManager.broadcast({t:'damage_pop',x:Number(x)||0,y:Number(y)||0,amount:value},false);
+    }
+  },
+  updateDamagePops(dt){
+    if(!Array.isArray(this.damagePops)||!this.damagePops.length) return;
+    for(let i=this.damagePops.length-1;i>=0;i--){
+      const p=this.damagePops[i];
+      p.life-=dt;
+      p.y-=28*dt;
+      p.x+=(p.driftX||0)*dt;
+      p.driftX=(p.driftX||0)*Math.pow(.22,Math.max(.1,dt*10));
+      if(p.life<=0) this.damagePops.splice(i,1);
+    }
+  },
+  renderDamagePops(ctx){
+    if(!Array.isArray(this.damagePops)||!this.damagePops.length) return;
+    const cam=this.camera,z=cam.zoom;
+    ctx.save(); ctx.scale(z,z); ctx.translate(-cam.x,-cam.y);
+    for(const p of this.damagePops){
+      const t=Math.max(0,Math.min(1,1-p.life/p.maxLife));
+      const alpha=Math.min(1,p.life/.16)*(1-t*.72);
+      const scale=0.88+t*.16+(p.life>.48?0.10:0);
+      ctx.save();
+      ctx.globalAlpha=alpha;
+      ctx.translate(p.x,p.y); ctx.scale(scale,scale);
+      ctx.font='1000 16px Segoe UI'; ctx.textAlign='center'; ctx.textBaseline='middle';
+      ctx.lineJoin='round'; ctx.lineWidth=3; ctx.strokeStyle='#120a05';
+      ctx.strokeText('+'+((p.amount<10)?p.amount.toFixed(1):Math.round(p.amount))+'%',0,0);
+      ctx.fillStyle='#ffe09a'; ctx.fillText('+'+((p.amount<10)?p.amount.toFixed(1):Math.round(p.amount))+'%',0,0);
+      ctx.restore();
+    }
+    ctx.restore();
+  },
+  buildWinnerPreview(data){
+    try{
+      let raws=Array.isArray(data?.winnerPreviews) ? data.winnerPreviews.filter(Boolean) : [];
+      if(!raws.length){
+        const raw=data?.winnerPreview || (data?.winnerId && this.players[data.winnerId] ? {
+          id:data.winnerId,name:this.players[data.winnerId].name,team:this.players[data.winnerId].team
+        } : null);
+        if(raw) raws=[raw];
+      }
+      if(!raws.length) return null;
+
+      const wrap=document.createElement('div');
+      wrap.className='round-winner-preview-wrap';
+      const label=document.createElement('div');
+      label.className='winner-label';
+      label.textContent=raws.length>1?'MATCH WINNERS':'MATCH WINNER';
+      wrap.appendChild(label);
+
+      const row=document.createElement('div');
+      row.className='round-winner-preview-row';
+      wrap.appendChild(row);
+
+      raws.forEach((raw,idx)=>{
+        const card=document.createElement('div');
+        card.className='round-winner-card';
+
+        const crown=document.createElement('div');
+        crown.className='winner-crown';
+        crown.textContent='♛';
+        crown.setAttribute('aria-label','Winner crown');
+        card.appendChild(crown);
+
+        const name=document.createElement('div');
+        name.className='winner-name';
+        name.textContent=String(raw?.name||'Player').slice(0,24);
+        card.appendChild(name);
+
+        if(raw?.team){
+          const team=document.createElement('div');
+          team.className='winner-team';
+          team.textContent=TEAM_LABELS[normalizedTeam(raw.team)]||String(raw.team).toUpperCase();
+          team.style.color=TEAM_COLORS[normalizedTeam(raw.team)]||'var(--accent3)';
+          card.appendChild(team);
+        }
+        row.appendChild(card);
+      });
+
+      return row.children.length ? wrap : null;
+    }catch(err){
+      console.warn('Winner crown display skipped:',err);
+      return null;
+    }
+  },
   getRoundWinner(){
     const alive = Object.values(this.players).filter(p=>p.alive && !p.spectator);
     return alive.length===1 ? alive[0] : null;
@@ -5614,6 +5865,8 @@ const Game = {
 
   clearRoundEffects(){
     if(this.particles?.active) this.particles.active.length=0;
+    if(this.damagePops?.length) this.damagePops.length=0;
+    this.impactFreezeUntil=0;
     if(this.trailParticles?.active) this.trailParticles.active.length=0;
     for(const p of Object.values(this.players)) if(p){
       p.trail.length=0;
@@ -5643,9 +5896,13 @@ const Game = {
     const seriesDone=fixedDone||scoreDone;
     const transitionId=(this.roundTransitionId||0)+1;
     this.roundTransitionId=transitionId;
+    const teamPreviewPlayer=this.matchSettings?.teams ? Object.values(this.players).find(q=>q && !q.spectator && q.alive && normalizedTeam(q.team)===normalizedTeam(teamWinner)) : null;
+    const previewPlayer=winner||teamPreviewPlayer||null;
+    const winnerPreview=previewPlayer ? {id:previewPlayer.id,name:previewPlayer.name,cust:Object.assign({},previewPlayer.cust||{}),team:previewPlayer.team||null} : null;
     const payload={
-      round:this.roundNumber, winnerId:winner?.id||null, winnerName:winner?.name||null,
+      round:this.roundNumber, winnerId:winner?.id||null, winnerName:winner?.name||null, winnerPreview,
       winnerTeam:this.matchSettings?.teams?normalizedTeam(teamWinner):null,
+      winnerPreviews:null,
       teamMode:!!this.matchSettings?.teams,
       teamScores:this.teamScores,
       scores:this.scores, final:seriesDone, totalRounds:this.roundConfig.count, target, transitionId, spectatorStates
@@ -5662,6 +5919,26 @@ const Game = {
     UI.showRoundResult(payload);
     if(seriesDone){
       const finalResults=this.buildResults();
+      let winnerPreviews=[];
+      if(this.matchSettings?.teams){
+        const topTeamScore=Math.max(...['red','blue'].map(team=>Number(this.teamScores[team])||0));
+        const winningTeams=['red','blue'].filter(team=>(Number(this.teamScores[team])||0)===topTeamScore);
+        winnerPreviews=Object.values(this.players)
+          .filter(p=>p && !p.spectator && winningTeams.includes(normalizedTeam(p.team)))
+          .sort((a,b)=>String(a.name||'').localeCompare(String(b.name||'')))
+          .map(p=>({id:p.id,name:p.name,cust:Object.assign({},p.cust||{}),team:p.team||null}));
+      }else{
+        const topScore=finalResults.length ? Number(finalResults[0].score)||0 : null;
+        winnerPreviews=finalResults
+          .filter(r=>topScore!=null && (Number(r.score)||0)===topScore)
+          .map(r=>this.players[r.id])
+          .filter(Boolean)
+          .map(p=>({id:p.id,name:p.name,cust:Object.assign({},p.cust||{}),team:p.team||null}));
+      }
+      if(!winnerPreviews.length && previewPlayer){
+        winnerPreviews=[winnerPreview];
+      }
+      payload.winnerPreviews=winnerPreviews;
       setTimeout(()=>{
         if(this.roundTransitionId!==transitionId || this.state!=='roundResults') return;
         this.state='results';
@@ -5672,8 +5949,8 @@ const Game = {
         }
         const finalSpectatorStates={};
         for(const id in this.players) finalSpectatorStates[id]=!!this.players[id].spectator;
-        NetworkManager.broadcast({t:'matchend', results:finalResults, scores:this.scores, teamScores:this.teamScores, teamMode:!!this.matchSettings?.teams, round:this.roundNumber, transitionId, spectatorStates:finalSpectatorStates}, true);
-        UI.showResults(finalResults, this.scores, this.roundNumber);
+        NetworkManager.broadcast({t:'matchend', results:finalResults, scores:this.scores, teamScores:this.teamScores, teamMode:!!this.matchSettings?.teams, round:this.roundNumber, transitionId, spectatorStates:finalSpectatorStates, winnerPreview, winnerPreviews}, true);
+        UI.showResults(finalResults, this.scores, payload);
         AudioManager.exitBattleMusic();
         AudioManager.victory();
       }, 900);
@@ -5728,7 +6005,25 @@ const Game = {
     const charge = extra.charge||0;
     const x = p.x, y = p.y;
     switch(type){
-      case 'jump': this.particles.burst(x,y+p.radius,'#ffffff',6,170,{gravity:520,life:.3,size:3,sizeEnd:.4}); break;
+      case 'jump': {
+        const tier=Math.max(1,Math.min(3,Number(extra.tier)||1));
+        const apex=!!extra.apex;
+        const counts=apex?[3,6,9]:[4,6,8];
+        const speeds=apex?[120,155,190]:[145,175,205];
+        const sizes=apex?[1.8,2.4,3.0]:[2.0,2.5,3.0];
+        const yy=y+(apex?0:p.radius);
+        this.particles.burst(x,yy,'#ffffff',counts[tier-1],speeds[tier-1],{gravity:apex?-30:520,life:apex?.18+tier*.025:.22+tier*.035,size:sizes[tier-1],sizeEnd:.18,twinkle:true,shape:apex?'spark':'shard'});
+        if(tier>=2){
+          this.particles.burst(x,yy,color,tier===2?3:5,90+tier*35,{gravity:apex?0:260,life:.18+tier*.035,size:1.6+tier*.45,sizeEnd:.1,twinkle:true});
+        }
+        if(apex && tier===3){
+          for(let i=0;i<6;i++){
+            const a=i/6*Math.PI*2;
+            this.particles.spawn(x+Math.cos(a)*(7+Math.random()*3),yy+Math.sin(a)*(7+Math.random()*3),{vx:Math.cos(a)*42,vy:Math.sin(a)*42,gravity:0,life:.2,size:1.9,sizeEnd:.1,color:'#ffd86b',twinkle:true,shape:'spark'});
+          }
+        }
+        break;
+      }
       case 'dash': {
         const chargeNorm = Math.min(1,(charge||0)/PHYS.dashMaxLevel);
         const count = 12 + Math.round(chargeNorm*34);
@@ -5781,6 +6076,12 @@ const Game = {
           }
           for(let k=0;k<3;k++){ const ringR=18+k*13+chargeNorm*18; for(let q=0;q<12;q++){ const a=(q/12)*Math.PI*2+k*.55+performance.now()*.001*(k+1); this.particles.spawn(x+Math.cos(a)*ringR,y+Math.sin(a)*ringR,{vx:-Math.cos(a)*(120+chargeNorm*170),vy:-Math.sin(a)*(120+chargeNorm*170),life:.55+chargeNorm*.25,size:2.5+chargeNorm*2.5,sizeEnd:.05,color:mythColors[(q+k)%mythColors.length],gravity:0,drag:.9,twinkle:true,shape:q%2?'star':'shard'}); } }
         }
+        if(extra.perfectRelease){
+          this.particles.burst(x-p.facing*6,y,'#ffe27a',10+Math.round(chargeNorm*6),260+chargeNorm*90,{gravity:0,life:.24,size:2.2+chargeNorm*1.4,sizeEnd:.15,twinkle:true,shape:'star'});
+          this.particles.burst(x,y,'#ffffff',5,140,{gravity:0,life:.16,size:2.8,sizeEnd:.1,twinkle:true,shape:'spark'});
+          this.particles.spawn(x,y,{vx:0,vy:0,gravity:0,life:.18,size:7+chargeNorm*6,sizeEnd:.2,color:'#fff2a0',twinkle:true,shape:'ring'});
+          AudioManager.beep(1180,.08,'triangle',.11,1660);
+        }
         if(effect.rarity==='epic'||effect.rarity==='legendary'){
           const extraCount=effect.rarity==='mythic'?34:effect.rarity==='legendary'?24:10;
           this.particles.burst(x-p.facing*12,y,dashColor,extraCount,520+chargeNorm*360,{gravity:0,life:.55+chargeNorm*.25,size:2+chargeNorm*2,sizeEnd:.1,twinkle:true,shape:effect.shape==='orb'?'star':effect.shape});
@@ -5808,14 +6109,64 @@ const Game = {
         break;
       }
       case 'grapple': this.particles.burst(x,y,'#5dff8f',7,150,{gravity:40,life:.42,size:3,sizeEnd:.3,twinkle:true}); break;
-      case 'impact': this.particles.burst(x,y,'#ffffff',10,260,{gravity:360,life:.4,size:3.5,sizeEnd:.5}); break;
+      case 'walltouch': {
+        const nx=Number(extra.nx)||0, ny=Number(extra.ny)||0;
+        const speed=Math.max(0,Number(extra.impactSpeed)||0);
+        const sideX=x-nx*(p.radius*.86), sideY=y-ny*(p.radius*.86);
+        const count=Math.min(8,3+Math.floor(speed/220));
+        this.particles.burst(sideX,sideY,'#ffffff',count,95+Math.min(120,speed*.28),{gravity:55,life:.14+Math.min(.08,speed*.00016),size:1.6+Math.min(1.2,speed*.0025),sizeEnd:.1,twinkle:true,shape:'spark'});
+        this.particles.burst(sideX,sideY,color,Math.max(2,Math.floor(count*.65)),75+Math.min(90,speed*.2),{gravity:35,life:.16,size:1.4+Math.min(1,speed*.0018),sizeEnd:.1,twinkle:true,shape:'shard'});
+        break;
+      }
+      case 'impact': {
+        const impact=Math.max(0,Number(extra.impact)||0);
+        this.particles.burst(x,y,'#ffffff',10,260,{gravity:360,life:.4,size:3.5,sizeEnd:.5});
+        if(impact>=900) this.triggerImpactFrame(30);
+        break;
+      }
+      case 'land': {
+        const fall=Math.max(0,Number(extra.fallSpeed)||0);
+        const strength=Math.max(0,Math.min(1,(fall-150)/700));
+        const dustY=y+(p.radius||26)*.92;
+        const dustColor=`hsl(${cust.hue||200},72%,62%)`;
+
+        // A compact two-layer dust burst: soft white impact dust plus a color
+        // matched layer that makes the landing feel tied to the character.
+        this.particles.burst(x,dustY,'#ffffff',
+          5+Math.round(strength*7),135+strength*110,
+          {gravity:150,life:.20+strength*.11,size:2.6+strength*1.6,sizeEnd:.25,twinkle:true});
+        this.particles.burst(x,dustY,dustColor,
+          4+Math.round(strength*6),115+strength*95,
+          {gravity:115,life:.24+strength*.10,size:2.2+strength*1.4,sizeEnd:.2,twinkle:true});
+
+        // Low, sideways ground streaks make heavier falls readable without
+        // creating a huge screen-filling particle explosion.
+        for(let i=0;i<3+Math.round(strength*3);i++){
+          const side=i%2?-1:1;
+          this.particles.spawn(x+side*(2+Math.random()*5),dustY,{
+            vx:side*(95+strength*150+Math.random()*70),
+            vy:-18-Math.random()*(35+strength*45),
+            gravity:95,
+            drag:.9,
+            life:.16+Math.random()*.10,
+            size:1.8+strength*1.2,
+            sizeEnd:.1,
+            color:i%2?'#ffffff':dustColor,
+            twinkle:true,
+            shape:'shard'
+          });
+        }
+
+        if(strength>0.32) this.camera.addShake(1.4+strength*3.0);
+        break;
+      }
       case 'death': this.particles.burst(x,y,'#e0693a',22,340,{gravity:520,life:.55,size:4.5,sizeEnd:.7,twinkle:true}); break;
       case 'bounce': this.particles.burst(x,y+p.radius,'#ffd45a',9,220,{gravity:500,life:.35,size:3.5,sizeEnd:.5}); break;
       case 'turn': this.particles.burst(x-p.facing*10,y,color,5,110,{gravity:40,life:.2,size:2.5,sizeEnd:.2}); break;
     }
 
     if(this.isHost && !fromNetwork){
-      NetworkManager.broadcast({t:'fx', fx:{type,x,y,ownerId:p.id,followOwner:(type==='dash'),facing:p.facing||1,hue:cust.hue??200,charge,effectId:p.cust?.dashEffect||'basic'}}, false);
+      NetworkManager.broadcast({t:'fx', fx:{type,x,y,ownerId:p.id,followOwner:(type==='dash'),facing:p.facing||1,hue:cust.hue??200,charge,effectId:p.cust?.dashEffect||'basic',perfectRelease:!!extra.perfectRelease,tier:Number(extra.tier)||0,apex:!!extra.apex,nx:Number(extra.nx)||0,ny:Number(extra.ny)||0,impactSpeed:Number(extra.impactSpeed)||0,impact:Number(extra.impact)||0}}, false);
     }
   },
 
@@ -5829,7 +6180,7 @@ const Game = {
       }
     }
     const p={id:'network-fx',x,y,radius:26,facing:fx.facing||1,cust:{hue:fx.hue??200,dashEffect:fx.effectId||'basic'}};
-    this.spawnFx(p,fx.type,true,{charge:fx.charge||0});
+    this.spawnFx(p,fx.type,true,{charge:fx.charge||0,perfectRelease:!!fx.perfectRelease,tier:Number(fx.tier)||0,apex:!!fx.apex,nx:Number(fx.nx)||0,ny:Number(fx.ny)||0,impactSpeed:Number(fx.impactSpeed)||0,impact:Number(fx.impact)||0});
   },
 
   /* ---------- networking glue ---------- */
@@ -6453,8 +6804,12 @@ const Game = {
         if(!this.isHost && data.fx) this.spawnNetworkFx(data.fx);
         break;
       case 'hitfx':
-        if(!this.isHost) this.spawnNetworkFx({x:data.x,y:data.y,type:'impact',facing:1,hue:200});
+        if(!this.isHost) this.spawnNetworkFx({x:data.x,y:data.y,type:'impact',facing:1,hue:200,impact:Number(data.impact)||0});
+        if(Number(data.impact)>=900) this.triggerImpactFrame(26);
         this.camera.addShake(5);
+        break;
+      case 'damage_pop':
+        if(!this.isHost) this.spawnDamagePop(data.x,data.y,data.amount,false);
         break;
       case 'kill_feed':
         if(!this.isHost && data.data) UI.addKillFeed(data.data);
@@ -6629,7 +6984,7 @@ const Game = {
             }
           }
           Lobby.render();
-          UI.showResults(data.results, data.scores, data.round);
+          UI.showResults(data.results, data.scores, data);
         }
         break;
       case 'rematch': if(!this.isHost) Lobby.goToLobby(); break;
@@ -6661,16 +7016,17 @@ const Game = {
 
   /* ---------- render ---------- */
   updateCameraAndHud(dt){
-    const everyone=Object.values(this.players).filter(p=>!p.spectator);
-    const inMapAlive=everyone.filter(p=>{
-      if(!p || !p.alive) return false;
-      const x=Number(p.x), y=Number(p.y);
-      return Number.isFinite(x) && Number.isFinite(y) &&
-        x>=0 && x<=this.map.width && y>=0 && y<=this.map.height;
+    // The camera's outer grace limits are intentionally wider than the map.
+    // Keep every living, non-spectating player as a target here, including
+    // players who have already crossed the map outline. The Camera class itself
+    // clamps the resulting view to its expanded outer limits.
+    const alivePlayers=Object.values(this.players).filter(p=>{
+      if(!p || p.spectator || !p.alive) return false;
+      return Number.isFinite(Number(p.x)) && Number.isFinite(Number(p.y));
     });
 
-    if(inMapAlive.length){
-      this.camera.follow(inMapAlive, this.map.width, this.map.height, this.viewW, this.viewH, dt);
+    if(alivePlayers.length){
+      this.camera.follow(alivePlayers, this.map.width, this.map.height, this.viewW, this.viewH, dt);
     }else{
       const fallback=[{x:(this.map.width||1600)/2,y:(this.map.height||900)/2,alive:true,spectator:false}];
       this.camera.follow(fallback, this.map.width, this.map.height, this.viewW, this.viewH, dt);
@@ -6695,6 +7051,7 @@ const Game = {
       this.renderPlayers(ctx);
       this.renderProjectiles(ctx);
       this.particles.render(ctx, this.camera);
+      this.renderDamagePops(ctx);
       this.renderOffMapMarkers(ctx);
     } else if(EditorState.active){
       MapEditor.render(ctx);
@@ -7794,6 +8151,8 @@ const UI = {
       else out+='<div class="player-card" style="display:flex;align-items:center;gap:8px;margin-top:8px;"><b>#'+(i+1)+'</b><span style="flex:1;text-align:left;font-weight:900;">'+esc(r.name||r.id)+'</span><span style="font-weight:900;color:var(--accent3);">'+r.score+' '+(r.score===1?'POINT':'POINTS')+'</span></div>';
     });
     content.innerHTML=out;
+    // Interim round leaderboards stay lightweight and do not build the canvas
+    // winner preview. The preview is reserved for the final round leaderboard.
     overlay.classList.remove('fade-out');
     overlay.classList.add('active');
     this._forcedRoundIntermissionRound=Number(data.round)||0;
@@ -7817,8 +8176,14 @@ const UI = {
   },
   showRoundResult(data){
     const list=document.getElementById('resultsList');
+    list.className='';
+    list.style.display='flex';
+    list.style.flexDirection='column';
+    list.style.gap='8px';
+    list.style.margin='16px 0';
     const resultsScreen=document.getElementById('screen-results');
     const resultsPanel=resultsScreen?.querySelector('.panel');
+    if(resultsPanel) resultsPanel.classList.remove('final-results-panel');
     if(resultsScreen){
       resultsScreen.style.removeProperty('z-index');
       resultsScreen.style.removeProperty('display');
@@ -7857,14 +8222,26 @@ const UI = {
       list.appendChild(div);
     });
   },
-  showResults(results, scores){
+  showResults(results, scores, finalData=null){
     Game.state='results';
     this.goto('results');
     const actions=document.querySelector('.results-actions');
     if(actions) actions.classList.remove('between-round');
     const list = document.getElementById('resultsList');
+    const resultsScreen=document.getElementById('screen-results');
+    const resultsPanel=resultsScreen?.querySelector('.panel');
+    if(resultsPanel) resultsPanel.classList.add('final-results-panel');
+    list.className='final-results-layout';
+    list.style.display='';
+    list.style.flexDirection='';
+    list.style.gap='';
+    list.style.margin='16px 0';
+
     const teamMode=!!Game.matchSettings?.teams || results?.some(r=>r.team);
-    list.innerHTML='<div style="font-size:18px;font-weight:900;color:var(--accent3);margin-bottom:4px;">MATCH COMPLETE</div>';
+    const leaderboard=document.createElement('div');
+    leaderboard.className='final-results-leaderboard';
+    leaderboard.innerHTML='<div class="round-leaderboard-title">MATCH LEADERBOARD</div>';
+
     results.forEach(r=>{
       const div=document.createElement('div'); div.className='player-card';
       if(teamMode){
@@ -7874,8 +8251,22 @@ const UI = {
         const sc=scores?.[r.id]??r.score??0;
         div.innerHTML = `<b>#${r.place}</b> <span style="flex:1;text-align:left;margin-left:8px;">${esc(r.name)}</span>` + `<span style="color:var(--accent3);font-weight:900;">${sc} ${sc===1?'POINT':'POINTS'}</span>`;
       }
-      list.appendChild(div);
+      leaderboard.appendChild(div);
     });
+
+    const winners=document.createElement('div');
+    winners.className='final-results-winners';
+    const winnerPreview=Game.buildWinnerPreview(finalData);
+    if(winnerPreview) winners.appendChild(winnerPreview);
+    else{
+      const empty=document.createElement('div');
+      empty.className='round-winner-preview-wrap';
+      empty.innerHTML='<div class="winner-label">MATCH WINNER</div>';
+      winners.appendChild(empty);
+    }
+
+    list.appendChild(leaderboard);
+    list.appendChild(winners);
   },
   clearKillFeed(){
     const box=document.getElementById('killFeed');
