@@ -394,6 +394,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .modifier-option-text{display:flex;flex-direction:column;min-width:0;}
 .modifier-option-name{font-size:10px;font-weight:1000;letter-spacing:.75px;color:var(--text);}
 .modifier-option-desc{font-size:8px;line-height:1.2;color:var(--text-dim);margin-top:2px;white-space:normal;}
+.field.gravity-disabled{opacity:.38;transition:opacity .14s ease;} .field.gravity-disabled label{color:#777!important;} .field.gravity-disabled input{cursor:not-allowed;}
 @media(max-width:760px){.modifier-picker-panel{width:100%;}.modifier-picker.open .modifier-picker-panel{grid-template-columns:1fr;}}
 .mode-picker{position:relative;width:100%;}
 .mode-picker-main{width:100%;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;white-space:nowrap;overflow:hidden;}
@@ -890,6 +891,81 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
 #screen-lobby .lobby-round-settings>.modifier-picker .modifier-picker-enabled{order:1!important;justify-content:flex-start!important;margin:0 0 0 5px!important;max-width:min(620px,calc(100vw - 300px))!important;}
 </style>
 
+
+<style id="modifier-ui-enabled-overflow-final">
+/* Keep the picker anchored to its button, regardless of enabled-modifier labels. */
+.modifier-picker{
+  position:relative!important;
+  display:block!important;
+  width:132px!important;
+  max-width:132px!important;
+  min-width:132px!important;
+  flex:0 0 132px!important;
+}
+.modifier-picker-main{
+  width:132px!important;
+  min-width:132px!important;
+  max-width:132px!important;
+  box-sizing:border-box!important;
+}
+.modifier-picker-enabled{
+  position:absolute!important;
+  left:calc(100% + 5px)!important;
+  right:auto!important;
+  top:50%!important;
+  transform:translateY(-50%)!important;
+  width:max-content!important;
+  max-width:min(620px,calc(100vw - 165px))!important;
+  margin:0!important;
+  justify-content:flex-start!important;
+  overflow:hidden!important;
+  pointer-events:auto!important;
+  z-index:44!important;
+}
+.modifier-picker-enabled span{
+  pointer-events:none!important;
+}
+.modifier-enabled-more{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-width:28px!important;
+  height:22px!important;
+  padding:3px 7px!important;
+  border:1px solid #6a4a28!important;
+  border-radius:3px!important;
+  background:#24160d!important;
+  color:#f0c36e!important;
+  font:900 10px/1 Arial,sans-serif!important;
+  letter-spacing:.4px!important;
+  cursor:pointer!important;
+  box-sizing:border-box!important;
+}
+.modifier-enabled-more:hover{
+  border-color:var(--accent)!important;
+  box-shadow:0 0 8px #f0c36e44!important;
+}
+/* Always open the modifier drawer directly to the right of the button. */
+#screen-create .modifier-picker-panel,
+#screen-lobby .modifier-picker-panel{
+  top:0!important;
+  bottom:auto!important;
+  left:calc(100% + 5px)!important;
+  right:auto!important;
+}
+.modifier-picker.open .modifier-picker-panel{
+  z-index:60!important;
+}
+/* The menu itself should not inherit the width of the enabled-label row. */
+.modifier-picker-panel{
+  position:absolute!important;
+}
+@media(max-width:760px){
+  .modifier-picker-enabled{max-width:calc(100vw - 165px)!important;}
+  .modifier-picker-panel{max-width:286px!important;}
+}
+</style>
+
 </head>
 <body>
 <div id="app">
@@ -907,7 +983,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.79 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.81 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -1527,7 +1603,17 @@ const PHYS = {
   fastFallMultiplier: 2.3,    // extra gravity multiplier while holding the down key in the air
   bounceDamp: 0.6,
   wallBounce: 0.55,
-  heavyMass: 2.15,        // density multiplier while Space is held
+  heavyMass: 2.15,
+  modifierSizeMin: 10,
+  modifierSizeMax: 62,
+  shrinkRayFactor: 0.93,
+  growthRayFactor: 1.07,
+  magnetRange: 700,
+  magnetStrength: 720,
+  repulsorRange: 700,
+  repulsorStrength: 720,        // density multiplier while Space is held
+  hotPotatoFuse: 8.0,
+  hotPotatoFlashSpeed: 0.009,
   grappleRange: 700,          // normal Grapple max distance to a platform
   grappleRangeDiameters: 5,   // PYPG grapple range = 5 player diameters
   grappleStaminaMax: 100,
@@ -1605,7 +1691,7 @@ class Player{
     this.heavy=false; this.hitFlash=0;
     this.bounceBoostQueued=false;
     this.bounceJumpActive=false; this.bounceJumpPeakSpeed=0; this.bounceJumpHeldPrev=false; this.bounceWBoostTimer=0; this.bounceIgnorePlatform=-1;
-    this.dashCd=0; this.dashTime=0; this.dashVelocity=0; this.dashDirection=0;
+    this.dashCd=0; this.dashTime=0; this.dashVelocity=0; this.dashDirection=0; this.dashDirectionX=0; this.dashDirectionY=0;
     this.dashCharging=false; this.dashCharge=0; this.dashCdMax=PHYS.dashCdBase; this._dashHeldPrev=false; this._dashChargeFxAcc=0;
     this.grappleAnchor=null; this.grappleTargetId=null; this.grappleLen=0; this.grappleRestLen=0;
     this.grappleStamina=PHYS.grappleStaminaMax; this.grappleStaminaMax=PHYS.grappleStaminaMax;
@@ -2392,18 +2478,19 @@ function injectArrows(baseMap, deadly){
 class Camera{
   constructor(){
     this.x=0;this.y=0;this.zoom=1;this.targetZoom=1; this.shake=0;
-    // Extra camera room is available only on an edge that a living player has
-    // actually crossed. Normal play stays clamped to the map as much as possible.
+    // Keep a small, intentional amount of space outside the arena visible.
+    // Extra room is earned smoothly when living players actually leave the map.
     this.edgeGrace=320;
+    this.edgeGraceX=430;
+    this.edgeGraceTop=320;
+    this.edgeGraceBottom=300;
     this.edgeRamp=165;
     this.maxZoomOut=0.34;
+    this.baseOuterMargin=72;
   }
   _calcView(players, mapW, mapH, viewW, viewH, dt=1/60){
     if(!players.length) return null;
 
-    // Keep every living, non-spectating player as a target. Off-map players are
-    // included so the camera can follow them, but their position only unlocks
-    // extra camera space on the side(s) they actually crossed.
     const targets=players.filter(p=>{
       if(!p || p.spectator || !p.alive) return false;
       return Number.isFinite(Number(p.x)) && Number.isFinite(Number(p.y));
@@ -2411,14 +2498,10 @@ class Camera{
     if(!targets.length) return null;
 
     const predictionTime=Math.min(0.105,Math.max(0.065,0.078+Math.min(0.027,dt*0.65)));
-    const predicted=targets.map(p=>{
-      const x=Number(p.x)||0, y=Number(p.y)||0;
-      const vx=Number(p.vx)||0, vy=Number(p.vy)||0;
-      return {
-        x:x+vx*predictionTime*0.40,
-        y:y+vy*predictionTime*0.40
-      };
-    });
+    const predicted=targets.map(p=>({
+      x:(Number(p.x)||0)+(Number(p.vx)||0)*predictionTime*0.40,
+      y:(Number(p.y)||0)+(Number(p.vy)||0)*predictionTime*0.40
+    }));
 
     let minX=Infinity,maxX=-Infinity,minY=Infinity,maxY=-Infinity;
     for(const p of predicted){
@@ -2433,17 +2516,14 @@ class Camera{
     const spreadY=Math.max(220,(maxY-minY)+280);
     const playerFit=Math.min(viewW/spreadX,viewH/spreadY);
 
-    // Keep the normal map framing until a player actually moves outside.
-    // The extra zoom-out range is eased in from the amount they have crossed,
-    // rather than switching on the instant they touch the border.
-    const outsideDepth=Math.max(
-      0,
-      ...targets.map(p=>{
-        const x=Number(p.x), y=Number(p.y);
-        return Math.max(-x,x-mapW,-y,y-mapH);
-      })
-    );
-    const outsideBlend=Math.min(1, outsideDepth/this.edgeRamp);
+    // Zoom out only when the current group actually extends outside the map.
+    // The transition is deliberately mild so crossing the border never causes
+    // a visible snap back toward the arena edge.
+    const outsideDepth=Math.max(0,...targets.map(p=>{
+      const x=Number(p.x), y=Number(p.y);
+      return Math.max(-x,x-mapW,-y,y-mapH);
+    }));
+    const outsideBlend=Math.min(1,outsideDepth/this.edgeRamp);
     const easedOutside=outsideBlend*outsideBlend*(3-2*outsideBlend);
     const minZoom=0.45+(this.maxZoomOut-0.45)*easedOutside;
     const z=Math.max(minZoom,Math.min(1.15,playerFit));
@@ -2452,29 +2532,42 @@ class Camera{
     let tx=cx-worldViewW/2;
     let ty=cy-worldViewH/2;
 
-    // Start with the normal in-map camera bounds.
-    let camMinX=0;
-    let camMaxX=Math.max(0,mapW-worldViewW);
-    let camMinY=0;
-    let camMaxY=Math.max(0,mapH-worldViewH);
+    // cam.x / cam.y are the camera's WORLD-SPACE TOP-LEFT, matching every
+    // renderer below (scale(z); translate(-cam.x,-cam.y)). Keep a small amount
+    // of outer space available all the time, then widen that limit smoothly
+    // only on the side where a living player actually leaves the arena.
+    const margin=this.baseOuterMargin;
 
-    // Unlock only the side(s) that currently have a living player beyond them.
-    // The available extra room grows smoothly with how far the player has
-    // crossed the border, so the camera does not make a sharp step outward.
+    let baseMinX=-margin;
+    let baseMaxX=mapW-worldViewW+margin;
+    let baseMinY=-margin;
+    let baseMaxY=mapH-worldViewH+margin;
+
+    // When the viewport is larger than the arena, center the map instead of
+    // letting the camera drift toward one side.
+    if(baseMinX>baseMaxX){
+      const centered=(mapW-worldViewW)/2;
+      baseMinX=baseMaxX=centered;
+    }
+    if(baseMinY>baseMaxY){
+      const centered=(mapH-worldViewH)/2;
+      baseMinY=baseMaxY=centered;
+    }
+
     const outLeft=Math.max(0,...targets.map(p=>-Number(p.x)));
     const outRight=Math.max(0,...targets.map(p=>Number(p.x)-mapW));
     const outTop=Math.max(0,...targets.map(p=>-Number(p.y)));
     const outBottom=Math.max(0,...targets.map(p=>Number(p.y)-mapH));
-    const extend=d=>{
+    const extend=(d,grace=this.edgeGrace)=>{
       const t=Math.min(1,Math.max(0,d/this.edgeRamp));
       const e=t*t*(3-2*t);
-      return this.edgeGrace*e;
+      return grace*e;
     };
 
-    if(outLeft>0)  camMinX=-extend(outLeft);
-    if(outRight>0) camMaxX=Math.max(camMaxX,mapW-worldViewW+extend(outRight));
-    if(outTop>0)   camMinY=-extend(outTop);
-    if(outBottom>0)camMaxY=Math.max(camMaxY,mapH-worldViewH+extend(outBottom));
+    const camMinX=baseMinX-extend(outLeft,this.edgeGraceX);
+    const camMaxX=baseMaxX+extend(outRight,this.edgeGraceX);
+    const camMinY=baseMinY-extend(outTop,this.edgeGraceTop);
+    const camMaxY=baseMaxY+extend(outBottom,this.edgeGraceBottom);
 
     tx=Math.max(camMinX,Math.min(tx,camMaxX));
     ty=Math.max(camMinY,Math.min(ty,camMaxY));
@@ -2495,9 +2588,10 @@ class Camera{
       const x=Number(p.x), y=Number(p.y);
       return Math.max(-x,x-mapW,-y,y-mapH);
     }));
-    const outsideT=Math.min(1,outsideDepth/210);
-    const zoomRate=8.2-2.3*outsideT;
-    const moveRate=10.8-4.2*outsideT;
+    const outsideT=Math.min(1,outsideDepth/190);
+    // Slightly quicker when somebody is outside, but still smoothly eased.
+    const zoomRate=8.9-1.7*outsideT;
+    const moveRate=11.6-2.7*outsideT;
     const zoomAlpha=1-Math.exp(-zoomRate*dt);
     const moveAlpha=1-Math.exp(-moveRate*dt);
 
@@ -3109,6 +3203,103 @@ bindSatSlider('custSecondarySat','secondary');
 const TEAM_COLORS={red:'#ff4b4b',blue:'#4d8dff'};
 const TEAM_LABELS={red:'RED',blue:'BLUE'};
 function normalizedTeam(v){ return v==='blue'?'blue':(v==='red'?'red':null); }
+function applyPlayerProximityModifierForces(dt){
+  if((!Game.matchSettings?.magnet && !Game.matchSettings?.repulsor) || Game.state!=='playing') return;
+  const arr=Object.values(Game.players).filter(p=>p && p.alive && !p.spectator);
+  if(arr.length<2) return;
+  const pull=!!Game.matchSettings?.magnet;
+  const range=Math.max(80,Number(pull?PHYS.magnetRange:PHYS.repulsorRange)||700);
+  const strength=Math.max(0,Number(pull?PHYS.magnetStrength:PHYS.repulsorStrength)||720);
+  for(let i=0;i<arr.length;i++){
+    const a=arr[i];
+    for(let j=i+1;j<arr.length;j++){
+      const b=arr[j];
+      const dx=b.x-a.x, dy=b.y-a.y, dist=Math.hypot(dx,dy);
+      if(dist<1 || dist>range) continue;
+      const nx=dx/dist, ny=dy/dist;
+      const falloff=1-Math.min(1,dist/range);
+      const accel=strength*falloff*falloff*(0.55+0.45*falloff);
+      const dir=pull?1:-1;
+      a.vx+=nx*accel*dt*dir; a.vy+=ny*accel*dt*dir;
+      b.vx-=nx*accel*dt*dir; b.vy-=ny*accel*dt*dir;
+    }
+  }
+}
+function applyCollisionContactModifier(a,b){
+  if(!a || !b || !a.alive || !b.alive) return;
+  a._playerCollisionTouch=a._playerCollisionTouch||{};
+  b._playerCollisionTouch=b._playerCollisionTouch||{};
+  const keyA=String(b.id), keyB=String(a.id);
+  if(a._playerCollisionTouch[keyA] && b._playerCollisionTouch[keyB]) return;
+  a._playerCollisionTouch[keyA]=performance.now();
+  b._playerCollisionTouch[keyB]=performance.now();
+
+  const sizeMode=Game.matchSettings?.shrinkray?'shrink':(Game.matchSettings?.growthray?'grow':null);
+  if(Game.isHost && Game.matchSettings?.hotpotato){
+    if(Game.hotPotato?.carrierId===a.id) transferHotPotato(a,b);
+    else if(Game.hotPotato?.carrierId===b.id) transferHotPotato(b,a);
+  }
+  if(Game.isHost && sizeMode){
+    const factor=sizeMode==='shrink'?PHYS.shrinkRayFactor:PHYS.growthRayFactor;
+    const minR=Math.max(6,Number(PHYS.modifierSizeMin)||10);
+    const maxR=Math.max(minR,Number(PHYS.modifierSizeMax)||62);
+    a.radius=Math.max(minR,Math.min(maxR,a.radius*factor));
+    b.radius=Math.max(minR,Math.min(maxR,b.radius*factor));
+    const fx=sizeMode==='shrink'?'#8de4ff':'#ffd35d';
+    if(Game.isHost){
+      Game.particles.burst(a.x,a.y,fx,5,110,{gravity:-35,life:.18,size:2.3,sizeEnd:.2,twinkle:true,shape:'spark'});
+      Game.particles.burst(b.x,b.y,fx,5,110,{gravity:-35,life:.18,size:2.3,sizeEnd:.2,twinkle:true,shape:'spark'});
+      NetworkManager.broadcast({t:'fx',fx:{type:'size_shift',x:a.x,y:a.y,ownerId:a.id,followOwner:false,hue:a.cust?.hue??200,sizeMode}},false);
+      NetworkManager.broadcast({t:'fx',fx:{type:'size_shift',x:b.x,y:b.y,ownerId:b.id,followOwner:false,hue:b.cust?.hue??200,sizeMode}},false);
+    }
+  }
+
+  if(Game.isHost && Game.matchSettings?.whiplash){
+    a.dashCd=Math.max(0,(a.dashCd||0)*0.5);
+    a.actionCooldown=Math.max(0,(a.actionCooldown||0)*0.5);
+    b.dashCd=Math.max(0,(b.dashCd||0)*0.5);
+    b.actionCooldown=Math.max(0,(b.actionCooldown||0)*0.5);
+  }
+}
+function resetHotPotatoState(){
+  Game.hotPotato={carrierId:null,expiresAt:0,serial:(Game.hotPotato?.serial||0)+1};
+}
+function chooseHotPotatoCarrier(){
+  if(!Game.isHost || !Game.matchSettings?.hotpotato || Game.state!=='playing') return null;
+  const living=Object.values(Game.players).filter(p=>p && p.alive && !p.spectator);
+  if(!living.length) return null;
+  const chosen=living[Math.floor(Math.random()*living.length)];
+  Game.hotPotato={carrierId:chosen.id,expiresAt:performance.now()+PHYS.hotPotatoFuse*1000,serial:(Game.hotPotato?.serial||0)+1};
+  return chosen;
+}
+function transferHotPotato(from,to){
+  if(!Game.isHost || !Game.matchSettings?.hotpotato || Game.state!=='playing' || !from || !to) return false;
+  if(Game.hotPotato?.carrierId!==from.id || !to.alive || to.spectator) return false;
+  Game.hotPotato={carrierId:to.id,expiresAt:performance.now()+PHYS.hotPotatoFuse*1000,serial:(Game.hotPotato?.serial||0)+1};
+  const hue=to.cust?.hue??200;
+  Game.particles.burst(to.x,to.y,'#ff5a4f',10,170,{gravity:-30,life:.28,size:2.8,sizeEnd:.25,twinkle:true,shape:'spark'});
+  Game.particles.burst(to.x,to.y,`hsl(${hue},85%,66%)`,5,110,{gravity:0,life:.22,size:2.2,sizeEnd:.15,twinkle:true,shape:'spark'});
+  return true;
+}
+function updateHotPotatoState(){
+  if(!Game.matchSettings?.hotpotato || Game.state!=='playing'){
+    if(Game.hotPotato?.carrierId) resetHotPotatoState();
+    return;
+  }
+  if(!Game.isHost) return;
+  let carrier=Game.players[Game.hotPotato?.carrierId];
+  if(!carrier || !carrier.alive || carrier.spectator){
+    carrier=chooseHotPotatoCarrier();
+  }
+  if(carrier && performance.now()>=Number(Game.hotPotato?.expiresAt||0)){
+    carrier.forceEliminate=true;
+    Game.hotPotato={carrierId:null,expiresAt:0,serial:(Game.hotPotato?.serial||0)+1};
+    Game.particles.burst(carrier.x,carrier.y,'#ff3f36',24,330,{gravity:80,life:.45,size:4.5,sizeEnd:.25,twinkle:true,shape:'shard'});
+    Game.particles.burst(carrier.x,carrier.y,'#ffd75a',14,220,{gravity:20,life:.35,size:3,sizeEnd:.2,twinkle:true,shape:'spark'});
+    Game.camera.addShake(8);
+  }
+}
+
 function getSmashKnockbackMultiplier(victim){
   if(!Game.matchSettings?.smash || !victim) return 1;
   const percent=Math.max(0,Number(victim.damage)||0);
@@ -3129,7 +3320,7 @@ const Game = {
   state:'menu',
   players:{},
   myId:null, myName:getSavedUsername(),
-  map:null, mode:'regular', matchSettings:{gravity:1,kb:1,maxPlayers:8,spikewall:false,teams:false,smash:false,combo:false,parry:false},
+  map:null, mode:'regular', matchSettings:{gravity:1,kb:1,maxPlayers:8,spikewall:false,teams:false,smash:false,combo:false,parry:false,shrinkray:false,growthray:false,whiplash:false,magnet:false,repulsor:false,hotpotato:false,zeroGravity:false},
   particles:new ParticleSystem(),
   // Trail FX are intentionally capped much lower than gameplay particles.
   // Trails are persistent cosmetics, so a small bounded pool keeps frame time stable.
@@ -3151,6 +3342,7 @@ const Game = {
   _roundResultShownAt:0,
   _lastShownRoundResultTransition:0,
   _roundTransitionTimer:null,
+  hotPotato:{carrierId:null,expiresAt:0,serial:0},
   scores:{},
   teamScores:{red:0,blue:0},
   spawnAssignments:{},
@@ -3236,13 +3428,13 @@ const Game = {
   killPlayersInSpikewall(){
     const wall=this.getSpikewallState();
     if(!wall) return;
-    const top=-PHYS.spikewallSpikeLength-8;
-    const bottom=(Number(this.map?.height)||900)+PHYS.spikewallSpikeLength+8;
+    // The wall now extends infinitely up and down, so its lethal check is only
+    // concerned with horizontal overlap. Players cannot bypass it by leaving
+    // the map vertically.
     for(const p of Object.values(this.players)){
       if(!p || !p.alive || p.spectator) continue;
       const overlapX=p.x+p.radius>wall.left && p.x-p.radius<wall.right+PHYS.spikewallSpikeLength;
-      const overlapY=p.y+p.radius>top && p.y-p.radius<bottom;
-      if(overlapX && overlapY) p.forceEliminate=true;
+      if(overlapX) p.forceEliminate=true;
     }
   },
 
@@ -3370,6 +3562,7 @@ const Game = {
   beginCountdown(){
     AudioManager.enterBattleMusic();
     this.state='countdown'; this.eliminationOrder=[]; this.projectiles=[]; this.mines=[];
+    resetHotPotatoState();
     this.physicsTick=0; this.hostPhysicsTick=0; this.lastRecvStateSeq=null; this.stateSeq=0;
     this.roundElapsed=0;
     this.roundTransitionId=0;
@@ -3389,6 +3582,7 @@ const Game = {
         clearInterval(this._cdInt);
         UI.pulseBanner('');
         this.state='playing'; this.matchTime=0;
+        if(this.isHost) chooseHotPotatoCarrier();
       }
     },900);
   },
@@ -3423,12 +3617,14 @@ const Game = {
       this.remotePredictionDisabledUntil = performance.now() + 2600;
     }
     this.state='playing'; this.eliminationOrder=[]; this.projectiles=[]; this.mines=[];
+    resetHotPotatoState();
     this.netRoundResult=null;
     this.clearRoundEffects();
     UI.hideRoundIntermission();
     UI.showHUD();
     this.resetMovingPlatforms();
     this.resetPlayers();
+    if(this.isHost && this.matchSettings?.hotpotato) chooseHotPotatoCarrier();
     // For a short window after a round begins, authoritative spawn coordinates
     // are rendered directly so every peer visibly starts in the exact same place.
     const spawnSnapNow=performance.now();
@@ -3492,7 +3688,7 @@ const Game = {
       p.heavy=false; p.grappleAnchor=null; p.grappleTargetId=null; p.grappleLen=0; p.grappleRestLen=0; p.grounded=false; p.netGrounded=false; p.supportPlatform=-1; p.netSupportPlatform=-1; p.grappleStamina=p.grappleStaminaMax; p.lastMoveDir=0;
       p.bounceBoostQueued=false;
       p.bounceJumpActive=false; p.bounceJumpPeakSpeed=0; p.bounceJumpHeldPrev=false; p.bounceWBoostTimer=0; p.bounceIgnorePlatform=-1;
-      p.dashCd=0; p.dashTime=0; p.dashVelocity=0; p.dashDirection=0; p.dashCharging=false; p.dashCharge=0; p.dashCdMax=PHYS.dashCdBase; p._dashHeldPrev=false; p._dashChargeFxAcc=0;
+      p.dashCd=0; p.dashTime=0; p.dashVelocity=0; p.dashDirection=0; p.dashDirectionX=0; p.dashDirectionY=0; p.dashCharging=false; p.dashCharge=0; p.dashCdMax=PHYS.dashCdBase; p._dashHeldPrev=false; p._dashChargeFxAcc=0;
       p.renderX=p.x; p.renderY=p.y; p.renderTargetX=p.x; p.renderTargetY=p.y; p.netServerX=p.x; p.netServerY=p.y; p.netServerVX=0; p.netServerVY=0; p.netStateReceivedAt=performance.now(); p.netErrorX=0; p.netErrorY=0; p.lastAckSeq=0;
       p.jumpBuffer=0; p.jumpSerial=0; p.netJumpSerial=0; p.lastJumpEventSeq=null; p.remoteJumpHeld=false; p.remoteJumpHoldSeq=0; p.remoteJumpReleaseSeq=0;
       p.netJumpActive=false; p._lastRemoteJumpSerial=0; p.netJumpStartY=p.y; p.netJumpPeakY=p.y; p.netJumpHeight=0;
@@ -3702,6 +3898,7 @@ const Game = {
 
   /* ---------- host physics ---------- */
   stepHost(dt){
+    updateHotPotatoState();
     this.updateMovingPlatforms(dt);
     for(const id in this.players){
       const p = this.players[id];
@@ -3714,6 +3911,7 @@ const Game = {
     this.updateMines(dt);
     this.killPlayersInSpikewall();
     this.checkDeaths();
+    updateHotPotatoState();
     this.checkModeEnd();
   },
   stepClientPredict(dt){
@@ -3776,7 +3974,8 @@ const Game = {
     if(p.jumpBuffer>0) p.jumpBuffer=Math.max(0,p.jumpBuffer-dt);
     if(input.jumpPressed) p.jumpBuffer=Math.max(p.jumpBuffer||0,0.15);
     p.heavy = !!input.heavy;
-    let grav = PHYS.baseGravity * (this.matchSettings.gravity||1) * (p.heavy?1.35:1);
+    const zeroGravity=!!this.matchSettings?.zeroGravity;
+    let grav = zeroGravity ? 0 : PHYS.baseGravity * (this.matchSettings.gravity||1) * (p.heavy?1.35:1);
 
     p.dashCd = Math.max(0,p.dashCd-dt);
     p.actionCooldown = Math.max(0,(p.actionCooldown||0)-dt);
@@ -3814,25 +4013,52 @@ const Game = {
     const chargeMoveFactor = 1 - chargeMoveNorm*0.58;
     const accel = ((p.grounded?PHYS.accel:PHYS.airAccel) / (p.heavy?1.4:1)) * chargeMoveFactor;
     const moveDir = input.left && !input.right ? -1 : (input.right && !input.left ? 1 : 0);
-    if(moveDir<0){ p.vx -= accel*dt; p.facing=-1; }
-    else if(moveDir>0){ p.vx += accel*dt; p.facing=1; }
-    else{ p.vx *= (p.grounded?PHYS.friction:PHYS.airFriction); }
+    const verticalDir = input.jump && !input.down ? -1 : (input.down && !input.jump ? 1 : 0);
     const maxS = (PHYS.maxSpeed / (p.heavy?1.25:1)) * chargeMoveFactor;
+    if(zeroGravity){
+      const axisLen=Math.hypot(moveDir,verticalDir)||1;
+      const ax=moveDir/axisLen, ay=verticalDir/axisLen;
+      const topDownAccel=(PHYS.accel/(p.heavy?1.4:1))*chargeMoveFactor;
+      if(moveDir || verticalDir){
+        p.vx += ax*topDownAccel*dt;
+        p.vy += ay*topDownAccel*dt;
+        if(moveDir) p.facing=moveDir<0?-1:1;
+      }else{
+        p.vx *= PHYS.airFriction;
+        p.vy *= PHYS.airFriction;
+      }
+      const spd=Math.hypot(p.vx,p.vy);
+      if(spd>maxS){ const scale=maxS/spd; p.vx*=scale; p.vy*=scale; }
+    }else{
+      if(moveDir<0){ p.vx -= accel*dt; p.facing=-1; }
+      else if(moveDir>0){ p.vx += accel*dt; p.facing=1; }
+      else{ p.vx *= (p.grounded?PHYS.friction:PHYS.airFriction); }
+    }
     p._smashKnockbackTimer=Math.max(0,(p._smashKnockbackTimer||0)-dt);
     const uncappedSmashKnockback=!!this.matchSettings?.smash && p._smashKnockbackTimer>0;
     if(p.dashTime>0 && Number.isFinite(p.dashVelocity)){
       // Dash momentum is locked to the direction chosen when the dash fired.
-      // Turning during the dash may change the character's facing, but never
-      // redirects the dash velocity.
-      const dashDir = p.dashDirection || p.facing || 1;
-      p.vx = dashDir * Math.abs(p.dashVelocity);
+      // In Zero Gravity that direction can be any 2D vector, including up/down
+      // and diagonals. Normal gravity mode keeps the existing left/right dash.
+      if(zeroGravity){
+        const ddx=Number(p.dashDirectionX), ddy=Number(p.dashDirectionY);
+        if(Number.isFinite(ddx) && Number.isFinite(ddy) && Math.hypot(ddx,ddy)>0.001){
+          p.vx = ddx * Math.abs(p.dashVelocity);
+          p.vy = ddy * Math.abs(p.dashVelocity);
+        }else{
+          const dashDir = p.dashDirection || p.facing || 1;
+          p.vx = dashDir * Math.abs(p.dashVelocity);
+        }
+      }else{
+        p.vx = (p.dashDirection || p.facing || 1) * Math.abs(p.dashVelocity);
+      }
     } else if(!uncappedSmashKnockback) {
       p.vx = Math.max(-maxS, Math.min(maxS, p.vx));
     }
 
     const jumpHeld = input.jump || (this.isHost && p.id!==this.myId && p.remoteJumpHeld);
     const jumpPower = PHYS.jumpVel / (p.heavy?1.2:1);
-    if(p.jumpBuffer>0 && p.grounded){
+    if(!zeroGravity && p.jumpBuffer>0 && p.grounded){
       p.vy = -jumpPower;
       p.grounded=false;
       p.jumpBuffer=0;
@@ -3844,7 +4070,7 @@ const Game = {
 
     // Normal jumping is intentionally untouched. Bounce-specific W acceleration
     // is handled separately so it cannot change the regular jump arc.
-    if(p.bounceJumpActive && !p.grounded){
+    if(!zeroGravity && p.bounceJumpActive && !p.grounded){
       // Bounce W boost is a short one-shot impulse window. Holding W after the
       // window expires cannot keep accelerating the player upward.
       if(p.bounceWBoostTimer>0 && p.vy < 0){
@@ -3855,7 +4081,7 @@ const Game = {
         p.bounceJumpActive=false;
         p.bounceWBoostTimer=0;
       }
-    } else if(!jumpHeld){
+    } else if(!zeroGravity && !jumpHeld){
       const shortHop = -jumpPower*PHYS.jumpShortHopFactor;
       if(p.vy < shortHop) p.vy = shortHop;
     }
@@ -3863,12 +4089,12 @@ const Game = {
 
     // Fast fall: holding down while airborne pulls you down harder, both cutting
     // a rising arc short and accelerating the fall itself.
-    if(input.down && !p.grounded) grav *= PHYS.fastFallMultiplier;
+    if(!zeroGravity && input.down && !p.grounded) grav *= PHYS.fastFallMultiplier;
     // Normal jumps keep their existing hold gravity. Bounce jumps use the explicit
     // speed cap above so their extra W boost stays tight and predictable.
-    if(jumpHeld && !p.grounded && p.vy < 0 && !p.bounceJumpActive) grav *= PHYS.jumpHoldGravityScale;
+    if(!zeroGravity && jumpHeld && !p.grounded && p.vy < 0 && !p.bounceJumpActive) grav *= PHYS.jumpHoldGravityScale;
 
-    const jumpAscendingBeforeMove=!!p._jumpTrackActive && p.vy<0;
+    const jumpAscendingBeforeMove=!zeroGravity && !!p._jumpTrackActive && p.vy<0;
 
     // Dash: hold to charge through three power levels, then release to fire.
     // A quick tap still produces the familiar low-power poke.
@@ -3900,7 +4126,7 @@ const Game = {
           this.spawnChargeFx(p, p.dashCharge);
         }
       } else {
-        this.fireDash(p);
+        this.fireDash(p,input);
       }
     }
     input.dashPressed=false;
@@ -3915,7 +4141,7 @@ const Game = {
     p.vy += grav*dt;
     this.movePlayerMapContinuous(p, dt);
 
-    if(p._jumpTrackActive){
+    if(!zeroGravity && p._jumpTrackActive){
       p._jumpPeakY=Math.min(Number(p._jumpPeakY)||p.y,p.y);
       if(jumpAscendingBeforeMove && p.vy>=0 && !p.grounded && !p._jumpApexFxDone){
         const jumpPowerNow=PHYS.jumpVel/(p.heavy?1.2:1);
@@ -4025,12 +4251,33 @@ const Game = {
 
   /* Fires the dash the moment the dash key is released (or immediately, if it
      was only tapped). Power and cooldown scale with the three charge levels. */
-  fireDash(p){
+  fireDash(p,input=null){
     const charge = Math.max(0,Math.min(PHYS.dashMaxLevel,p.dashCharge||0));
     const chargeNorm = charge/PHYS.dashMaxLevel;
     const perfectRelease = charge >= PHYS.dashMaxLevel-0.08;
     const power = PHYS.dashBaseSpeed + Math.pow(chargeNorm, PHYS.dashPowerCurve)*PHYS.dashMaxBonus;
-    p.vx = p.facing * power;
+    const zeroGravity=!!this.matchSettings?.zeroGravity;
+    if(zeroGravity){
+      const mx=input?.left && !input?.right ? -1 : (input?.right && !input?.left ? 1 : 0);
+      const my=input?.jump && !input?.down ? -1 : (input?.down && !input?.jump ? 1 : 0);
+      let dx=mx, dy=my;
+      if(Math.hypot(dx,dy)<0.001){
+        dx=p.vx;
+        dy=p.vy;
+        if(Math.hypot(dx,dy)<0.001){ dx=p.facing||1; dy=0; }
+      }
+      const len=Math.hypot(dx,dy)||1;
+      dx/=len; dy/=len;
+      p.dashDirectionX=dx;
+      p.dashDirectionY=dy;
+      p.dashDirection=Math.abs(dx)>0.01 ? (dx<0?-1:1) : (p.facing||1);
+      p.vx=dx*power;
+      p.vy=dy*power;
+    }else{
+      p.dashDirectionX=p.facing||1;
+      p.dashDirectionY=0;
+      p.vx = p.facing * power;
+    }
     p.dashVelocity = power;
     p.dashCd = (PHYS.dashCdBase + chargeNorm*PHYS.dashCdMaxBonus) * (this.matchSettings?.parry ? PHYS.parryDashCooldownMultiplier : 1);
     p.dashCdMax = p.dashCd;
@@ -5430,6 +5677,7 @@ const Game = {
   },
 
   resolveCollisions(dt){
+    applyPlayerProximityModifierForces(dt);
     // First resolve player/map contact using the exact current overlap.
     for(const id in this.players) if(!this.players[id].spectator) this.collideWithMap(this.players[id], dt);
 
@@ -5449,6 +5697,10 @@ const Game = {
         // a strong knockback). The old solver sent that case through the sweep with
         // a zero normal and therefore could neither separate nor exchange velocity.
         const minD=a.radius+b.radius+PHYS.collisionSkin;
+        if(startDist>=minD && endDist>=minD){
+          if(a._playerCollisionTouch) delete a._playerCollisionTouch[String(b.id)];
+          if(b._playerCollisionTouch) delete b._playerCollisionTouch[String(a.id)];
+        }
         let toi=null;
         let nx=0, ny=0, overlap=0;
         const normalFrom=(dx,dy,fx,fy)=>{
@@ -5494,6 +5746,8 @@ const Game = {
           a.x-=nx*(separationEps*0.5); a.y-=ny*(separationEps*0.5);
           b.x+=nx*(separationEps*0.5); b.y+=ny*(separationEps*0.5);
         }
+
+        applyCollisionContactModifier(a,b);
 
         // Heavy-player impacts and active-dash impacts break grapples before velocity transfer.
         // This intentionally reuses the heavy collision rule: the grappling player loses
@@ -5549,8 +5803,8 @@ const Game = {
           addDensityHit(b,a,effectiveVbN-effectiveVaN,bWasDashing,-nx,-ny);
 
           if(dashImpact){
-            if(aWasDashing){a.dashTime=0;a.dashVelocity=0;a.dashDirection=0;a.dashCharging=false;a.dashCharge=0;}
-            if(bWasDashing){b.dashTime=0;b.dashVelocity=0;b.dashDirection=0;b.dashCharging=false;b.dashCharge=0;}
+            if(aWasDashing){a.dashTime=0;a.dashVelocity=0;a.dashDirection=0;a.dashDirectionX=0;a.dashDirectionY=0;a.dashCharging=false;a.dashCharge=0;}
+            if(bWasDashing){b.dashTime=0;b.dashVelocity=0;b.dashDirection=0;b.dashDirectionX=0;b.dashDirectionY=0;b.dashCharging=false;b.dashCharge=0;}
           }
 
           const effectiveRelativeNormal=effectiveVbN-effectiveVaN;
@@ -5719,7 +5973,8 @@ const Game = {
     for(const id in this.players){
       const p=this.players[id];
       if(!p.alive) continue;
-      const outOfBounds = p.y > this.map.height+250 || p.y < -900 || p.x < -400 || p.x > this.map.width+400;
+      // Actual gameplay death-box: left/right 400px outside, 900px above, 250px below.
+      const outOfBounds = p.y > this.map.height+250 || p.y < -720 || p.x < -400 || p.x > this.map.width+400;
       if(outOfBounds || p.forceEliminate){
         if(outOfBounds){
           p.offMapX=p.x;
@@ -6124,6 +6379,12 @@ const Game = {
         if(impact>=900) this.triggerImpactFrame(30);
         break;
       }
+      case 'size_shift': {
+        const col=extra.sizeMode==='grow'?'#ffd35d':'#8de4ff';
+        this.particles.burst(x,y,col,7,150,{gravity:-20,life:.22,size:2.8,sizeEnd:.2,twinkle:true,shape:'spark'});
+        this.particles.burst(x,y,'#ffffff',2,90,{gravity:0,life:.12,size:1.8,sizeEnd:.1,twinkle:true,shape:'spark'});
+        break;
+      }
       case 'land': {
         const fall=Math.max(0,Number(extra.fallSpeed)||0);
         const strength=Math.max(0,Math.min(1,(fall-150)/700));
@@ -6180,7 +6441,7 @@ const Game = {
       }
     }
     const p={id:'network-fx',x,y,radius:26,facing:fx.facing||1,cust:{hue:fx.hue??200,dashEffect:fx.effectId||'basic'}};
-    this.spawnFx(p,fx.type,true,{charge:fx.charge||0,perfectRelease:!!fx.perfectRelease,tier:Number(fx.tier)||0,apex:!!fx.apex,nx:Number(fx.nx)||0,ny:Number(fx.ny)||0,impactSpeed:Number(fx.impactSpeed)||0,impact:Number(fx.impact)||0});
+    this.spawnFx(p,fx.type,true,{charge:fx.charge||0,perfectRelease:!!fx.perfectRelease,tier:Number(fx.tier)||0,apex:!!fx.apex,nx:Number(fx.nx)||0,ny:Number(fx.ny)||0,impactSpeed:Number(fx.impactSpeed)||0,impact:Number(fx.impact)||0,sizeMode:fx.sizeMode||null});
   },
 
   /* ---------- networking glue ---------- */
@@ -6215,10 +6476,12 @@ const Game = {
         p.actionAiming?1:0,Number.isFinite(p.actionAngle)?p.actionAngle:0,Math.max(0,Math.min(1,p.actionCharge||0)),
         p.grounded?1:0, Number.isInteger(p.supportPlatform)?p.supportPlatform:-1,
         p.grappleTargetId||'',
-        p.spectator?1:0
+        p.spectator?1:0,
+        Math.round(p.radius*100)/100
       ];
     }
-    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, roundResult:(this.state==='roundResults'?this.netRoundResult:null), scores:(this.state==='roundResults'?this.scores:null), teamScores:this.teamScores, spawnAssignments:this.spawnAssignments, spawnPositions:(this.state==='roundResults' ? this.getNextRoundSpawnPositions() : null), movingPlatforms:this.getMovingPlatformSnapshot(), s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace,kind:q.kind,bouncy:!!q.bouncy,bounceCount:q.bounceCount||0,playerHitCooldowns:q.playerHitCooldowns||{}})), mines:this.mines.map(m=>this.serializeMine(m))}, false);
+    const hotPotato=(this.matchSettings?.hotpotato && this.hotPotato?.carrierId)?{carrierId:this.hotPotato.carrierId,remainingMs:Math.max(0,(Number(this.hotPotato.expiresAt)||0)-performance.now()),serial:this.hotPotato.serial||0}:null;
+    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, hotPotato, roundResult:(this.state==='roundResults'?this.netRoundResult:null), scores:(this.state==='roundResults'?this.scores:null), teamScores:this.teamScores, spawnAssignments:this.spawnAssignments, spawnPositions:(this.state==='roundResults' ? this.getNextRoundSpawnPositions() : null), movingPlatforms:this.getMovingPlatformSnapshot(), s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace,kind:q.kind,bouncy:!!q.bouncy,bounceCount:q.bounceCount||0,playerHitCooldowns:q.playerHitCooldowns||{}})), mines:this.mines.map(m=>this.serializeMine(m))}, false);
     this.lastServerState = Date.now();
   },
   updateRemoteJumpPrediction(p, serverX, serverY, serverVX, serverVY, now){
@@ -6375,6 +6638,13 @@ const Game = {
       // leaves non-hosts following the last surviving player instead of showing the
       // round leaderboard and then resetting with everyone else.
     }
+    if(!this.isHost){
+      if(msg.hotPotato && msg.hotPotato.carrierId){
+        this.hotPotato={carrierId:String(msg.hotPotato.carrierId),expiresAt:performance.now()+Math.max(0,Number(msg.hotPotato.remainingMs)||0),serial:Number(msg.hotPotato.serial)||0};
+      }else if(this.matchSettings?.hotpotato){
+        this.hotPotato={carrierId:null,expiresAt:0,serial:Number(msg.hotPotato?.serial)||0};
+      }
+    }
     // Round-result payloads are semantic transition messages even though they are
     // carried inside a state snapshot. Process them BEFORE state-sequence filtering
     // so an out-of-order/duplicate movement snapshot cannot suppress the leaderboard.
@@ -6487,6 +6757,7 @@ const Game = {
       }
 
       p.damage=v[4];
+      if(Number.isFinite(v[30])) p.radius=Math.max(PHYS.modifierSizeMin,Math.min(PHYS.modifierSizeMax,Number(v[30])));
       const hostSpectator=!!v[29];
       p.spectator=hostSpectator;
       p.alive=!!v[5] && !p.spectator;
@@ -7194,52 +7465,192 @@ const Game = {
   renderSpikewall(ctx){
     const wall=this.getSpikewallState();
     if(!wall || !this.camera) return;
-    const cam=this.camera, z=cam.zoom;
-    const h=Math.max(1,Number(this.map?.height)||900);
+    const cam=this.camera, z=Math.max(0.01,cam.zoom);
     const w=wall.width;
     const spikes=PHYS.spikewallSpikeLength;
-    const rightEdge=Math.max(Number(this.map?.width)||1600, wall.right, wall.mapWidth + this.viewW/Math.max(0.01,z) + 80);
+    const mapW=Math.max(Number(this.map?.width)||1600, wall.right);
+
+    // The Spikewall is vertically infinite. Only draw the portion currently
+    // visible through the camera, with a little padding so it never pops in.
+    const viewTop=cam.y-120/z;
+    const viewBottom=cam.y+(this.viewH/z)+120/z;
+    const seamStep=46;
+    const seamStart=Math.floor(viewTop/seamStep)*seamStep;
+    const spikeStep=42;
+    const spikeStart=Math.floor(viewTop/spikeStep)*spikeStep- spikeStep;
+
     ctx.save();
     ctx.scale(z,z);
     ctx.translate(-cam.x,-cam.y);
 
-    // Deep shadow makes the wall read clearly against every map background.
-    ctx.fillStyle='#00000055';
-    ctx.fillRect(wall.left+7,-40,Math.max(0,rightEdge-(wall.left+7)),h+80);
+    // Extend far enough right to remain visible even during the camera's
+    // outer-border grace area.
+    const rightEdge=Math.max(mapW, wall.right + this.viewW/z + 80);
+    const drawH=Math.max(1,viewBottom-viewTop);
 
-    // Gray metal wall body.
+    ctx.fillStyle='#00000055';
+    ctx.fillRect(wall.left+7,viewTop,Math.max(0,rightEdge-(wall.left+7)),drawH);
+
     const grad=ctx.createLinearGradient(wall.left,0,Math.max(wall.right,rightEdge),0);
     grad.addColorStop(0,'#55585a');
     grad.addColorStop(.42,'#8b8e90');
     grad.addColorStop(.72,'#66696b');
     grad.addColorStop(1,'#3d4042');
     ctx.fillStyle=grad;
-    ctx.fillRect(wall.left, -40, Math.max(w,rightEdge-wall.left), h+80);
+    ctx.fillRect(wall.left,viewTop,Math.max(w,rightEdge-wall.left),drawH);
 
-    // Repeating vertical seams keep the wall visually readable while moving.
     ctx.strokeStyle='#d6d8da55';
     ctx.lineWidth=1.5;
-    for(let y=0;y<h;y+=46){
+    for(let y=seamStart;y<viewBottom+seamStep;y+=seamStep){
       ctx.beginPath(); ctx.moveTo(wall.left+8,y); ctx.lineTo(wall.right-7,y); ctx.stroke();
     }
 
-    // Spikes face left: the first teeth are visible right at the map edge when
-    // the wall appears, so the hazard never starts completely off-screen.
     ctx.fillStyle='#9da0a2';
     ctx.strokeStyle='#2b2d2f';
     ctx.lineWidth=1.5;
-    const step=42;
-    for(let y=-12;y<h+step;y+=step){
+    for(let y=spikeStart;y<viewBottom+spikeStep;y+=spikeStep){
       ctx.beginPath();
       ctx.moveTo(wall.left,y);
-      ctx.lineTo(wall.left-spikes,y+step*.5);
-      ctx.lineTo(wall.left,y+step);
+      ctx.lineTo(wall.left-spikes,y+spikeStep*.5);
+      ctx.lineTo(wall.left,y+spikeStep);
       ctx.closePath(); ctx.fill(); ctx.stroke();
     }
 
-    // A thin dark front edge emphasizes exactly where contact becomes lethal.
     ctx.fillStyle='#282a2c';
-    ctx.fillRect(wall.left-2,-40,3,h+80);
+    ctx.fillRect(wall.left-2,viewTop,3,drawH);
+    ctx.restore();
+  },
+
+  renderDeathZone(ctx){
+    if(!this.map || !this.camera) return;
+    const z=Math.max(0.01,this.camera.zoom);
+    const mapW=Math.max(1,Number(this.map.width)||1600);
+    const mapH=Math.max(1,Number(this.map.height)||900);
+    // These are the actual gameplay death-box thresholds used by checkDeaths().
+    const deathLeft=-400;
+    const deathRight=mapW+400;
+    const deathTop=-720;
+    const deathBottom=mapH+250;
+    const cam=this.camera;
+    const top=cam.y-100/z, bottom=cam.y+this.viewH/z+100/z;
+    const left=cam.x-100/z, right=cam.x+this.viewW/z+100/z;
+
+    ctx.save();
+    ctx.translate(-cam.x,-cam.y);
+
+    // The actual lethal boundary is outside the arena. Keep a subtle warning
+    // field in the final 64px before the true kill line.
+    const warn=220;
+    const drawWarningBand=(x0,y0,x1,y1,axis)=>{
+      if(x1<=x0 || y1<=y0) return;
+      let grad;
+      if(axis==='x'){
+        grad=ctx.createLinearGradient(x0,0,x1,0);
+        const towardEdge=x0<deathLeft;
+        if(towardEdge){ grad.addColorStop(0,'#5c141405'); grad.addColorStop(.55,'#7b1b1b16'); grad.addColorStop(1,'#ad252548'); }
+        else { grad.addColorStop(0,'#ad252548'); grad.addColorStop(.45,'#7b1b1b16'); grad.addColorStop(1,'#5c141405'); }
+      }else{
+        grad=ctx.createLinearGradient(0,y0,0,y1);
+        const towardEdge=y0<deathTop;
+        if(towardEdge){ grad.addColorStop(0,'#5c141405'); grad.addColorStop(.55,'#7b1b1b16'); grad.addColorStop(1,'#ad252548'); }
+        else { grad.addColorStop(0,'#ad252548'); grad.addColorStop(.45,'#7b1b1b16'); grad.addColorStop(1,'#5c141405'); }
+      }
+      ctx.fillStyle=grad;
+      ctx.fillRect(x0,y0,x1-x0,y1-y0);
+    };
+    if(left<deathLeft){
+      const x0=Math.max(left,deathLeft-warn), x1=Math.min(right,deathLeft);
+      drawWarningBand(x0,top,x1,bottom,'x');
+    }
+    if(right>deathRight){
+      const x0=Math.max(left,deathRight), x1=Math.min(right,deathRight+warn);
+      drawWarningBand(x0,top,x1,bottom,'x');
+    }
+    if(top<deathTop){
+      const y0=Math.max(top,deathTop-warn), y1=Math.min(bottom,deathTop);
+      drawWarningBand(left,y0,right,y1,'y');
+    }
+    if(bottom>deathBottom){
+      const y0=Math.max(top,deathBottom), y1=Math.min(bottom,deathBottom+warn);
+      drawWarningBand(left,y0,right,y1,'y');
+    }
+
+    const spikeStep=46, spikeLen=28;
+    ctx.fillStyle='#a8abad';
+    ctx.strokeStyle='#252729';
+    ctx.lineWidth=1.5;
+
+    // Spikes are centered on the exact death-box boundary, not the map border.
+    if(left<deathLeft+spikeLen && right>deathLeft-spikeLen){
+      for(let y=Math.floor(top/spikeStep)*spikeStep; y<bottom+spikeStep; y+=spikeStep){
+        ctx.beginPath();
+        ctx.moveTo(deathLeft,y);
+        ctx.lineTo(deathLeft-spikeLen,y+spikeStep*.5);
+        ctx.lineTo(deathLeft,y+spikeStep);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+      }
+    }
+    if(left<deathRight+spikeLen && right>deathRight-spikeLen){
+      for(let y=Math.floor(top/spikeStep)*spikeStep; y<bottom+spikeStep; y+=spikeStep){
+        ctx.beginPath();
+        ctx.moveTo(deathRight,y);
+        ctx.lineTo(deathRight+spikeLen,y+spikeStep*.5);
+        ctx.lineTo(deathRight,y+spikeStep);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+      }
+    }
+    if(top<deathTop+spikeLen && bottom>deathTop-spikeLen){
+      for(let x=Math.floor(left/spikeStep)*spikeStep; x<right+spikeStep; x+=spikeStep){
+        ctx.beginPath();
+        ctx.moveTo(x,deathTop);
+        ctx.lineTo(x+spikeStep*.5,deathTop-spikeLen);
+        ctx.lineTo(x+spikeStep,deathTop);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+      }
+    }
+    if(top<deathBottom+spikeLen && bottom>deathBottom-spikeLen){
+      for(let x=Math.floor(left/spikeStep)*spikeStep; x<right+spikeStep; x+=spikeStep){
+        ctx.beginPath();
+        ctx.moveTo(x,deathBottom);
+        ctx.lineTo(x+spikeStep*.5,deathBottom+spikeLen);
+        ctx.lineTo(x+spikeStep,deathBottom);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+      }
+    }
+
+    // Saws sit on the same actual kill-box edges. They are decorative; the
+    // existing gameplay death checks remain authoritative.
+    const t=performance.now()/1000;
+    const drawSaw=(x,y,r=22)=>{
+      ctx.save();
+      ctx.translate(x,y); ctx.rotate(t*2.2+(x+y)*0.002);
+      ctx.fillStyle='#d7d9db'; ctx.strokeStyle='#252729'; ctx.lineWidth=2;
+      ctx.beginPath();
+      for(let i=0;i<24;i++){
+        const a=i*Math.PI*2/24, rr=(i%2)?r*.72:r;
+        const px=Math.cos(a)*rr, py=Math.sin(a)*rr;
+        if(i===0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+      }
+      ctx.closePath(); ctx.fill(); ctx.stroke();
+      ctx.fillStyle='#4b4e50';
+      ctx.beginPath(); ctx.arc(0,0,r*.30,0,Math.PI*2); ctx.fill();
+      ctx.restore();
+    };
+
+    const sawSpacing=150;
+    if(left<deathLeft+40 && right>deathLeft-40){
+      for(let y=Math.ceil((top+40)/sawSpacing)*sawSpacing; y<bottom-40; y+=sawSpacing) drawSaw(deathLeft,y);
+    }
+    if(left<deathRight+40 && right>deathRight-40){
+      for(let y=Math.ceil((top+40)/sawSpacing)*sawSpacing; y<bottom-40; y+=sawSpacing) drawSaw(deathRight,y);
+    }
+    if(top<deathTop+40 && bottom>deathTop-40){
+      for(let x=Math.ceil((left+40)/sawSpacing)*sawSpacing; x<right-40; x+=sawSpacing) drawSaw(x,deathTop);
+    }
+    if(top<deathBottom+40 && bottom>deathBottom-40){
+      for(let x=Math.ceil((left+40)/sawSpacing)*sawSpacing; x<right-40; x+=sawSpacing) drawSaw(x,deathBottom);
+    }
+
     ctx.restore();
   },
 
@@ -7256,6 +7667,10 @@ const Game = {
     else if(bg==='chaos'){ bgGrad=ctx.createLinearGradient(0,0,0,this.viewH/z); bgGrad.addColorStop(0,'#2a1a40'); bgGrad.addColorStop(1,'#40103a'); }
     else { bgGrad=ctx.createLinearGradient(0,0,0,this.viewH/z); bgGrad.addColorStop(0,'#1c130d'); bgGrad.addColorStop(1,'#0a0705'); }
     ctx.fillStyle=bgGrad; ctx.fillRect(0,0,this.viewW/z,this.viewH/z);
+
+    // Death-zone hazards sit outside the map. They use their own camera transform
+    // and are rendered before the world geometry so the arena border stays crisp.
+    this.renderDeathZone(ctx);
     ctx.translate(-cam.x, -cam.y);
 
     // Render higher platforms last so an upper platform naturally occludes the
@@ -7640,12 +8055,63 @@ const Game = {
         ctx.strokeStyle='#fff'; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(ex-9,ey); ctx.lineTo(ex+9,ey); ctx.moveTo(ex,ey-9); ctx.lineTo(ex,ey+9); ctx.stroke();
         ctx.restore();
       }
+
+
       // Use the exact same visual position as the dash ring / aiming reticle for remote players.
       // drawCharacter() translates using p.x/p.y, so pass a lightweight visual-position proxy
       // instead of allowing the sprite and name to fall behind the already-predicted effects.
       const drawPlayer = (p.id!==this.myId && Number.isFinite(visualX) && Number.isFinite(visualY))
         ? Object.assign({},p,{x:visualX,y:visualY}) : p;
       this.drawCharacter(ctx,drawPlayer);
+      if(this.matchSettings?.hotpotato && this.hotPotato?.carrierId===p.id && p.alive){
+        const now=performance.now();
+        const remaining=Math.max(0,(Number(this.hotPotato.expiresAt)||0)-now);
+        const fuseMs=Math.max(1,PHYS.hotPotatoFuse*1000);
+        const progress=Math.max(0,Math.min(1,1-remaining/fuseMs));
+        const pulse=0.5+0.5*Math.sin(now*PHYS.hotPotatoFlashSpeed*(1+progress*0.9));
+        const urgent=remaining<2200;
+        ctx.save();
+
+        // The carrier gets the existing warning ring, but the potato itself is
+        // always visible right in the character's center.
+        ctx.globalAlpha=0.58+(urgent?0.30*pulse:0.13*pulse);
+        ctx.strokeStyle=urgent ? '#ff4941' : '#ff6a4f';
+        ctx.lineWidth=urgent?3.5:3;
+        ctx.shadowColor=ctx.strokeStyle;
+        ctx.shadowBlur=urgent?14:8;
+        ctx.beginPath(); ctx.arc(visualX,visualY,p.radius+9+pulse*3,0,Math.PI*2); ctx.stroke();
+
+        // Potato grows and heats up over the life of the fuse: brown at pickup,
+        // progressively redder toward detonation.
+        const brown={r:139,g:88,b:38}, red={r:255,g:42,b:34};
+        const r=Math.round(brown.r+(red.r-brown.r)*progress);
+        const g=Math.round(brown.g+(red.g-brown.g)*progress);
+        const b=Math.round(brown.b+(red.b-brown.b)*progress);
+        const potatoR=p.radius*(0.11+progress*0.25)+2.2+progress*1.6;
+        const glowR=potatoR*(1.8+progress*0.65)+(urgent?pulse*2.2:0);
+        const grad=ctx.createRadialGradient(visualX-potatoR*.32,visualY-potatoR*.34,0,visualX,visualY,glowR);
+        grad.addColorStop(0,`rgba(${Math.min(255,r+65)},${Math.min(255,g+55)},${Math.min(255,b+35)},${0.9+progress*0.08})`);
+        grad.addColorStop(0.55,`rgba(${r},${g},${b},0.96)`);
+        grad.addColorStop(1,`rgba(${r},${g},${b},0)`);
+        ctx.globalAlpha=0.35+progress*0.25+(urgent?0.12*pulse:0);
+        ctx.fillStyle=grad;
+        ctx.beginPath(); ctx.arc(visualX,visualY,glowR,0,Math.PI*2); ctx.fill();
+
+        ctx.globalAlpha=1;
+        ctx.fillStyle=`rgb(${r},${g},${b})`;
+        ctx.strokeStyle=urgent ? '#ffddd4' : '#6a3c1e';
+        ctx.lineWidth=Math.max(1.5,potatoR*0.16);
+        ctx.shadowColor=`rgb(${r},${g},${b})`;
+        ctx.shadowBlur=4+progress*9+(urgent?8*pulse:0);
+        ctx.beginPath(); ctx.arc(visualX,visualY,potatoR,0,Math.PI*2); ctx.fill(); ctx.stroke();
+
+        // Tiny highlight keeps it reading as a potato dot rather than a plain UI
+        // circle, especially when the player is small on screen.
+        ctx.shadowBlur=0;
+        ctx.fillStyle=`rgba(255,232,185,${0.42-0.16*progress})`;
+        ctx.beginPath(); ctx.arc(visualX-potatoR*.28,visualY-potatoR*.30,Math.max(1.2,potatoR*.22),0,Math.PI*2); ctx.fill();
+        ctx.restore();
+      }
       ctx.globalAlpha=1;
     }
     ctx.restore();
@@ -8759,7 +9225,7 @@ const Lobby = {
   },
   renderSettings(){
     const hostMode=document.getElementById('lobbyModeSelect'),gravity=document.getElementById('lobbyGravity'),kb=document.getElementById('lobbyKB'),maxP=document.getElementById('lobbyMaxP'),roundMode=document.getElementById('lobbyRoundMode'),roundCount=document.getElementById('lobbyRoundCount'),pointTarget=document.getElementById('lobbyPointTarget'),mapSel=document.getElementById('lobbyMapSelect'),mapPrev=document.getElementById('lobbyMapPreview'); if(!hostMode||!gravity||!kb||!maxP||!roundMode||!roundCount||!pointTarget||!mapSel)return;
-    const savedName=getSavedUsername(); Game.myName=savedName; hostMode.value=Game.mode||'regular'; gravity.value=Game.matchSettings.gravity??1; kb.value=Game.matchSettings.kb??1; maxP.value=Game.matchSettings.maxPlayers??8; const teams=document.getElementById('lobbyTeams'); if(teams)teams.checked=!!Game.matchSettings.teams; const smash=document.getElementById('lobbySmash'); if(smash)smash.checked=!!Game.matchSettings.smash; const combo=document.getElementById('lobbyCombo'); if(combo)combo.checked=!!Game.matchSettings.combo; const parry=document.getElementById('lobbyParry'); if(parry)parry.checked=!!Game.matchSettings.parry; const playerSize=document.getElementById('lobbyPlayerSize'); if(playerSize)playerSize.value=Game.matchSettings.playerSize??1; const spikewall=document.getElementById('lobbySpikewall'); if(spikewall)spikewall.checked=!!Game.matchSettings.spikewall; roundMode.value=Game.roundConfig.mode||'rounds'; roundCount.value=Game.roundConfig.count??3; pointTarget.value=Game.roundConfig.target??3;
+    const savedName=getSavedUsername(); Game.myName=savedName; hostMode.value=Game.mode||'regular'; gravity.value=Game.matchSettings.gravity??1; kb.value=Game.matchSettings.kb??1; maxP.value=Game.matchSettings.maxPlayers??8; const teams=document.getElementById('lobbyTeams'); if(teams)teams.checked=!!Game.matchSettings.teams; const smash=document.getElementById('lobbySmash'); if(smash)smash.checked=!!Game.matchSettings.smash; const combo=document.getElementById('lobbyCombo'); if(combo)combo.checked=!!Game.matchSettings.combo; const parry=document.getElementById('lobbyParry'); if(parry)parry.checked=!!Game.matchSettings.parry; const shrinkray=document.getElementById('lobbyShrinkray'); if(shrinkray)shrinkray.checked=!!Game.matchSettings.shrinkray; const growthray=document.getElementById('lobbyGrowthray'); if(growthray)growthray.checked=!!Game.matchSettings.growthray; const whiplash=document.getElementById('lobbyWhiplash'); if(whiplash)whiplash.checked=!!Game.matchSettings.whiplash; const magnet=document.getElementById('lobbyMagnet'); if(magnet)magnet.checked=!!Game.matchSettings.magnet; const repulsor=document.getElementById('lobbyRepulsor'); if(repulsor)repulsor.checked=!!Game.matchSettings.repulsor; const hotpotato=document.getElementById('lobbyHotPotato'); if(hotpotato)hotpotato.checked=!!Game.matchSettings.hotpotato; const zeroGravity=document.getElementById('lobbyZeroGravity'); if(zeroGravity)zeroGravity.checked=!!Game.matchSettings.zeroGravity; const playerSize=document.getElementById('lobbyPlayerSize'); if(playerSize)playerSize.value=Game.matchSettings.playerSize??1; const spikewall=document.getElementById('lobbySpikewall'); if(spikewall)spikewall.checked=!!Game.matchSettings.spikewall; roundMode.value=Game.roundConfig.mode||'rounds'; roundCount.value=Game.roundConfig.count??3; pointTarget.value=Game.roundConfig.target??3;
     if(Game.map){const wanted=selectedMapOptionValue(Game.map);if([...mapSel.options].some(o=>o.value===wanted))mapSel.value=wanted;if(mapPrev)drawMapThumb(mapPrev,Game.map);} const scoreMode=roundMode.value==='score'; document.getElementById('lobbyRoundCountField')?.classList.toggle('hidden',scoreMode);document.getElementById('lobbyPointTargetField')?.classList.toggle('hidden',!scoreMode); const controls=[hostMode,gravity,kb,playerSize,maxP,roundMode,roundCount,pointTarget,mapSel,document.getElementById('lobbySpikewall'),document.getElementById('lobbyTeams'),document.getElementById('lobbySmash'),document.getElementById('lobbyCombo'),document.getElementById('lobbyParry')].filter(Boolean);controls.forEach(el=>el.disabled=!Game.isHost);
     hostMode.dispatchEvent(new Event('change'));
     // These picker constants are initialized later in this script. Calling renderSettings
@@ -8786,7 +9252,7 @@ const Lobby = {
     const mapSel=document.getElementById('lobbyMapSelect');
     const chosenMap=(String(mapSel?.value||'').startsWith('requested:') && this._requestedMap) ? this._requestedMap : selectedMapFromSelect(mapSel);
     Game.map=ensureMapSpawn(chosenMap || BUILTIN_MAPS[0]);
-    Game.mode=document.getElementById('lobbyModeSelect').value; Game.matchSettings={gravity:Math.max(.1,Math.min(3,+document.getElementById('lobbyGravity').value||1)),kb:Math.max(.2,Math.min(3,+document.getElementById('lobbyKB').value||1)),playerSize:Math.max(.5,Math.min(2,+document.getElementById('lobbyPlayerSize').value||1)),maxPlayers:Math.max(Object.keys(Game.players).length,Math.min(8,+document.getElementById('lobbyMaxP').value||8)),spikewall:!!document.getElementById('lobbySpikewall')?.checked,teams:!!document.getElementById('lobbyTeams')?.checked,smash:!!document.getElementById('lobbySmash')?.checked,combo:!!document.getElementById('lobbyCombo')?.checked,parry:!!document.getElementById('lobbyParry')?.checked}; Game.roundConfig={mode:document.getElementById('lobbyRoundMode').value,count:Math.max(1,Math.min(99,+document.getElementById('lobbyRoundCount').value||3)),target:Math.max(1,Math.min(99,+document.getElementById('lobbyPointTarget').value||3))}; this.pushSettings();
+    Game.mode=document.getElementById('lobbyModeSelect').value; Game.matchSettings={gravity:Math.max(.1,Math.min(3,+document.getElementById('lobbyGravity').value||1)),kb:Math.max(.2,Math.min(3,+document.getElementById('lobbyKB').value||1)),playerSize:Math.max(.5,Math.min(2,+document.getElementById('lobbyPlayerSize').value||1)),maxPlayers:Math.max(Object.keys(Game.players).length,Math.min(8,+document.getElementById('lobbyMaxP').value||8)),spikewall:!!document.getElementById('lobbySpikewall')?.checked,teams:!!document.getElementById('lobbyTeams')?.checked,smash:!!document.getElementById('lobbySmash')?.checked,combo:!!document.getElementById('lobbyCombo')?.checked,parry:!!document.getElementById('lobbyParry')?.checked,shrinkray:!!document.getElementById('lobbyShrinkray')?.checked,growthray:!!document.getElementById('lobbyGrowthray')?.checked,whiplash:!!document.getElementById('lobbyWhiplash')?.checked,magnet:!!document.getElementById('lobbyMagnet')?.checked,repulsor:!!document.getElementById('lobbyRepulsor')?.checked,hotpotato:!!document.getElementById('lobbyHotPotato')?.checked,zeroGravity:!!document.getElementById('lobbyZeroGravity')?.checked}; Game.roundConfig={mode:document.getElementById('lobbyRoundMode').value,count:Math.max(1,Math.min(99,+document.getElementById('lobbyRoundCount').value||3)),target:Math.max(1,Math.min(99,+document.getElementById('lobbyPointTarget').value||3))}; this.pushSettings();
   },
   render(){
     document.getElementById('btnLeaveLobby').textContent=Game.isHost?'CLOSE LOBBY':'LEAVE';
@@ -8932,6 +9398,7 @@ const Lobby = {
     Game.projectiles.length=0; Game.mines.length=0; Game.eliminationOrder=[];
     if(Game._roundTransitionTimer){clearTimeout(Game._roundTransitionTimer);Game._roundTransitionTimer=null;}
     Game.netRoundResult=null; Game.state='lobby'; Game.roundNumber=1; Game.roundElapsed=0; Game.matchTime=0;
+    resetHotPotatoState();
     Game.resetMovingPlatforms();
     Game.scores={}; Game.teamScores={red:0,blue:0};
     for(const p of Object.values(Game.players)){ p.alive=false; if(p.autoSpectator){p.autoSpectator=false;p.spectator=false;} }
@@ -10644,6 +11111,17 @@ window.addEventListener('DOMContentLoaded', ()=>{
   const hostModePicker=setupModePicker('hostMode');
   const lobbyModePicker=setupModePicker('lobbyModeSelect');
 
+  function syncZeroGravityControl(key){
+    const gravityId=key==='host'?'hostGravity':'lobbyGravity';
+    const cbId=key==='host'?'hostZeroGravity':'lobbyZeroGravity';
+    const gravity=document.getElementById(gravityId);
+    if(!gravity) return;
+    const enabled=!!document.getElementById(cbId)?.checked;
+    const field=gravity.closest('.field');
+    gravity.disabled=enabled || (key==='lobby' && !Game.isHost);
+    field?.classList.toggle('gravity-disabled',enabled);
+    gravity.setAttribute('aria-disabled',String(gravity.disabled));
+  }
   function setupModifierPicker(key){
     const picker=document.querySelector(`[data-modifier-picker=\"${key}\"]`);
     if(!picker) return null;
@@ -10651,22 +11129,45 @@ window.addEventListener('DOMContentLoaded', ()=>{
     const valueEl=picker.querySelector('.modifier-picker-value');
     const panel=picker.querySelector('.modifier-picker-panel');
     const defs=[
-      ['teams','TEAMS', 'Team-based matches', key==='host'?'hostTeams':'lobbyTeams'],
-      ['spikewall','SPIKEWALL', 'Adds the spike-wall hazard', key==='host'?'hostSpikewall':'lobbySpikewall'],
-      ['smash','SMASH', 'Damage increases future knockback', key==='host'?'hostSmash':'lobbySmash'],
-      ['combo','COMBO', 'Build hit chains for extra knockback', key==='host'?'hostCombo':'lobbyCombo'],
-      ['parry','PARRY', 'Dash counter after a 1/3-second reaction window', key==='host'?'hostParry':'lobbyParry']
+      ['teams','TEAMS', 'Team mode', key==='host'?'hostTeams':'lobbyTeams'],
+      ['spikewall','SPIKEWALL', 'Adds spike walls', key==='host'?'hostSpikewall':'lobbySpikewall'],
+      ['smash','SMASH', 'More hit power', key==='host'?'hostSmash':'lobbySmash'],
+      ['combo','COMBO', 'Build hit combos', key==='host'?'hostCombo':'lobbyCombo'],
+      ['parry','PARRY', 'Dash to counter', key==='host'?'hostParry':'lobbyParry'],
+      ['shrinkray','SHRINK RAY', 'Hits shrink you', key==='host'?'hostShrinkray':'lobbyShrinkray'],
+      ['growthray','GROWTH RAY', 'Hits grow you', key==='host'?'hostGrowthray':'lobbyGrowthray'],
+      ['whiplash','WHIPLASH', 'Hits cut cooldowns', key==='host'?'hostWhiplash':'lobbyWhiplash'],
+      ['magnet','MAGNET', 'Pulls players in', key==='host'?'hostMagnet':'lobbyMagnet'],
+      ['repulsor','REPULSOR', 'Pushes players away', key==='host'?'hostRepulsor':'lobbyRepulsor'],
+      ['hotpotato','HOT POTATO', 'Pass it before it blows', key==='host'?'hostHotPotato':'lobbyHotPotato'],
+      ['zeroGravity','ZERO GRAVITY', 'Top-down movement', key==='host'?'hostZeroGravity':'lobbyZeroGravity']
     ];
     const enabledDisplay=picker.querySelector('.modifier-picker-enabled');
     const updateEnabledDisplay=()=>{
       if(!enabledDisplay) return;
       enabledDisplay.innerHTML='';
       const active=defs.filter(([k,label,desc,id])=>document.getElementById(id)?.checked);
-      active.forEach(([k,label])=>{
+      const expanded=picker.dataset.enabledExpanded==='1';
+      const visible=expanded?active:active.slice(0,4);
+      visible.forEach(([k,label])=>{
         const span=document.createElement('span');
         span.textContent=label;
         enabledDisplay.appendChild(span);
       });
+      if(!expanded && active.length>4){
+        const more=document.createElement('button');
+        more.type='button';
+        more.className='modifier-enabled-more';
+        more.textContent='+'+(active.length-4);
+        more.setAttribute('aria-label','Show '+(active.length-4)+' more enabled modifiers');
+        more.addEventListener('click',e=>{
+          e.preventDefault();
+          e.stopPropagation();
+          picker.dataset.enabledExpanded='1';
+          updateEnabledDisplay();
+        });
+        enabledDisplay.appendChild(more);
+      }
       picker.classList.toggle('has-enabled',active.length>0);
     };
     const refresh=()=>{
@@ -10675,6 +11176,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
       valueEl.textContent=''; valueEl.setAttribute('aria-label',active.length?active.join(' · '):'No modifiers selected');
       updateEnabledDisplay();
       main.disabled=(key==='lobby' && !Game.isHost);
+      syncZeroGravityControl(key);
       if(main.disabled){picker.classList.remove('open');main.setAttribute('aria-expanded','false');}
     };
     panel.innerHTML='';
@@ -10691,6 +11193,14 @@ window.addEventListener('DOMContentLoaded', ()=>{
       const d=document.createElement('span'); d.className='modifier-option-desc'; d.textContent=desc;
       text.append(name,d); row.append(cb,text); panel.appendChild(row);
       cb.addEventListener('change',()=>{
+        if((k==='shrinkray' || k==='growthray') && cb.checked){
+          const otherId=k==='shrinkray'?(key==='host'?'hostGrowthray':'lobbyGrowthray'):(key==='host'?'hostShrinkray':'lobbyShrinkray');
+          const other=document.getElementById(otherId); if(other) other.checked=false;
+        }
+        if((k==='magnet' || k==='repulsor') && cb.checked){
+          const otherId=k==='magnet'?(key==='host'?'hostRepulsor':'lobbyRepulsor'):(key==='host'?'hostMagnet':'lobbyMagnet');
+          const other=document.getElementById(otherId); if(other) other.checked=false;
+        }
         if(key==='lobby' && k==='teams'){ Lobby.toggleTeams(cb.checked); }
         else if(key==='lobby'){ Lobby.commitSettingsFromUI(); }
         refresh();
@@ -10753,7 +11263,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
     Game.myName=getSavedUsername();
     Game.map=ensureMapSpawn(selectedMapFromSelect(document.getElementById('hostMap')));
     Game.mode=document.getElementById('hostMode').value;
-    Game.matchSettings={gravity:+document.getElementById('hostGravity').value,kb:+document.getElementById('hostKB').value,playerSize:Math.max(0.5,Math.min(2,+document.getElementById('hostPlayerSize').value||1)),maxPlayers:+document.getElementById('hostMaxP').value,spikewall:!!document.getElementById('hostSpikewall')?.checked,teams:!!document.getElementById('hostTeams')?.checked,smash:!!document.getElementById('hostSmash')?.checked,combo:!!document.getElementById('hostCombo')?.checked,parry:!!document.getElementById('hostParry')?.checked};
+    Game.matchSettings={gravity:+document.getElementById('hostGravity').value,kb:+document.getElementById('hostKB').value,playerSize:Math.max(0.5,Math.min(2,+document.getElementById('hostPlayerSize').value||1)),maxPlayers:+document.getElementById('hostMaxP').value,spikewall:!!document.getElementById('hostSpikewall')?.checked,teams:!!document.getElementById('hostTeams')?.checked,smash:!!document.getElementById('hostSmash')?.checked,combo:!!document.getElementById('hostCombo')?.checked,parry:!!document.getElementById('hostParry')?.checked,shrinkray:!!document.getElementById('hostShrinkray')?.checked,growthray:!!document.getElementById('hostGrowthray')?.checked,whiplash:!!document.getElementById('hostWhiplash')?.checked,magnet:!!document.getElementById('hostMagnet')?.checked,repulsor:!!document.getElementById('hostRepulsor')?.checked,hotpotato:!!document.getElementById('hostHotPotato')?.checked,zeroGravity:!!document.getElementById('hostZeroGravity')?.checked};
     Game.roundConfig={mode:document.getElementById('hostRoundMode').value,count:Math.max(1,+document.getElementById('hostRoundCount').value||3),target:Math.max(1,+document.getElementById('hostPointTarget').value||3)};
     Lobby.createAsHost();
   });
