@@ -565,6 +565,9 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 ::-webkit-scrollbar-thumb{background:#3a2a1a;border-radius:2px;}
 
 .spherebox-card{background:#0d0906;border:2px solid #3a2a1a;border-radius:var(--radius);padding:14px;display:flex;flex-direction:column;gap:9px;}
+.spherebox-home-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+@media(max-width:760px){.spherebox-home-grid{grid-template-columns:1fr!important;}}
+
 .spherebox-odds-wrap{position:fixed;bottom:12px;left:max(12px,calc(50vw - 448px));z-index:20;}
 .spherebox-odds-btn{font-size:10px!important;padding:6px 9px!important;min-width:0!important;}
 .spherebox-odds-panel{position:absolute;bottom:36px;left:0;width:196px;background:#110c08f5;border:1px solid #503622;border-radius:4px;padding:9px;box-shadow:0 12px 28px #000b;display:none;text-align:left;}
@@ -610,6 +613,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .dash-effect-preview .diamond{width:23px;height:23px;background:var(--fx-color);transform:rotate(45deg);box-shadow:0 0 16px var(--fx-color);}.dash-effect-preview .hex{width:32px;height:32px;background:var(--fx-color);clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);box-shadow:0 0 16px var(--fx-color);}.dash-effect-preview .plus{width:42px;height:42px;position:relative;filter:drop-shadow(0 0 8px var(--fx-color));}.dash-effect-preview .plus:before,.dash-effect-preview .plus:after{content:'';position:absolute;background:var(--fx-color);left:50%;top:50%;transform:translate(-50%,-50%)}.dash-effect-preview .plus:before{width:42px;height:10px}.dash-effect-preview .plus:after{width:10px;height:42px}.dash-effect-preview .spark{width:34px;height:34px;background:var(--fx-color);clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);filter:drop-shadow(0 0 8px var(--fx-color));}
 .dash-effect-preview .star{width:38px;height:38px;position:relative;filter:drop-shadow(0 0 7px var(--fx-color));}
 .dash-effect-preview .star:before,.dash-effect-preview .star:after{content:'';position:absolute;inset:0;background:var(--fx-color);clip-path:polygon(50% 0,61% 37%,100% 50%,61% 63%,50% 100%,39% 63%,0 50%,39% 37%);}
+.dash-effect-preview .triangle{width:30px;height:30px;background:var(--fx-color);clip-path:polygon(50% 0,100% 90%,0 90%);filter:drop-shadow(0 0 9px var(--fx-color));}
 .dash-effect-preview .aura{display:none!important;}
 .dash-effect-meta{font-size:9px;color:var(--text-dim);margin-top:4px;line-height:1.35;}
 .rarity-common{color:#d7d7d7}.rarity-uncommon{color:#72e6a1}.rarity-rare{color:#70b7ff}.rarity-epic{color:#c58cff}.rarity-legendary{color:#ffd76a;text-shadow:0 0 8px #ffd76a66}.rarity-mythic{color:#ff72f1;text-shadow:0 0 8px #ff72f188,0 0 20px #6cfbff55;animation:mythicTextPulse 1.2s ease-in-out infinite alternate}@keyframes mythicTextPulse{from{filter:brightness(.95)}to{filter:brightness(1.35)}}
@@ -638,6 +642,48 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .spherebox-roll-icon.style-seraph:before{width:25px;height:25px;clip-path:polygon(50% 0,60% 34%,100% 18%,68% 50%,100% 82%,60% 66%,50% 100%,40% 66%,0 82%,32% 50%,0 18%,40% 34%);}
 .spherebox-roll-icon.style-worldtree:before{width:25px;height:29px;clip-path:polygon(50% 0,67% 35%,88% 22%,72% 48%,100% 55%,69% 62%,82% 92%,59% 70%,50% 100%,41% 70%,18% 92%,31% 62%,0 55%,28% 48%,12% 22%,33% 35%);}
 .spherebox-roll-icon.palette-rich{filter:saturate(1.05);}
+
+/* Hit-effect reel / View Drops icons are intentionally not mini-spheres: each uses a distinct silhouette. */
+.spherebox-roll-icon.hit-card-icon{
+  width:50px;height:50px;flex:0 0 50px;border-radius:0;overflow:visible;
+  background:transparent!important;border:0!important;box-shadow:none!important;
+  filter:none!important;isolation:isolate;
+}
+.spherebox-roll-icon.hit-card-icon:before{
+  width:28px;height:28px;
+  background:conic-gradient(from 20deg,var(--fx-c1),var(--fx-c2,var(--fx-c1)),var(--fx-c3,var(--fx-c2,var(--fx-c1))),var(--fx-c1));
+  box-shadow:0 0 10px color-mix(in srgb,var(--fx-c1) 75%,transparent),0 0 18px color-mix(in srgb,var(--fx-c2,var(--fx-c1)) 42%,transparent);
+  z-index:2;
+}
+.spherebox-roll-icon.hit-card-icon.shape-ring:before{
+  width:34px;height:34px;border-radius:50%;background:transparent;
+  border:4px solid var(--fx-c1);box-shadow:0 0 10px var(--fx-c1),inset 0 0 7px var(--fx-c2,var(--fx-c1));
+}
+.spherebox-roll-icon.hit-card-icon.shape-cross:before{
+  width:34px;height:34px;border-radius:0;background:var(--fx-c1);
+  clip-path:polygon(41% 0,59% 0,59% 41%,100% 41%,100% 59%,59% 59%,59% 100%,41% 100%,41% 59%,0 59%,0 41%,41% 41%);
+}
+.spherebox-roll-icon.hit-card-icon.shape-shard:before{width:23px;height:34px;clip-path:polygon(50% 0,86% 23%,69% 100%,31% 100%,14% 23%);}
+.spherebox-roll-icon.hit-card-icon.shape-triangle:before{width:32px;height:32px;clip-path:polygon(50% 0,100% 88%,0 88%);}
+.spherebox-roll-icon.hit-card-icon.shape-supernova:before{width:34px;height:34px;clip-path:polygon(50% 0,59% 29%,78% 10%,71% 37%,100% 33%,75% 50%,100% 67%,71% 63%,78% 90%,59% 71%,50% 100%,41% 71%,22% 90%,29% 63%,0 67%,25% 50%,0 33%,29% 37%,22% 10%,41% 29%);}
+.spherebox-roll-icon.hit-card-icon.shape-star:before{width:34px;height:34px;clip-path:polygon(50% 0,61% 35%,100% 50%,61% 65%,50% 100%,39% 65%,0 50%,39% 35%);}
+.spherebox-roll-icon.hit-card-icon.shape-spark:before{width:31px;height:31px;clip-path:polygon(50% 0,60% 35%,100% 50%,60% 65%,50% 100%,40% 65%,0 50%,40% 35%);}
+.spherebox-roll-icon.hit-card-icon.shape-diamond:before{width:25px;height:25px;transform:translate(-50%,-50%) rotate(45deg);border-radius:3px;}
+.spherebox-roll-icon.hit-card-icon.shape-hex:before{width:34px;height:34px;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);}
+.spherebox-roll-icon.hit-card-icon.shape-orb:before{width:28px;height:28px;border-radius:50%;}
+/* Distinct secondary motifs for hit effects that explicitly define a second shape. */
+.spherebox-roll-icon.hit-card-icon.secondary-ring:after{content:'';position:absolute;left:50%;top:50%;width:41px;height:41px;transform:translate(-50%,-50%);border:1px solid var(--fx-c2,var(--fx-c1));border-radius:50%;box-shadow:0 0 8px var(--fx-c2,var(--fx-c1));opacity:.8;z-index:1;}
+.spherebox-roll-icon.hit-card-icon.secondary-star:after{content:'';position:absolute;left:50%;top:50%;width:42px;height:42px;transform:translate(-50%,-50%) rotate(22.5deg);background:var(--fx-c2,var(--fx-c1));clip-path:polygon(50% 0,59% 36%,100% 50%,59% 64%,50% 100%,41% 64%,0 50%,41% 36%);opacity:.36;filter:drop-shadow(0 0 7px var(--fx-c2,var(--fx-c1)));z-index:1;}
+.spherebox-roll-icon.hit-card-icon.secondary-triangle:after{content:'';position:absolute;left:50%;top:50%;width:41px;height:41px;transform:translate(-50%,-50%) rotate(180deg);border:2px solid var(--fx-c2,var(--fx-c1));clip-path:polygon(50% 0,100% 88%,0 88%);opacity:.48;z-index:1;}
+.spherebox-roll-icon.hit-card-icon.secondary-cross:after{content:'';position:absolute;left:50%;top:50%;width:43px;height:43px;transform:translate(-50%,-50%) rotate(45deg);background:var(--fx-c2,var(--fx-c1));clip-path:polygon(46% 0,54% 0,54% 46%,100% 46%,100% 54%,54% 54%,54% 100%,46% 100%,46% 54%,0 54%,0 46%,46% 46%);opacity:.4;z-index:1;}
+/* Style-specific accents keep otherwise similar base shapes visually distinct. */
+.spherebox-roll-icon.hit-card-icon.style-slash:after{content:'';position:absolute;left:50%;top:50%;width:48px;height:5px;transform:translate(-50%,-50%) rotate(-35deg);background:linear-gradient(90deg,transparent,var(--fx-c2,var(--fx-c1)),transparent);box-shadow:0 0 8px var(--fx-c2,var(--fx-c1));z-index:3;}
+.spherebox-roll-icon.hit-card-icon.style-glass:after{content:'';position:absolute;left:50%;top:50%;width:44px;height:44px;transform:translate(-50%,-50%);border:1px solid var(--fx-c2,var(--fx-c1));clip-path:polygon(50% 0,63% 30%,100% 50%,65% 66%,50% 100%,34% 65%,0 50%,32% 34%);opacity:.65;z-index:1;}
+.spherebox-roll-icon.hit-card-icon.style-ember:after{content:'◆';position:absolute;left:50%;top:50%;transform:translate(-50%,-58%);font-size:14px;color:var(--fx-c2,var(--fx-c1));text-shadow:-15px 8px 0 var(--fx-c3,var(--fx-c2,var(--fx-c1))),15px -7px 0 var(--fx-c1);z-index:3;}
+.spherebox-roll-icon.hit-card-icon.style-smash:after{content:'';position:absolute;left:50%;top:50%;width:45px;height:45px;transform:translate(-50%,-50%) rotate(45deg);border:2px solid var(--fx-c2,var(--fx-c1));clip-path:polygon(49% 0,51% 0,51% 35%,100% 35%,100% 37%,51% 37%,51% 100%,49% 100%,49% 37%,0 37%,0 35%,49% 35%);opacity:.72;z-index:3;}
+.spherebox-roll-icon.hit-card-icon.style-shockwave:after{content:'';position:absolute;left:50%;top:50%;width:43px;height:43px;transform:translate(-50%,-50%);border:2px solid var(--fx-c2,var(--fx-c1));border-radius:50%;opacity:.7;box-shadow:0 0 8px var(--fx-c2,var(--fx-c1));z-index:1;}
+.spherebox-roll-icon.hit-card-icon.style-bonk:after{content:'✦';position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:39px;line-height:1;color:var(--fx-c2,var(--fx-c1));opacity:.32;text-shadow:0 0 8px var(--fx-c2,var(--fx-c1));z-index:1;}
+.spherebox-roll-icon.hit-card-icon.style-critical:after{content:'';position:absolute;left:50%;top:50%;width:46px;height:46px;transform:translate(-50%,-50%) rotate(22.5deg);background:conic-gradient(from 0deg,var(--fx-c2,var(--fx-c1)) 0deg 4deg,transparent 4deg 34deg,var(--fx-c3,var(--fx-c2,var(--fx-c1))) 34deg 38deg,transparent 38deg 68deg,var(--fx-c2,var(--fx-c1)) 68deg 72deg,transparent 72deg 102deg,var(--fx-c3,var(--fx-c2,var(--fx-c1))) 102deg 106deg,transparent 106deg 136deg,var(--fx-c2,var(--fx-c1)) 136deg 140deg,transparent 140deg 170deg,var(--fx-c3,var(--fx-c2,var(--fx-c1))) 170deg 174deg,transparent 174deg 204deg,var(--fx-c2,var(--fx-c1)) 204deg 208deg,transparent 208deg 238deg,var(--fx-c3,var(--fx-c2,var(--fx-c1))) 238deg 242deg,transparent 242deg 272deg,var(--fx-c2,var(--fx-c1)) 272deg 276deg,transparent 276deg 306deg,var(--fx-c3,var(--fx-c2,var(--fx-c1))) 306deg 310deg,transparent 310deg 340deg,var(--fx-c2,var(--fx-c1)) 340deg 344deg,transparent 344deg 360deg);-webkit-mask:radial-gradient(circle,transparent 0 42%,#000 43% 48%,transparent 49%);mask:radial-gradient(circle,transparent 0 42%,#000 43% 48%,transparent 49%);filter:drop-shadow(0 0 7px var(--fx-c2,var(--fx-c1)));z-index:1;}
 .spherebox-roll-icon.trail-card-icon{width:54px;height:34px;flex:0 0 54px;border-radius:0;background:transparent!important;border:0;box-shadow:none;overflow:visible;filter:none;}
 .spherebox-roll-icon.trail-card-icon:after{content:'';position:absolute;left:3px;top:50%;width:46px;height:13px;transform:translateY(-50%);border-radius:999px;background:radial-gradient(circle at 86% 50%,#ffffffee 0 8%,var(--fx-c1) 16%,transparent 48%),radial-gradient(circle at 64% 50%,var(--fx-c2,var(--fx-c1)) 0 13%,transparent 50%),radial-gradient(circle at 40% 50%,var(--fx-c3,var(--fx-c2,var(--fx-c1))) 0 10%,transparent 48%);filter:blur(2px);opacity:.9;z-index:1;}
 .spherebox-roll-icon.trail-card-icon:before{filter:saturate(.98) brightness(1.14);box-shadow:0 0 9px var(--fx-c1),0 0 16px color-mix(in srgb,var(--fx-c1) 48%,transparent);z-index:2;}
@@ -742,7 +788,7 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .cust-effect-preview-field{margin-bottom:4px;}
 .cust-effect-preview-field label{font-size:10px;}
 
-#custTrailShower{width:240px!important;height:170px!important;flex:0 0 auto;object-fit:contain;background:transparent;border:0;border-radius:0;}
+#custTrailShower,#custHitShower{width:240px!important;height:170px!important;flex:0 0 auto;object-fit:contain;background:transparent;border:0;border-radius:0;}
 .trail-effect-preview{height:82px;border-radius:3px;border:0;background:transparent;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
 .trail-worm-preview{background:transparent;}
 .trail-preview-worm-glow{position:absolute;left:12%;right:11%;top:39%;height:24%;border-radius:999px;background:radial-gradient(circle at 86% 50%,#fff 0 7%,var(--trail-main,#fff) 13%,transparent 40%),radial-gradient(circle at 68% 50%,var(--trail-second,var(--trail-main,#fff)) 0 12%,transparent 48%),radial-gradient(circle at 48% 50%,var(--trail-main,#fff) 0 11%,transparent 47%),radial-gradient(circle at 28% 50%,var(--trail-second,var(--trail-main,#fff)) 0 9%,transparent 44%);filter:blur(7px);opacity:.52;}
@@ -754,14 +800,14 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 .trail-preview-dot.shape-spark{clip-path:polygon(50% 0,62% 35%,100% 50%,62% 65%,50% 100%,38% 65%,0 50%,38% 35%);}
 .trail-preview-dot.shape-star{clip-path:polygon(50% 0,61% 36%,100% 50%,61% 64%,50% 100%,39% 64%,0 50%,39% 36%);}
 .trail-preview-dot.shape-hex{clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%);}
-@media(max-width:760px){.cust-effect-left #custTrailShower{width:210px!important;height:150px!important;}}
+@media(max-width:760px){.cust-effect-left #custTrailShower,.cust-effect-left #custHitShower{width:210px!important;height:150px!important;}}
 @media(max-width:760px){.cust-layout{grid-template-columns:1fr;}.cust-controls-column{grid-column:1;grid-row:1;order:1;}.cust-preview-column{grid-column:1;grid-row:2;order:2;}.cust-col-preview #custPreview,.cust-effect-left #custEffectShower{width:210px!important;height:210px!important;background:transparent;border:0;border-radius:0;}}
 
 /* Spherebox quick menu on main-menu hover */
 .spherebox-menu-hover{position:relative;width:100%;display:flex;}
 .spherebox-main-button{width:100%;}
-.spherebox-hover-actions{position:absolute;inset:0;display:grid;grid-template-columns:1fr 1fr;gap:7px;opacity:0;pointer-events:none;transform:scaleX(.96);transition:opacity .12s ease,transform .12s ease;}
-.spherebox-hover-actions .btn{min-width:0;padding:12px 8px;font-size:12px;}
+.spherebox-hover-actions{position:absolute;inset:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;opacity:0;pointer-events:none;transform:scaleX(.96);transition:opacity .12s ease,transform .12s ease;}
+.spherebox-hover-actions .btn{min-width:0;padding:11px 4px;font-size:10px;letter-spacing:.45px;white-space:nowrap;}
 .spherebox-hover-actions .btn:hover,.spherebox-hover-actions .btn:focus-visible{transform:none!important;box-shadow:0 0 16px #c9793a55,0 6px 18px #0008;}
 .spherebox-menu-hover:hover .spherebox-main-button,.spherebox-menu-hover:focus-within .spherebox-main-button{opacity:0;pointer-events:none;}
 .spherebox-menu-hover:hover .spherebox-hover-actions,.spherebox-menu-hover:focus-within .spherebox-hover-actions{opacity:1;pointer-events:auto;transform:scaleX(1);}
@@ -966,6 +1012,165 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
 }
 </style>
 
+
+<style id="compact-customize-effect-previews">
+.cust-preview-column{gap:4px!important;}
+.cust-preview-column .cust-col-title{margin-bottom:3px!important;}
+.cust-preview-column .cust-large-preview{padding:3px!important;min-height:0!important;}
+.cust-preview-column .cust-large-preview .cust-effect-preview-wrap{min-height:0!important;}
+/* .cust-preview-column children alternate title/preview blocks: 2, 4, 6. */
+.cust-preview-column > .cust-large-preview:nth-child(2) .cust-effect-preview-wrap{width:180px!important;max-width:100%;aspect-ratio:1/1;height:auto!important;}
+.cust-preview-column > .cust-large-preview:nth-child(2) canvas{width:180px!important;height:180px!important;max-width:100%;max-height:100%;}
+.cust-preview-column > .cust-large-preview:nth-child(4) .cust-effect-preview-wrap,
+.cust-preview-column > .cust-large-preview:nth-child(6) .cust-effect-preview-wrap{width:210px!important;max-width:100%;height:118px!important;}
+.cust-preview-column > .cust-large-preview:nth-child(4) canvas,
+.cust-preview-column > .cust-large-preview:nth-child(6) canvas{width:210px!important;height:118px!important;max-width:100%;max-height:100%;}
+@media(max-width:760px){
+  .cust-preview-column > .cust-large-preview:nth-child(2) .cust-effect-preview-wrap{width:160px!important;}
+  .cust-preview-column > .cust-large-preview:nth-child(2) canvas{width:160px!important;height:160px!important;}
+  .cust-preview-column > .cust-large-preview:nth-child(4) .cust-effect-preview-wrap,
+  .cust-preview-column > .cust-large-preview:nth-child(6) .cust-effect-preview-wrap{width:200px!important;height:110px!important;}
+  .cust-preview-column > .cust-large-preview:nth-child(4) canvas,
+  .cust-preview-column > .cust-large-preview:nth-child(6) canvas{width:200px!important;height:110px!important;}
+}
+</style>
+
+<style id="customize-preview-alignment-fix">
+/* Center and clean up all Customize effect previews. */
+.cust-preview-column{align-items:stretch;}
+.cust-preview-column .cust-col-title{text-align:center;}
+.cust-preview-column .cust-large-preview{display:flex;justify-content:center;align-items:center;text-align:center;padding:6px;box-sizing:border-box;}
+.cust-preview-column .cust-effect-preview-wrap{width:100%!important;max-width:100%;display:flex;justify-content:center;align-items:center;margin:0 auto;}
+.cust-preview-column #custEffectShower{width:220px!important;height:220px!important;max-width:100%;display:block;margin:0 auto;}
+.cust-preview-column #custTrailShower{width:100%!important;height:150px!important;max-width:100%;display:block;margin:0 auto;object-fit:fill;}
+.cust-preview-column #custHitShower{width:220px!important;height:150px!important;max-width:100%;display:block;margin:0 auto;}
+</style>
+
+<style id="spherebox-preview-centering-fix">
+.dash-effect-card,.spherebox-result,.trail-effect-preview{display:flex;flex-direction:column;align-items:center;text-align:center;}
+.trail-effect-preview{width:100%;justify-content:center;}
+</style>
+<style id="hit-preview-slightly-shorter">.cust-preview-column #custHitShower{height:138px!important;}.cust-preview-column > .cust-large-preview:nth-child(6) .cust-effect-preview-wrap{height:138px!important;}</style>
+
+<style id="hit-thumbnail-and-preview-polish-v2">
+/* Hit-effect inventory thumbnails: no second rectangle inside the card. */
+.dash-effect-card.hit-effect-card{overflow:visible;}
+.dash-effect-card.hit-effect-card .hit-effect-preview{
+  width:100%;height:72px;min-height:72px;
+  display:flex;align-items:center;justify-content:center;
+  border:0!important;background:transparent!important;border-radius:0;
+  overflow:visible!important;
+}
+.dash-effect-card.hit-effect-card .hit-effect-preview > *{left:50%;top:50%;}
+/* Center the visible effect, including the added legendary ray/halo layers. */
+.dash-effect-card.hit-effect-card .hit-effect-preview .ring,
+.dash-effect-card.hit-effect-card .hit-effect-preview .core,
+.dash-effect-card.hit-effect-card .hit-effect-preview .star,
+.dash-effect-card.hit-effect-card .hit-effect-preview .spark,
+.dash-effect-card.hit-effect-card .hit-effect-preview .diamond,
+.dash-effect-card.hit-effect-card .hit-effect-preview .hex,
+.dash-effect-card.hit-effect-card .hit-effect-preview .triangle,
+.dash-effect-card.hit-effect-card .hit-effect-preview .plus,
+.dash-effect-card.hit-effect-card .hit-effect-preview .orb{left:50%;top:50%;}
+/* A little less vertical space in Customize for the two big previews. */
+.cust-preview-column #custEffectShower{width:210px!important;height:200px!important;max-width:100%;display:block;margin:0 auto;object-fit:contain;}
+.cust-preview-column > .cust-large-preview:nth-child(2) .cust-effect-preview-wrap{height:200px!important;}
+.cust-preview-column #custHitShower{width:220px!important;height:126px!important;max-width:100%;display:block;margin:0 auto;object-fit:contain;}
+.cust-preview-column > .cust-large-preview:nth-child(6) .cust-effect-preview-wrap{height:126px!important;}
+@media(max-width:760px){
+  .dash-effect-card.hit-effect-card .hit-effect-preview{height:68px;min-height:68px;}
+  .cust-preview-column #custEffectShower{width:200px!important;height:190px!important;}
+  .cust-preview-column > .cust-large-preview:nth-child(2) .cust-effect-preview-wrap{height:190px!important;}
+  .cust-preview-column #custHitShower{width:210px!important;height:118px!important;}
+  .cust-preview-column > .cust-large-preview:nth-child(6) .cust-effect-preview-wrap{height:118px!important;}
+}
+</style>
+
+<style id="hit-icons-final-alignment-v4">
+/* Final centering pass for hit-effect View Drops / reel thumbnails. */
+.spherebox-roll-icon.hit-card-icon{
+  position:relative!important;
+  display:block!important;
+  flex:0 0 50px!important;
+  width:50px!important;
+  height:50px!important;
+  margin:0!important;
+  align-self:center!important;
+  transform:none!important;
+  transform-origin:50% 50%!important;
+}
+.spherebox-roll-icon.hit-card-icon::before,
+.spherebox-roll-icon.hit-card-icon::after{
+  box-sizing:border-box!important;
+  transform-origin:50% 50%!important;
+}
+/* Every primary hit symbol is anchored to the exact icon center. */
+.spherebox-roll-icon.hit-card-icon::before{
+  left:50%!important;
+  top:50%!important;
+  margin:0!important;
+}
+.spherebox-roll-icon.hit-card-icon.shape-diamond::before{
+  transform:translate(-50%,-50%) rotate(45deg)!important;
+}
+.spherebox-roll-icon.hit-card-icon::after{
+  left:50%!important;
+  top:50%!important;
+  margin:0!important;
+}
+/* Symmetric three-dot arrangement; no dot is allowed to pull the visual center. */
+.dash-effect-card.hit-effect-card .hit-effect-preview .orb.o1,
+.spherebox-result .hit-effect-preview .orb.o1{
+  left:50%!important; top:50%!important;
+  transform:translate(-13px,-14px)!important;
+}
+.dash-effect-card.hit-effect-card .hit-effect-preview .orb.o2,
+.spherebox-result .hit-effect-preview .orb.o2{
+  left:50%!important; top:50%!important;
+  transform:translate(13px,-14px)!important;
+}
+.dash-effect-card.hit-effect-card .hit-effect-preview .orb.o3,
+.spherebox-result .hit-effect-preview .orb.o3{
+  left:50%!important; top:50%!important;
+  transform:translate(-50%,-50%) translate(0,16px)!important;
+}
+/* Keep secondary square/cross motifs mathematically centered as well. */
+.spherebox-roll-icon.hit-card-icon.secondary-cross::after,
+.spherebox-roll-icon.hit-card-icon.style-smash::after{
+  left:50%!important; top:50%!important;
+  transform:translate(-50%,-50%) rotate(45deg)!important;
+}
+.spherebox-roll-icon.hit-card-icon.style-ember::after{
+  left:50%!important; top:50%!important;
+  transform:translate(-50%,-50%)!important;
+}
+
+/* Slightly taller Customize hit-effect preview, while retaining the shortened footprint. */
+.cust-preview-column > .cust-large-preview:nth-child(6) .cust-effect-preview-wrap{
+  width:205px!important;
+  height:116px!important;
+  margin:0 auto!important;
+  aspect-ratio:auto!important;
+}
+.cust-preview-column > .cust-large-preview:nth-child(6) canvas{
+  width:205px!important;
+  height:116px!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  display:block!important;
+  margin:0 auto!important;
+  object-fit:contain!important;
+}
+@media(max-width:760px){
+  .cust-preview-column > .cust-large-preview:nth-child(6) .cust-effect-preview-wrap{
+    width:190px!important;height:106px!important;
+  }
+  .cust-preview-column > .cust-large-preview:nth-child(6) canvas{
+    width:190px!important;height:106px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="app">
@@ -980,10 +1185,10 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <button class="btn" data-go="join">JOIN GAME</button>
     <button class="btn" data-go="editor">MAP EDITOR</button>
     <button class="btn" data-go="customize">CUSTOMIZE</button>
-    <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button></div></div>
+    <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button><button class="btn small" type="button" data-sphere-quick="hit">HIT EFFECTS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.81 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.83 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -1139,9 +1344,10 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div id="sphereboxHome">
       <h2>SPHEREBOX</h2>
       <div class="subhint" style="margin:-4px 0 14px;">Choose a cosmetic category.</div>
-      <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;">
+      <div class="spherebox-home-grid">
         <button class="btn primary" id="btnSphereDash" style="min-height:110px;font-size:18px;">DASH EFFECTS</button>
         <button class="btn" id="btnSphereTrails" style="min-height:110px;font-size:18px;">TRAILS</button>
+        <button class="btn" id="btnSphereHits" style="min-height:110px;font-size:18px;">HIT EFFECTS</button>
       </div>
     </div>
     <div id="sphereboxCategoryView" class="hidden">
@@ -1194,6 +1400,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
         <div class="cust-selector-grid">
           <div class="field"><label>Dash Charge Effect</label><select id="custDashEffect"></select></div>
           <div class="field"><label>Trail Effect</label><select id="custTrailEffect"></select></div>
+          <div class="field"><label>Hit Effect</label><select id="custHitEffect"></select></div>
         </div>
         <div class="cust-save-row">
           <button class="btn danger cust-exit-btn" id="btnExitCust" data-go="main">EXIT</button>
@@ -1209,7 +1416,9 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
         <div class="cust-col-title">DASH EFFECT PREVIEW</div>
         <div class="cust-large-preview"><div class="cust-effect-preview-wrap"><canvas id="custEffectShower" width="240" height="240"></canvas></div></div>
         <div class="cust-col-title">TRAIL EFFECT PREVIEW</div>
-        <div class="cust-large-preview"><div class="cust-effect-preview-wrap"><canvas id="custTrailShower" width="240" height="170"></canvas></div></div>
+        <div class="cust-large-preview"><div class="cust-effect-preview-wrap"><canvas id="custTrailShower" width="420" height="160"></canvas></div></div>
+        <div class="cust-col-title">HIT EFFECT PREVIEW</div>
+        <div class="cust-large-preview"><div class="cust-effect-preview-wrap"><canvas id="custHitShower" width="320" height="190"></canvas></div></div>
       </div>
     </div>
   </div>
@@ -1559,15 +1768,24 @@ class ParticleSystem{
       }else{
         ctx.save(); ctx.translate(sx,sy); ctx.rotate(p.rotation); ctx.beginPath();
         if(p.shape==='diamond'){
-          ctx.moveTo(0,-size); ctx.lineTo(size,0); ctx.lineTo(0,size); ctx.lineTo(-size,0); ctx.closePath();
+          ctx.moveTo(0,-size); ctx.lineTo(size,0); ctx.lineTo(0,size); ctx.lineTo(-size,0); ctx.closePath(); ctx.fill();
         }else if(p.shape==='shard'){
-          ctx.moveTo(size*1.4,0); ctx.lineTo(-size*.6,-size*.55); ctx.lineTo(-size*.9,0); ctx.lineTo(-size*.25,size*.55); ctx.closePath();
+          ctx.moveTo(size*1.4,0); ctx.lineTo(-size*.6,-size*.55); ctx.lineTo(-size*.9,0); ctx.lineTo(-size*.25,size*.55); ctx.closePath(); ctx.fill();
+        }else if(p.shape==='triangle'){
+          ctx.moveTo(0,-size); ctx.lineTo(size*.95,size*.75); ctx.lineTo(-size*.95,size*.75); ctx.closePath(); ctx.fill();
+        }else if(p.shape==='hex'){
+          for(let k=0;k<6;k++){ const ang=-Math.PI/2+k*Math.PI/3, px=Math.cos(ang)*size, py=Math.sin(ang)*size; if(k===0)ctx.moveTo(px,py); else ctx.lineTo(px,py); } ctx.closePath(); ctx.fill();
+        }else if(p.shape==='cross'){
+          const w=size*.34;
+          ctx.moveTo(-w,-size);ctx.lineTo(w,-size);ctx.lineTo(w,-w);ctx.lineTo(size,-w);ctx.lineTo(size,w);ctx.lineTo(w,w);ctx.lineTo(w,size);ctx.lineTo(-w,size);ctx.lineTo(-w,w);ctx.lineTo(-size,w);ctx.lineTo(-size,-w);ctx.lineTo(-w,-w);ctx.closePath(); ctx.fill();
+        }else if(p.shape==='ring'){
+          ctx.strokeStyle=p.color; ctx.lineWidth=Math.max(.8,size*.22); ctx.beginPath(); ctx.arc(0,0,size*.72,0,Math.PI*2); ctx.stroke();
         }else{
           const points=p.shape==='supernova'?8:5, inner=size*.42;
           for(let k=0;k<points*2;k++){ const ang=-Math.PI/2+k*Math.PI/points, r=k%2===0?size:inner; const x=Math.cos(ang)*r,y=Math.sin(ang)*r; if(k===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); }
-          ctx.closePath();
+          ctx.closePath(); ctx.fill();
         }
-        ctx.fill(); ctx.restore();
+        ctx.restore();
       }
     }
     ctx.globalAlpha=1;
@@ -1681,7 +1899,7 @@ const PHYS = {
 class Player{
   constructor(id,name,cust,spawn){
     this.id=id; this.name=name||'Player';
-    this.cust = Object.assign({hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',dashEffect:'basic',trailEffect:'none'}, cust||{});
+    this.cust = Object.assign({hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',dashEffect:'basic',trailEffect:'none',hitEffect:'impactSpark'}, cust||{});
     this.x=spawn?spawn.x:0; this.y=spawn?spawn.y:0;
     this.vx=0; this.vy=0; this.radius=26;
     this.grounded=false; this.netGrounded=false; this.supportPlatform=-1; this.netSupportPlatform=-1; this.facing=1;
@@ -3056,6 +3274,37 @@ const SphereBoxes = {
     celestialRainbow:{name:'Celestial Rainbow',rarity:'legendary',colors:['#ff4f96','#ffae43','#fff269','#5dff97','#59d8ff','#9873ff','#ff70d8'],shape:'star',particleShape:'star',style:'celestial',density:2.05,size:4.1,length:2.25,glow:25},
     hyperprism:{name:'Hyperprism',rarity:'legendary',colors:['#ff3484','#ff8835','#fff238','#45ef96','#43d9ff','#8c60ff','#ff63e3'],shape:'shard',particleShape:'shard',style:'hyperprism',density:2.15,size:4.3,length:2.35,glow:28},
     genesisSpectrum:{name:'Genesis Spectrum',rarity:'mythic',colors:['#ff3f9e','#ff8f32','#fff04d','#69ff86','#4fdcff','#8b65ff','#ff62d9'],shape:'supernova',particleShape:'orb',style:'genesis',density:2.6,size:5,length:2.8,glow:38}
+
+  },
+  hitEffects:{
+    impactSpark:{name:'Impact Spark',rarity:'common',colors:['#ffffff','#dbe7ff','#7fa8ff'],shape:'spark',style:'spark'},
+    bonkStars:{name:'Bonk Stars',rarity:'common',colors:['#fff36a','#ffffff','#ffe05c'],shape:'star',style:'bonk'},
+    slashBurst:{name:'Slash Burst',rarity:'uncommon',colors:['#ffffff','#78ddff','#4f9cff'],shape:'shard',style:'slash'},
+    shockwave:{name:'Shockwave',rarity:'rare',colors:['#e8fff4','#74f6c4','#4f8cff'],shape:'ring',style:'shockwave'},
+    glassBreak:{name:'Glass Break',rarity:'rare',colors:['#ffffff','#7fe9ff','#62a8ff'],shape:'shard',style:'glass'},
+    emberSparks:{name:'Ember Sparks',rarity:'common',colors:['#fff38a','#ff9f32','#ff5a2f'],shape:'spark',style:'ember'},
+    starSmash:{name:'Star Smash',rarity:'rare',colors:['#fff06b','#ffb52f','#ff6a32','#fff6b0'],shape:'star',style:'smash'},
+    criticalNova:{name:'Critical Nova',rarity:'legendary',colors:['#fff4c4','#ffb12c','#ff4d38','#a95bff'],shape:'supernova',style:'critical'},
+    voltageBloom:{name:'Voltage Bloom',rarity:'uncommon',colors:['#dfffff','#55dfff','#72ff83','#ffe45c'],shape:'star',style:'shockwave'},
+    circuitFlash:{name:'Circuit Flash',rarity:'rare',colors:['#eaffff','#56e5ff','#62ff8b','#f5ff55'],shape:'spark',style:'ember'},
+    neonVoltage:{name:'Neon Voltage',rarity:'epic',colors:['#36cfff','#66ff85','#f4ff56','#fff9d1'],shape:'supernova',style:'critical'},
+    auroraStrike:{name:'Aurora Strike',rarity:'legendary',colors:['#35d8ff','#62ff9a','#e9ff4e','#ffffff','#61a6ff'],shape:'star',style:'smash'},
+    magmaBurst:{name:'Magma Burst',rarity:'uncommon',colors:['#ff5a2f','#ff8c28','#ffd44a','#fff2a1'],shape:'shard',style:'ember'},
+    violetCrash:{name:'Violet Crash',rarity:'uncommon',colors:['#ff623f','#ff9a32','#b86cff','#7d5cff'],shape:'shard',style:'slash'},
+    sunsetNova:{name:'Sunset Nova',rarity:'rare',colors:['#ff5a3d','#ff9c2f','#ffd84f','#9b63ff'],shape:'ring',style:'shockwave'},
+    royalImpact:{name:'Royal Impact',rarity:'epic',colors:['#ff513d','#ff922f','#ffd75a','#b75cff','#7c4dff'],shape:'supernova',style:'critical'},
+    thunderCrown:{name:'Thunder Crown',rarity:'mythic',colors:['#2e8cff','#6fe9ff','#67ff88','#fff04d','#ffffff'],shape:'supernova',style:'mythic-electric'},
+    kineticCataclysm:{name:'Kinetic Cataclysm',rarity:'mythic',colors:['#ff3b30','#ff702e','#ffd23f','#9b4dff','#f05cff','#ffffff'],shape:'supernova',secondaryShape:'star',style:'mythic-kinetic'},
+    plasmaDust:{name:'Plasma Dust',rarity:'common',colors:['#82766e','#b9a69a','#e4b7ca'],shape:'orb',secondaryShape:'triangle',style:'plasma-dust'},
+    plasmaPulse:{name:'Plasma Pulse',rarity:'uncommon',colors:['#6f6259','#d1bbb0','#ff89c0'],shape:'ring',secondaryShape:'orb',style:'plasma-pulse'},
+    plasmaNeedle:{name:'Plasma Needle',rarity:'uncommon',colors:['#8a786e','#d7c2b8','#ff8fc2'],shape:'triangle',secondaryShape:'shard',style:'plasma-needle'},
+    plasmaShard:{name:'Plasma Shard',rarity:'rare',colors:['#75665d','#bda99c','#ff77b8','#c48aa8'],shape:'shard',secondaryShape:'triangle',style:'plasma-shard'},
+    plasmaHalo:{name:'Plasma Halo',rarity:'rare',colors:['#665b54','#b79f91','#ff9dcb','#f6c4da'],shape:'ring',secondaryShape:'star',style:'plasma-halo'},
+    plasmaOrbit:{name:'Plasma Orbit',rarity:'epic',colors:['#8d7d75','#d6c4b6','#ff6fc0','#ffb0da'],shape:'orb',secondaryShape:'ring',style:'plasma-orbit'},
+    plasmaBloom:{name:'Plasma Bloom',rarity:'epic',colors:['#796b64','#c6b0a3','#ff78ba','#d99ab9'],shape:'star',secondaryShape:'orb',style:'plasma-bloom'},
+    plasmaRift:{name:'Plasma Rift',rarity:'legendary',colors:['#514740','#9e8171','#ff5ba8','#e5a4c7'],shape:'shard',secondaryShape:'cross',style:'plasma-rift'},
+    plasmaCrown:{name:'Plasma Crown',rarity:'legendary',colors:['#6b5a51','#af8e7d','#ff5da9','#ffc1dd','#d9b3a3'],shape:'supernova',secondaryShape:'star',style:'plasma-crown'},
+    plasmaOverload:{name:'Plasma Overload',rarity:'mythic',colors:['#71635b','#a48d7d','#e6a6c2','#ff6fba','#ffc8e1','#f1d3c0'],shape:'supernova',secondaryShape:'ring',style:'mythic-plasma'}
   },
   boxes:{
     moon:{kind:'dash',name:'MOONSPHERE BOX',symbol:'☾',odds:[['mythic',0.005],['common',73.220],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['moonGlow','moonHalo','moonDust','lunarEclipse','moonOrbit','moonComet','moonVoid','lunarSupernova','moonAstralCrown','lunarSingularity']},
@@ -3063,11 +3312,16 @@ const SphereBoxes = {
     earth:{kind:'dash',name:'EARTHSPHERE BOX',symbol:'◉',odds:[['mythic',0.005],['common',73.220],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['earthPulse','earthStone','earthBloom','earthCrack','tectonic','seismic','earthNova','terraCore','worldshatter','gaiaAwakening','worldtreeCataclysm']},
     rain:{kind:'trail',name:'RAINSPHERE BOX',symbol:'☂',odds:[['mythic',0.005],['common',73.220],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['rainDrop','drizzle','silverRain','downpour','stormtrail','tempest','rainfire','monsoon','thunderstorm','rainworld']},
     cloud:{kind:'trail',name:'CLOUDSPHERE BOX',symbol:'☁',odds:[['mythic',0.005],['common',73.220],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['puffy','softCloud','silverLining','stormCloud','cottonCyclone','nimbus','electricFront','supercell','skybreaker','cloudfall']},
-    rainbow:{kind:'trail',name:'RAINBOWSPHERE BOX',symbol:'✧',odds:[['mythic',0.005],['common',73.220],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['prismDust','pastelArc','spectrum','rainbowRibbon','neonArc','kaleido','auroraArc','celestialRainbow','hyperprism','genesisSpectrum']}
+    rainbow:{kind:'trail',name:'RAINBOWSPHERE BOX',symbol:'✧',odds:[['mythic',0.005],['common',73.220],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['prismDust','pastelArc','spectrum','rainbowRibbon','neonArc','kaleido','auroraArc','celestialRainbow','hyperprism','genesisSpectrum']},
+    electric:{kind:'hit',name:'ELECTROSPHERE BOX',symbol:'⚡',odds:[['mythic',0.005],['common',73.220],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['impactSpark','bonkStars','slashBurst','voltageBloom','shockwave','glassBreak','circuitFlash','neonVoltage','auroraStrike','thunderCrown']},
+    kinetic:{kind:'hit',name:'KINETICSPHERE BOX',symbol:'✦',odds:[['mythic',0.005],['common',73.220],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['emberSparks','violetCrash','magmaBurst','starSmash','sunsetNova','royalImpact','criticalNova','kineticCataclysm']},
+    plasma:{kind:'hit',name:'PLASMASPHERE BOX',symbol:'◈',odds:[['mythic',0.005],['common',73.220],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['plasmaDust','plasmaPulse','plasmaNeedle','plasmaShard','plasmaHalo','plasmaOrbit','plasmaBloom','plasmaRift','plasmaCrown','plasmaOverload']},
+    impact:{kind:'hit',name:'ELECTROSPHERE BOX',symbol:'⚡',odds:[['mythic',0.005],['common',73.220],['uncommon',21.225],['rare',5],['epic',0.5],['legendary',0.05]],pool:['impactSpark','bonkStars','slashBurst','voltageBloom','shockwave','glassBreak','circuitFlash','neonVoltage','auroraStrike'],legacy:true}
   },
   getInventory(){
-    const inv=Storage.get('sphereInventory',{basic:1});
+    const inv=Storage.get('sphereInventory',{basic:1,impactSpark:1});
     if(!inv.basic) inv.basic=1;
+    if(!inv.impactSpark) inv.impactSpark=1;
     return inv;
   },
   addEffect(id){ const inv=this.getInventory(); inv[id]=(inv[id]||0)+1; Storage.set('sphereInventory',inv); return inv[id]; },
@@ -3077,18 +3331,20 @@ const SphereBoxes = {
     const b=this.boxes[boxKey];
     const r=Math.random()*100; let acc=0; let rarity='common';
     for(const [name,chance] of b.odds){ acc+=chance; if(r<acc){ rarity=name; break; } }
-    const catalog=b.kind==='trail'?this.trailEffects:this.effects;
+    const catalog=b.kind==='trail'?this.trailEffects:(b.kind==='hit'?this.hitEffects:this.effects);
     const choices=b.pool.filter(id=>catalog[id]?.rarity===rarity);
-    const fallback=b.kind==='trail' ? (b.pool.find(id=>catalog[id]?.rarity==='common')||b.pool[0]||null) : 'basic';
+    const fallback=b.pool.find(id=>catalog[id]?.rarity==='common')||b.pool[0]||(b.kind==='trail'?'none':'basic');
     return choices.length?choices[Math.floor(Math.random()*choices.length)]:fallback;
   },
-  describe(id){ return this.effects[id]||this.trailEffects[id]||this.effects.basic; },
+  describe(id){ return this.effects[id]||this.trailEffects[id]||this.hitEffects[id]||this.effects.basic; },
   colors(effect){ return Array.isArray(effect?.colors) && effect.colors.length ? effect.colors : [effect?.particle||'#fff']; },
   primaryColor(effect){ const colors=this.colors(effect); return colors[0] || '#fff'; },
-  equip(id){ if(!this.owns(id)) return false; const c=Storage.get('customization',{name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',trailEffect:'none'}); c.dashEffect=id; Storage.set('customization',c); return true; },
-  equipTrail(id){ if(id!=='none' && !this.owns(id)) return false; const c=Storage.get('customization',{name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',trailEffect:'none'}); c.trailEffect=id; Storage.set('customization',c); return true; },
+  equip(id){ if(!this.owns(id)) return false; const c=Storage.get('customization',{name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',trailEffect:'none',hitEffect:'impactSpark'}); c.dashEffect=id; Storage.set('customization',c); return true; },
+  equipTrail(id){ if(id!=='none' && !this.owns(id)) return false; const c=Storage.get('customization',{name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',trailEffect:'none',hitEffect:'impactSpark'}); c.trailEffect=id; Storage.set('customization',c); return true; },
+  equipHit(id){ if(!this.owns(id)) return false; const c=Storage.get('customization',{name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',trailEffect:'none',hitEffect:'impactSpark'}); c.hitEffect=id; Storage.set('customization',c); return true; },
   equipped(){ return Storage.get('customization',{}).dashEffect||'basic'; },
-  equippedTrail(){ return Storage.get('customization',{}).trailEffect||'none'; }
+  equippedTrail(){ return Storage.get('customization',{}).trailEffect||'none'; },
+  equippedHit(){ return Storage.get('customization',{}).hitEffect||'impactSpark'; }
 };
 // Dash effects no longer create a separate aura around the player.
 Object.values(SphereBoxes.effects).forEach(effect => { effect.aura = false; });
@@ -4438,6 +4694,7 @@ const Game = {
       const dx=hitPlayer.x-x, dy=hitPlayer.y-y;
       const dist=Math.hypot(dx,dy)||1;
       const nx=dx/dist, ny=dy/dist;
+      let mineHitImpact=90;
       if(air){
         const upBias=ny*0.65-0.25;
         const len=Math.hypot(nx,upBias)||1;
@@ -4445,6 +4702,7 @@ const Game = {
         hitPlayer.vx += (nx/len)*k;
         hitPlayer.vy += (upBias/len)*k;
         hitPlayer.damage += PHYS.mineAirDamage;
+        mineHitImpact=Math.max(90,k);
       }else{
         const upBias=Math.min(-0.45,ny-0.35);
         const len=Math.hypot(nx,upBias)||1;
@@ -4452,12 +4710,14 @@ const Game = {
         hitPlayer.vx += (nx/len)*k;
         hitPlayer.vy += (upBias/len)*k;
         hitPlayer.damage += 12;
+        mineHitImpact=Math.max(90,Math.abs(k)*1.08);
       }
       hitPlayer.hitFlash=8;
+      const mineNx=nx, mineNy=ny;
+      this.emitHitEffect(hitPlayer.x,hitPlayer.y,mineHitImpact,hitPlayer.cust?.hitEffect||'impactSpark',mineNx,mineNy);
       if(this.matchSettings?.combo && mine.ownerId) this.registerHit(mine.ownerId,hitPlayer.id,x,y,'mine');
-      // Mines already have their own authoritative detonation event, so do not
-      // also spawn the generic impact FX/network event here. That duplicate FX
-      // path was one of the main sources of frame spikes during explosions.
+      // Mines keep their own detonation visuals; the hit effect above is the
+      // victim's equipped impact cosmetic and is sent separately/reliably.
     }
 
     // Small three-tone mine burst: enough red/orange/yellow to read clearly,
@@ -4844,7 +5104,7 @@ const Game = {
                 p.vx+=nx*knock;p.vy+=ny*knock;p.damage+=8;p.hitFlash=8;
                 if(knock>=1000) this.triggerImpactFrame(26);
                 if(this.matchSettings?.combo) this.registerHit(q.ownerId,p.id,sx,sy,'arrow');
-                this.spawnFx(p,'impact');NetworkManager.broadcast({t:'hitfx',x:p.x,y:p.y,impact:knock},false);
+                this.spawnFx(p,'impact',false,{impact:knock,nx:-nx,ny:-ny});
               }
               if(!q.bouncy){ this.spawnProjectileEndFx(sx,sy,'arrow',false); NetworkManager.broadcast({t:'arrow_end_fx',x:sx,y:sy,miss:false},false); }
               if(q.bouncy && (q.bounceCount||0)<PHYS.bouncyArrowMaxBounces){
@@ -4921,7 +5181,7 @@ const Game = {
         hitPlayer.vx+=nx*knock;hitPlayer.vy+=ny*knock;hitPlayer.damage+=8;hitPlayer.hitFlash=8;
         if(knock>=1000) this.triggerImpactFrame(26);
         if(this.matchSettings?.combo) this.registerHit(q.ownerId,hitPlayer.id,q.x,q.y,'arrow');
-        this.spawnFx(hitPlayer,'impact');NetworkManager.broadcast({t:'hitfx',x:hitPlayer.x,y:hitPlayer.y,impact:knock},false);
+        this.spawnFx(hitPlayer,'impact',false,{impact:knock,nx:-nx,ny:-ny});
         // A bouncy arrow may hit the same opponent again after it has bounced away.
         // Keep only a short re-hit lock so one contact cannot apply damage repeatedly
         // during the few simulation samples that surround the same impact point.
@@ -6247,6 +6507,169 @@ const Game = {
       .map((r,i)=>({...r,place:i+1}));
   },
 
+  emitHitEffect(x,y,impact=0,effectId='impactSpark',nx=0,ny=0){
+    if(!this.isHost) return;
+    const id=SphereBoxes.hitEffects[effectId]?effectId:'impactSpark';
+    this.spawnHitEffectAt(x,y,impact,id,nx,ny);
+    NetworkManager.broadcast({t:'hitfx',x,y,impact:Number(impact)||0,effectId:id,nx:Number(nx)||0,ny:Number(ny)||0},true);
+  },
+
+  spawnHitEffectAt(x,y,impact=0,effectId='impactSpark',nx=0,ny=0){
+    const e=SphereBoxes.hitEffects[effectId]||SphereBoxes.hitEffects.impactSpark;
+    const colors=SphereBoxes.colors(e);
+    const base=Math.max(0,Math.min(1,(Number(impact)||0)/700));
+    const normalLen=Math.hypot(nx,ny);
+    const nnx=normalLen>1e-6?nx/normalLen:0;
+    const nny=normalLen>1e-6?ny/normalLen:-1;
+    const tx=-nny, ty=nnx;
+    const rarityCfg={common:{count:.60,size:.72,speed:.92},uncommon:{count:.80,size:.86,speed:.96},rare:{count:1,size:1.04,speed:1},epic:{count:1.24,size:1.28,speed:1.06},legendary:{count:1.52,size:1.56,speed:1.12},mythic:{count:1.92,size:1.86,speed:1.18}}[e.rarity]||{count:1,size:1,speed:1};
+    const rCount=n=>Math.max(1,Math.round(n*rarityCfg.count));
+    const rSize=n=>Math.max(.45,n*rarityCfg.size);
+    const rSpeed=n=>n*rarityCfg.speed;
+    const spawn=(px,py,opts={})=>{ const next=Object.assign({},opts); if(Number.isFinite(next.size))next.size=rSize(next.size); if(Number.isFinite(next.sizeEnd))next.sizeEnd=Math.max(.05,next.sizeEnd*rarityCfg.size); if(Number.isFinite(next.vx))next.vx*=rarityCfg.speed; if(Number.isFinite(next.vy))next.vy*=rarityCfg.speed; this.particles.spawn(px,py,next); };
+    const burst=(count,speed,shape='spark',gravity=80,size=2.8,life=.22)=>{
+      this.particles.burst(x,y,colors[0]||'#fff',rCount(count),rSpeed(speed),{gravity,life,size:rSize(size),sizeEnd:.15,twinkle:true,colors,shape});
+    };
+    switch(e.style){
+      case 'mythic-electric': {
+        const cc=colors;
+        this.particles.burst(x,y,'#ffffff',18+Math.round(base*8),320+base*160,{gravity:0,life:.34+base*.10,size:3.6+base*1.5,sizeEnd:.15,twinkle:true,colors:cc,shape:'spark'});
+        for(let k=0;k<3;k++){
+          const rr=12+k*12+base*9;
+          for(let q=0;q<12;q++){
+            const a=q/12*Math.PI*2+k*.35;
+            spawn(x+Math.cos(a)*rr,y+Math.sin(a)*rr,{vx:-Math.sin(a)*(95+base*70),vy:Math.cos(a)*(95+base*70),gravity:0,drag:.9,life:.46+base*.12,size:2.3+base*1.2,sizeEnd:.05,color:cc[(q+k)%cc.length],twinkle:true,shape:q%3?'spark':'shard'});
+          }
+        }
+        for(let q=0;q<6;q++){
+          const a=q/6*Math.PI*2;
+          spawn(x+Math.cos(a)*7,y+Math.sin(a)*7,{vx:Math.cos(a)*210,vy:Math.sin(a)*210,gravity:0,life:.25,size:3.4,sizeEnd:.1,color:cc[q%cc.length],twinkle:true,shape:'spark'});
+        }
+        spawn(x,y,{vx:0,vy:0,gravity:0,life:.28,size:14+base*7,sizeEnd:.2,color:'#ffffff',twinkle:true,shape:'ring'});
+        spawn(x,y,{vx:0,vy:0,gravity:0,life:.34,size:29+base*10,sizeEnd:.2,color:cc[1]||cc[0],twinkle:true,shape:'ring'});
+        break;
+      }
+      case 'mythic-kinetic': {
+        const cc=colors;
+        this.particles.burst(x,y,'#ffffff',20+Math.round(base*10),360+base*190,{gravity:20,life:.3+base*.1,size:3.9+base*1.6,sizeEnd:.12,twinkle:true,colors:cc,shape:'spark'});
+        for(let q=0;q<22;q++){
+          const a=Math.random()*Math.PI*2; const sp=150+Math.random()*260+base*100;
+          spawn(x+Math.cos(a)*4,y+Math.sin(a)*4,{vx:Math.cos(a)*sp+nnx*90,vy:Math.sin(a)*sp+nny*90,gravity:70,drag:.88,life:.36+Math.random()*.18,size:2.7+base*1.8,sizeEnd:.1,color:cc[q%cc.length],twinkle:true,shape:q%3?'shard':'star',rotation:a});
+        }
+        for(let k=0;k<3;k++){
+          const a0=(k%2?1:-1)*performance.now()*.0014;
+          for(let q=0;q<8;q++){
+            const a=a0+q/8*Math.PI*2, rr=10+k*13;
+            spawn(x+Math.cos(a)*rr,y+Math.sin(a)*rr,{vx:Math.cos(a)*45,vy:Math.sin(a)*45,gravity:0,drag:.93,life:.5+base*.1,size:2.4+base,sizeEnd:.06,color:cc[(q+k+2)%cc.length],twinkle:true,shape:q%2?'star':'spark'});
+          }
+        }
+        spawn(x,y,{vx:0,vy:0,gravity:0,life:.25,size:15+base*6,sizeEnd:.15,color:'#fff5cf',twinkle:true,shape:'ring'});
+        break;
+      }
+      case 'bonk':
+        burst(7+Math.round(base*3),145+base*90,'star',65,2.6+base*1.1,.28);
+        this.particles.burst(x+nnx*5,y+nny*5,colors[1]||'#fff',3,75,{gravity:-15,life:.3,size:3.4,sizeEnd:.2,twinkle:true,colors,shape:'diamond'});
+        break;
+      case 'slash':
+        for(let i=0;i<7;i++){
+          const side=i%2?-1:1, along=(i-3)*5;
+          spawn(x+tx*along+nnx*(-side*3),y+ty*along+nny*(-side*3),{
+            vx:tx*side*(90+base*80)+nnx*(70+base*70),
+            vy:ty*side*(90+base*80)+nny*(70+base*70),
+            gravity:10,drag:.9,life:.18+Math.random()*.08,size:2.2+base*1.5,sizeEnd:.1,
+            color:colors[i%colors.length],twinkle:true,shape:'shard',rotation:Math.atan2(ty,tx)
+          });
+        }
+        break;
+      case 'ember':
+        burst(9+Math.round(base*5),170+base*110,'spark',95,2.5+base*1.4,.3);
+        this.particles.burst(x,y,colors[2]||colors[0]||'#fff',5,240,{gravity:180,life:.34,size:2.2,sizeEnd:.1,twinkle:true,colors,shape:'orb'});
+        break;
+      case 'shockwave':
+        burst(16+Math.round(base*6),115+base*85,'spark',0,2.2+base*1.0,.24);
+        for(let i=0;i<10;i++){
+          const a=(i/10)*Math.PI*2;
+          spawn(x+Math.cos(a)*5,y+Math.sin(a)*5,{vx:Math.cos(a)*(95+base*90),vy:Math.sin(a)*(95+base*90),gravity:0,drag:.92,life:.3,size:1.8+base,sizeEnd:.08,color:colors[(i+1)%colors.length],twinkle:true,shape:'diamond'});
+        }
+        break;
+      case 'glass':
+        burst(12+Math.round(base*5),220+base*150,'shard',260,3.0+base*1.2,.36);
+        break;
+      case 'smash':
+        burst(15+Math.round(base*7),240+base*170,'star',80,3.4+base*1.8,.34);
+        this.particles.burst(x,y,'#ffffff',5,380+base*180,{gravity:20,life:.18,size:3.3+base*1.8,sizeEnd:.2,twinkle:true,shape:'spark'});
+        break;
+      case 'critical':
+        burst(20+Math.round(base*10),290+base*200,'star',20,3.8+base*2.2,.4);
+        this.particles.burst(x,y,'#ffffff',10,430+base*220,{gravity:0,life:.24,size:3.2+base*2.2,sizeEnd:.1,twinkle:true,shape:'spark'});
+        this.particles.burst(x+nnx*4,y+nny*4,colors[2]||'#ff9c42',8,170,{gravity:-35,life:.38,size:2.5+base*1.5,sizeEnd:.1,twinkle:true,colors,shape:'diamond'});
+        break;
+      default:
+        burst(8+Math.round(base*3),155+base*100,'spark',70,2.3+base*1.1,.24);
+        break;
+    }
+    switch(e.style){
+      case 'plasma-dust':
+        for(let q=0;q<10;q++){ const a=Math.random()*Math.PI*2, sp=70+Math.random()*100; spawn(x,y,{vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,gravity:25,drag:.93,life:.34+Math.random()*.16,size:2.3,sizeEnd:.1,color:colors[q%colors.length],twinkle:true,shape:q%3?'orb':'triangle'}); }
+        break;
+      case 'plasma-pulse':
+        for(let k=0;k<3;k++) spawn(x,y,{vx:0,vy:0,gravity:0,life:.25+k*.08,size:18+k*9,sizeEnd:.25,color:colors[k%colors.length],twinkle:false,shape:'ring'});
+        break;
+      case 'plasma-needle':
+        for(let q=0;q<11;q++){ const a=q/11*Math.PI*2, sp=145+Math.random()*125; spawn(x,y,{vx:Math.cos(a)*sp+nnx*60,vy:Math.sin(a)*sp+nny*60,gravity:55,drag:.9,life:.28+Math.random()*.12,size:2.7,sizeEnd:.08,color:colors[q%colors.length],twinkle:true,shape:q%2?'triangle':'shard',rotation:a}); }
+        break;
+      case 'plasma-shard':
+        for(let q=0;q<13;q++){ const a=Math.random()*Math.PI*2, sp=170+Math.random()*150; spawn(x,y,{vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,gravity:45,drag:.88,life:.3+Math.random()*.2,size:3,sizeEnd:.08,color:colors[q%colors.length],twinkle:true,shape:q%3===0?'triangle':'shard',rotation:a}); }
+        break;
+      case 'plasma-halo':
+        for(let q=0;q<4;q++) spawn(x,y,{vx:0,vy:0,gravity:0,life:.34+q*.05,size:22+q*7,sizeEnd:.25,color:colors[q%colors.length],twinkle:true,shape:'ring'});
+        break;
+      case 'plasma-orbit':
+        for(let q=0;q<16;q++){ const a=q/16*Math.PI*2+performance.now()*.002, rr=10+(q%3)*6; spawn(x+Math.cos(a)*rr,y+Math.sin(a)*rr,{vx:-Math.sin(a)*90,vy:Math.cos(a)*90,gravity:0,drag:.95,life:.5,size:2.4,sizeEnd:.1,color:colors[q%colors.length],twinkle:true,shape:q%2?'orb':'ring'}); }
+        break;
+      case 'plasma-bloom':
+        for(let q=0;q<18;q++){ const a=q/18*Math.PI*2, rr=7+Math.sin(q*1.7)*5; spawn(x+Math.cos(a)*rr,y+Math.sin(a)*rr,{vx:Math.cos(a)*90,vy:Math.sin(a)*90,gravity:-15,drag:.93,life:.4,size:2.6,sizeEnd:.06,color:colors[q%colors.length],twinkle:true,shape:q%3?'star':'orb'}); }
+        break;
+      case 'plasma-rift':
+        for(let q=0;q<10;q++){ const side=q%2?-1:1; spawn(x+tx*(q-4)*4,y+ty*(q-4)*4,{vx:tx*side*170+nnx*60,vy:ty*side*170+nny*60,gravity:20,drag:.9,life:.3,size:2.9,sizeEnd:.08,color:colors[q%colors.length],twinkle:true,shape:q%2?'shard':'cross',rotation:Math.atan2(ty,tx)}); }
+        break;
+      case 'plasma-crown':
+        for(let q=0;q<10;q++){ const a=-Math.PI*.92+(q/9)*Math.PI*.84, rr=15+q*.55; spawn(x+Math.cos(a)*rr,y+Math.sin(a)*rr,{vx:Math.cos(a)*55,vy:Math.sin(a)*55-45,gravity:25,drag:.93,life:.55,size:2.7,sizeEnd:.08,color:colors[q%colors.length],twinkle:true,shape:q%2?'triangle':'star'}); }
+        break;
+      case 'mythic-plasma':
+        for(let k=0;k<4;k++) spawn(x,y,{vx:0,vy:0,gravity:0,life:.46+k*.05,size:16+k*10,sizeEnd:.2,color:colors[k%colors.length],twinkle:true,shape:'ring'});
+        for(let q=0;q<32;q++){ const a=q/32*Math.PI*2, sp=180+Math.random()*280; spawn(x,y,{vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,gravity:35,drag:.9,life:.5+Math.random()*.22,size:3+Math.random()*2.4,sizeEnd:.06,color:colors[q%colors.length],twinkle:true,shape:q%5===0?'hex':q%2?'star':'shard',rotation:a}); }
+        break;
+    }
+
+    if(e.rarity==='legendary'){
+      const cc=colors;
+      const outer=24+base*12;
+      for(let k=0;k<8;k++){
+        const a=(k/8)*Math.PI*2 + performance.now()*.0009;
+        spawn(x+Math.cos(a)*outer,y+Math.sin(a)*outer,{
+          vx:-Math.sin(a)*(38+base*26),
+          vy: Math.cos(a)*(38+base*26),
+          gravity:0,drag:.96,life:.34+base*.08,size:2.6+base*1.2,sizeEnd:.08,
+          color:cc[k%cc.length]||'#fff',twinkle:true,shape:k%2?'star':'shard',rotation:a
+        });
+      }
+      spawn(x,y,{vx:0,vy:0,gravity:0,life:.30+base*.08,size:26+base*10,sizeEnd:.2,color:cc[0]||'#fff',twinkle:false,shape:'ring'});
+      spawn(x,y,{vx:0,vy:0,gravity:0,life:.20+base*.06,size:12+base*6,sizeEnd:.15,color:'#ffffff',twinkle:true,shape:'star'});
+    }
+
+    if(e.style!=='mythic-electric' && e.style!=='mythic-kinetic' && e.style!=='mythic-plasma') {
+      const sig=Math.max(0,Math.min(1,e.rarity==='legendary'||e.rarity==='mythic'?1:e.rarity==='epic'?.78:e.rarity==='rare'?.56:e.rarity==='uncommon'?.34:.18));
+      const accentShape=e.secondaryShape||(e.shape==='ring'?'spark':e.shape==='supernova'?'star':(e.shape||'spark'));
+      const accentCount=rCount(2+Math.round(sig*5));
+      const styleHash=Array.from(e.style||'hit').reduce((a,c)=>a+c.charCodeAt(0),0);
+      for(let q=0;q<accentCount;q++){
+        const a=(q/accentCount)*Math.PI*2 + (styleHash%19)*.03, rr=7+sig*10+(q%2)*4;
+        spawn(x+Math.cos(a)*rr,y+Math.sin(a)*rr,{vx:Math.cos(a)*rSpeed(55+sig*85),vy:Math.sin(a)*rSpeed(55+sig*85),gravity:e.style==='ember'||e.style==='plasma-shard'?95:25,drag:.9,life:.18+sig*.16,size:1.7+sig*1.6,sizeEnd:.08,color:colors[q%colors.length]||'#fff',twinkle:true,shape:accentShape});
+      }
+    }
+  },
+
   spawnFx(p, type, fromNetwork=false, extra={}){
     if(!p) return;
     // The host is the sole authority for gameplay FX. Clients predict the whole
@@ -6257,6 +6680,8 @@ const Game = {
     const cust = p.cust||{hue:200};
     const color = `hsl(${cust.hue||200},80%,60%)`;
     const effect=SphereBoxes.describe(p.cust?.dashEffect||'basic');
+    const hitEffectId=extra.hitEffectId||p.cust?.hitEffect||'impactSpark';
+    const hitEffect=SphereBoxes.hitEffects[hitEffectId]||SphereBoxes.hitEffects.impactSpark;
     const charge = extra.charge||0;
     const x = p.x, y = p.y;
     switch(type){
@@ -6376,6 +6801,7 @@ const Game = {
       case 'impact': {
         const impact=Math.max(0,Number(extra.impact)||0);
         this.particles.burst(x,y,'#ffffff',10,260,{gravity:360,life:.4,size:3.5,sizeEnd:.5});
+        this.emitHitEffect(x,y,impact,hitEffectId,Number(extra.nx)||0,Number(extra.ny)||0);
         if(impact>=900) this.triggerImpactFrame(30);
         break;
       }
@@ -6426,8 +6852,8 @@ const Game = {
       case 'turn': this.particles.burst(x-p.facing*10,y,color,5,110,{gravity:40,life:.2,size:2.5,sizeEnd:.2}); break;
     }
 
-    if(this.isHost && !fromNetwork){
-      NetworkManager.broadcast({t:'fx', fx:{type,x,y,ownerId:p.id,followOwner:(type==='dash'),facing:p.facing||1,hue:cust.hue??200,charge,effectId:p.cust?.dashEffect||'basic',perfectRelease:!!extra.perfectRelease,tier:Number(extra.tier)||0,apex:!!extra.apex,nx:Number(extra.nx)||0,ny:Number(extra.ny)||0,impactSpeed:Number(extra.impactSpeed)||0,impact:Number(extra.impact)||0}}, false);
+    if(this.isHost && !fromNetwork && type!=='impact'){
+      NetworkManager.broadcast({t:'fx', fx:{type,x,y,ownerId:p.id,followOwner:(type==='dash'),facing:p.facing||1,hue:cust.hue??200,charge,effectId:p.cust?.dashEffect||'basic',hitEffectId:p.cust?.hitEffect||'impactSpark',perfectRelease:!!extra.perfectRelease,tier:Number(extra.tier)||0,apex:!!extra.apex,nx:Number(extra.nx)||0,ny:Number(extra.ny)||0,impactSpeed:Number(extra.impactSpeed)||0,impact:Number(extra.impact)||0}}, false);
     }
   },
 
@@ -6441,7 +6867,7 @@ const Game = {
       }
     }
     const p={id:'network-fx',x,y,radius:26,facing:fx.facing||1,cust:{hue:fx.hue??200,dashEffect:fx.effectId||'basic'}};
-    this.spawnFx(p,fx.type,true,{charge:fx.charge||0,perfectRelease:!!fx.perfectRelease,tier:Number(fx.tier)||0,apex:!!fx.apex,nx:Number(fx.nx)||0,ny:Number(fx.ny)||0,impactSpeed:Number(fx.impactSpeed)||0,impact:Number(fx.impact)||0,sizeMode:fx.sizeMode||null});
+    this.spawnFx(p,fx.type,true,{charge:fx.charge||0,perfectRelease:!!fx.perfectRelease,tier:Number(fx.tier)||0,apex:!!fx.apex,nx:Number(fx.nx)||0,ny:Number(fx.ny)||0,impactSpeed:Number(fx.impactSpeed)||0,impact:Number(fx.impact)||0,sizeMode:fx.sizeMode||null,hitEffectId:fx.hitEffectId||'impactSpark'});
   },
 
   /* ---------- networking glue ---------- */
@@ -7075,9 +7501,11 @@ const Game = {
         if(!this.isHost && data.fx) this.spawnNetworkFx(data.fx);
         break;
       case 'hitfx':
-        if(!this.isHost) this.spawnNetworkFx({x:data.x,y:data.y,type:'impact',facing:1,hue:200,impact:Number(data.impact)||0});
-        if(Number(data.impact)>=900) this.triggerImpactFrame(26);
-        this.camera.addShake(5);
+        if(!this.isHost){
+          this.spawnHitEffectAt(Number(data.x)||0,Number(data.y)||0,Number(data.impact)||0,data.effectId||'impactSpark',Number(data.nx)||0,Number(data.ny)||0);
+          if(Number(data.impact)>=900) this.triggerImpactFrame(26);
+          this.camera.addShake(Math.min(8,2.5+Number(data.impact||0)*.008));
+        }
         break;
       case 'damage_pop':
         if(!this.isHost) this.spawnDamagePop(data.x,data.y,data.amount,false);
@@ -8361,7 +8789,7 @@ const Game = {
     const outer=Math.max(0,r-.15);
     const depth=Math.max(4.8,Math.min(11.5,r*.29));
     const innerBase=outer-.15;
-    const countMap={spikes:14,squares:8,ovals:10,diamonds:12,scallops:16,teeth:14,petals:10,stars:10,bubbles:24};
+    const countMap={spikes:14,squares:8,ovals:10,diamonds:12,scallops:16,teeth:14,petals:10,stars:10,bubbles:24,orbit:3,circuit:8,ribbon:12,rivet:12,broken:12,dotted:24,double:16,pixel:16};
     const count=countMap[id]||0;
 
     const pathWithRadial=(radialFn)=>{
@@ -8396,6 +8824,40 @@ const Game = {
       ctx.restore();
       return;
     }
+    if(id==='broken'){
+      ctx.save();
+      ctx.strokeStyle=secondary; ctx.lineWidth=Math.max(3.2,r*.075); ctx.lineCap='round';
+      for(let i=0;i<12;i++){
+        const a0=-Math.PI/2+i*(TAU/12)+.16, a1=a0+.31;
+        ctx.beginPath(); ctx.arc(0,0,outer-depth*.42,a0,a1); ctx.stroke();
+      }
+      ctx.strokeStyle=secondaryHi; ctx.globalAlpha=.24; ctx.lineWidth=Math.max(1,r*.022);
+      for(let i=0;i<12;i+=2){ const a=-Math.PI/2+i*(TAU/12); ctx.beginPath();ctx.arc(0,0,outer-.45,a+.08,a+.22);ctx.stroke(); }
+      ctx.restore(); return;
+    }
+    if(id==='dotted'){
+      ctx.save();
+      for(let i=0;i<24;i++){ const a=-Math.PI/2+i*(TAU/24), rr=outer-depth*.5; ctx.fillStyle=secondary; ctx.beginPath();ctx.arc(Math.cos(a)*rr,Math.sin(a)*rr,Math.max(1.8,r*.055),0,TAU);ctx.fill(); }
+      ctx.restore(); return;
+    }
+    if(id==='double'){
+      ctx.save(); ctx.strokeStyle=secondary; ctx.lineWidth=Math.max(3.4,r*.072);
+      ctx.beginPath();ctx.arc(0,0,outer-depth*.24,0,TAU);ctx.stroke();
+      ctx.lineWidth=Math.max(2.2,r*.05); ctx.globalAlpha=.68;
+      ctx.beginPath();ctx.arc(0,0,outer-depth*.78,0,TAU);ctx.stroke();
+      ctx.strokeStyle=secondaryHi;ctx.globalAlpha=.25;ctx.lineWidth=Math.max(1,r*.02);
+      ctx.beginPath();ctx.arc(0,0,outer-.45,0,TAU);ctx.stroke();
+      ctx.restore(); return;
+    }
+    if(id==='pixel'){
+      const n=16;
+      ctx.save(); ctx.strokeStyle=secondary;ctx.lineWidth=Math.max(4,r*.08);ctx.lineJoin='miter';
+      ctx.beginPath();
+      for(let i=0;i<n;i++){ const a=-Math.PI/2+i*TAU/n; const rr=outer-depth*.42; const px=Math.round(Math.cos(a)*rr*2)/2,py=Math.round(Math.sin(a)*rr*2)/2; i?ctx.lineTo(px,py):ctx.moveTo(px,py); }
+      ctx.closePath();ctx.stroke();
+      ctx.strokeStyle=secondaryHi;ctx.globalAlpha=.22;ctx.lineWidth=Math.max(1,r*.02);ctx.stroke();
+      ctx.restore(); return;
+    }
 
     if(id==='bubbles'){
       /* Organic bubble outline: deliberately uneven bubble sizes/spacing so it
@@ -8426,6 +8888,70 @@ const Game = {
       ctx.beginPath(); bubbleOuter.forEach(([x,y],i)=>i===0?ctx.moveTo(x,y):ctx.lineTo(x,y)); ctx.closePath(); ctx.stroke();
       ctx.restore();
       return;
+    }
+
+    if(id==='orbit'){
+      ctx.save();
+      const orbitColors=[secondary,secondaryHi];
+      for(let k=0;k<3;k++){
+        const rad=outer-depth*(.24+k*.24);
+        ctx.strokeStyle=orbitColors[k%2];
+        ctx.globalAlpha=.78-.12*k;
+        ctx.lineWidth=Math.max(2.1,r*.045);
+        const start=-Math.PI/2+k*1.7;
+        ctx.beginPath(); ctx.arc(0,0,rad,start,start+4.55); ctx.stroke();
+        const nodeA=start+2.15;
+        ctx.fillStyle=orbitColors[k%2];
+        ctx.beginPath(); ctx.arc(Math.cos(nodeA)*rad,Math.sin(nodeA)*rad,Math.max(2.1,r*.052),0,TAU); ctx.fill();
+      }
+      ctx.restore(); return;
+    }
+    if(id==='circuit'){
+      ctx.save();
+      const n=8; const rad=outer-depth*.30;
+      ctx.strokeStyle=secondary; ctx.fillStyle=secondaryHi; ctx.lineWidth=Math.max(2.5,r*.05); ctx.lineCap='square'; ctx.lineJoin='miter';
+      for(let i=0;i<n;i++){
+        const a=-Math.PI/2+i*TAU/n, ca=Math.cos(a), sa=Math.sin(a);
+        const tx=ca*rad, ty=sa*rad;
+        const tangX=-sa, tangY=ca;
+        ctx.beginPath(); ctx.moveTo(ca*(rad-depth*.36),sa*(rad-depth*.36)); ctx.lineTo(ca*(rad-depth*.10),sa*(rad-depth*.10));
+        ctx.lineTo(ca*(rad-depth*.10)+tangX*depth*.34,sa*(rad-depth*.10)+tangY*depth*.34);
+        ctx.stroke();
+        ctx.fillRect(tx-2.4,ty-2.4,4.8,4.8);
+      }
+      ctx.globalAlpha=.24; ctx.lineWidth=Math.max(1,r*.02); ctx.beginPath(); ctx.arc(0,0,rad-depth*.50,0,TAU); ctx.stroke();
+      ctx.restore(); return;
+    }
+    if(id==='ribbon'){
+      ctx.save();
+      ctx.strokeStyle=secondary; ctx.lineWidth=Math.max(3.2,r*.062); ctx.lineCap='round';
+      for(let layer=0;layer<2;layer++){
+        ctx.globalAlpha=layer?0.42:0.9;
+        ctx.beginPath();
+        const steps=144;
+        for(let i=0;i<=steps;i++){
+          const a=-Math.PI/2+TAU*i/steps;
+          const wave=Math.sin(a*6+layer*Math.PI)*depth*.18;
+          const rr=outer-depth*(.28+layer*.22)+wave;
+          const x=Math.cos(a)*rr, y=Math.sin(a)*rr;
+          i?ctx.lineTo(x,y):ctx.moveTo(x,y);
+        }
+        ctx.stroke();
+      }
+      ctx.strokeStyle=secondaryHi; ctx.globalAlpha=.22; ctx.lineWidth=Math.max(1,r*.018); ctx.beginPath(); ctx.arc(0,0,outer-.5,0,TAU); ctx.stroke();
+      ctx.restore(); return;
+    }
+    if(id==='rivet'){
+      ctx.save();
+      const n=12, rad=outer-depth*.32;
+      ctx.strokeStyle=secondary; ctx.globalAlpha=.56; ctx.lineWidth=Math.max(1.6,r*.03);
+      ctx.beginPath(); ctx.arc(0,0,rad-depth*.34,0,TAU); ctx.stroke();
+      for(let i=0;i<n;i++){
+        const a=-Math.PI/2+i*TAU/n, x=Math.cos(a)*rad, y=Math.sin(a)*rad;
+        ctx.globalAlpha=.95; ctx.fillStyle=secondary; ctx.beginPath(); ctx.arc(x,y,Math.max(3,r*.075),0,TAU); ctx.fill();
+        ctx.fillStyle=secondaryHi; ctx.globalAlpha=.55; ctx.beginPath(); ctx.arc(x-r*.018,y-r*.018,Math.max(1,r*.026),0,TAU); ctx.fill();
+      }
+      ctx.restore(); return;
     }
 
     const innerPath=pathWithRadial((a)=>{
@@ -8539,6 +9065,7 @@ const UI = {
     if(name!=='results') this._roundResultDomForced=false;
     stopCustomizePreviewLoop();
     stopCustomizeEffectShower();
+    stopCustomizeHitPreview();
     document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
     const el = document.getElementById('screen-'+name);
     if(el) el.classList.add('active');
@@ -9020,7 +9547,7 @@ const Lobby = {
       this.index=index; this.code=String(index);
       Game.isHost=true; NetworkManager.isHost=true; Game.myId=id; Game.chatMuted=false; Game.mutedPlayers=new Set(); Chat.syncMuteUI(); Game.lobbyHostName=Game.myName;
       document.getElementById('btnLeaveLobby').textContent='CLOSE LOBBY';
-      const cust=Storage.get('customization',{hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',dashEffect:'basic',trailEffect:'none'});
+      const cust=Storage.get('customization',{hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',dashEffect:'basic',trailEffect:'none',hitEffect:'impactSpark'});
       const hostPlayer=new Player(id,Game.myName,cust,{x:0,y:0});
       hostPlayer.clientIdentity=getClientIdentity();
       Game.players={}; Game.players[id]=hostPlayer; this.ready={}; this.ready[id]=true; hostPlayer.team=null; if(Game.matchSettings.teams)this.assignInitialTeams();
@@ -9112,7 +9639,7 @@ const Lobby = {
     const status=document.getElementById('joinBrowserStatus'); status.textContent=`Connecting to ${info.title||'lobby'}...`;
     NetworkManager.joinHost(info.index).then(()=>{
       Game.isHost=false; NetworkManager.isHost=false; Game.myId=NetworkManager.myId;
-      const cust=Storage.get('customization',{hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',dashEffect:'basic',trailEffect:'none'});
+      const cust=Storage.get('customization',{hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',dashEffect:'basic',trailEffect:'none',hitEffect:'impactSpark'});
       NetworkManager.sendToHost({t:'join_request',name:Game.myName,cust,clientIdentity:getClientIdentity(),password:String(password||'')},true);
     }).catch(err=>{status.textContent='Unable to connect to that lobby. Refresh the list and try again.';});
   },
@@ -10312,7 +10839,7 @@ const FACE_OPTIONS={
   ],
   outline:[
     ['none','None'],['circle','Ring'],['spikes','Spikes'],['squares','Squares'],['ovals','Ovals'],
-    ['diamonds','Diamonds'],['scallops','Scallops'],['teeth','Straight Teeth'],['petals','Petals'],['stars','Stars'],['bubbles','Bubbles']
+    ['diamonds','Diamonds'],['scallops','Scallops'],['teeth','Straight Teeth'],['petals','Petals'],['stars','Stars'],['bubbles','Bubbles'],['orbit','Orbitals'],['circuit','Circuit'],['ribbon','Ribbon'],['rivet','Riveted'],['broken','Broken'],['dotted','Dotted'],['double','Double Ring'],['pixel','Pixel']
   ]
 };
 const FACE_DEFAULTS={eyes:'classic',mouth:'smile',brows:'none',outline:'none'};
@@ -10464,6 +10991,7 @@ function drawCustPreview(){
   startCustomizePreviewLoop();
   startCustomizeEffectShower();
   startCustomizeTrailPreview();
+  startCustomizeHitPreview();
 }
 function updateCustomizePreview(now=performance.now()){
   custPreviewRAF=0;
@@ -10496,18 +11024,21 @@ function populateDashEffectSelect(selected){
   });
   if([...sel.options].some(o=>o.value===selected)) sel.value=selected; else if(sel.options.length) sel.value=sel.options[0].value;
 }
-function effectPreviewHtml(e){
-  const cls=e.shape==='star'?'star':e.shape==='diamond'?'diamond':e.shape==='hex'?'hex':e.shape==='plus'?'plus':e.shape==='spark'?'spark':e.shape==='orb'?'core':(e.shape==='comet'?'orb':'core');
+function effectPreviewHtml(e,isHit=false){
+  const cls=e.shape==='star'?'star':e.shape==='diamond'?'diamond':e.shape==='hex'?'hex':e.shape==='plus'?'plus':e.shape==='cross'?'plus':e.shape==='triangle'?'triangle':e.shape==='spark'?'spark':e.shape==='orb'?'core':(e.shape==='comet'||e.shape==='ring'?'orb':'core');
   const colors=SphereBoxes.colors(e);
+  const rarityClass=e.rarity==='legendary'?' rarity-legendary-preview':e.rarity==='mythic'?' rarity-mythic-preview':'';
   const extra=e.aura?'<div class="aura"></div>':'';
   let orbs='';
   if(e.shape==='orb'||e.shape==='comet'||e.rarity==='mythic'||e.rarity==='legendary'){
     for(let i=0;i<3;i++) orbs+=`<div class="orb o${i+1}" style="--orb-color:${colors[i%colors.length]}"></div>`;
   }
-  const ring=(e.aura||e.shape==='supernova'||e.shape==='shard'||e.shape==='hex')?'<div class="ring"></div>':'';
+  const ring=(e.aura||e.shape==='supernova'||e.shape==='shard'||e.shape==='hex'||e.shape==='ring')?'<div class="ring"></div>':'';
   const multi=colors.length>1?' multicolor':'';
   const gradient=colors.length>1?`linear-gradient(90deg,${colors.join(',')})`:colors[0];
-  return `<div class="dash-effect-preview${multi}" style="--fx-color:${colors[0]};--fx-gradient:${gradient}">${extra}${ring}<div class="${cls}" style="${colors.length>1?'background:var(--fx-gradient);':''}"></div>${orbs}</div>`;
+  const hitClass=isHit?' hit-effect-preview':'';
+  const legendaryLayers=isHit&&e.rarity==='legendary'?'<span class="hit-legendary-ray"></span><span class="hit-legendary-core-ring"></span>':'';
+  return `<div class="dash-effect-preview${multi}${hitClass}${rarityClass}" style="--fx-color:${colors[0]};--fx-gradient:${gradient}">${extra}${legendaryLayers}${ring}<div class="${cls}" style="${colors.length>1?'background:var(--fx-gradient);':''}"></div>${orbs}</div>`;
 }
 
 let custShowerRAF=0;
@@ -10646,7 +11177,7 @@ function updateCustomizeEffectShower(now=performance.now()){
 
   ctx.clearRect(0,0,W,H);
   ctx.fillStyle='#080604'; ctx.fillRect(0,0,W,H);
-  if(t<explosionTime){ drawCustomizeChargeRing(ctx,W*.5,H*.58,42,chargeNorm,getCustomizeEffectPreviewState().effect,1); }
+  if(t<explosionTime){ drawCustomizeChargeRing(ctx,W*.5,H*.50,42,chargeNorm,getCustomizeEffectPreviewState().effect,1); }
   custShowerParticleSystem.render(ctx,{x:0,y:0,zoom:1});
   ctx.globalAlpha=1;
   custShowerRAF=requestAnimationFrame(updateCustomizeEffectShower);
@@ -10659,8 +11190,110 @@ function startCustomizeEffectShower(){
   custShowerRunning=true;
   custShowerRAF=requestAnimationFrame(updateCustomizeEffectShower);
 }
+let custHitRAF=0;
+let custHitParticleSystem=null;
+let custHitLastTime=0;
+let custHitCycleStart=0;
+function initCustomizeHitPreview(){
+  if(!custHitParticleSystem) custHitParticleSystem=new ParticleSystem();
+  custHitParticleSystem.maxParticles=900;
+  custHitLastTime=performance.now();
+  custHitCycleStart=custHitLastTime;
+}
+function resetCustomizeHitPreview(now=performance.now()){
+  if(!custHitParticleSystem) initCustomizeHitPreview();
+  custHitParticleSystem.active.length=0;
+  custHitParticleSystem.pool.length=0;
+  custHitLastTime=now;
+  custHitCycleStart=now;
+}
+function startCustomizeHitPreview(){
+  if(custHitRAF) return;
+  initCustomizeHitPreview();
+  resetCustomizeHitPreview(performance.now());
+  custHitRAF=requestAnimationFrame(updateCustomizeHitPreview);
+}
+function updateCustomizeHitPreview(now=performance.now()){
+  const canvas=document.getElementById('custHitShower');
+  if(!canvas||!document.getElementById('screen-customize')?.classList.contains('active')){ custHitRAF=0; return; }
+  if(!custHitParticleSystem) initCustomizeHitPreview();
+  const ctx=canvas.getContext('2d'), W=canvas.width, H=canvas.height;
+  const dt=custHitLastTime?Math.min(.05,Math.max(0,(now-custHitLastTime)/1000)):0;
+  custHitLastTime=now;
+  if(!custHitCycleStart) custHitCycleStart=now;
+  const elapsed=(now-custHitCycleStart)/1000;
+  const cycle=2.15, t=elapsed%cycle;
+  const id=document.getElementById('custHitEffect')?.value||SphereBoxes.equippedHit()||'impactSpark';
+  const e=SphereBoxes.hitEffects[id]||SphereBoxes.hitEffects.impactSpark;
+  const cx=W*.50, cy=H*.50;
+  if(t<.04){
+    custHitParticleSystem.active.length=0;
+    custHitParticleSystem.pool.length=0;
+    withPreviewParticles(()=>{
+      Game.spawnHitEffectAt.call({particles:custHitParticleSystem},cx,cy,980,id,1.15,0);
+      // A second slightly offset pulse makes the shape much easier to read in a static glance.
+      Game.spawnHitEffectAt.call({particles:custHitParticleSystem},cx+18,cy-4,700,id,.72,0);
+    });
+  }
+  custHitParticleSystem.update(dt);
+  ctx.clearRect(0,0,W,H);
+  ctx.fillStyle='#080604'; ctx.fillRect(0,0,W,H);
+  const colors=SphereBoxes.colors(e);
+  const base=colors[0]||'#fff', accent=colors[1]||base, accent2=colors[2]||accent;
+
+  // Clear impact target: a large centered player silhouette plus a visible direction marker.
+  ctx.save();
+  ctx.globalAlpha=.98; ctx.fillStyle='#0d0906'; ctx.shadowColor=base; ctx.shadowBlur=18;
+  ctx.beginPath(); ctx.arc(cx,cy,34,0,Math.PI*2); ctx.fill();
+  ctx.shadowBlur=0; ctx.strokeStyle=accent; ctx.lineWidth=2.5; ctx.stroke();
+  ctx.strokeStyle=accent2; ctx.globalAlpha=.62; ctx.lineWidth=1.2; ctx.beginPath(); ctx.arc(cx,cy,42,0,Math.PI*2); ctx.stroke();
+  ctx.restore();
+
+  // Timed rings make the impact pulse readable even when the chosen effect is particle-heavy.
+  const pulse=Math.min(1,t/.12);
+  if(t<.7){
+    ctx.save(); ctx.globalAlpha=Math.max(0,1-t/.7)*.8;
+    ctx.strokeStyle=accent; ctx.lineWidth=2.4; ctx.shadowColor=accent; ctx.shadowBlur=14;
+    ctx.beginPath(); ctx.arc(cx,cy,48+pulse*62,0,Math.PI*2); ctx.stroke();
+    ctx.restore();
+  }
+
+  custHitParticleSystem.render(ctx,{x:0,y:0,zoom:1});
+  custHitRAF=requestAnimationFrame(updateCustomizeHitPreview);
+}
+function stopCustomizeHitPreview(){
+  if(custHitRAF){cancelAnimationFrame(custHitRAF);custHitRAF=0;}
+  if(custHitParticleSystem){custHitParticleSystem.active.length=0;custHitParticleSystem.pool.length=0;}
+}
+
 let custTrailRAF=0;
-function updateCustomizeTrailPreview(now=performance.now()){const canvas=document.getElementById('custTrailShower');if(!canvas||!document.getElementById('screen-customize')?.classList.contains('active')){custTrailRAF=0;return;}const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;ctx.clearRect(0,0,W,H);ctx.fillStyle='#080604';ctx.fillRect(0,0,W,H);const id=document.getElementById('custTrailEffect')?.value||'none',e=SphereBoxes.trailEffects[id];if(!e){ctx.fillStyle='#a4907a';ctx.font='12px Segoe UI';ctx.textAlign='center';ctx.fillText('NO TRAIL EQUIPPED',W/2,H/2);custTrailRAF=requestAnimationFrame(updateCustomizeTrailPreview);return;}const phase=(now*.00032)%1,cx=42+phase*(W-84),cy=H*.56,pts=[];for(let i=7;i>=0;i--)pts.push({x:cx-i*18,y:cy+Math.sin(now*.003-i*.75)*4});drawTrailEffect(ctx,{trail:pts,radius:32,vx:100,vy:0},e,1);ctx.fillStyle='#0d0906';ctx.strokeStyle='#f0e6da';ctx.shadowColor=SphereBoxes.primaryColor(e);ctx.shadowBlur=e.glow||7;ctx.beginPath();ctx.arc(cx,cy,26,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#f0e6da';ctx.font='900 10px Segoe UI';ctx.textAlign='center';ctx.fillText(e.name.toUpperCase(),W/2,18);custTrailRAF=requestAnimationFrame(updateCustomizeTrailPreview);}
+function updateCustomizeTrailPreview(now=performance.now()){
+  const canvas=document.getElementById('custTrailShower');
+  if(!canvas||!document.getElementById('screen-customize')?.classList.contains('active')){custTrailRAF=0;return;}
+  const ctx=canvas.getContext('2d'),W=canvas.width,H=canvas.height;
+  ctx.clearRect(0,0,W,H);ctx.fillStyle='#080604';ctx.fillRect(0,0,W,H);
+  const id=document.getElementById('custTrailEffect')?.value||'none',e=SphereBoxes.trailEffects[id];
+  if(!e){ctx.fillStyle='#a4907a';ctx.font='12px Segoe UI';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('NO TRAIL EQUIPPED',W/2,H/2);custTrailRAF=requestAnimationFrame(updateCustomizeTrailPreview);return;}
+  const phase=(now*.00032)%1;
+  const cx=W*(.86+.025*Math.sin(now*.0013)), cy=H*.58;
+  const pts=[];
+  // Use nearly the entire wide canvas so the trail reads as a real in-game streak instead of a squeezed icon.
+  const trailLen=34;
+  const spacing=Math.max(8,W/26);
+  for(let i=trailLen;i>=0;i--){
+    const x=Math.max(8,cx-i*spacing);
+    const y=cy+Math.sin(now*.003-i*.42+phase*6.28)*4.2;
+    pts.push({x,y});
+  }
+  drawTrailEffect(ctx,{trail:pts,radius:34,vx:120,vy:0},e,1);
+  ctx.save();
+  ctx.fillStyle='#0d0906';ctx.strokeStyle='#f0e6da';ctx.shadowColor=SphereBoxes.primaryColor(e);ctx.shadowBlur=e.glow||7;
+  ctx.beginPath();ctx.arc(cx,cy,26,0,Math.PI*2);ctx.fill();
+  ctx.shadowBlur=0;ctx.lineWidth=2;ctx.stroke();ctx.restore();
+  ctx.fillStyle='#f0e6da';ctx.font='900 12px Segoe UI';ctx.textAlign='center';ctx.textBaseline='top';ctx.shadowColor='#000';ctx.shadowBlur=4;
+  ctx.fillText(e.name.toUpperCase(),W/2,8);ctx.shadowBlur=0;
+  custTrailRAF=requestAnimationFrame(updateCustomizeTrailPreview);
+}
 function startCustomizeTrailPreview(){if(custTrailRAF)return;custTrailRAF=requestAnimationFrame(updateCustomizeTrailPreview);}
 function resetCustomizeTrailPreview(){if(custTrailRAF){cancelAnimationFrame(custTrailRAF);custTrailRAF=0;}startCustomizeTrailPreview();}
 function stopCustomizeEffectShower(){
@@ -10669,9 +11302,9 @@ function stopCustomizeEffectShower(){
   if(custShowerParticleSystem){custShowerParticleSystem.active.length=0;custShowerParticleSystem.pool.length=0;}
 }
 
-function renderEffectCard(id,e,owned,click,isTrail=false){
-  const item=document.createElement('div'); item.className='dash-effect-card';
-  const preview=isTrail?trailEffectPreviewHtml(Object.assign({id},e)):effectPreviewHtml(e);
+function renderEffectCard(id,e,owned,click,isTrail=false,isHit=false){
+  const item=document.createElement('div'); item.className=`dash-effect-card${isHit?' hit-effect-card':''}`;
+  const preview=isTrail?trailEffectPreviewHtml(Object.assign({id},e)):effectPreviewHtml(e,isHit);
   item.innerHTML=preview+`<div class="${SphereBoxes.rarityColor(e.rarity)}" style="font-weight:900;font-size:11px;margin-top:6px;">${e.name}</div><div style="font-size:9px;letter-spacing:1px;color:var(--text-dim);">${e.rarity.toUpperCase()} · ${owned?'OWNED':'LOCKED'}</div>`;
   if(click)item.addEventListener('click',click);return item;
 }
@@ -10922,7 +11555,7 @@ function finishSphereOpen(boxKey,id,amount,wasRare){
   if(overlay) overlay.classList.add('hidden');
   if(result){
     result.classList.remove('hidden','reveal-common','reveal-uncommon','reveal-rare');
-    result.innerHTML=`<div style="font-size:11px;letter-spacing:2px;color:var(--text-dim);">YOU UNBOXED</div>${b.kind==='trail'?trailEffectPreviewHtml(Object.assign({id},e)):effectPreviewHtml(e)}<div class="${SphereBoxes.rarityColor(e.rarity)} ${wasRare?'spherebox-rare-title':''}" style="font-size:26px;font-weight:900;margin:10px 0 4px;">${e.name}</div><div style="font-size:11px;letter-spacing:2px;">${e.rarity.toUpperCase()}</div><div style="margin-top:8px;font-size:11px;color:var(--text-dim);">Owned: ${amount}</div>`;
+    result.innerHTML=`<div style="font-size:11px;letter-spacing:2px;color:var(--text-dim);">YOU UNBOXED</div>${b.kind==='trail'?trailEffectPreviewHtml(Object.assign({id},e)):effectPreviewHtml(e,b.kind==='hit')}<div class="${SphereBoxes.rarityColor(e.rarity)} ${wasRare?'spherebox-rare-title':''}" style="font-size:26px;font-weight:900;margin:10px 0 4px;">${e.name}</div><div style="font-size:11px;letter-spacing:2px;">${e.rarity.toUpperCase()}</div><div style="margin-top:8px;font-size:11px;color:var(--text-dim);">Owned: ${amount}</div>`;
     if(b.kind==='trail')drawTrailPreviewCanvas(result.querySelector('canvas'),Object.assign({id},e));
     if(e.rarity==='common'||e.rarity==='uncommon'||e.rarity==='rare'){
       void result.offsetWidth;
@@ -10952,7 +11585,7 @@ function openSphereBox(boxKey){
   // the same position in the reel. The marker still centers the selected card.
   const targetIndex=42+Math.floor(Math.random()*9);
   const seq=makeReelCards(boxKey,id,targetIndex);
-  seq.forEach(cid=>{ const ce=SphereBoxes.describe(cid); const card=document.createElement('div'); card.className='spherebox-reel-card'; card.innerHTML=sphereRollIconHtml(ce)+`<div style="font-size:9px;">${ce.name}</div><div class="${SphereBoxes.rarityColor(ce.rarity)}" style="font-size:8px;">${ce.rarity.toUpperCase()}</div>`; strip.appendChild(card); });
+  seq.forEach(cid=>{ const ce=SphereBoxes.describe(cid); const card=document.createElement('div'); card.className='spherebox-reel-card'; card.innerHTML=sphereRollIconHtml(Object.assign({id:cid},ce))+`<div style="font-size:9px;">${ce.name}</div><div class="${SphereBoxes.rarityColor(ce.rarity)}" style="font-size:8px;">${ce.rarity.toUpperCase()}</div>`; strip.appendChild(card); });
   const finish=()=>{ if(done) return; done=true; if(timer) clearTimeout(timer); skip.disabled=true; SphereBoxes.opening=false; const amount=SphereBoxes.addEffect(id); const rare=['rare','epic','legendary','mythic'].includes(e.rarity); if(rare) AudioManager.rareDrop(e.rarity); finishSphereOpen(boxKey,id,amount,rare); };
   const doSpin=()=>{
     const win=overlay.querySelector('.spherebox-reel-window');
@@ -10997,7 +11630,9 @@ function sphereRollIconHtml(e){
   const shape=(e.shape||'orb'), style=(e.style||'');
   const rarityScale=trailRarityScale(e);
   const isTrail=!!SphereBoxes.trailEffects[e?.id];
-  const cls=`spherebox-roll-icon shape-${shape} style-${style}${colors.length>=6?' palette-rich':''}${isTrail?' trail-card-icon':''}`;
+  const isHit=!!SphereBoxes.hitEffects[e?.id];
+  const secondary=e.secondaryShape||'';
+  const cls=`spherebox-roll-icon shape-${shape} style-${style}${colors.length>=6?' palette-rich':''}${isTrail?' trail-card-icon':''}${isHit?' hit-card-icon':''}${secondary?' secondary-'+secondary:''}`;
   return `<div class="${cls}" style="${vars};--trail-scale:${rarityScale}" aria-hidden="true"></div>`;
 }
 function showSphereDrops(boxKey){
@@ -11006,19 +11641,20 @@ function showSphereDrops(boxKey){
   if(!overlay||!grid) return;
   title.textContent=box.name+' — POSSIBLE DROPS'; grid.innerHTML='';
   box.pool.forEach(id=>{ const e=SphereBoxes.describe(id); const row=document.createElement('div'); row.className='spherebox-drop-row';
-    row.innerHTML=sphereRollIconHtml(e)+`<div style="flex:1;font-weight:900;">${e.name}<div class="${SphereBoxes.rarityColor(e.rarity)}" style="font-size:10px;letter-spacing:1px;margin-top:2px;">${e.rarity.toUpperCase()}</div></div>`; grid.appendChild(row); });
+    row.innerHTML=sphereRollIconHtml(Object.assign({id},e))+`<div style="flex:1;font-weight:900;">${e.name}<div class="${SphereBoxes.rarityColor(e.rarity)}" style="font-size:10px;letter-spacing:1px;margin-top:2px;">${e.rarity.toUpperCase()}</div></div>`; grid.appendChild(row); });
   overlay.classList.remove('hidden');
 }
 
 function showSphereCategoryHome(){document.getElementById('sphereboxHome')?.classList.remove('hidden');document.getElementById('sphereboxCategoryView')?.classList.add('hidden');}
-function showSphereCategory(kind){document.getElementById('sphereboxHome')?.classList.add('hidden');document.getElementById('sphereboxCategoryView')?.classList.remove('hidden');const trail=kind==='trail';const result=document.getElementById('sphereboxResult');if(result){result.classList.add('hidden');result.innerHTML='';}document.getElementById('sphereboxCategoryTitle').textContent=trail?'TRAILS':'DASH EFFECTS';document.getElementById('sphereboxCategoryHint').textContent=trail?'Open boxes to unlock trails that follow your player.':'Open boxes to unlock dash charge effects. Click an owned effect to equip it.';document.getElementById('sphereboxInventoryTitle').textContent=trail?'YOUR TRAILS':'YOUR EFFECTS';renderSpherebox(kind);}
+function showSphereCategory(kind){document.getElementById('sphereboxHome')?.classList.add('hidden');document.getElementById('sphereboxCategoryView')?.classList.remove('hidden');const trail=kind==='trail',hit=kind==='hit';const result=document.getElementById('sphereboxResult');if(result){result.classList.add('hidden');result.innerHTML='';}document.getElementById('sphereboxCategoryTitle').textContent=trail?'TRAILS':hit?'HIT EFFECTS':'DASH EFFECTS';document.getElementById('sphereboxCategoryHint').textContent=trail?'Open boxes to unlock trails that follow your player.':hit?'Open boxes to unlock effects that play when you are hit.':'Open boxes to unlock dash charge effects. Click an owned effect to equip it.';document.getElementById('sphereboxInventoryTitle').textContent=trail?'YOUR TRAILS':hit?'YOUR HIT EFFECTS':'YOUR EFFECTS';renderSpherebox(kind);}
 function renderSpherebox(kind='dash'){
   const cards=document.getElementById('sphereboxCards'),invBox=document.getElementById('sphereboxInventory'),count=document.getElementById('sphereboxCounts');if(!cards||!invBox)return;cards.innerHTML='';
-  Object.entries(SphereBoxes.boxes).filter(([,b])=>(b.kind||'dash')===kind).forEach(([key,b])=>{const card=document.createElement('div');card.className='spherebox-card';card.innerHTML=`<div class="spherebox-visual ${key==='rainbow'?'rainbow-box-visual':''}">${b.symbol}</div><h3>${b.name}</h3>`;const actions=document.createElement('div');actions.className='spherebox-actions';actions.style.gap='7px';const btn=document.createElement('button');btn.className='btn primary sphere-open-btn';btn.textContent='OPEN BOX';btn.disabled=SphereBoxes.opening;btn.addEventListener('click',()=>openSphereBox(key));actions.appendChild(btn);const view=document.createElement('button');view.className='btn drop-view-btn';view.textContent='VIEW DROPS';view.disabled=SphereBoxes.opening;view.addEventListener('click',()=>showSphereDrops(key));actions.appendChild(view);card.appendChild(actions);cards.appendChild(card);});
+  Object.entries(SphereBoxes.boxes).filter(([,b])=>(b.kind||'dash')===kind && !b.legacy).forEach(([key,b])=>{const card=document.createElement('div');card.className='spherebox-card';card.innerHTML=`<div class="spherebox-visual ${key==='rainbow'?'rainbow-box-visual':''}">${b.symbol}</div><h3>${b.name}</h3>`;const actions=document.createElement('div');actions.className='spherebox-actions';actions.style.gap='7px';const btn=document.createElement('button');btn.className='btn primary sphere-open-btn';btn.textContent='OPEN BOX';btn.disabled=SphereBoxes.opening;btn.addEventListener('click',()=>openSphereBox(key));actions.appendChild(btn);const view=document.createElement('button');view.className='btn drop-view-btn';view.textContent='VIEW DROPS';view.disabled=SphereBoxes.opening;view.addEventListener('click',()=>showSphereDrops(key));actions.appendChild(view);card.appendChild(actions);cards.appendChild(card);});
   invBox.innerHTML='';let total=0;const inv=SphereBoxes.getInventory();
   if(kind==='trail'){Object.entries(inv).forEach(([id,n])=>{const e=SphereBoxes.trailEffects[id];if(!e)return;total+=n;const item=renderEffectCard(id,e,true,()=>{SphereBoxes.equipTrail(id);populateTrailEffectSelect(id);renderSpherebox('trail');},true);item.title='Click to equip this trail';invBox.appendChild(item);});}
+  else if(kind==='hit'){Object.entries(inv).forEach(([id,n])=>{const e=SphereBoxes.hitEffects[id];if(!e)return;total+=n;const item=renderEffectCard(id,e,true,()=>{SphereBoxes.equipHit(id);populateHitEffectSelect(id);renderSpherebox('hit');},false,true);item.title='Click to equip this hit effect';invBox.appendChild(item);});}
   else {Object.entries(inv).forEach(([id,n])=>{const e=SphereBoxes.effects[id];if(!e)return;total+=n;const item=renderEffectCard(id,e,true,()=>{SphereBoxes.equip(id);populateDashEffectSelect(id);renderSpherebox('dash');});item.title='Click to equip this dash effect';invBox.appendChild(item);});}
-  count.textContent=`${total} ${kind==='trail'?'trail':'effect'}${total===1?'':'s'} owned`;}
+  const label=kind==='trail'?'trail':kind==='hit'?'hit effect':'effect'; count.textContent=`${total} ${label}${total===1?'':'s'} owned`;}
 
 
 window.addEventListener('DOMContentLoaded', ()=>{
@@ -11030,6 +11666,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.addEventListener('pointerdown', ()=>{ AudioManager.init(); AudioManager.resume(); AudioManager.startMusic(); }, {passive:true});
   document.getElementById('btnSphereDash')?.addEventListener('click',()=>showSphereCategory('dash'));
   document.getElementById('btnSphereTrails')?.addEventListener('click',()=>showSphereCategory('trail'));
+  document.getElementById('btnSphereHits')?.addEventListener('click',()=>showSphereCategory('hit'));
   document.getElementById('btnSphereBack')?.addEventListener('click',()=>{ AudioManager.click(); document.getElementById('sphereboxOddsPanel')?.classList.remove('open'); UI.goto('main'); });
   document.querySelectorAll('[data-sphere-quick]').forEach(btn=>btn.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();AudioManager.click();UI.goto('spherebox');showSphereCategory(btn.getAttribute('data-sphere-quick'));}));
   document.querySelector('.spherebox-main-button')?.addEventListener('click',()=>{AudioManager.click();UI.goto('spherebox');showSphereCategoryHome();});
@@ -11317,7 +11954,8 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('custDashEffect').addEventListener('change', ()=>{
     const c=Storage.get('customization',{dashEffect:'basic',trailEffect:'none'}); c.dashEffect=document.getElementById('custDashEffect').value||'basic'; Storage.set('customization',c); drawCustPreview();
   });
-  document.getElementById('custTrailEffect')?.addEventListener('change', ()=>{ const c=Storage.get('customization',{dashEffect:'basic',trailEffect:'none'}); c.trailEffect=document.getElementById('custTrailEffect').value||'none'; Storage.set('customization',c); resetCustomizeTrailPreview(); });
+  document.getElementById('custTrailEffect')?.addEventListener('change', ()=>{ const c=Storage.get('customization',{dashEffect:'basic',trailEffect:'none',hitEffect:'impactSpark'}); c.trailEffect=document.getElementById('custTrailEffect').value||'none'; Storage.set('customization',c); resetCustomizeTrailPreview(); });
+  document.getElementById('custHitEffect')?.addEventListener('change', ()=>{ const c=Storage.get('customization',{dashEffect:'basic',trailEffect:'none',hitEffect:'impactSpark'}); c.hitEffect=document.getElementById('custHitEffect').value||'impactSpark'; Storage.set('customization',c); resetCustomizeHitPreview(performance.now()); });
 document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     const oldCust=Storage.get('customization',{dashEffect:'basic',trailEffect:'none'});
     const cust = {
@@ -11334,7 +11972,8 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
       brows:getFaceParts().brows,
       outline:getFaceParts().outline,
       dashEffect:document.getElementById('custDashEffect').value||oldCust.dashEffect||'basic',
-      trailEffect:document.getElementById('custTrailEffect')?.value||oldCust.trailEffect||'none'
+      trailEffect:document.getElementById('custTrailEffect')?.value||oldCust.trailEffect||'none',
+      hitEffect:document.getElementById('custHitEffect')?.value||oldCust.hitEffect||'impactSpark'
     };
     Storage.set('customization', cust);
     saveCustomizationToSlot(cust);
@@ -11384,7 +12023,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
   document.getElementById('edPropMoveTargetY')?.addEventListener('change',applyMoveEndpointFields);
   document.getElementById('edPropMoveRepeat')?.addEventListener('change', e=>MapEditor.applySelectedProperty('moveRepeat',e.target.checked));
 
-  const CUST_DEFAULTS={name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,brightness:60,brightness2:60,gradientPattern:'radial-out',eyes:'classic',mouth:'smile',brows:'none',outline:'none',dashEffect:'basic',trailEffect:'none'};
+  const CUST_DEFAULTS={name:'Player',hue:200,hue2:40,saturation:80,saturation2:60,brightness:60,brightness2:60,gradientPattern:'radial-out',eyes:'classic',mouth:'smile',brows:'none',outline:'none',dashEffect:'basic',trailEffect:'none',hitEffect:'impactSpark'};
   let activeCustSlot=0;
   function getCustomizationSlots(){
     const raw=Storage.get('customizationSlots',[null,null,null]);
@@ -11412,6 +12051,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     document.getElementById('custGradient').value=c.gradientPattern;
     populateDashEffectSelect(c.dashEffect);
     populateTrailEffectSelect(c.trailEffect);
+    populateHitEffectSelect(c.hitEffect);
     Game.characterSpriteCache.clear(); faceThumbCache.clear();
     renderFaceControls(); updatePickerUi(); drawCustPreview();
   }
@@ -11423,6 +12063,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     document.getElementById('custGradient').value=next.gradientPattern||'radial-out';
     populateDashEffectSelect(next.dashEffect||'basic');
     populateTrailEffectSelect(next.trailEffect||'none');
+    populateHitEffectSelect(next.hitEffect||'impactSpark');
     Game.characterSpriteCache.clear(); faceThumbCache.clear();
     renderFaceControls(); updatePickerUi(); drawCustPreview();
   }
@@ -11458,6 +12099,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     const slots=getCustomizationSlots();
     if(slots[activeCustSlot]){ loadCustomizationIntoUI(slots[activeCustSlot]); }
     else { loadCustomizationIntoUI(customizationForUI()); }
+    populateHitEffectSelect(customizationForUI().hitEffect||'impactSpark');
     updateCustSlotButtons();
   }
   function populateTrailEffectSelect(selected){
@@ -11466,6 +12108,14 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     const none=document.createElement('option'); none.value='none'; none.textContent='None'; sel.appendChild(none);
     Object.entries(SphereBoxes.trailEffects).forEach(([id,e])=>{ if((inv[id]||0)<=0) return; const o=document.createElement('option'); o.value=id; o.textContent=`${e.name} · ${e.rarity.toUpperCase()}${inv[id]>1?' ×'+inv[id]:''}`; sel.appendChild(o); });
     sel.value=[...sel.options].some(o=>o.value===selected)?selected:'none';
+  }
+
+  function populateHitEffectSelect(selected){
+    const sel=document.getElementById('custHitEffect'); if(!sel) return;
+    const inv=SphereBoxes.getInventory(); sel.innerHTML='';
+    Object.entries(SphereBoxes.hitEffects).forEach(([id,e])=>{ if((inv[id]||0)<=0) return; const o=document.createElement('option'); o.value=id; o.textContent=`${e.name} · ${e.rarity.toUpperCase()}${inv[id]>1?' ×'+inv[id]:''}`; sel.appendChild(o); });
+    if(!sel.options.length){ const o=document.createElement('option'); o.value='impactSpark'; o.textContent='Impact Spark · COMMON'; sel.appendChild(o); }
+    sel.value=[...sel.options].some(o=>o.value===selected)?selected:sel.options[0]?.value||'impactSpark';
   }
 
   function loadSettingsUI(){
@@ -11494,7 +12144,242 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
   window.addEventListener('error', (e)=>{ console.error('Game error (suppressed from UI):', e.error||e.message); });
 });
 </script>
+
+<style id="preview-clarity-final">
+/* Final customize preview polish: preserve the trail's wide aspect ratio and give the hit preview breathing room. */
+.cust-preview-column > .cust-large-preview:nth-of-type(4) .cust-effect-preview-wrap,
+.cust-preview-column > .cust-large-preview:nth-of-type(6) .cust-effect-preview-wrap{
+  width:100%!important; max-width:none!important; height:auto!important; aspect-ratio:420 / 160!important;
+}
+.cust-preview-column > .cust-large-preview:nth-of-type(4) canvas,
+.cust-preview-column > .cust-large-preview:nth-of-type(6) canvas{
+  width:100%!important; height:auto!important; max-width:none!important; max-height:none!important;
+  aspect-ratio:420 / 160!important; object-fit:contain!important; flex:1 1 auto;
+}
+.cust-preview-column > .cust-large-preview:nth-of-type(6) .cust-effect-preview-wrap{
+  aspect-ratio:320 / 220!important;
+}
+.cust-preview-column > .cust-large-preview:nth-of-type(6) canvas{
+  aspect-ratio:320 / 220!important;
+}
+@media(max-width:760px){
+  .cust-preview-column > .cust-large-preview:nth-of-type(4) .cust-effect-preview-wrap,
+  .cust-preview-column > .cust-large-preview:nth-of-type(4) canvas{aspect-ratio:420 / 160!important;}
+  .cust-preview-column > .cust-large-preview:nth-of-type(6) .cust-effect-preview-wrap,
+  .cust-preview-column > .cust-large-preview:nth-of-type(6) canvas{aspect-ratio:320 / 220!important;}
+}
+</style>
+
+<style id="hit-icons-final-alignment-v5">
+/* This block is intentionally at the end so it overrides all earlier thumbnail rules. */
+.spherebox-roll-icon.hit-card-icon{
+  position:relative!important;
+  display:block!important;
+  flex:0 0 50px!important;
+  width:50px!important;
+  height:50px!important;
+  margin:0!important;
+  align-self:center!important;
+  transform:none!important;
+  transform-origin:50% 50%!important;
+}
+.spherebox-roll-icon.hit-card-icon::before,
+.spherebox-roll-icon.hit-card-icon::after{
+  box-sizing:border-box!important;
+  left:50%!important;
+  top:50%!important;
+  margin:0!important;
+  transform-origin:50% 50%!important;
+}
+.spherebox-roll-icon.hit-card-icon::before{
+  transform:translate(-50%,-50%)!important;
+}
+.spherebox-roll-icon.hit-card-icon.shape-diamond::before{
+  transform:translate(-50%,-50%) rotate(45deg)!important;
+}
+.spherebox-roll-icon.hit-card-icon.secondary-cross::after,
+.spherebox-roll-icon.hit-card-icon.style-smash::after{
+  transform:translate(-50%,-50%) rotate(45deg)!important;
+}
+.spherebox-roll-icon.hit-card-icon.style-ember::after{
+  transform:translate(-50%,-50%)!important;
+}
+.spherebox-roll-icon.hit-card-icon.secondary-ring::after,
+.spherebox-roll-icon.hit-card-icon.secondary-star::after,
+.spherebox-roll-icon.hit-card-icon.secondary-triangle::after,
+.spherebox-roll-icon.hit-card-icon.style-slash::after,
+.spherebox-roll-icon.hit-card-icon.style-glass::after,
+.spherebox-roll-icon.hit-card-icon.style-shockwave::after,
+.spherebox-roll-icon.hit-card-icon.style-bonk::after,
+.spherebox-roll-icon.hit-card-icon.style-critical::after{
+  left:50%!important;
+  top:50%!important;
+}
+/* Symmetric three-dot layout for hit-effect preview thumbnails. */
+.dash-effect-card.hit-effect-card .hit-effect-preview .orb.o1,
+.spherebox-result .hit-effect-preview .orb.o1{
+  left:50%!important;top:50%!important;
+  transform:translate(-13px,-14px)!important;
+}
+.dash-effect-card.hit-effect-card .hit-effect-preview .orb.o2,
+.spherebox-result .hit-effect-preview .orb.o2{
+  left:50%!important;top:50%!important;
+  transform:translate(13px,-14px)!important;
+}
+.dash-effect-card.hit-effect-card .hit-effect-preview .orb.o3,
+.spherebox-result .hit-effect-preview .orb.o3{
+  left:50%!important;top:50%!important;
+  transform:translate(0,16px)!important;
+}
+/* Keep the requested compact-but-slightly-taller Customize hit preview centered. */
+.cust-preview-column > .cust-large-preview:nth-child(6) .cust-effect-preview-wrap{
+  width:205px!important;height:116px!important;
+  margin:0 auto!important;aspect-ratio:auto!important;
+}
+.cust-preview-column > .cust-large-preview:nth-child(6) canvas{
+  width:205px!important;height:116px!important;
+  max-width:100%!important;max-height:100%!important;
+  display:block!important;margin:0 auto!important;object-fit:contain!important;
+}
+@media(max-width:760px){
+  .cust-preview-column > .cust-large-preview:nth-child(6) .cust-effect-preview-wrap{
+    width:190px!important;height:106px!important;
+  }
+  .cust-preview-column > .cust-large-preview:nth-child(6) canvas{
+    width:190px!important;height:106px!important;
+  }
+}
+</style>
+
 </body>
+
+<style id="legendary-hit-effect-polish">
+/* Owned hit-effect thumbnails: let glows/rays extend beyond the small preview well. */
+.dash-effect-card.hit-effect-card{overflow:visible;}
+.dash-effect-card.hit-effect-card .hit-effect-preview{
+  overflow:visible;
+  height:82px;
+  position:relative;
+}
+/* Legendary hit effects get an extra rotating halo + crisp outer ray layer. */
+.hit-effect-preview.rarity-legendary-preview{
+  isolation:isolate;
+  overflow:visible!important;
+}
+.hit-effect-preview.rarity-legendary-preview::before{
+  content:'';
+  position:absolute;
+  left:50%;top:50%;
+  width:68px;height:68px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:conic-gradient(
+    from 0deg,
+    transparent 0deg 18deg,
+    var(--fx-c1,var(--fx-color)) 18deg 23deg,
+    transparent 23deg 52deg,
+    var(--fx-c2,var(--fx-color)) 52deg 57deg,
+    transparent 57deg 91deg,
+    var(--fx-c3,var(--fx-color)) 91deg 96deg,
+    transparent 96deg 143deg,
+    var(--fx-c1,var(--fx-color)) 143deg 148deg,
+    transparent 148deg 205deg,
+    var(--fx-c2,var(--fx-color)) 205deg 210deg,
+    transparent 210deg 261deg,
+    var(--fx-c3,var(--fx-color)) 261deg 266deg,
+    transparent 266deg 312deg,
+    var(--fx-c1,var(--fx-color)) 312deg 317deg,
+    transparent 317deg 360deg
+  );
+  -webkit-mask:radial-gradient(circle,transparent 0 49%,#000 50% 56%,transparent 57%);
+  mask:radial-gradient(circle,transparent 0 49%,#000 50% 56%,transparent 57%);
+  opacity:.86;
+  filter:drop-shadow(0 0 7px var(--fx-color));
+  animation:legendaryHitHaloSpin 1.2s linear infinite;
+  z-index:0;
+  pointer-events:none;
+}
+.hit-effect-preview.rarity-legendary-preview::after{
+  content:'';
+  position:absolute;
+  left:50%;top:50%;
+  width:58px;height:58px;
+  transform:translate(-50%,-50%) rotate(22.5deg);
+  background:conic-gradient(
+    from 0deg,
+    var(--fx-c1,var(--fx-color)) 0deg 3deg,
+    transparent 3deg 42deg,
+    var(--fx-c2,var(--fx-color)) 42deg 45deg,
+    transparent 45deg 87deg,
+    var(--fx-c3,var(--fx-color)) 87deg 90deg,
+    transparent 90deg 132deg,
+    var(--fx-c1,var(--fx-color)) 132deg 135deg,
+    transparent 135deg 177deg,
+    var(--fx-c2,var(--fx-color)) 177deg 180deg,
+    transparent 180deg 222deg,
+    var(--fx-c3,var(--fx-color)) 222deg 225deg,
+    transparent 225deg 267deg,
+    var(--fx-c1,var(--fx-color)) 267deg 270deg,
+    transparent 270deg 312deg,
+    var(--fx-c2,var(--fx-color)) 312deg 315deg,
+    transparent 315deg 357deg,
+    var(--fx-c3,var(--fx-color)) 357deg 360deg
+  );
+  -webkit-mask:radial-gradient(circle,transparent 0 43%,#000 44% 48%,transparent 49%);
+  mask:radial-gradient(circle,transparent 0 43%,#000 44% 48%,transparent 49%);
+  opacity:.52;
+  filter:blur(.2px) drop-shadow(0 0 6px var(--fx-color));
+  animation:legendaryHitRaySpin 2.2s linear reverse infinite;
+  z-index:0;
+  pointer-events:none;
+}
+.hit-effect-preview.rarity-legendary-preview .core,
+.hit-effect-preview.rarity-legendary-preview .star,
+.hit-effect-preview.rarity-legendary-preview .spark,
+.hit-effect-preview.rarity-legendary-preview .diamond,
+.hit-effect-preview.rarity-legendary-preview .hex,
+.hit-effect-preview.rarity-legendary-preview .triangle,
+.hit-effect-preview.rarity-legendary-preview .plus,
+.hit-effect-preview.rarity-legendary-preview .orb{
+  z-index:2;
+}
+.hit-effect-preview.rarity-legendary-preview .ring{
+  z-index:1;
+  width:78px;height:78px;
+  box-shadow:0 0 18px var(--fx-color),0 0 30px color-mix(in srgb,var(--fx-color) 55%,transparent);
+}
+@keyframes legendaryHitHaloSpin{
+  from{transform:translate(-50%,-50%) rotate(0deg)}
+  to{transform:translate(-50%,-50%) rotate(360deg)}
+}
+@keyframes legendaryHitRaySpin{
+  from{transform:translate(-50%,-50%) rotate(22.5deg)}
+  to{transform:translate(-50%,-50%) rotate(-337.5deg)}
+}
+
+/* The Customize hit preview is shorter while keeping its native aspect ratio. */
+.cust-preview-column > .cust-large-preview:nth-of-type(6) .cust-effect-preview-wrap{
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:320 / 190!important;
+}
+.cust-preview-column > .cust-large-preview:nth-of-type(6) canvas{
+  width:100%!important;
+  height:auto!important;
+  aspect-ratio:320 / 190!important;
+  object-fit:contain!important;
+  max-height:none!important;
+}
+
+/* Mobile keeps the same compact proportion. */
+@media(max-width:760px){
+  .cust-preview-column > .cust-large-preview:nth-of-type(6) .cust-effect-preview-wrap,
+  .cust-preview-column > .cust-large-preview:nth-of-type(6) canvas{
+    aspect-ratio:320 / 190!important;
+  }
+}
+</style>
+
 </html>
 
 <style id="modifier-panel-final-fix">
@@ -11616,6 +12501,503 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
   letter-spacing:.45px;
   text-transform:uppercase;
   box-sizing:border-box;
+}
+</style>
+
+
+
+
+
+<style id="hit-and-dash-thumbnail-final-v6">
+/*
+  Definitive cosmetic-preview alignment pass.
+  This block is the final style block so older rules cannot pull individual
+  shapes, dots, rings, or secondary motifs out of alignment.
+*/
+
+/* ---- OWNED EFFECT THUMBNAILS ---- */
+.dash-effect-card .dash-effect-preview{
+  width:100%!important;
+  height:78px!important;
+  min-height:78px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  overflow:visible!important;
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+}
+
+/* Keep the actual centerpiece mathematically centered. */
+.dash-effect-card .dash-effect-preview > .core,
+.dash-effect-card .dash-effect-preview > .star,
+.dash-effect-card .dash-effect-preview > .spark,
+.dash-effect-card .dash-effect-preview > .diamond,
+.dash-effect-card .dash-effect-preview > .hex,
+.dash-effect-card .dash-effect-preview > .triangle,
+.dash-effect-card .dash-effect-preview > .plus{
+  position:relative!important;
+  left:auto!important;
+  top:auto!important;
+  margin:0!important;
+}
+
+/* Remove the old asymmetric generic orb offsets and use a centered triangle. */
+.dash-effect-card .dash-effect-preview > .orb{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  margin:0!important;
+  transform-origin:50% 50%!important;
+}
+.dash-effect-card .dash-effect-preview > .orb.o1{
+  transform:translate(-24px,-14px)!important;
+}
+.dash-effect-card .dash-effect-preview > .orb.o2{
+  transform:translate(24px,-14px)!important;
+}
+.dash-effect-card .dash-effect-preview > .orb.o3{
+  transform:translate(0,21px)!important;
+}
+
+/* Rings are centered by their own midpoint. */
+.dash-effect-card .dash-effect-preview > .ring{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  margin:0!important;
+  transform:translate(-50%,-50%)!important;
+}
+
+/* Hit thumbnails get the same clean, borderless treatment. */
+.dash-effect-card.hit-effect-card .hit-effect-preview{
+  width:100%!important;
+  height:78px!important;
+  min-height:78px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  overflow:visible!important;
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+}
+
+/* Every hit-effect base shape starts from the exact center. */
+.dash-effect-card.hit-effect-card .hit-effect-preview > .core,
+.dash-effect-card.hit-effect-card .hit-effect-preview > .star,
+.dash-effect-card.hit-effect-card .hit-effect-preview > .spark,
+.dash-effect-card.hit-effect-card .hit-effect-preview > .diamond,
+.dash-effect-card.hit-effect-card .hit-effect-preview > .hex,
+.dash-effect-card.hit-effect-card .hit-effect-preview > .triangle,
+.dash-effect-card.hit-effect-card .hit-effect-preview > .plus{
+  position:relative!important;
+  left:auto!important;
+  top:auto!important;
+  margin:0!important;
+}
+.dash-effect-card.hit-effect-card .hit-effect-preview > .ring{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  margin:0!important;
+  transform:translate(-50%,-50%)!important;
+}
+
+/* Symmetric hit-effect dot placement. */
+.dash-effect-card.hit-effect-card .hit-effect-preview > .orb{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  margin:0!important;
+  transform-origin:50% 50%!important;
+}
+.dash-effect-card.hit-effect-card .hit-effect-preview > .orb.o1{
+  transform:translate(-15px,-15px)!important;
+}
+.dash-effect-card.hit-effect-card .hit-effect-preview > .orb.o2{
+  transform:translate(15px,-15px)!important;
+}
+.dash-effect-card.hit-effect-card .hit-effect-preview > .orb.o3{
+  transform:translate(0,17px)!important;
+}
+
+/* Keep legendary overlays centered too. */
+.dash-effect-card.hit-effect-card .hit-effect-preview.rarity-legendary-preview::before,
+.dash-effect-card.hit-effect-card .hit-effect-preview.rarity-legendary-preview::after{
+  left:50%!important;
+  top:50%!important;
+}
+
+/* ---- VIEW DROPS / REEL HIT ICONS ---- */
+/* The outer icon itself is a transparent 50x50 coordinate system. */
+.spherebox-roll-icon.hit-card-icon{
+  width:50px!important;
+  height:50px!important;
+  min-width:50px!important;
+  min-height:50px!important;
+  flex:0 0 50px!important;
+  display:block!important;
+  position:relative!important;
+  margin:0 auto!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  isolation:isolate;
+  transform:none!important;
+}
+
+/* Primary shape: always centered at (25,25). */
+.spherebox-roll-icon.hit-card-icon::before{
+  left:50%!important;
+  top:50%!important;
+  margin:0!important;
+  transform:translate(-50%,-50%)!important;
+  transform-origin:50% 50%!important;
+}
+
+/* Preserve intentional diamond rotation, but not its position. */
+.spherebox-roll-icon.hit-card-icon.shape-diamond::before{
+  transform:translate(-50%,-50%) rotate(45deg)!important;
+}
+
+/* Secondary shape: always centered at (25,25), with its own rotation applied afterward. */
+.spherebox-roll-icon.hit-card-icon::after{
+  left:50%!important;
+  top:50%!important;
+  margin:0!important;
+  transform:translate(-50%,-50%)!important;
+  transform-origin:50% 50%!important;
+}
+
+/* Secondary motifs that need rotation. */
+.spherebox-roll-icon.hit-card-icon.secondary-star::after{
+  transform:translate(-50%,-50%) rotate(22.5deg)!important;
+}
+.spherebox-roll-icon.hit-card-icon.secondary-triangle::after{
+  transform:translate(-50%,-50%) rotate(180deg)!important;
+}
+.spherebox-roll-icon.hit-card-icon.secondary-cross::after,
+.spherebox-roll-icon.hit-card-icon.style-smash::after{
+  transform:translate(-50%,-50%) rotate(45deg)!important;
+}
+.spherebox-roll-icon.hit-card-icon.style-slash::after{
+  transform:translate(-50%,-50%) rotate(-35deg)!important;
+}
+.spherebox-roll-icon.hit-card-icon.style-critical::after{
+  transform:translate(-50%,-50%) rotate(22.5deg)!important;
+}
+.spherebox-roll-icon.hit-card-icon.style-ember::after,
+.spherebox-roll-icon.hit-card-icon.style-bonk::after{
+  transform:translate(-50%,-50%)!important;
+}
+
+/* Drop rows and reel cards should center the whole icon cell, not just the glyph. */
+.spherebox-drop-row .spherebox-roll-icon.hit-card-icon,
+.spherebox-reel-card .spherebox-roll-icon.hit-card-icon{
+  align-self:center!important;
+  justify-self:center!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+
+/* ---- CUSTOMIZE PREVIEWS ---- */
+/* Keep the dash preview compact and centered. */
+.cust-preview-column > .cust-large-preview:nth-child(2){
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  text-align:center!important;
+  padding:6px!important;
+}
+.cust-preview-column > .cust-large-preview:nth-child(2) .cust-effect-preview-wrap{
+  width:185px!important;
+  height:165px!important;
+  margin:0 auto!important;
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+}
+.cust-preview-column > .cust-large-preview:nth-child(2) canvas{
+  width:185px!important;
+  height:165px!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  display:block!important;
+  margin:0 auto!important;
+  object-fit:contain!important;
+}
+
+/* Keep the hit preview compact, centered, and free of the old arrow. */
+.cust-preview-column > .cust-large-preview:nth-child(6){
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+  text-align:center!important;
+  padding:6px!important;
+}
+.cust-preview-column > .cust-large-preview:nth-child(6) .cust-effect-preview-wrap{
+  width:205px!important;
+  height:116px!important;
+  margin:0 auto!important;
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+}
+.cust-preview-column > .cust-large-preview:nth-child(6) canvas{
+  width:205px!important;
+  height:116px!important;
+  max-width:100%!important;
+  max-height:100%!important;
+  display:block!important;
+  margin:0 auto!important;
+  object-fit:contain!important;
+}
+
+@media(max-width:760px){
+  .cust-preview-column > .cust-large-preview:nth-child(2) .cust-effect-preview-wrap{
+    width:175px!important;height:155px!important;
+  }
+  .cust-preview-column > .cust-large-preview:nth-child(2) canvas{
+    width:175px!important;height:155px!important;
+  }
+  .cust-preview-column > .cust-large-preview:nth-child(6) .cust-effect-preview-wrap{
+    width:190px!important;height:106px!important;
+  }
+  .cust-preview-column > .cust-large-preview:nth-child(6) canvas{
+    width:190px!important;height:106px!important;
+  }
+}
+</style>
+
+<style id="unboxed-and-customize-final-v7">
+/* ============================================================
+   YOU UNBOXED: no clipping around the generated effect preview
+   ============================================================ */
+#sphereboxResult{
+  overflow:visible!important;
+}
+#sphereboxResult .dash-effect-preview{
+  width:min(250px,100%)!important;
+  height:112px!important;
+  min-height:112px!important;
+  margin:8px auto 6px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  overflow:visible!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  position:relative!important;
+}
+
+/* Keep all generated result shapes centered after removing the crop. */
+#sphereboxResult .dash-effect-preview > .core,
+#sphereboxResult .dash-effect-preview > .star,
+#sphereboxResult .dash-effect-preview > .spark,
+#sphereboxResult .dash-effect-preview > .diamond,
+#sphereboxResult .dash-effect-preview > .hex,
+#sphereboxResult .dash-effect-preview > .triangle,
+#sphereboxResult .dash-effect-preview > .plus{
+  position:relative!important;
+  left:auto!important;
+  top:auto!important;
+  margin:0!important;
+}
+
+#sphereboxResult .dash-effect-preview > .ring{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  margin:0!important;
+  transform:translate(-50%,-50%)!important;
+}
+
+#sphereboxResult .dash-effect-preview > .orb{
+  position:absolute!important;
+  left:50%!important;
+  top:50%!important;
+  margin:0!important;
+  transform-origin:50% 50%!important;
+}
+#sphereboxResult .dash-effect-preview > .orb.o1{
+  transform:translate(-24px,-14px)!important;
+}
+#sphereboxResult .dash-effect-preview > .orb.o2{
+  transform:translate(24px,-14px)!important;
+}
+#sphereboxResult .dash-effect-preview > .orb.o3{
+  transform:translate(0,21px)!important;
+}
+
+/* Hit-result symbols use the same centered coordinate system as the owned cards. */
+#sphereboxResult .hit-effect-preview{
+  width:min(250px,100%)!important;
+  height:112px!important;
+  min-height:112px!important;
+  overflow:visible!important;
+  margin:8px auto 6px!important;
+  border:0!important;
+  background:transparent!important;
+}
+
+/* ============================================================
+   CUSTOMIZE: shave a few pixels from the whole panel so the
+   page does not create a vertical scrollbar at normal viewport
+   heights.
+   ============================================================ */
+#screen-customize{
+  padding:18px!important;
+}
+#screen-customize > .panel{
+  padding:17px!important;
+}
+
+/* ============================================================
+   CUSTOMIZE: let the hit-preview section use the empty space
+   beneath it while keeping the effect itself centered.
+   ============================================================ */
+#screen-customize .cust-preview-column{
+  align-self:stretch!important;
+  min-height:0!important;
+}
+
+#screen-customize .cust-preview-column > .cust-large-preview:last-child{
+  flex:1 1 auto!important;
+  min-height:142px!important;
+  display:flex!important;
+  align-items:stretch!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  padding:4px!important;
+}
+
+#screen-customize .cust-preview-column > .cust-large-preview:last-child .cust-effect-preview-wrap{
+  flex:1 1 auto!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-width:none!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  overflow:hidden!important;
+  margin:0 auto!important;
+  aspect-ratio:auto!important;
+}
+
+#screen-customize #custHitShower{
+  width:100%!important;
+  height:100%!important;
+  max-width:none!important;
+  max-height:none!important;
+  display:block!important;
+  margin:0!important;
+  object-fit:contain!important;
+}
+
+/* Keep the dash preview and trail preview centered and compact above it. */
+#screen-customize .cust-preview-column > .cust-large-preview:nth-child(2),
+#screen-customize .cust-preview-column > .cust-large-preview:nth-child(4){
+  flex:0 0 auto!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+
+#screen-customize .cust-preview-column > .cust-large-preview:nth-child(2){
+  min-height:0!important;
+}
+#screen-customize .cust-preview-column > .cust-large-preview:nth-child(4){
+  min-height:0!important;
+}
+
+@media(max-width:760px){
+  #screen-customize{
+    padding:12px!important;
+  }
+  #screen-customize > .panel{
+    padding:13px!important;
+  }
+  #screen-customize .cust-preview-column > .cust-large-preview:last-child{
+    min-height:132px!important;
+  }
+}
+</style>
+
+<style id="spherebox-quick-font-final">
+.spherebox-hover-actions .btn{
+  font-size:11.5px!important;
+  letter-spacing:.4px!important;
+  padding-left:4px!important;
+  padding-right:4px!important;
+}
+@media(max-width:760px){
+  .spherebox-hover-actions .btn{font-size:11px!important;}
+}
+</style>
+
+<style id="customize-panel-centered-safe-final">
+#screen-customize{
+  align-items:center!important;
+  justify-content:center!important;
+  padding:20px!important;
+}
+
+/* The brown outer panel is the scaled unit. */
+#screen-customize > .panel{
+  box-sizing:border-box!important;
+  width:min(1121px,92.15vw)!important;
+  max-width:92.15vw!important;
+  max-height:calc(100vh - 40px)!important;
+  height:auto!important;
+  margin:0 auto!important;
+  padding:16.15px!important;
+  transform:scale(.95)!important;
+  transform-origin:center center!important;
+  position:relative!important;
+}
+
+/* Keep the contents constrained by the same visual panel bounds. */
+#screen-customize > .panel .cust-layout{
+  width:100%!important;
+  min-width:0!important;
+}
+
+/* In shorter/non-fullscreen windows, don't let the panel itself acquire a
+   second outer scrollbar. The existing inner controls retain their own
+   scrolling behavior where already defined. */
+@media(max-height:760px) and (min-width:761px){
+  #screen-customize{
+    padding-top:10px!important;
+    padding-bottom:10px!important;
+  }
+  #screen-customize > .panel{
+    max-height:calc(100vh - 20px)!important;
+  }
+}
+
+@media(max-width:760px){
+  #screen-customize{
+    padding:10px!important;
+  }
+  #screen-customize > .panel{
+    width:96vw!important;
+    max-width:96vw!important;
+    max-height:calc(100vh - 20px)!important;
+    padding:12.35px!important;
+    transform:scale(.95)!important;
+    margin:0 auto!important;
+  }
 }
 </style>
 
