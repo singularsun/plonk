@@ -1461,7 +1461,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button><button class="btn small" type="button" data-sphere-quick="hit">HIT EFFECTS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.85 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.86 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -1579,7 +1579,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
           <div class="field"><label>Knockback ×</label><input type="number" id="lobbyKB" min="0.2" max="3" step="0.1" value="1"></div>
           <div class="field"><label>Player Size</label><input type="number" id="lobbyPlayerSize" min="0.5" max="2" step="0.1" value="1"></div>
           <div class="field"><label>Max Players</label><input type="number" id="lobbyMaxP" min="2" max="8" value="8"></div>
-          <div class="field hidden weapon-selector-lock-field" id="lobbyWeaponField"><label>Your Weapon</label><div class="weapon-selector-lock-row"><select id="lobbyWeapon"><option value="sword">Sword</option><option value="wand">Wand</option><option value="bo_staff">Bo Staff</option><option value="axe">Shovel</option><option value="flail">Flail</option><option value="chakram">Chakram</option></select><div id="lobbyWeaponLockField"><button class="btn small" type="button" id="btnWeaponLock">Lock</button></div></div></div>
+          <div class="field hidden weapon-selector-lock-field" id="lobbyWeaponField"><label>Your Weapon</label><div class="weapon-selector-lock-row"><div class="weapon-picker" id="lobbyWeaponPicker" data-weapon-picker="lobby"><button class="btn small weapon-picker-main" type="button" aria-haspopup="true" aria-expanded="false"><span class="weapon-picker-value">Sword</span><span class="weapon-picker-caret">▾</span></button><div class="weapon-picker-panel" role="menu"></div></div><select id="lobbyWeapon" class="hidden" aria-hidden="true"><option value="sword">Sword</option><option value="wand">Wand</option><option value="bo_staff">Bo Staff</option><option value="axe">Shovel</option><option value="flail">Flail</option><option value="chakram">Chakram</option></select><div id="lobbyWeaponLockField"><button class="btn small" type="button" id="btnWeaponLock">Lock</button></div></div></div>
           <div class="round-settings-grid lobby-round-settings">
             <div class="field"><label>Round Rule</label><select id="lobbyRoundMode"><option value="rounds">Fixed Rounds</option><option value="score">First to Points</option></select></div>
             <div class="field round-count-slot" id="lobbyRoundCountField"><label>Rounds</label><input type="number" id="lobbyRoundCount" min="1" max="99" value="3"></div>
@@ -3671,7 +3671,7 @@ const WEAPONS={
   flail:{label:'Flail',orbitSpeed:2.70,cooldown:2.45,contactCooldown:.23,
     idleInner:34,idleOuter:74,idleWidth:8,attackExtend:.095,attackActive:.09,attackRetract:.12,returnSpeed:1240,
     idleCenter:52,strikeRange:218,ballRadius:10,chainWidth:4,activeWidth:10,contactKnockback:350},
-  chakram:{label:'Chakram',orbitSpeed:3.05,cooldown:3.35,contactCooldown:.18,
+  chakram:{label:'Chakram',orbitSpeed:3.05,cooldown:2.1,contactCooldown:.18,
     idleInner:36,idleOuter:78,idleWidth:8,attackExtend:.20,attackActive:.08,attackHold:1.25,attackRetract:.20,returnSpeed:820,
     idleCenter:60,throwRange:154,discRadius:15,discThickness:5,activeWidth:14,contactKnockback:330,spinSpeed:14}
 };
@@ -10758,7 +10758,7 @@ const Lobby = {
     document.getElementById('lobbyWeaponLockField')?.classList.toggle('hidden',!(weaponryActive&&Game.isHost));
     const lockBtn=document.getElementById('btnWeaponLock');
     if(lockBtn){ lockBtn.textContent=lockedWeapon?'Unlock':'Lock'; lockBtn.disabled=!Game.isHost||!weaponryActive; }
-    if(lobbyWeapon) { lobbyWeapon.value=validWeapon(Game.players[Game.myId]?.weapon||Storage.get('weaponChoice','sword')); lobbyWeapon.disabled=!!Game.players[Game.myId]?.spectator||!!lockedWeapon; }
+    if(lobbyWeapon) { lobbyWeapon.value=validWeapon(Game.players[Game.myId]?.weapon||Storage.get('weaponChoice','sword')); lobbyWeapon.disabled=!!Game.players[Game.myId]?.spectator||!!lockedWeapon; document.getElementById('lobbyWeaponPicker')?._weaponPickerRefresh?.(); }
     const controls=[hostMode,gravity,kb,playerSize,maxP,roundMode,roundCount,pointTarget,mapSel,document.getElementById('lobbySpikewall'),document.getElementById('lobbyTeams'),document.getElementById('lobbySmash'),document.getElementById('lobbyCombo'),document.getElementById('lobbyParry')].filter(Boolean);controls.forEach(el=>el.disabled=!Game.isHost);
     hostMode.dispatchEvent(new Event('change'));
     // These picker constants are initialized later in this script. Calling renderSettings
@@ -12952,6 +12952,51 @@ window.addEventListener('DOMContentLoaded', ()=>{
   };
   document.getElementById('hostMode')?.addEventListener('change',syncWeaponFields);
   document.getElementById('lobbyModeSelect')?.addEventListener('change',syncWeaponFields);
+  function setupWeaponPicker(){
+    const select=document.getElementById('lobbyWeapon'), picker=document.getElementById('lobbyWeaponPicker');
+    if(!select || !picker) return null;
+    const main=picker.querySelector('.weapon-picker-main'), valueEl=picker.querySelector('.weapon-picker-value'), panel=picker.querySelector('.weapon-picker-panel');
+    const choices=[['sword','Sword'],['wand','Wand'],['bo_staff','Bo Staff'],['axe','Shovel'],['flail','Flail'],['chakram','Chakram']];
+    let open=false;
+    const close=()=>{ open=false; picker.classList.remove('open'); main.setAttribute('aria-expanded','false'); };
+    const refresh=()=>{
+      const value=validWeapon(select.value);
+      const label=choices.find(x=>x[0]===value)?.[1]||value;
+      valueEl.textContent=label;
+      main.disabled=!!select.disabled;
+      picker.classList.toggle('disabled',!!select.disabled);
+      if(select.disabled) close();
+    };
+    const render=()=>{
+      panel.innerHTML='';
+      const current=validWeapon(select.value);
+      for(const [v,label] of choices){
+        const b=document.createElement('button'); b.type='button'; b.className='weapon-picker-option'; b.textContent=label; b.setAttribute('role','menuitemradio'); b.setAttribute('aria-checked',String(v===current));
+        if(v===current) b.classList.add('selected');
+        b.addEventListener('click',e=>{
+          e.stopPropagation();
+          if(select.disabled) return;
+          select.value=v;
+          select.dispatchEvent(new Event('change',{bubbles:true}));
+          refresh(); close();
+        });
+        panel.appendChild(b);
+      }
+    };
+    main.addEventListener('click',e=>{
+      e.stopPropagation();
+      if(main.disabled) return;
+      if(picker.classList.contains('open')) close();
+      else { render(); picker.classList.add('open'); main.setAttribute('aria-expanded','true'); }
+    });
+    document.addEventListener('click',e=>{ if(!picker.contains(e.target)) close(); });
+    document.addEventListener('keydown',e=>{ if(e.key==='Escape') close(); });
+    select.addEventListener('change',refresh);
+    picker._weaponPickerRefresh=refresh;
+    refresh();
+    return picker;
+  }
+  const lobbyWeaponPicker=setupWeaponPicker();
   const savedWeapon=validWeapon(Storage.get('weaponChoice','sword'));
   const hostWeapon=document.getElementById('hostWeapon'); if(hostWeapon) hostWeapon.value=savedWeapon;
   document.getElementById('lobbyWeapon')?.addEventListener('change',()=>{
@@ -13579,6 +13624,30 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
 }
 </style>
 
+
+<style id="weapon-dropdown-custom-final">
+/* Custom PLUNK weapon selector: the native select remains as a hidden backing value for game/network code. */
+.weapon-selector-lock-row{display:flex;align-items:flex-end;gap:6px;width:100%;}
+#lobbyWeaponPicker{position:relative;flex:1 1 auto;min-width:0;width:100%;}
+#lobbyWeaponPicker .weapon-picker-main{width:100%;min-height:34px;height:34px;display:flex;align-items:center;justify-content:space-between;gap:8px;text-align:left;white-space:nowrap;overflow:hidden;padding:7px 10px;}
+#lobbyWeaponPicker .weapon-picker-value{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;font-weight:900;letter-spacing:.65px;}
+#lobbyWeaponPicker .weapon-picker-caret{flex:0 0 auto;color:var(--text-dim);font-size:10px;}
+#lobbyWeaponPicker .weapon-picker-panel{position:absolute;left:0;top:calc(100% + 4px);min-width:100%;width:170px;max-width:220px;display:none;flex-direction:column;gap:3px;padding:5px;background:#110c08f8;border:1px solid #503622;border-radius:3px;box-shadow:0 12px 28px #000b;z-index:80;}
+#lobbyWeaponPicker.open .weapon-picker-panel{display:flex;}
+#lobbyWeaponPicker .weapon-picker-option{width:100%;padding:7px 9px;border:1px solid #3a2a1a;background:#151009;color:var(--text);font-size:10px;font-weight:900;letter-spacing:.6px;text-align:left;border-radius:2px;cursor:pointer;white-space:nowrap;}
+#lobbyWeaponPicker .weapon-picker-option:hover,#lobbyWeaponPicker .weapon-picker-option.selected{background:#241a10;border-color:var(--accent);}
+#lobbyWeaponPicker .weapon-picker-option.selected::after{content:'✓';float:right;color:var(--accent3);font-size:10px;margin-left:10px;}
+#lobbyWeaponPicker.disabled .weapon-picker-main{opacity:.6;cursor:not-allowed;}
+#lobbyWeaponField #lobbyWeapon.hidden{display:none !important;}
+#lobbyWeaponLockField{flex:0 0 auto;}
+#btnWeaponLock{height:34px;min-height:34px;width:58px !important;padding:7px 8px !important;box-sizing:border-box;}
+@media(max-width:700px){
+  .weapon-selector-lock-row{gap:5px;}
+  #lobbyWeaponPicker .weapon-picker-main{height:34px;min-height:34px;}
+  #btnWeaponLock{width:58px !important;}
+  #lobbyWeaponPicker .weapon-picker-panel{width:160px;max-width:calc(100vw - 34px);}
+}
+</style>
 </body>
 
 <style id="legendary-hit-effect-polish">
@@ -13710,7 +13779,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
 
 
 <style id="chakram-lobby-round-tight-final">
-/* Final overrides: keep the Chakram at the endpoint longer and slightly increase cooldown. */
+/* Final overrides: keep the Chakram at the endpoint longer; cooldown remains defined in WEAPONS. */
 
 /* Weapon selector + Lock is a compact 223px unit. Match the round-rule controls
    to that same visual footprint instead of the previous wide tracks. */
@@ -14905,4 +14974,12 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     max-width:calc(100vw - 44px)!important;
   }
 }
+</style>
+
+<style id="weapon-dropdown-font-final">
+/* Slightly larger text in the custom Your Weapon control. */
+#lobbyWeaponPicker .weapon-picker-value{font-size:12px!important;}
+#lobbyWeaponPicker .weapon-picker-caret{font-size:11px!important;}
+#lobbyWeaponPicker .weapon-picker-option{font-size:11px!important;}
+#lobbyWeaponPicker .weapon-picker-option.selected::after{font-size:11px!important;}
 </style>
