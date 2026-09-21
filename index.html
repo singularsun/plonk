@@ -3671,7 +3671,7 @@ const WEAPONS={
   flail:{label:'Flail',orbitSpeed:2.70,cooldown:2.45,contactCooldown:.23,
     idleInner:34,idleOuter:74,idleWidth:8,attackExtend:.095,attackActive:.09,attackRetract:.12,returnSpeed:1240,
     idleCenter:52,strikeRange:218,ballRadius:10,chainWidth:4,activeWidth:10,contactKnockback:350},
-  chakram:{label:'Chakram',orbitSpeed:3.05,cooldown:2.1,contactCooldown:.18,
+  chakram:{label:'Chakram',orbitSpeed:3.05,cooldown:3.35,contactCooldown:.18,
     idleInner:36,idleOuter:78,idleWidth:8,attackExtend:.20,attackActive:.08,attackHold:1.25,attackRetract:.20,returnSpeed:820,
     idleCenter:60,throwRange:154,discRadius:15,discThickness:5,activeWidth:14,contactKnockback:330,spinSpeed:14}
 };
@@ -13710,7 +13710,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
 
 
 <style id="chakram-lobby-round-tight-final">
-/* Final overrides: keep the Chakram at the endpoint longer; cooldown remains defined in WEAPONS. */
+/* Final overrides: keep the Chakram at the endpoint longer and slightly increase cooldown. */
 
 /* Weapon selector + Lock is a compact 223px unit. Match the round-rule controls
    to that same visual footprint instead of the previous wide tracks. */
