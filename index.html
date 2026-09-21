@@ -177,6 +177,15 @@ h3{margin:14px 0 8px 0;font-size:13px;color:var(--text-dim);text-transform:upper
 @media(max-width:700px){#killFeed{width:230px;max-width:48vw}.killfeed-killer,.killfeed-victim{max-width:72px}#comboHud{min-width:160px;padding:9px 12px}.hud-player-percent{font-size:13px}}
 #timer{position:absolute;top:10px;left:50%;transform:translateX(-50%);font-size:20px;font-weight:800;
   background:#000000a0;padding:4px 16px;border-radius:2px;color:var(--text-dim);}
+#weaponHud{position:absolute;left:18px;bottom:132px;min-width:132px;padding:7px 10px;background:#100b08dd;border:1px solid #4e3523;border-radius:4px;box-shadow:0 7px 18px #0008;display:none;flex-direction:column;gap:2px;pointer-events:none;z-index:5;}
+#weaponHud.active{display:flex;}
+.weapon-hud-name{font-size:11px;letter-spacing:1.4px;font-weight:1000;color:var(--accent3);}
+.weapon-hud-state{font-size:9px;letter-spacing:.9px;font-weight:900;color:var(--text-dim);}
+.weapon-lobby-chip{display:inline-flex;align-items:center;justify-content:center;margin-left:6px;padding:2px 5px;border:1px solid #563c28;border-radius:3px;background:#1a1009;color:#d8c5b0;font-size:8px;letter-spacing:.6px;font-weight:900;vertical-align:middle;}
+.weapon-lock-button-field{display:flex;align-items:end;}
+#btnWeaponLock{width:100%;white-space:nowrap;}
+#lobbyWeaponField .game-text-input,#lobbyWeaponField select{width:100%;}
+@media(max-width:700px){#weaponHud{left:10px;bottom:112px;min-width:112px;padding:6px 8px;}.weapon-hud-name{font-size:10px}.weapon-hud-state{font-size:8px}}
 #msgbanner{position:absolute;top:20%;left:50%;transform:translate(-50%,-50%);font-size:54px;font-weight:900;
   color:var(--accent3);text-shadow:0 0 20px #000;pointer-events:none;text-align:center;letter-spacing:2px;
   opacity:0;}
@@ -1171,6 +1180,270 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
 }
 </style>
 
+
+
+
+
+
+<style id="RESTORE-ALL-RECENT-WEAPONRY-UI">
+/* ================================================================
+   RESTORE THE RECENT WEAPONRY LOBBY UI AS A SINGLE FINAL OVERRIDE
+   - compact Weapon + Lock control
+   - Weaponry-only Round Rule positioning
+   - host gets the extra gap for the Lock control
+   - non-host keeps the same layout without reserving Lock space
+   - main MODIFIERS drawer opens downward
+   - lobby +N equipped-modifier drawer opens left
+   ================================================================ */
+
+@media (min-width:761px){
+  /* Keep every non-Weaponry lobby in the original settings grid. */
+  #screen-lobby:not(.weaponry-active) .setting-grid.compact{
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+  #screen-lobby:not(.weaponry-active) .lobby-round-settings{
+    grid-column:1 / -1!important;
+    grid-row:auto!important;
+    margin:0!important;
+    padding:0!important;
+    width:100%!important;
+    box-sizing:border-box!important;
+  }
+
+  /* Weaponry field: 140px selector + 5px gap + 53px Lock. */
+  #screen-lobby.weaponry-active .setting-grid.compact{
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+  #screen-lobby.weaponry-active #lobbyWeaponField{
+    grid-column:1!important;
+    grid-row:2!important;
+    justify-self:start!important;
+    align-self:start!important;
+    width:198px!important;
+    min-width:198px!important;
+    max-width:198px!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby.weaponry-active .weapon-selector-lock-row{
+    display:flex!important;
+    flex-direction:row!important;
+    align-items:flex-end!important;
+    justify-content:flex-start!important;
+    gap:5px!important;
+    width:198px!important;
+    min-width:198px!important;
+    max-width:198px!important;
+    margin:0!important;
+    padding:0!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby.weaponry-active .weapon-selector-lock-row > select#lobbyWeapon{
+    width:140px!important;
+    min-width:140px!important;
+    max-width:140px!important;
+    flex:0 0 140px!important;
+    height:34px!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby.weaponry-active .weapon-selector-lock-row #lobbyWeaponLockField{
+    width:53px!important;
+    min-width:53px!important;
+    max-width:53px!important;
+    flex:0 0 53px!important;
+    height:34px!important;
+    margin:0!important;
+    padding:0!important;
+    align-self:flex-end!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby.weaponry-active .weapon-selector-lock-row #btnWeaponLock{
+    width:53px!important;
+    min-width:53px!important;
+    max-width:53px!important;
+    height:34px!important;
+    min-height:34px!important;
+    margin:0!important;
+    padding:6px 4px!important;
+    line-height:1!important;
+    box-sizing:border-box!important;
+  }
+
+  /* Non-hosts: Round Rule begins after the 140px Weapon selector + 8px gap. */
+  #screen-lobby.weaponry-active:not(.is-host) #lobbyWeaponField:not(.hidden) ~ .lobby-round-settings{
+    grid-column:1 / -1!important;
+    grid-row:2!important;
+    margin:0!important;
+    padding:0 0 0 148px!important;
+    width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+    display:grid!important;
+    grid-template-columns:132px 83px 223px minmax(0,1fr)!important;
+    gap:8px!important;
+    align-items:end!important;
+  }
+
+  /* Hosts: Round Rule begins 16px after the full Weapon + Lock unit. */
+  #screen-lobby.weaponry-active.is-host #lobbyWeaponField:not(.hidden) ~ .lobby-round-settings{
+    grid-column:1 / -1!important;
+    grid-row:2!important;
+    margin:0!important;
+    padding:0 0 0 214px!important;
+    width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+    display:grid!important;
+    grid-template-columns:132px 83px 223px minmax(0,1fr)!important;
+    gap:8px!important;
+    align-items:end!important;
+  }
+  #screen-lobby.weaponry-active .lobby-round-settings > .field,
+  #screen-lobby.weaponry-active .lobby-round-settings > .modifier-picker{
+    min-width:0!important;
+    margin:0!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby.weaponry-active .lobby-round-settings > .field{
+    width:100%!important;
+  }
+  #screen-lobby.weaponry-active .lobby-round-settings > .field select,
+  #screen-lobby.weaponry-active .lobby-round-settings > .field input{
+    width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby.weaponry-active .lobby-round-settings > .modifier-picker{
+    grid-column:3!important;
+    grid-row:1!important;
+    width:223px!important;
+    min-width:223px!important;
+    max-width:223px!important;
+    justify-self:start!important;
+  }
+
+  /* Main lobby MODIFIERS drawer opens below its own button. */
+  #screen-lobby .lobby-modifier-picker{
+    position:relative!important;
+    overflow:visible!important;
+  }
+  #screen-lobby .lobby-modifier-picker .modifier-picker-panel{
+    left:0!important;
+    right:auto!important;
+    top:calc(100% + 6px)!important;
+    bottom:auto!important;
+    transform:none!important;
+    width:286px!important;
+    min-width:286px!important;
+    max-width:286px!important;
+    max-height:240px!important;
+    box-sizing:border-box!important;
+    z-index:150!important;
+  }
+}
+
+/* Lobby +N equipped-modifier popup: extend LEFT of the button. */
+#screen-lobby .lobby-modifier-picker .modifier-picker-enabled,
+#screen-lobby .modifier-picker-enabled{
+  overflow:visible!important;
+  pointer-events:none!important;
+}
+#screen-lobby .lobby-modifier-picker .modifier-enabled-more-wrap,
+#screen-lobby .modifier-enabled-more-wrap{
+  position:relative!important;
+  display:inline-flex!important;
+  overflow:visible!important;
+  pointer-events:auto!important;
+  z-index:400!important;
+}
+#screen-lobby .lobby-modifier-picker .modifier-enabled-more,
+#screen-lobby .modifier-enabled-more{
+  pointer-events:auto!important;
+  cursor:pointer!important;
+  position:relative!important;
+  z-index:402!important;
+}
+#screen-lobby .lobby-modifier-picker .modifier-enabled-popup,
+#screen-lobby .modifier-enabled-popup{
+  position:absolute!important;
+  left:auto!important;
+  right:calc(100% + 6px)!important;
+  top:50%!important;
+  bottom:auto!important;
+  transform:translateY(-50%)!important;
+  display:flex!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  width:max-content!important;
+  max-width:min(320px,70vw)!important;
+  box-sizing:border-box!important;
+  z-index:401!important;
+}
+#screen-lobby .lobby-modifier-picker .modifier-enabled-popup[hidden],
+#screen-lobby .modifier-enabled-popup[hidden]{
+  display:none!important;
+  visibility:hidden!important;
+}
+#screen-lobby .lobby-modifier-picker .modifier-enabled-popup::after,
+#screen-lobby .modifier-enabled-popup::after{
+  left:auto!important;
+  right:-5px!important;
+  top:50%!important;
+  transform:translateY(-50%) rotate(45deg)!important;
+}
+
+@media (max-width:760px){
+  #screen-lobby.weaponry-active #lobbyWeaponField{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  #screen-lobby.weaponry-active .weapon-selector-lock-row{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  #screen-lobby.weaponry-active .weapon-selector-lock-row > select#lobbyWeapon{
+    width:calc(100% - 58px)!important;
+    min-width:0!important;
+    max-width:none!important;
+    flex:1 1 auto!important;
+  }
+  #screen-lobby.weaponry-active .weapon-selector-lock-row #lobbyWeaponLockField,
+  #screen-lobby.weaponry-active .weapon-selector-lock-row #btnWeaponLock{
+    width:53px!important;
+    min-width:53px!important;
+    max-width:53px!important;
+  }
+  #screen-lobby.weaponry-active .lobby-round-settings,
+  #screen-lobby:not(.weaponry-active) .lobby-round-settings{
+    grid-column:1 / -1!important;
+    grid-row:auto!important;
+    margin:0!important;
+    padding:0!important;
+    width:100%!important;
+  }
+  #screen-lobby .lobby-modifier-picker .modifier-picker-panel{
+    left:0!important;
+    right:auto!important;
+    top:calc(100% + 6px)!important;
+    bottom:auto!important;
+    width:min(286px,calc(100vw - 40px))!important;
+    min-width:0!important;
+    max-width:calc(100vw - 40px)!important;
+  }
+  #screen-lobby .lobby-modifier-picker .modifier-enabled-popup,
+  #screen-lobby .modifier-enabled-popup{
+    left:auto!important;
+    right:calc(100% + 4px)!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    max-width:calc(100vw - 44px)!important;
+  }
+}
+</style>
 </head>
 <body>
 <div id="app">
@@ -1188,7 +1461,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button><button class="btn small" type="button" data-sphere-quick="hit">HIT EFFECTS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.83 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.85 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -1209,9 +1482,10 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
               <button class="btn small mode-picker-main" type="button" aria-haspopup="true" aria-expanded="false"><span class="mode-picker-value">Regular</span><span class="mode-picker-caret">▾</span></button>
               <div class="mode-picker-panel" role="menu"></div>
             </div>
-            <select id="hostMode" class="hidden"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="grapple_hook">Grapple Hook</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option><option value="bouncy_arrows">Bouncy Arrows</option><option value="mines">Mines</option><option value="large_mines">Large Mines</option><option value="death_mines">Death Mines</option></select>
+            <select id="hostMode" class="hidden"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="grapple_hook">Grapple Hook</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option><option value="bouncy_arrows">Bouncy Arrows</option><option value="mines">Mines</option><option value="large_mines">Large Mines</option><option value="death_mines">Death Mines</option><option value="weaponry">Weaponry</option></select>
           </div>
           <div class="field"><label>Max Players</label><input type="number" id="hostMaxP" min="2" max="8" value="8"></div>
+          <div class="field hidden" id="hostWeaponField"><label>Weapon</label><select id="hostWeapon"><option value="sword">Sword</option><option value="wand">Wand</option><option value="bo_staff">Bo Staff</option><option value="axe">Shovel</option><option value="flail">Flail</option><option value="chakram">Chakram</option></select></div>
         </div>
         <h3>PHYSICS</h3>
         <div class="setting-grid">
@@ -1287,7 +1561,6 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
         <h3>PLAYERS</h3>
         <div class="scrollbox lobby-scrollbox" id="lobbyPlayers"></div>
         <div class="player-actions">
-          <button class="btn" id="btnReady">READY</button>
           <button class="btn hidden" id="btnLobbySpectate">SPECTATE</button>
           <button class="btn primary hidden" id="btnStartMatch">START MATCH</button>
         </div>
@@ -1300,12 +1573,13 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
               <button class="btn small mode-picker-main" type="button" aria-haspopup="true" aria-expanded="false"><span class="mode-picker-value">Regular</span><span class="mode-picker-caret">▾</span></button>
               <div class="mode-picker-panel" role="menu"></div>
             </div>
-            <select id="lobbyModeSelect" class="hidden"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="grapple_hook">Grapple Hook</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option><option value="bouncy_arrows">Bouncy Arrows</option><option value="mines">Mines</option><option value="large_mines">Large Mines</option><option value="death_mines">Death Mines</option></select>
+            <select id="lobbyModeSelect" class="hidden"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="grapple_hook">Grapple Hook</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option><option value="bouncy_arrows">Bouncy Arrows</option><option value="mines">Mines</option><option value="large_mines">Large Mines</option><option value="death_mines">Death Mines</option><option value="weaponry">Weaponry</option></select>
           </div>
           <div class="field"><label>Gravity</label><input type="number" id="lobbyGravity" min="0.1" max="3" step="0.1" value="1"></div>
           <div class="field"><label>Knockback ×</label><input type="number" id="lobbyKB" min="0.2" max="3" step="0.1" value="1"></div>
           <div class="field"><label>Player Size</label><input type="number" id="lobbyPlayerSize" min="0.5" max="2" step="0.1" value="1"></div>
           <div class="field"><label>Max Players</label><input type="number" id="lobbyMaxP" min="2" max="8" value="8"></div>
+          <div class="field hidden weapon-selector-lock-field" id="lobbyWeaponField"><label>Your Weapon</label><div class="weapon-selector-lock-row"><select id="lobbyWeapon"><option value="sword">Sword</option><option value="wand">Wand</option><option value="bo_staff">Bo Staff</option><option value="axe">Shovel</option><option value="flail">Flail</option><option value="chakram">Chakram</option></select><div id="lobbyWeaponLockField"><button class="btn small" type="button" id="btnWeaponLock">Lock</button></div></div></div>
           <div class="round-settings-grid lobby-round-settings">
             <div class="field"><label>Round Rule</label><select id="lobbyRoundMode"><option value="rounds">Fixed Rounds</option><option value="score">First to Points</option></select></div>
             <div class="field round-count-slot" id="lobbyRoundCountField"><label>Rounds</label><input type="number" id="lobbyRoundCount" min="1" max="99" value="3"></div>
@@ -1498,6 +1772,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
   </div>
   <div class="playercards" id="playercards"></div>
   <div id="timer">0:00</div>
+  <div id="weaponHud" aria-live="polite"><span class="weapon-hud-name" id="weaponHudName">SWORD</span><span class="weapon-hud-state" id="weaponHudState">READY</span></div>
   <div id="cdflash"></div>
   <div id="msgbanner"></div>
   <div id="barswrap">
@@ -1940,6 +2215,14 @@ class Player{
     this.grappleSerial=0; this.netGrappleSerial=0; this.grappleEventSeq=0; this.lastGrappleEventSeq=null;
     this.pendingGrappleTargetId=null; this.remoteGrappleActive=false; this.remoteGrappleEventSeq=null;
     this.actionAiming=false; this.actionAngle=-Math.PI/2; this.actionAimStartAngle=-Math.PI/2; this.actionAimStartTime=0; this.actionEventSeq=0; this.lastActionEventSeq=null; this.pendingActionAngle=null; this.remoteActionActive=false; this.actionCooldown=0; this.actionCooldownMax=PHYS.actionProjectileCooldown; this.actionCharge=0; this.actionChargeStartTime=0; this.actionPower=0; this.actionKind=null;
+    this.weapon=validWeapon(cust?.weapon);
+    this.weaponOrbitAngle=((weaponHash32(id)%3600)/3600)*Math.PI*2;
+    this.weaponPhase='idle'; this.weaponPhaseTime=0; this.weaponAttackAngle=this.weaponOrbitAngle;
+    this.weaponActionSerial=0; this.netWeaponActionSerial=0; this.weaponEventSeq=0; this.lastWeaponEventSeq=null;
+    this.weaponCooldown=0; this.weaponCooldownMax=0; this.weaponHitIds={}; this.weaponContactLocks={};
+    this.weaponThrowOriginX=this.x; this.weaponThrowOriginY=this.y;
+    this.weaponWorldX=this.x+Math.cos(this.weaponOrbitAngle)*60; this.weaponWorldY=this.y+Math.sin(this.weaponOrbitAngle)*60;
+    this.weaponReturnX=this.weaponWorldX; this.weaponReturnY=this.weaponWorldY;
     this._jumpTrackActive=false; this._jumpStartY=this.y; this._jumpPeakY=this.y; this._jumpApexFxDone=false; this._wallTouchFxAt=0;
   }
 }
@@ -3363,7 +3646,43 @@ const GameModes = {
   mines:{ label:'Mines', grapple:false, projectile:false, deadly:false, mine:true, deathMine:false },
   large_mines:{ label:'Large Mines', grapple:false, projectile:false, deadly:false, mine:true, deathMine:false, largeMine:true },
   death_mines:{ label:'Death Mines', grapple:false, projectile:false, deadly:false, mine:true, deathMine:true },
+  weaponry:{ label:'Weaponry', weaponry:true },
 };
+
+/* ---------------------------- WEAPONRY ----------------------------
+   Isolated player-only combat. Weapons never participate in map/platform
+   collision. The host owns knockback, elimination and projectile hits. */
+const WEAPONS={
+  // Idle placement deliberately starts outside the normal player radius so the
+  // weapons visibly float around the character instead of clipping through it.
+  sword:{label:'Sword',orbitSpeed:3.35,cooldown:.78,contactCooldown:.20,
+    idleInner:36,idleOuter:84,idleWidth:8,attackExtend:.11,attackActive:.12,attackRetract:.15,
+    bladeLength:48,idleCenter:60,attackCenter:98,activeWidth:9,contactKnockback:390},
+  wand:{label:'Wand',orbitSpeed:2.55,cooldown:2.05,contactCooldown:.24,
+    idleInner:34,idleOuter:78,idleWidth:7,castTime:.16,projectileSpeed:880,projectileRange:620,
+    projectileRadius:7,contactKnockback:300},
+  bo_staff:{label:'Bo Staff',orbitSpeed:2.05,cooldown:8.80,contactCooldown:.22,
+    idleInner:42,idleOuter:114,idleWidth:7,attackExtend:.24,attackHold:1.85,attackReturn:.46,returnSpeed:420,
+    staffLength:92,idleCenter:78,throwStart:78,throwEnd:245,activeWidth:8,contactKnockback:370,spinSpeed:12.5},
+  axe:{label:'Shovel',orbitSpeed:3.00,cooldown:2.00,contactCooldown:.21,
+    idleInner:40,idleOuter:84,idleWidth:9,attackExtend:.09,attackActive:.28,attackRetract:.15,
+    handleLength:48,idleCenter:62,attackCenter:96,activeWidth:11,swingInner:42,swingOuter:126,
+    swingStart:-1.08,swingEnd:1.08,contactKnockback:430},
+  flail:{label:'Flail',orbitSpeed:2.70,cooldown:2.45,contactCooldown:.23,
+    idleInner:34,idleOuter:74,idleWidth:8,attackExtend:.095,attackActive:.09,attackRetract:.12,returnSpeed:1240,
+    idleCenter:52,strikeRange:218,ballRadius:10,chainWidth:4,activeWidth:10,contactKnockback:350},
+  chakram:{label:'Chakram',orbitSpeed:3.05,cooldown:2.1,contactCooldown:.18,
+    idleInner:36,idleOuter:78,idleWidth:8,attackExtend:.20,attackActive:.08,attackHold:1.25,attackRetract:.20,returnSpeed:820,
+    idleCenter:60,throwRange:154,discRadius:15,discThickness:5,activeWidth:14,contactKnockback:330,spinSpeed:14}
+};
+function validWeapon(id){ return Object.prototype.hasOwnProperty.call(WEAPONS,id)?id:'sword'; }
+function weaponLabel(id){ return WEAPONS[validWeapon(id)].label; }
+function weaponHash32(str){
+  let h=2166136261>>>0; const text=String(str||'');
+  for(let i=0;i<text.length;i++){ h^=text.charCodeAt(i); h=Math.imul(h,16777619); }
+  return h>>>0;
+}
+
 
 /* ============================================================================
    GAME — main state machine + physics + rendering + networking glue
@@ -3576,7 +3895,7 @@ const Game = {
   state:'menu',
   players:{},
   myId:null, myName:getSavedUsername(),
-  map:null, mode:'regular', matchSettings:{gravity:1,kb:1,maxPlayers:8,spikewall:false,teams:false,smash:false,combo:false,parry:false,shrinkray:false,growthray:false,whiplash:false,magnet:false,repulsor:false,hotpotato:false,zeroGravity:false},
+  map:null, mode:'regular', matchSettings:{gravity:1,kb:1,maxPlayers:8,spikewall:false,teams:false,smash:false,combo:false,parry:false,shrinkray:false,growthray:false,whiplash:false,magnet:false,repulsor:false,hotpotato:false,zeroGravity:false,weaponLock:null},
   particles:new ParticleSystem(),
   // Trail FX are intentionally capped much lower than gameplay particles.
   // Trails are persistent cosmetics, so a small bounded pool keeps frame time stable.
@@ -3607,6 +3926,7 @@ const Game = {
   countdownPunch:0,
   projectiles:[],
   _nextProjectileId:1,
+  weaponProjectiles:[],
   mines:[],
   _nextMineId:1,
   movingPlatformState:{},
@@ -3872,7 +4192,7 @@ const Game = {
       this.authoritativeSpawnRound = Number(expectedRound)||this.roundNumber;
       this.remotePredictionDisabledUntil = performance.now() + 2600;
     }
-    this.state='playing'; this.eliminationOrder=[]; this.projectiles=[]; this.mines=[];
+    this.state='playing'; this.eliminationOrder=[]; this.projectiles=[]; this.weaponProjectiles=[]; this.mines=[];
     resetHotPotatoState();
     this.netRoundResult=null;
     this.clearRoundEffects();
@@ -3924,6 +4244,7 @@ const Game = {
         p.vx=0; p.vy=0; p.damage=0; p.alive=false; p.grounded=false; p.supportPlatform=-1;
         p.grappleAnchor=null; p.grappleTargetId=null; p.grappleLen=0; p.grappleRestLen=0;
         p.actionAiming=false; p.remoteActionActive=false; p.actionCharge=0; p.actionPower=0; p.actionKind=null;
+        p.weaponPhase='idle'; p.weaponPhaseTime=0; p.weaponCooldown=0; p.weaponHitIds={}; p.weaponContactLocks={};
         p.renderX=p.x; p.renderY=p.y; p.renderTargetX=p.x; p.renderTargetY=p.y; p._smoothRenderTrail=[];
         continue;
       }
@@ -3953,6 +4274,7 @@ const Game = {
       p.dashSerial=0; p.netDashSerial=0; p.grappleSerial=0; p.netGrappleSerial=0; p._dashChargeSfxLevel=0;
       p.grappleEventSeq=0; p.lastGrappleEventSeq=null; p.pendingGrappleTargetId=null; p.remoteGrappleActive=false; p.remoteGrappleEventSeq=null;
       p.actionAiming=false; p.actionAngle=-Math.PI/2; p.actionAimStartAngle=-Math.PI/2; p.actionAimStartTime=0; p.actionEventSeq=0; p.lastActionEventSeq=null; p.pendingActionAngle=null; p.remoteActionActive=false; p.actionCooldown=0; p.actionCooldownMax=GameModes[this.mode]?.mine?PHYS.mineCooldown:PHYS.actionProjectileCooldown; p.actionCharge=0; p.actionChargeStartTime=0; p.actionPower=0; p.actionKind=null; p._actionChargeFxAcc=0;
+      p.weapon=validWeapon(p.weapon||'sword'); p.weaponPhase='idle'; p.weaponPhaseTime=0; p.weaponAttackAngle=p.weaponOrbitAngle; p.weaponActionSerial=0; p.netWeaponActionSerial=0; p.weaponEventSeq=0; p.lastWeaponEventSeq=null; p.weaponCooldown=0; p.weaponCooldownMax=0; p.weaponHitIds={}; p.weaponContactLocks={}; p.weaponWallBlocked=false;
       p._jumpTrackActive=false; p._jumpStartY=p.y; p._jumpPeakY=p.y; p._jumpApexFxDone=false; p._wallTouchFxAt=0;
       p.remoteJumpHeld=false; p.remoteJumpHoldSeq=0; p.remoteJumpReleaseSeq=0;
     }
@@ -3989,7 +4311,12 @@ const Game = {
         me.jumpEventSeq = ((me.jumpEventSeq||0) + 1) & 65535;
         NetworkManager.sendToHost({t:'jump', seq:me.jumpEventSeq}, true);
       }
-      if(me && (this.mode==='grapple' || this.mode==='pypg' || this.mode==='grapple_hook' || this.mode==='arrows' || this.mode==='death_arrows' || this.mode==='bouncy_arrows' || this.mode==='mines' || this.mode==='large_mines' || this.mode==='death_mines')){
+      if(me && this.mode==='weaponry'){
+        if(me.input.grapplePressed){
+          me.input.grapplePressed=false;
+          if(!this.startWeaponAttack(me,me.weaponOrbitAngle,true,null)) this.showActionFailureFeedback(me,'action');
+        }
+      } else if(me && (this.mode==='grapple' || this.mode==='pypg' || this.mode==='grapple_hook' || this.mode==='arrows' || this.mode==='death_arrows' || this.mode==='bouncy_arrows' || this.mode==='mines' || this.mode==='large_mines' || this.mode==='death_mines')){
         const actionMode=this.mode;
         if(actionMode==='grapple' || actionMode==='pypg'){
           if(me.input.grapplePressed){
@@ -4121,6 +4448,7 @@ const Game = {
         if(this.isHost) this.stepHost(PHYS.step);
         else this.stepClientPredict(PHYS.step);
         this.updateProjectiles(PHYS.step);
+        this.updateWeaponProjectiles(PHYS.step);
         this.physicsTick = (this.physicsTick||0) + 1;
       }
       this.accumulator -= PHYS.step;
@@ -4164,6 +4492,7 @@ const Game = {
       this.applyGrapple(p, dt);
     }
     this.resolveCollisions(dt);
+    this.updateWeapons(dt);
     this.updateMines(dt);
     this.killPlayersInSpikewall();
     this.checkDeaths();
@@ -4184,6 +4513,7 @@ const Game = {
       this.applyGrapple(p, dt);
     }
     this.resolveCollisions(dt);
+    this.updateWeapons(dt);
     this.updateMines(dt);
     this.killPlayersInSpikewall();
     // Deaths and round completion are host-authoritative. Clients wait for the
@@ -5220,6 +5550,619 @@ const Game = {
     this.particles.burst(x,y,'#5dffcf',3,120,{gravity:0,life:.18,size:2.1,sizeEnd:.2,twinkle:true});
     this.particles.burst(x,y,'#ffffff',2,90,{gravity:0,life:.12,size:1.5,sizeEnd:.15,twinkle:true});
     this.camera.addShake(2.5);NetworkManager.broadcast({t:'grapple_hook_hit_fx',x,y},false);
+  },
+
+  /* ---------- Weaponry: isolated player-only combat system ---------- */
+  isWeaponry(){ return this.mode==='weaponry'; },
+  weaponSpec(p){ return WEAPONS[validWeapon(p?.weapon||'sword')]; },
+  weaponPoint(p,angle,distance){ const a=Number(angle)||0,d=Math.max(0,Number(distance)||0); return {x:p.x+Math.cos(a)*d,y:p.y+Math.sin(a)*d}; },
+  weaponSegmentHitsTarget(ax,ay,bx,by,width,target){
+    if(!target||!target.alive||target.spectator) return false;
+    const dx=bx-ax,dy=by-ay,len2=dx*dx+dy*dy;
+    const t=len2>1e-8?Math.max(0,Math.min(1,((target.x-ax)*dx+(target.y-ay)*dy)/len2)):0;
+    const cx=ax+dx*t,cy=ay+dy*t,reach=(target.radius||26)+(Number(width)||6);
+    return (target.x-cx)*(target.x-cx)+(target.y-cy)*(target.y-cy)<=reach*reach;
+  },
+  weaponSegmentHit(p,angle,inner,outer,width,target){
+    if(!target||!target.alive||target.spectator)return false;
+    const id=validWeapon(p?.weapon);
+    if(id==='sword' && p.weaponPhase!=='idle'){
+      const g=this.weaponRenderGeometry(p),half=g.length*0.5,ca=Math.cos(g.rotation),sa=Math.sin(g.rotation);
+      const cx=p.x+Math.cos(g.angle)*g.center,cy=p.y+Math.sin(g.angle)*g.center;
+      return this.weaponSegmentHitsTarget(cx-ca*half,cy-sa*half,cx+ca*half,cy+sa*half,width,target);
+    }
+    if(id==='axe' && p.weaponPhase!=='idle'){
+      const g=this.weaponRenderGeometry(p);
+      const a=this.normalizeAngle(g.rotation);
+      const inR=Math.max(30,g.center-(g.handleLength||48)*0.22);
+      const outR=g.center+(g.headReach||27);
+      const ax=p.x+Math.cos(a)*inR, ay=p.y+Math.sin(a)*inR;
+      const bx=p.x+Math.cos(a)*outR, by=p.y+Math.sin(a)*outR;
+      return this.weaponSegmentHitsTarget(ax,ay,bx,by,width,target);
+    }
+    if(id==='bo_staff'){
+      const g=this.weaponRenderGeometry(p),half=g.length*0.5,ca=Math.cos(g.rotation),sa=Math.sin(g.rotation);
+      return this.weaponSegmentHitsTarget(g.worldX-ca*half,g.worldY-sa*half,g.worldX+ca*half,g.worldY+sa*half,width,target);
+    }
+    if(id==='chakram' && p.weaponPhase!=='idle'){
+      const g=this.weaponRenderGeometry(p),rad=(g.discRadius||15)+(Number(width)||6);
+      return (target.x-g.worldX)*(target.x-g.worldX)+(target.y-g.worldY)*(target.y-g.worldY)<=Math.max(rad,target.radius||26)**2;
+    }
+    if(id==='flail' && p.weaponPhase!=='idle'){
+      const g=this.weaponRenderGeometry(p),rad=(g.ballRadius||10)+(Number(width)||6);
+      return (target.x-g.worldX)*(target.x-g.worldX)+(target.y-g.worldY)*(target.y-g.worldY)<=Math.max(rad,target.radius||26)**2;
+    }
+    const a=this.weaponPoint(p,angle,inner),b=this.weaponPoint(p,angle,outer);
+    return this.weaponSegmentHitsTarget(a.x,a.y,b.x,b.y,width,target);
+  },
+  weaponClampAgainstWalls(p,angle,fromDistance,toDistance,radius=6){
+    if(!this.map)return {distance:toDistance,blocked:false};
+    const lo=Math.max(0,Number(fromDistance)||0), hi=Math.max(lo,Number(toDistance)||lo), r=Math.max(1,Number(radius)||6);
+    const span=hi-lo;
+    const steps=Math.max(1,Math.ceil(span/3));
+    const testAt=(d)=>{
+      const x=p.x+Math.cos(angle)*d,y=p.y+Math.sin(angle)*d;
+      if(x-r<=0||y-r<=0||x+r>=this.map.width||y+r>=this.map.height)return true;
+      for(const plat of this.map.platforms||[]){
+        if(plat.phase)continue;
+        const hit=(Number(plat.rotation)||0)!==0
+          ? this.circleVsRotatedRect({x,y,radius:r},plat)
+          : this.circleVsAxisAlignedRect({x,y,radius:r},plat);
+        if(hit)return true;
+      }
+      return false;
+    };
+    if(testAt(lo))return {distance:lo,blocked:true};
+    for(let i=1;i<=steps;i++){
+      const d=lo+span*(i/steps);
+      if(testAt(d))return {distance:Math.max(lo,d-Math.max(2,span/steps*1.5)),blocked:true};
+    }
+    return {distance:hi,blocked:false};
+  },
+  weaponWandBurstFx(x,y,reason='hit',broadcast=true){
+    // A compact purple burst that reads like the rest of PLUNK's particles.
+    this.particles.burst(x,y,'#ffffff',7,170,{gravity:-18,life:.26,size:2.5,sizeEnd:.12,twinkle:true,shape:'diamond'});
+    this.particles.burst(x,y,'#ad70ff',7,135,{gravity:0,life:.32,size:2.7,sizeEnd:.08,twinkle:true,shape:'star'});
+    this.particles.burst(x,y,'#6f35d8',5,105,{gravity:12,life:.24,size:2.0,sizeEnd:.06,twinkle:true,shape:'circle'});
+    if(reason==='hit') this.particles.burst(x,y,'#ead8ff',3,85,{gravity:-4,life:.20,size:3.0,sizeEnd:.18,twinkle:true,shape:'diamond'});
+    if(broadcast&&this.isHost) NetworkManager.broadcast({t:'weapon_wand_fx',x,y,reason},false);
+  },
+  weaponImpactFx(x,y,kind,strong=true){
+    if(kind==='wand'){
+      this.weaponWandBurstFx(x,y,'hit',true);
+      if(strong) this.camera.addShake(1.6);
+      return;
+    }
+    const c='#ffd46a';
+    this.particles.burst(x,y,'#ffffff',strong?10:6,strong?250:150,{gravity:-15,life:strong?.30:.20,size:strong?3.1:2.2,sizeEnd:.12,twinkle:true,shape:'diamond'});
+    this.particles.burst(x,y,c,strong?7:3,strong?190:110,{gravity:0,life:strong?.22:.15,size:strong?2.4:1.8,sizeEnd:.08,twinkle:true,shape:'star'});
+    if(strong) this.camera.addShake(2.1);
+    if(this.isHost) NetworkManager.broadcast({t:'weapon_hit_fx',x,y,kind},false);
+  },
+  weaponApplyKnockback(attacker,victim,kind){
+    if(!this.isHost||!attacker||!victim||!victim.alive||victim.spectator)return;
+    const spec=this.weaponSpec(attacker),dx=victim.x-attacker.x,dy=victim.y-attacker.y,dist=Math.hypot(dx,dy)||1,k=(spec.contactKnockback||320)*(this.matchSettings.kb||1);
+    victim.vx+=dx/dist*k; victim.vy+=dy/dist*k*.72-40; victim.grounded=false; victim.hitFlash=4; victim.lastHitBy=attacker.id; victim.lastHitAt=performance.now();
+    if(this.matchSettings?.combo) this.registerHit(attacker.id,victim.id,victim.x,victim.y,kind);
+    this.weaponImpactFx(victim.x,victim.y,kind,true);
+  },
+  weaponEliminate(attacker,victim,kind,x,y){
+    if(!this.isHost||!attacker||!victim||!victim.alive||victim.spectator)return;
+    victim.alive=false; victim.vx=0; victim.vy=0; victim.lastHitBy=attacker.id; victim.lastHitAt=performance.now(); victim.hitFlash=8;
+    if(!this.eliminationOrder.includes(victim.id)) this.eliminationOrder.push(victim.id);
+    this.weaponImpactFx(x,y,kind,true);
+    NetworkManager.broadcast({t:'eliminated',id:victim.id,killerId:attacker.id,reason:'weapon',kind},true);
+    AudioManager.death();
+    this.reportElimination(victim);
+  },
+  weaponPlayerContact(attacker,angle,inner,outer,width,kind,now){
+    if(!this.isHost||!attacker?.alive||attacker.spectator)return;
+    const locks=attacker.weaponContactLocks||(attacker.weaponContactLocks={}), lockMs=this.weaponSpec(attacker).contactCooldown*1000;
+    for(const other of Object.values(this.players)){
+      if(!other||other.id===attacker.id||!other.alive||other.spectator)continue;
+      if((locks[other.id]||0)<=now&&this.weaponSegmentHit(attacker,angle,inner,outer,width,other)){ locks[other.id]=now+lockMs; this.weaponApplyKnockback(attacker,other,kind); }
+    }
+  },
+  weaponActiveContact(attacker,angle,inner,outer,width,kind){
+    if(!this.isHost||!attacker?.alive||attacker.spectator)return;
+    const hits=attacker.weaponHitIds||(attacker.weaponHitIds={});
+    for(const other of Object.values(this.players)){
+      if(!other||other.id===attacker.id||!other.alive||other.spectator||hits[other.id])continue;
+      if(this.weaponSegmentHit(attacker,angle,inner,outer,width,other)){ hits[other.id]=true; this.weaponEliminate(attacker,other,kind,other.x,other.y); }
+    }
+  },
+  startWeaponAttack(p,angle,fromInput=false,remoteSeq=null){
+    if(!this.isWeaponry()||!p||p.spectator||!p.alive)return false;
+    const spec=this.weaponSpec(p); if((p.weaponCooldown||0)>0||p.weaponPhase!=='idle')return false;
+    const a=this.normalizeAngle(Number.isFinite(angle)?angle:p.weaponOrbitAngle);
+    p.weaponAttackAngle=a; p.weaponPhase='extend'; p.weaponPhaseTime=0;
+    p.weaponCooldown=spec.cooldown; p.weaponCooldownMax=spec.cooldown;
+    p.weaponHitIds={}; p.weaponContactLocks={}; p.weaponActionSerial=(p.weaponActionSerial||0)+1;
+    // Bo Staff keeps an exact world-space position while thrown. Its return target
+    // is the same floating orbit point it occupied at the moment of the throw, so
+    // finishing the return never snaps into the player's body or jumps back out.
+    if(p.weapon==='bo_staff'){
+      p.weaponThrowOriginX=p.x; p.weaponThrowOriginY=p.y;
+      p.weaponWorldX=p.x+Math.cos(a)*spec.throwStart; p.weaponWorldY=p.y+Math.sin(a)*spec.throwStart;
+      p.weaponReturnX=p.x+Math.cos(a)*spec.idleCenter; p.weaponReturnY=p.y+Math.sin(a)*spec.idleCenter;
+    }else if(p.weapon==='flail'){
+      p.weaponThrowOriginX=p.x; p.weaponThrowOriginY=p.y;
+      p.weaponWorldX=p.x+Math.cos(a)*spec.idleOuter; p.weaponWorldY=p.y+Math.sin(a)*spec.idleOuter;
+      p.weaponReturnX=p.weaponWorldX; p.weaponReturnY=p.weaponWorldY; p.weaponWallBlocked=false;
+    }else if(p.weapon==='chakram'){
+      p.weaponThrowOriginX=p.x; p.weaponThrowOriginY=p.y;
+      p.weaponWorldX=p.x+Math.cos(a)*spec.idleCenter; p.weaponWorldY=p.y+Math.sin(a)*spec.idleCenter;
+      p.weaponReturnX=p.x+Math.cos(a)*spec.idleCenter; p.weaponReturnY=p.y+Math.sin(a)*spec.idleCenter;
+    }
+    if(remoteSeq!=null)p.netWeaponActionSerial=remoteSeq;
+    if(p.weapon==='wand')this.spawnWeaponProjectile(p,a,p.weaponActionSerial);
+    if(this.isHost)NetworkManager.broadcast({t:'weapon_attack',id:p.id,serial:p.weaponActionSerial,weapon:p.weapon,angle:a,throwX:p.weaponThrowOriginX,throwY:p.weaponThrowOriginY},true);
+    else if(fromInput){
+      p.weaponEventSeq=((p.weaponEventSeq||0)+1)&65535;
+      NetworkManager.sendToHost({t:'weapon_attack',seq:p.weaponEventSeq,weapon:p.weapon,angle:a},true);
+    }
+    return true;
+  },
+  receiveWeaponAttack(data){
+    if(!this.isWeaponry()||!data?.id)return;
+    const p=this.players[data.id]; if(!p||p.id===this.myId||p.spectator)return;
+    if(validWeapon(data.weapon)!==p.weapon)return;
+    const serial=Number(data.serial)||0; if(serial&&serial<=Number(p.netWeaponActionSerial||0))return;
+    p.netWeaponActionSerial=serial||((p.netWeaponActionSerial||0)+1); p.weaponAttackAngle=this.normalizeAngle(Number.isFinite(Number(data.angle))?Number(data.angle):p.weaponOrbitAngle); p.weaponPhase='extend'; p.weaponPhaseTime=0; p.weaponCooldown=this.weaponSpec(p).cooldown; p.weaponCooldownMax=p.weaponCooldown; p.weaponHitIds={}; p.weaponContactLocks={}; p.weaponActionSerial=Math.max(p.weaponActionSerial||0,p.netWeaponActionSerial);
+    if(p.weapon==='bo_staff'){
+      p.weaponThrowOriginX=Number.isFinite(Number(data.throwX))?Number(data.throwX):p.x;
+      p.weaponThrowOriginY=Number.isFinite(Number(data.throwY))?Number(data.throwY):p.y;
+      p.weaponWorldX=p.weaponThrowOriginX+Math.cos(p.weaponAttackAngle)*this.weaponSpec(p).throwStart;
+      p.weaponWorldY=p.weaponThrowOriginY+Math.sin(p.weaponAttackAngle)*this.weaponSpec(p).throwStart;
+      p.weaponReturnX=p.x+Math.cos(p.weaponAttackAngle)*this.weaponSpec(p).idleCenter;
+      p.weaponReturnY=p.y+Math.sin(p.weaponAttackAngle)*this.weaponSpec(p).idleCenter;
+    }else if(p.weapon==='flail'){
+      const fs=this.weaponSpec(p);
+      p.weaponThrowOriginX=p.x; p.weaponThrowOriginY=p.y;
+      p.weaponWorldX=p.x+Math.cos(p.weaponAttackAngle)*fs.idleOuter;
+      p.weaponWorldY=p.y+Math.sin(p.weaponAttackAngle)*fs.idleOuter;
+      p.weaponReturnX=p.weaponWorldX; p.weaponReturnY=p.weaponWorldY; p.weaponWallBlocked=false;
+    }else if(p.weapon==='chakram'){
+      const cs=this.weaponSpec(p);
+      p.weaponThrowOriginX=p.x; p.weaponThrowOriginY=p.y;
+      p.weaponWorldX=p.x+Math.cos(p.weaponAttackAngle)*cs.idleCenter;
+      p.weaponWorldY=p.y+Math.sin(p.weaponAttackAngle)*cs.idleCenter;
+      p.weaponReturnX=p.x+Math.cos(p.weaponAttackAngle)*cs.idleCenter;
+      p.weaponReturnY=p.y+Math.sin(p.weaponAttackAngle)*cs.idleCenter;
+    }
+    if(p.weapon==='wand')this.spawnWeaponProjectile(p,p.weaponAttackAngle,p.netWeaponActionSerial);
+  },
+  endWeaponAttack(p){
+    if(!p)return;
+    const id=validWeapon(p.weapon);
+    if(id==='bo_staff'){
+      const spec=this.weaponSpec(p),a=this.normalizeAngle(Number.isFinite(p.weaponAttackAngle)?p.weaponAttackAngle:p.weaponOrbitAngle);
+      p.weaponOrbitAngle=a;p.weaponWorldX=p.x+Math.cos(a)*spec.idleCenter;p.weaponWorldY=p.y+Math.sin(a)*spec.idleCenter;p.weaponReturnX=p.weaponWorldX;p.weaponReturnY=p.weaponWorldY;
+    }else if(id==='flail'){
+      const spec=this.weaponSpec(p),a=this.normalizeAngle(Number.isFinite(p.weaponAttackAngle)?p.weaponAttackAngle:p.weaponOrbitAngle);
+      p.weaponOrbitAngle=a;p.weaponWorldX=p.x+Math.cos(a)*spec.idleOuter;p.weaponWorldY=p.y+Math.sin(a)*spec.idleOuter;p.weaponReturnX=p.weaponWorldX;p.weaponReturnY=p.weaponWorldY;p.weaponWallBlocked=false;
+    }else if(id==='chakram'){
+      const spec=this.weaponSpec(p),a=this.normalizeAngle(Number.isFinite(p.weaponAttackAngle)?p.weaponAttackAngle:p.weaponOrbitAngle);
+      p.weaponOrbitAngle=a;p.weaponWorldX=p.x+Math.cos(a)*spec.idleCenter;p.weaponWorldY=p.y+Math.sin(a)*spec.idleCenter;p.weaponReturnX=p.weaponWorldX;p.weaponReturnY=p.weaponWorldY;
+    }
+    p.weaponPhase='idle';p.weaponPhaseTime=0;p.weaponHitIds={};
+  },
+  spawnWeaponProjectile(owner,angle,serial){
+    if(!owner||owner.weapon!=='wand')return; const spec=this.weaponSpec(owner),a=this.normalizeAngle(angle),id=`wp:${owner.id}:${serial}`;
+    if(this.weaponProjectiles.some(q=>q.id===id))return;
+    // Start the bolt just beyond the wand tip, rather than from inside the player.
+    const wandCenter=(spec.idleInner+spec.idleOuter)*.5;
+    const wandLength=spec.idleOuter-spec.idleInner;
+    const start=wandCenter+wandLength*.34+12;
+    const x=owner.x+Math.cos(a)*start,y=owner.y+Math.sin(a)*start;
+    const q={id,ownerId:owner.id,x,y,prevX:x,prevY:y,vx:Math.cos(a)*spec.projectileSpeed,vy:Math.sin(a)*spec.projectileSpeed,angle:a,travel:0,maxRange:spec.projectileRange,radius:spec.projectileRadius||7,life:spec.projectileRange/spec.projectileSpeed,serial};
+    this.weaponProjectiles.push(q); if(this.isHost)NetworkManager.broadcast({t:'weapon_shot',projectile:q},false);
+  },
+  weaponProjectileHitsPlayer(q,target){
+    if(!target||!target.alive||target.spectator||target.id===q.ownerId)return false;
+    const dx=q.x-q.prevX,dy=q.y-q.prevY,len2=dx*dx+dy*dy,t=len2>1e-8?Math.max(0,Math.min(1,((target.x-q.prevX)*dx+(target.y-q.prevY)*dy)/len2)):0,cx=q.prevX+dx*t,cy=q.prevY+dy*t,reach=(target.radius||26)+(q.radius||7);
+    return (target.x-cx)*(target.x-cx)+(target.y-cy)*(target.y-cy)<=reach*reach;
+  },
+  updateWeaponProjectiles(dt){
+    if(!this.isWeaponry()){this.weaponProjectiles=[];return;} const keep=[];
+    for(const q of this.weaponProjectiles){
+      q.prevX=q.x;q.prevY=q.y;q.x+=q.vx*dt;q.y+=q.vy*dt;q.travel+=Math.hypot(q.vx,q.vy)*dt;q.life-=dt;let remove=false;
+      if(this.isHost){
+        const owner=this.players[q.ownerId];
+        if(!owner||!owner.alive) remove=true;
+        else for(const target of Object.values(this.players)){
+          if(this.weaponProjectileHitsPlayer(q,target)){
+            this.weaponEliminate(owner,target,'wand',target.x,target.y); remove=true; break;
+          }
+        }
+        if(!remove && (q.travel>=(q.maxRange||620)||q.life<=0)){
+          this.weaponWandBurstFx(q.x,q.y,'range',true);
+          remove=true;
+        }
+      }
+      if(!remove&&q.travel<(q.maxRange||620)&&q.life>0)keep.push(q);
+    }
+    this.weaponProjectiles=keep;
+  },
+  updateWeapons(dt){
+    if(!this.isWeaponry())return;
+    const now=performance.now();
+    for(const p of Object.values(this.players)){
+      if(!p)continue;
+      if((p.weaponCooldown||0)>0)p.weaponCooldown=Math.max(0,p.weaponCooldown-dt);
+      if(p.spectator||!p.alive){if(p.weaponPhase!=='idle')this.endWeaponAttack(p);continue;}
+      const spec=this.weaponSpec(p);
+      if(p.weaponPhase==='idle'){
+        p.weaponOrbitAngle=this.normalizeAngle(p.weaponOrbitAngle+spec.orbitSpeed*dt);
+        this.weaponPlayerContact(p,p.weaponOrbitAngle,spec.idleInner,spec.idleOuter,spec.idleWidth,'idle',now);
+        continue;
+      }
+      p.weaponPhaseTime+=dt;
+      if(p.weapon==='sword'){
+        if(p.weaponPhase==='extend'){
+          // Sword is lethal along its entire outward travel, not only once it reaches the tip.
+          this.weaponActiveContact(p,p.weaponAttackAngle,spec.activeWidth,spec.activeWidth,spec.activeWidth,'sword');
+          if(p.weaponPhaseTime>=spec.attackExtend){p.weaponPhase='active';p.weaponPhaseTime=0;}
+        }else if(p.weaponPhase==='active'){
+          this.weaponActiveContact(p,p.weaponAttackAngle,spec.activeWidth,spec.activeWidth,spec.activeWidth,'sword');
+          if(p.weaponPhaseTime>=spec.attackActive){p.weaponPhase='retract';p.weaponPhaseTime=0;}
+        }else if(p.weaponPhase==='retract'){
+          // The returning blade remains lethal while traveling back through an opponent.
+          this.weaponActiveContact(p,p.weaponAttackAngle,spec.activeWidth,spec.activeWidth,spec.activeWidth,'sword');
+          if(p.weaponPhaseTime>=spec.attackRetract)this.endWeaponAttack(p);
+        }
+      }else if(p.weapon==='wand'){
+        if(p.weaponPhaseTime>=spec.castTime)this.endWeaponAttack(p);
+      }else if(p.weapon==='bo_staff'){
+        if(p.weaponPhase==='extend'){
+          const t=Math.min(1,p.weaponPhaseTime/spec.attackExtend);
+          const d=spec.throwStart+(spec.throwEnd-spec.throwStart)*(t*t*(3-2*t));
+          p.weaponWorldX=p.weaponThrowOriginX+Math.cos(p.weaponAttackAngle)*d;
+          p.weaponWorldY=p.weaponThrowOriginY+Math.sin(p.weaponAttackAngle)*d;
+          // The staff is lethal during its entire outward travel.
+          this.weaponActiveContact(p,p.weaponAttackAngle,0,0,spec.activeWidth,'bo_staff');
+          if(p.weaponPhaseTime>=spec.attackExtend){
+            p.weaponWorldX=p.weaponThrowOriginX+Math.cos(p.weaponAttackAngle)*spec.throwEnd;
+            p.weaponWorldY=p.weaponThrowOriginY+Math.sin(p.weaponAttackAngle)*spec.throwEnd;
+            p.weaponPhase='hold';p.weaponPhaseTime=0;
+          }
+        }else if(p.weaponPhase==='hold'){
+          // World-space lock: the staff remains exactly where it was thrown even
+          // if the player moves underneath it.
+          this.weaponActiveContact(p,p.weaponAttackAngle,0,0,spec.activeWidth,'bo_staff');
+          if(p.weaponPhaseTime>=spec.attackHold){
+            p.weaponPhase='return';p.weaponPhaseTime=0;
+            p.weaponReturnX=p.x+Math.cos(p.weaponAttackAngle)*spec.idleCenter;
+            p.weaponReturnY=p.y+Math.sin(p.weaponAttackAngle)*spec.idleCenter;
+            p.weaponWorldX=p.weaponThrowOriginX+Math.cos(p.weaponAttackAngle)*spec.throwEnd;
+            p.weaponWorldY=p.weaponThrowOriginY+Math.sin(p.weaponAttackAngle)*spec.throwEnd;
+          }
+        }else if(p.weaponPhase==='return'){
+          const targetX=p.x+Math.cos(p.weaponAttackAngle)*spec.idleCenter;
+          const targetY=p.y+Math.sin(p.weaponAttackAngle)*spec.idleCenter;
+          p.weaponReturnX=targetX;p.weaponReturnY=targetY;
+          const dx=targetX-p.weaponWorldX,dy=targetY-p.weaponWorldY,dist=Math.hypot(dx,dy),step=Math.max(0,spec.returnSpeed||420)*dt;
+          if(dist<=Math.max(5,step)){
+            p.weaponWorldX=targetX;p.weaponWorldY=targetY;p.weaponOrbitAngle=this.normalizeAngle(p.weaponAttackAngle);this.endWeaponAttack(p);
+          }else{
+            p.weaponWorldX+=(dx/dist)*step;p.weaponWorldY+=(dy/dist)*step;
+          }
+          if(p.weaponPhase!=='idle')this.weaponActiveContact(p,p.weaponAttackAngle,0,0,spec.activeWidth,'bo_staff');
+        }
+      }else if(p.weapon==='chakram'){
+        const a=p.weaponAttackAngle;
+        if(p.weaponPhase==='extend'){
+          const t=Math.min(1,p.weaponPhaseTime/spec.attackExtend),d=spec.idleCenter+(spec.throwRange-spec.idleCenter)*(t*t*(3-2*t));
+          // Like the Bo Staff, the disc travels from the original throw position;
+          // player movement cannot drag it around while it is being thrown.
+          p.weaponWorldX=p.weaponThrowOriginX+Math.cos(a)*d; p.weaponWorldY=p.weaponThrowOriginY+Math.sin(a)*d;
+          // The disc is lethal for the entire outward throw, not only at the endpoint.
+          this.weaponActiveContact(p,a,0,0,spec.activeWidth,'chakram');
+          if(p.weaponPhaseTime>=spec.attackExtend){
+            p.weaponWorldX=p.weaponThrowOriginX+Math.cos(a)*spec.throwRange;
+            p.weaponWorldY=p.weaponThrowOriginY+Math.sin(a)*spec.throwRange;
+            p.weaponPhase='active';p.weaponPhaseTime=0;
+          }
+        }else if(p.weaponPhase==='active'){
+          // Brief lethal contact at the endpoint, then hold the disc there.
+          p.weaponActiveRotation=(p.weaponActiveRotation||0)+spec.spinSpeed*dt;
+          this.weaponActiveContact(p,a,0,0,spec.activeWidth,'chakram');
+          if(p.weaponPhaseTime>=spec.attackActive){p.weaponPhase='hold';p.weaponPhaseTime=0;}
+        }else if(p.weaponPhase==='hold'){
+          // World-space hold: keep the Chakram exactly where it reached until the
+          // hold finishes, matching the Bo Staff's thrown behavior.
+          p.weaponActiveRotation=(p.weaponActiveRotation||0)+spec.spinSpeed*dt;
+          this.weaponActiveContact(p,a,0,0,spec.activeWidth,'chakram');
+          if(p.weaponPhaseTime>=spec.attackHold){p.weaponPhase='retract';p.weaponPhaseTime=0;}
+        }else if(p.weaponPhase==='retract'){
+          const targetX=p.x+Math.cos(a)*spec.idleCenter,targetY=p.y+Math.sin(a)*spec.idleCenter;
+          const dx=targetX-p.weaponWorldX,dy=targetY-p.weaponWorldY,dist=Math.hypot(dx,dy),step=spec.returnSpeed*dt;
+          p.weaponActiveRotation=(p.weaponActiveRotation||0)+spec.spinSpeed*dt;
+          if(dist<=Math.max(4,step)){p.weaponWorldX=targetX;p.weaponWorldY=targetY;p.weaponOrbitAngle=this.normalizeAngle(a);this.endWeaponAttack(p);}
+          else {p.weaponWorldX+=(dx/dist)*step;p.weaponWorldY+=(dy/dist)*step;}
+          if(p.weaponPhase!=='idle')this.weaponActiveContact(p,a,0,0,spec.activeWidth,'chakram');
+        }
+      }else if(p.weapon==='axe'){
+        if(p.weaponPhase==='extend'){
+          // The Shovel's head/handle is lethal throughout the outward sweep.
+          this.weaponActiveContact(p,p.weaponAttackAngle,spec.swingInner,spec.swingOuter,spec.activeWidth,'axe');
+          if(p.weaponPhaseTime>=spec.attackExtend){p.weaponPhase='active';p.weaponPhaseTime=0;}
+        }else if(p.weaponPhase==='active'){
+          this.weaponActiveContact(p,p.weaponAttackAngle,spec.swingInner,spec.swingOuter,spec.activeWidth,'axe');
+          if(p.weaponPhaseTime>=spec.attackActive){p.weaponPhase='retract';p.weaponPhaseTime=0;}
+        }else if(p.weaponPhase==='retract'){
+          // The returning Shovel remains lethal while it swings back into orbit.
+          this.weaponActiveContact(p,p.weaponAttackAngle,spec.swingInner,spec.swingOuter,spec.activeWidth,'axe');
+          if(p.weaponPhaseTime>=spec.attackRetract)this.endWeaponAttack(p);
+        }
+      }else if(p.weapon==='flail'){
+        const a=p.weaponAttackAngle;
+        if(p.weaponPhase==='extend'){
+          const t=Math.min(1,p.weaponPhaseTime/spec.attackExtend), eased=t*t*(3-2*t);
+          const targetDist=spec.idleOuter+spec.strikeRange*eased;
+          const wall=this.weaponClampAgainstWalls(p,a,spec.idleOuter,targetDist,spec.ballRadius);
+          const d=wall.distance;
+          p.weaponWorldX=p.x+Math.cos(a)*d;p.weaponWorldY=p.y+Math.sin(a)*d;p.weaponWallBlocked=wall.blocked;
+          // The Flail ball is lethal anywhere along the outward whip path.
+          this.weaponActiveContact(p,a,0,0,spec.activeWidth,'flail');
+          if(wall.blocked||p.weaponPhaseTime>=spec.attackExtend){
+            const finalDist=wall.distance;
+            p.weaponWorldX=p.x+Math.cos(a)*finalDist;p.weaponWorldY=p.y+Math.sin(a)*finalDist;
+            // Whip behavior: touching a wall or reaching max range immediately turns
+            // the ball around. Give the endpoint one active hit sample, then retract.
+            this.weaponActiveContact(p,a,0,0,spec.activeWidth,'flail');
+            p.weaponPhase='retract';p.weaponPhaseTime=0;
+          }
+        }else if(p.weaponPhase==='active'){
+          // Keep the strike endpoint clamped to the map so the ball cannot slip
+          // through a wall if the attacker moves during the tiny active window.
+          const currentDist=Math.hypot(p.weaponWorldX-p.x,p.weaponWorldY-p.y);
+          const wall=this.weaponClampAgainstWalls(p,a,spec.idleCenter,Math.max(spec.idleCenter,currentDist),spec.ballRadius);
+          const d=Math.min(currentDist,wall.distance);
+          p.weaponWorldX=p.x+Math.cos(a)*d;p.weaponWorldY=p.y+Math.sin(a)*d;
+          this.weaponActiveContact(p,a,0,0,spec.activeWidth,'flail');
+          if(p.weaponPhaseTime>=spec.attackActive){p.weaponPhase='retract';p.weaponPhaseTime=0;}
+        }else if(p.weaponPhase==='retract'){
+          const targetX=p.x+Math.cos(a)*spec.idleOuter,targetY=p.y+Math.sin(a)*spec.idleOuter;
+          const dx=targetX-p.weaponWorldX,dy=targetY-p.weaponWorldY,dist=Math.hypot(dx,dy),step=spec.returnSpeed*dt;
+          if(dist<=Math.max(4,step)){
+            p.weaponWorldX=targetX;p.weaponWorldY=targetY;
+            // Sample the final return segment too, before switching back to idle.
+            this.weaponActiveContact(p,a,0,0,spec.activeWidth,'flail');
+            this.endWeaponAttack(p);
+          }else{
+            // The outward strike was wall-clamped, so the whip retracts directly and
+            // smoothly to the player's normal floating orbit point. No snap at the end.
+            p.weaponWorldX+=(dx/dist)*step;
+            p.weaponWorldY+=(dy/dist)*step;
+          }
+          if(p.weaponPhase!=='idle')this.weaponActiveContact(p,a,0,0,spec.activeWidth,'flail');
+        }
+      }
+    }
+  },
+  weaponRenderGeometry(p){
+    const id=validWeapon(p.weapon),spec=this.weaponSpec(p);
+    let angle=p.weaponOrbitAngle,center=spec.idleCenter||((spec.idleInner+spec.idleOuter)*.5),rotation=0,
+        inner=spec.idleInner,outer=spec.idleOuter,length=(spec.bladeLength||spec.staffLength||Math.max(1,outer-inner));
+    if(id==='wand')return {angle,center:(spec.idleInner+spec.idleOuter)*.5,rotation:0,inner,outer,length:outer-inner};
+
+    if(id==='sword'){
+      length=spec.bladeLength;rotation=p.weaponAttackAngle;center=spec.idleCenter;
+      if(p.weaponPhase!=='idle'){
+        angle=p.weaponAttackAngle;let t=1;
+        if(p.weaponPhase==='extend')t=Math.min(1,p.weaponPhaseTime/spec.attackExtend);
+        else if(p.weaponPhase==='active')t=1;
+        else if(p.weaponPhase==='retract')t=1-Math.min(1,p.weaponPhaseTime/spec.attackRetract);
+        center=spec.idleCenter+(spec.attackCenter-spec.idleCenter)*t;
+      }else rotation=angle;
+      return {angle,center,rotation,inner:0,outer:0,length};
+    }
+
+    if(id==='axe'){
+      if(p.weaponPhase==='idle'){
+        return {angle:p.weaponOrbitAngle,center:spec.idleCenter,rotation:p.weaponOrbitAngle,inner:spec.idleInner,outer:spec.idleOuter,length:spec.handleLength,headReach:27,handleLength:spec.handleLength,swingT:0};
+      }
+      const ease=t=>t*t*(3-2*t);
+      let sweep=0,center=spec.idleCenter;
+      if(p.weaponPhase==='extend'){
+        const t=ease(Math.min(1,p.weaponPhaseTime/spec.attackExtend));
+        sweep=spec.swingStart*t;
+        center=spec.idleCenter+(spec.attackCenter-spec.idleCenter)*t;
+      }else if(p.weaponPhase==='active'){
+        const t=ease(Math.min(1,p.weaponPhaseTime/spec.attackActive));
+        sweep=spec.swingStart+(spec.swingEnd-spec.swingStart)*t;
+        center=spec.attackCenter;
+      }else{
+        const t=ease(Math.min(1,p.weaponPhaseTime/spec.attackRetract));
+        sweep=spec.swingEnd*(1-t);
+        center=spec.attackCenter+(spec.idleCenter-spec.attackCenter)*t;
+      }
+      return {angle:p.weaponAttackAngle+sweep,center,rotation:p.weaponAttackAngle+sweep,inner:spec.swingInner,outer:spec.swingOuter,length:spec.handleLength,headReach:27,handleLength:spec.handleLength,swingT:0};
+    }
+    if(id==='chakram'){
+      const a=p.weaponPhase==='idle'?p.weaponOrbitAngle:p.weaponAttackAngle;
+      const wx=p.weaponPhase==='idle'?p.x+Math.cos(a)*spec.idleCenter:Number.isFinite(p.weaponWorldX)?p.weaponWorldX:p.x+Math.cos(a)*spec.idleCenter;
+      const wy=p.weaponPhase==='idle'?p.y+Math.sin(a)*spec.idleCenter:Number.isFinite(p.weaponWorldY)?p.weaponWorldY:p.y+Math.sin(a)*spec.idleCenter;
+      let rot=a;
+      if(p.weaponPhase!=='idle') rot+=Number(p.weaponActiveRotation||0);
+      return {angle:a,center:spec.idleCenter,rotation:rot,inner:spec.idleInner,outer:spec.idleOuter,length:0,worldX:wx,worldY:wy,discRadius:spec.discRadius};
+    }
+    if(id==='flail'){
+      const a=p.weaponPhase==='idle'?p.weaponOrbitAngle:p.weaponAttackAngle;
+      const wx=p.weaponPhase==='idle'?p.x+Math.cos(a)*spec.idleOuter:Number.isFinite(p.weaponWorldX)?p.weaponWorldX:p.x+Math.cos(a)*spec.idleCenter;
+      const wy=p.weaponPhase==='idle'?p.y+Math.sin(a)*spec.idleOuter:Number.isFinite(p.weaponWorldY)?p.weaponWorldY:p.y+Math.sin(a)*spec.idleCenter;
+      return {angle:a,center:spec.idleCenter,rotation:a,inner:spec.idleInner,outer:spec.idleOuter,length:spec.idleOuter-spec.idleInner,worldX:wx,worldY:wy,ballRadius:spec.ballRadius};
+    }
+
+    // Bo Staff uses the world-space position that updateWeapons maintains.
+    if(p.weaponPhase==='idle'){
+      return {angle,center:spec.idleCenter,rotation:angle,inner,outer,length:spec.staffLength,worldX:p.x+Math.cos(angle)*spec.idleCenter,worldY:p.y+Math.sin(angle)*spec.idleCenter};
+    }
+    let elapsed=0;
+    if(p.weaponPhase==='extend')elapsed=p.weaponPhaseTime;
+    else if(p.weaponPhase==='hold')elapsed=spec.attackExtend+p.weaponPhaseTime;
+    else elapsed=spec.attackExtend+spec.attackHold+p.weaponPhaseTime;
+    return {angle:p.weaponAttackAngle,center:0,rotation:p.weaponAttackAngle+elapsed*spec.spinSpeed,inner:0,outer:0,length:spec.staffLength,worldX:Number.isFinite(p.weaponWorldX)?p.weaponWorldX:p.x+Math.cos(p.weaponAttackAngle)*spec.idleCenter,worldY:Number.isFinite(p.weaponWorldY)?p.weaponWorldY:p.y+Math.sin(p.weaponAttackAngle)*spec.idleCenter};
+  },
+  renderWeapon(ctx,p){
+    if(!this.isWeaponry()||!p||p.spectator)return;
+    const id=validWeapon(p.weapon),x=(p.id!==this.myId&&Number.isFinite(p.renderX))?p.renderX:p.x,
+      y=(p.id!==this.myId&&Number.isFinite(p.renderY))?p.renderY:p.y;
+    const fake=Object.assign({},p,{x,y}),g=this.weaponRenderGeometry(fake),
+      primary=hsvToCss(p.cust?.hue??200,p.cust?.saturation??80,92),
+      secondary=hsvToCss(p.cust?.hue2??40,p.cust?.saturation2??60,78),
+      active=p.weaponPhase!=='idle';
+    ctx.save();ctx.translate(x,y);ctx.lineCap='square';ctx.lineJoin='miter';
+    if(id==='sword'){ctx.rotate(g.rotation);this.drawWeaponSword(ctx,g.center,g.length,primary,secondary,active);}
+    else if(id==='wand'){ctx.rotate(g.angle);this.drawWeaponWand(ctx,g.center,g.length,primary,secondary,active);}
+    else if(id==='axe'){
+      // The axe's center itself follows the full 360-degree orbit. Its head only
+      // changes facing at the left/right halves of that orbit. This keeps the
+      // weapon moving continuously around the player instead of snapping to the sides.
+      ctx.translate(Math.cos(g.angle)*g.center,Math.sin(g.angle)*g.center);
+      ctx.rotate(g.rotation);
+      this.drawWeaponShovel(ctx,0,g.length,primary,secondary,active);
+    }
+    else if(id==='chakram'){
+      ctx.translate(g.worldX-x,g.worldY-y);ctx.rotate(g.rotation);
+      this.drawWeaponChakram(ctx,g.discRadius,primary,secondary,active);
+    }
+    else if(id==='flail'){
+      const dx=g.worldX-x,dy=g.worldY-y;
+      this.drawWeaponFlail(ctx,dx,dy,g.center,g.inner,g.ballRadius,primary,secondary,active);
+    }else{
+      // Bo Staff uses absolute world coordinates while thrown, so player movement
+      // cannot drag it around; on return, geometry itself converges to the player.
+      ctx.restore();
+      ctx.save();ctx.translate(g.worldX,g.worldY);ctx.rotate(g.rotation);
+      this.drawWeaponBoStaff(ctx,g.length,primary,secondary,active);
+      ctx.restore();
+      return;
+    }
+    ctx.restore();
+  },
+  drawWeaponSword(ctx,center,length,primary,secondary,active){
+    const h0=center-length*.50,g=center-length*.18,tip=center+length*.50;
+    const handle=ctx.createLinearGradient(h0,-5,g,5);
+    handle.addColorStop(0,'#3a2418');handle.addColorStop(.5,'#855333');handle.addColorStop(1,'#3a2418');
+    ctx.strokeStyle='#241a15';ctx.lineWidth=8;ctx.beginPath();ctx.moveTo(h0,0);ctx.lineTo(g,0);ctx.stroke();
+    ctx.strokeStyle=handle;ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(h0,0);ctx.lineTo(g,0);ctx.stroke();
+    const wrap=ctx.createLinearGradient(0,-4,0,4);
+    wrap.addColorStop(0,secondary);wrap.addColorStop(.5,primary);wrap.addColorStop(1,secondary);
+    ctx.strokeStyle=wrap;ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(h0+8,-4);ctx.lineTo(h0+8,4);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(h0+15,-4);ctx.lineTo(h0+15,4);ctx.stroke();
+
+    const blade=ctx.createLinearGradient(g,-5,tip,5);
+    blade.addColorStop(0,'#777b7a');blade.addColorStop(.5,'#d6d9d7');blade.addColorStop(1,'#686c6c');
+    ctx.fillStyle='#252624';ctx.beginPath();ctx.moveTo(g,-6);ctx.lineTo(tip-7,-6);ctx.lineTo(tip,0);ctx.lineTo(tip-7,6);ctx.lineTo(g,6);ctx.closePath();ctx.fill();
+    ctx.fillStyle=blade;ctx.beginPath();ctx.moveTo(g,-4);ctx.lineTo(tip-8,-4);ctx.lineTo(tip-1,0);ctx.lineTo(tip-8,4);ctx.lineTo(g,4);ctx.closePath();ctx.fill();
+  },
+  drawWeaponWand(ctx,center,length,primary,secondary,active){
+    const left=center-length*.50,right=center+length*.34,tip=right+11;
+    const wood=ctx.createLinearGradient(left,-4,right,4);
+    wood.addColorStop(0,'#352218');wood.addColorStop(.5,'#895636');wood.addColorStop(1,'#3b2519');
+    ctx.strokeStyle='#211812';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(left,0);ctx.lineTo(right-5,0);ctx.stroke();
+    ctx.strokeStyle=wood;ctx.lineWidth=4.5;ctx.beginPath();ctx.moveTo(left,0);ctx.lineTo(right-5,0);ctx.stroke();
+    ctx.fillStyle='#252018';ctx.beginPath();ctx.moveTo(right-8,-4.5);ctx.lineTo(tip,0);ctx.lineTo(right-8,4.5);ctx.closePath();ctx.fill();
+    ctx.fillStyle='#6d4529';ctx.beginPath();ctx.moveTo(right-8,-3);ctx.lineTo(tip-1,0);ctx.lineTo(right-8,3);ctx.closePath();ctx.fill();
+    const accent=ctx.createLinearGradient(0,-4,0,4);
+    accent.addColorStop(0,secondary);accent.addColorStop(.5,primary);accent.addColorStop(1,secondary);
+    ctx.fillStyle=accent;ctx.fillRect(left+12,-4,4,8);ctx.fillRect(left+20,-4,4,8);
+  },
+  drawWeaponShovel(ctx,center,length,primary,secondary,active){
+    const handleStart=center-length*.52, headBase=center+length*.24;
+    const handleGrad=ctx.createLinearGradient(handleStart,-4,headBase+5,4);
+    handleGrad.addColorStop(0,'#342116');handleGrad.addColorStop(.42,'#805331');handleGrad.addColorStop(.70,'#a66a3f');handleGrad.addColorStop(1,'#3b2418');
+    ctx.strokeStyle='#211812';ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(handleStart,0);ctx.lineTo(headBase+5,0);ctx.stroke();
+    ctx.strokeStyle=handleGrad;ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(handleStart,0);ctx.lineTo(headBase+5,0);ctx.stroke();
+    const gripGrad=ctx.createLinearGradient(0,-4,0,4);gripGrad.addColorStop(0,secondary);gripGrad.addColorStop(.5,primary);gripGrad.addColorStop(1,secondary);
+    ctx.strokeStyle=gripGrad;ctx.lineWidth=3;
+    ctx.beginPath();ctx.moveTo(handleStart+11,-4.2);ctx.lineTo(handleStart+11,4.2);ctx.stroke();
+
+    // Compact shovel silhouette: a small metal socket on the haft and a broad blade
+    // with a distinct cutting edge, rather than a shovel-like scoop.
+    const edgeX=headBase+29;
+    const headGrad=ctx.createLinearGradient(headBase,-14,edgeX,12);
+    headGrad.addColorStop(0,'#4f5352');headGrad.addColorStop(.38,'#e0e2df');headGrad.addColorStop(.68,'#aaadab');headGrad.addColorStop(1,'#5f6362');
+    ctx.fillStyle='#242625';ctx.beginPath();
+    ctx.moveTo(headBase-2,-7);ctx.lineTo(headBase+8,-13);ctx.lineTo(edgeX,-10);
+    ctx.lineTo(edgeX+1,10);ctx.lineTo(headBase+8,13);ctx.lineTo(headBase-2,7);ctx.closePath();ctx.fill();
+    ctx.fillStyle=headGrad;ctx.beginPath();
+    ctx.moveTo(headBase,-5);ctx.lineTo(headBase+9,-10);ctx.lineTo(edgeX-2,-7);
+    ctx.lineTo(edgeX-1,7);ctx.lineTo(headBase+9,10);ctx.lineTo(headBase,5);ctx.closePath();ctx.fill();
+
+  },
+  drawWeaponChakram(ctx,radius,primary,secondary,active){
+    const metal=ctx.createRadialGradient(-4,-5,2,0,0,radius+4);
+    metal.addColorStop(0,'#f0f2ef');metal.addColorStop(.28,'#aab0ad');metal.addColorStop(.62,'#5e6463');metal.addColorStop(1,'#262928');
+    ctx.shadowColor=active?'#0008':'#0005';ctx.shadowBlur=active?7:4;
+    ctx.fillStyle='#232625';ctx.beginPath();ctx.arc(0,0,radius+2,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=metal;ctx.beginPath();ctx.arc(0,0,radius,0,Math.PI*2);ctx.fill();
+    const rim=ctx.createLinearGradient(-radius,-radius,radius,radius);
+    rim.addColorStop(0,secondary);rim.addColorStop(.5,primary);rim.addColorStop(1,secondary);
+    ctx.strokeStyle=rim;ctx.lineWidth=4;ctx.beginPath();ctx.arc(0,0,radius-3,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle='#202323';ctx.beginPath();ctx.arc(0,0,5.5,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle=primary;ctx.beginPath();ctx.arc(0,0,3,0,Math.PI*2);ctx.fill();
+    for(let i=0;i<4;i++){
+      const a=(Math.PI/2)*i+Math.PI/4,rr=radius-5;
+      ctx.save();ctx.rotate(a);ctx.fillStyle=primary;ctx.fillRect(rr-2,-1.7,5,3.4);ctx.restore();
+    }
+    ctx.shadowBlur=0;
+  },
+  drawWeaponFlail(ctx,dx,dy,startRadius,inner,ballRadius,primary,secondary,active){
+    const dist=Math.hypot(dx,dy)||1,ang=Math.atan2(dy,dx);
+    const chainStart=Math.max(inner,startRadius*.7),chainEnd=Math.max(chainStart,dist-ballRadius-2);
+    ctx.save();ctx.rotate(ang);
+
+    // No brown handle: the flail begins directly at the floating chain anchor,
+    // with only a small player-color accent where it connects to the player.
+    const gripAccent=ctx.createLinearGradient(0,-4,0,4);
+    gripAccent.addColorStop(0,secondary);gripAccent.addColorStop(.5,primary);gripAccent.addColorStop(1,secondary);
+    ctx.strokeStyle=gripAccent;ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(inner-2,-3.5);ctx.lineTo(inner-2,3.5);ctx.stroke();
+
+    const chain=ctx.createLinearGradient(chainStart,0,chainEnd,0);
+    chain.addColorStop(0,'#4b4e4e');chain.addColorStop(.5,'#c6cac8');chain.addColorStop(1,'#686b6b');
+    ctx.strokeStyle='#242626';ctx.lineWidth=7;ctx.beginPath();ctx.moveTo(chainStart,0);ctx.lineTo(chainEnd,0);ctx.stroke();
+    ctx.strokeStyle=chain;ctx.lineWidth=3.5;ctx.beginPath();ctx.moveTo(chainStart,0);ctx.lineTo(chainEnd,0);ctx.stroke();
+
+    const links=Math.max(2,Math.min(5,Math.floor((chainEnd-chainStart)/20)));
+    for(let i=0;i<links;i++){
+      const t=(i+1)/(links+1),lx=chainStart+(chainEnd-chainStart)*t;
+      ctx.fillStyle=i%2?'#a4a8a7':'#d0d3d1';ctx.fillRect(lx-2.5,-4,5,8);
+    }
+
+    const ball=ctx.createRadialGradient(dist-3,-3,1,dist,0,ballRadius+3);
+    ball.addColorStop(0,'#eef0ee');ball.addColorStop(.45,'#9fa4a2');ball.addColorStop(1,'#3f4242');
+    ctx.fillStyle=ball;ctx.beginPath();ctx.arc(dist,0,ballRadius,0,Math.PI*2);ctx.fill();
+    for(let i=0;i<6;i++){
+      const a=(Math.PI*2*i)/6,ir=ballRadius-1,or=ballRadius+6;
+      const bx=dist+Math.cos(a-.18)*ir,by=Math.sin(a-.18)*ir;
+      const tx=dist+Math.cos(a)*or,ty=Math.sin(a)*or;
+      const cx=dist+Math.cos(a+.18)*ir,cy=Math.sin(a+.18)*ir;
+      ctx.fillStyle='#666a69';ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(tx,ty);ctx.lineTo(cx,cy);ctx.closePath();ctx.fill();
+    }
+    ctx.restore();
+  },
+  drawWeaponBoStaff(ctx,length,primary,secondary,active){
+    const left=-length*.5,right=length*.5;
+    const metal=ctx.createLinearGradient(0,-5,0,5);
+    metal.addColorStop(0,'#5a5e5d');metal.addColorStop(.5,'#d1d4d2');metal.addColorStop(1,'#565958');
+    ctx.strokeStyle='#252626';ctx.lineWidth=9;ctx.beginPath();ctx.moveTo(left,0);ctx.lineTo(right,0);ctx.stroke();
+    ctx.strokeStyle=metal;ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(left,0);ctx.lineTo(right,0);ctx.stroke();
+    const accent=ctx.createLinearGradient(0,-5,0,5);
+    accent.addColorStop(0,secondary);accent.addColorStop(.5,primary);accent.addColorStop(1,secondary);
+    ctx.fillStyle=accent;
+    ctx.fillRect(left+6,-4.5,4,9);ctx.fillRect(left+14,-4.5,4,9);
+    ctx.fillRect(right-18,-4.5,4,9);ctx.fillRect(right-10,-4.5,4,9);
+  },
+  renderWeaponProjectiles(ctx){
+    if(!this.isWeaponry()||!this.weaponProjectiles.length)return;const cam=this.camera,z=cam.zoom;ctx.save();ctx.scale(z,z);ctx.translate(-cam.x,-cam.y);
+    for(const q of this.weaponProjectiles){const owner=this.players[q.ownerId],h=owner?.cust?.hue??290,col=hsvToCss(h,owner?.cust?.saturation??80,94),a=q.angle||Math.atan2(q.vy,q.vx);ctx.save();ctx.translate(q.x,q.y);ctx.rotate(a);ctx.shadowColor='#a969ff';ctx.shadowBlur=16;ctx.fillStyle='#8d55ff';ctx.beginPath();ctx.ellipse(-13,0,16,4.6,0,0,Math.PI*2);ctx.fill();ctx.fillStyle=col;ctx.beginPath();ctx.arc(2,0,q.radius||7,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff6ff';ctx.beginPath();ctx.arc(1.5,-1.5,2.7,0,Math.PI*2);ctx.fill();ctx.restore();}ctx.restore();
+  },
+  weaponHudUpdate(){
+    const hud=document.getElementById('weaponHud');if(!hud)return;const show=(this.state==='playing'||this.state==='countdown')&&this.isWeaponry();hud.classList.toggle('active',show);if(!show)return;const p=this.players[this.myId];if(!p)return;document.getElementById('weaponHudName').textContent=weaponLabel(p.weapon).toUpperCase();let st='READY';if(p.weaponPhase==='active'||p.weaponPhase==='hold')st=(p.weapon==='bo_staff'||p.weapon==='chakram')?'SPINNING':'ACTIVE';else if(p.weaponPhase==='extend')st='ATTACKING';else if(p.weaponPhase==='retract')st='RETURNING';else if((p.weaponCooldown||0)>0)st=`COOLDOWN ${(p.weaponCooldown).toFixed(1)}s`;document.getElementById('weaponHudState').textContent=st;
   },
 
   findNearestLivingPlayer(p){
@@ -6903,11 +7846,14 @@ const Game = {
         p.grounded?1:0, Number.isInteger(p.supportPlatform)?p.supportPlatform:-1,
         p.grappleTargetId||'',
         p.spectator?1:0,
-        Math.round(p.radius*100)/100
+        Math.round(p.radius*100)/100,
+        validWeapon(p.weapon),p.weaponPhase||'idle',Number(p.weaponPhaseTime)||0,Number(p.weaponAttackAngle)||0,
+        Number(p.weaponActionSerial)||0,Number(p.weaponCooldown)||0,Number(p.weaponOrbitAngle)||0,
+        Number.isFinite(p.weaponWorldX)?Math.round(p.weaponWorldX):0,Number.isFinite(p.weaponWorldY)?Math.round(p.weaponWorldY):0
       ];
     }
     const hotPotato=(this.matchSettings?.hotpotato && this.hotPotato?.carrierId)?{carrierId:this.hotPotato.carrierId,remainingMs:Math.max(0,(Number(this.hotPotato.expiresAt)||0)-performance.now()),serial:this.hotPotato.serial||0}:null;
-    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, hotPotato, roundResult:(this.state==='roundResults'?this.netRoundResult:null), scores:(this.state==='roundResults'?this.scores:null), teamScores:this.teamScores, spawnAssignments:this.spawnAssignments, spawnPositions:(this.state==='roundResults' ? this.getNextRoundSpawnPositions() : null), movingPlatforms:this.getMovingPlatformSnapshot(), s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace,kind:q.kind,bouncy:!!q.bouncy,bounceCount:q.bounceCount||0,playerHitCooldowns:q.playerHitCooldowns||{}})), mines:this.mines.map(m=>this.serializeMine(m))}, false);
+    NetworkManager.broadcast({t:'state', tick:this.physicsTick||0, seq:this.stateSeq, round:this.roundNumber, transitionId:this.roundTransitionId||0, hotPotato, roundResult:(this.state==='roundResults'?this.netRoundResult:null), scores:(this.state==='roundResults'?this.scores:null), teamScores:this.teamScores, spawnAssignments:this.spawnAssignments, spawnPositions:(this.state==='roundResults' ? this.getNextRoundSpawnPositions() : null), movingPlatforms:this.getMovingPlatformSnapshot(), s:snap, projectiles:this.projectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,life:null,deadly:q.deadly,halfLength:q.halfLength,halfWidth:q.halfWidth,angle:q.angle,power:q.power,spawnGrace:q.spawnGrace,kind:q.kind,bouncy:!!q.bouncy,bounceCount:q.bounceCount||0,playerHitCooldowns:q.playerHitCooldowns||{}})), mines:this.mines.map(m=>this.serializeMine(m)),weaponProjectiles:this.weaponProjectiles.map(q=>({id:q.id,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,angle:q.angle,travel:q.travel,maxRange:q.maxRange,radius:q.radius,life:q.life,serial:q.serial}))}, false);
     this.lastServerState = Date.now();
   },
   updateRemoteJumpPrediction(p, serverX, serverY, serverVX, serverVY, now){
@@ -7132,6 +8078,15 @@ const Game = {
         if(!seen.has(this.mines[mi].id)) this.mines.splice(mi,1);
       }
     }
+    if(Array.isArray(msg.weaponProjectiles) && !this.isHost){
+      const byId=new Map(msg.weaponProjectiles.map(q=>[q.id,q]));
+      for(const q of msg.weaponProjectiles){
+        const local=this.weaponProjectiles.find(x=>x.id===q.id);
+        if(local){local.x+=(q.x-local.x)*.72;local.y+=(q.y-local.y)*.72;local.vx=q.vx;local.vy=q.vy;local.travel=q.travel;local.life=q.life;}
+        else this.weaponProjectiles.push(Object.assign({},q));
+      }
+      this.weaponProjectiles=this.weaponProjectiles.filter(q=>byId.has(q.id));
+    }
     for(const id in msg.s){
       const v = msg.s[id];
       const p = this.players[id];
@@ -7184,6 +8139,13 @@ const Game = {
 
       p.damage=v[4];
       if(Number.isFinite(v[30])) p.radius=Math.max(PHYS.modifierSizeMin,Math.min(PHYS.modifierSizeMax,Number(v[30])));
+      if(v[31]!=null) p.weapon=validWeapon(v[31]);
+      if(id!==this.myId){
+        p.weaponPhase=['idle','extend','active','retract','hold','return'].includes(v[32])?v[32]:'idle';
+        p.weaponPhaseTime=Number(v[33])||0; p.weaponAttackAngle=Number(v[34])||p.weaponOrbitAngle;
+        p.netWeaponActionSerial=Number(v[35])||p.netWeaponActionSerial||0; p.weaponCooldown=Number(v[36])||0; p.weaponOrbitAngle=Number(v[37])||p.weaponOrbitAngle;
+        if(Number.isFinite(Number(v[38])) && Number.isFinite(Number(v[39]))){ p.weaponWorldX=Number(v[38]); p.weaponWorldY=Number(v[39]); }
+      }
       const hostSpectator=!!v[29];
       p.spectator=hostSpectator;
       p.alive=!!v[5] && !p.spectator;
@@ -7387,6 +8349,30 @@ const Game = {
           }
         }
         break;
+      case 'weapon_attack':
+        if(this.isHost){
+          const p=this.players[pid]; if(!p||p.spectator||!this.isWeaponry()) return;
+          const seq=(data.seq||0)&65535,prev=p.lastWeaponEventSeq,newer=prev===null||(((seq-(prev||0)+65536)&65535)<32768&&seq!==prev); if(!newer)return;
+          if(validWeapon(data.weapon)!==p.weapon)return; p.lastWeaponEventSeq=seq; this.startWeaponAttack(p,Number(data.angle),false,seq);
+        }else if(data.id){ this.receiveWeaponAttack(data); }
+        break;
+      case 'weapon_select':
+        if(this.isHost){
+          const p=this.players[pid]; if(!p||p.spectator)return;
+          const locked=(this.mode==='weaponry'&&this.matchSettings?.weaponLock)?validWeapon(this.matchSettings.weaponLock):null;
+          p.weapon=locked||validWeapon(data.weapon||p.weapon); p.weaponPhase='idle'; p.weaponCooldown=0;
+          NetworkManager.broadcast({t:'lobby_update',players:Lobby.serializePlayers(),mutedPlayers:Chat.mutedPlayerIds(),title:Lobby.title,index:Lobby.index,hostName:Game.myName,spectatorStates:Lobby.getSpectatorStates()},true); Lobby.render();
+        }
+        break;
+      case 'weapon_hit_fx':
+        if(!this.isHost){const x=Number(data.x)||0,y=Number(data.y)||0;this.particles.burst(x,y,'#fff',8,210,{gravity:-20,life:.28,size:2.5,sizeEnd:.15,twinkle:true,shape:'diamond'});this.particles.burst(x,y,'#ffd46a',5,165,{gravity:0,life:.22,size:2.2,sizeEnd:.1,twinkle:true,shape:'star'});}
+        break;
+      case 'weapon_wand_fx':
+        if(!this.isHost)this.weaponWandBurstFx(Number(data.x)||0,Number(data.y)||0,data.reason||'hit',false);
+        break;
+      case 'weapon_shot':
+        if(!this.isHost&&data.projectile&&!this.weaponProjectiles.some(q=>q.id===data.projectile.id))this.weaponProjectiles.push(Object.assign({},data.projectile));
+        break;
       case 'action_start':
         if(this.isHost){
           const p=this.players[pid]; if(!p) return;
@@ -7555,7 +8541,6 @@ const Game = {
       case 'lobby_update': if(!this.isHost) UI.applyLobbyUpdate(data); break;
       case 'join_request': if(this.isHost) Lobby.handleJoinRequest(pid, data); break;
       case 'join_accept': if(!this.isHost) Lobby.handleJoinAccept(data); break;
-      case 'ready': if(this.isHost) Lobby.setReady(pid, data.ready); break;
       case 'spectator_set': if(this.isHost) Lobby.setSpectator(pid,!!data.spectator,false); else Lobby.applySpectatorState(data); break;
       case 'spectator_roster': if(!this.isHost) Lobby.applySpectatorStates(data.states); break;
       case 'lobby_settings': if(!this.isHost) Lobby.applySettings(data); break;
@@ -7731,6 +8716,7 @@ const Game = {
       this.camera.follow(fallback, this.map.width, this.map.height, this.viewW, this.viewH, dt);
     }
     UI.updateHUD();
+    this.weaponHudUpdate();
   },
   render(){
     const ctx=this.ctx;
@@ -7749,6 +8735,7 @@ const Game = {
       this.trailParticles.render(ctx, this.camera);
       this.renderPlayers(ctx);
       this.renderProjectiles(ctx);
+      this.renderWeaponProjectiles(ctx);
       this.particles.render(ctx, this.camera);
       this.renderDamagePops(ctx);
       this.renderOffMapMarkers(ctx);
@@ -8491,6 +9478,7 @@ const Game = {
       const drawPlayer = (p.id!==this.myId && Number.isFinite(visualX) && Number.isFinite(visualY))
         ? Object.assign({},p,{x:visualX,y:visualY}) : p;
       this.drawCharacter(ctx,drawPlayer);
+      this.renderWeapon(ctx,drawPlayer);
       if(this.matchSettings?.hotpotato && this.hotPotato?.carrierId===p.id && p.alive){
         const now=performance.now();
         const remaining=Math.max(0,(Number(this.hotPotato.expiresAt)||0)-now);
@@ -9063,6 +10051,10 @@ const UI = {
   comboUi:{count:0,expiresAt:0},
   goto(name){
     if(name!=='results') this._roundResultDomForced=false;
+    if(name!=='results'){
+      const staleResults=document.getElementById('resultsList');
+      if(staleResults) staleResults.replaceChildren();
+    }
     stopCustomizePreviewLoop();
     stopCustomizeEffectShower();
     stopCustomizeHitPreview();
@@ -9221,6 +10213,10 @@ const UI = {
     const actions=document.querySelector('.results-actions');
     if(actions) actions.classList.remove('between-round');
     const list = document.getElementById('resultsList');
+    // A match-end message can arrive more than once to non-hosts. Rebuild the
+    // final-results surface from only the current match instead of accumulating
+    // every prior match's leaderboard/winner DOM.
+    if(list) list.replaceChildren();
     const resultsScreen=document.getElementById('screen-results');
     const resultsPanel=resultsScreen?.querySelector('.panel');
     if(resultsPanel) resultsPanel.classList.add('final-results-panel');
@@ -9445,9 +10441,9 @@ const UI = {
 
 /* ---------------------------- LOBBY ---------------------------- */
 const Lobby = {
-  players:[], code:null, index:null, title:'', password:'', ready:{}, banned:{}, discoveryResults:[], pendingJoin:null, intentionalLeave:false, teamAutoNext:'red', _requestedMap:null, _pendingMapRequest:null,
+  players:[], code:null, index:null, title:'', password:'', banned:{}, discoveryResults:[], pendingJoin:null, intentionalLeave:false, teamAutoNext:'red', _requestedMap:null, _pendingMapRequest:null,
   serializePlayers(){
-    return Object.values(Game.players).map(p=>({id:p.id,name:p.name,cust:p.cust,clientIdentity:p.clientIdentity||null,ready:!!this.ready[p.id],host:p.id===Game.myId,spectator:!!p.spectator,autoSpectator:!!p.autoSpectator,team:normalizedTeam(p.team),muted:Chat.isPlayerMuted(p.id)}));
+    return Object.values(Game.players).map(p=>({id:p.id,name:p.name,cust:p.cust,clientIdentity:p.clientIdentity||null,host:p.id===Game.myId,spectator:!!p.spectator,autoSpectator:!!p.autoSpectator,team:normalizedTeam(p.team),weapon:validWeapon(p.weapon),muted:Chat.isPlayerMuted(p.id)}));
   },
   activeTeamPlayers(){ return Object.values(Game.players).filter(p=>!p.spectator); },
   assignInitialTeams(){
@@ -9536,7 +10532,7 @@ const Lobby = {
   createAsHost(){
     Game.chatMuted=false; Game.mutedPlayers=new Set();
     Chat.syncMuteUI();
-    this.intentionalLeave=false; this.players=[]; this.ready={}; this.banned={}; this._requestedMap=null; this._pendingMapRequest=null;
+    this.intentionalLeave=false; this.players=[]; this.banned={}; this._requestedMap=null; this._pendingMapRequest=null;
     // Keep spaces inside the host-entered lobby name; only trim outer whitespace.
     const rawLobbyTitle=String(document.getElementById('hostLobbyTitle').value||'').replace(/[\r\n\t]+/g,' ').replace(/\s+$/,'').replace(/^\s+/,'');
     this.title=(rawLobbyTitle||`${Game.myName||'Player'}'s Lobby`).slice(0,32);
@@ -9549,8 +10545,8 @@ const Lobby = {
       document.getElementById('btnLeaveLobby').textContent='CLOSE LOBBY';
       const cust=Storage.get('customization',{hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',dashEffect:'basic',trailEffect:'none',hitEffect:'impactSpark'});
       const hostPlayer=new Player(id,Game.myName,cust,{x:0,y:0});
-      hostPlayer.clientIdentity=getClientIdentity();
-      Game.players={}; Game.players[id]=hostPlayer; this.ready={}; this.ready[id]=true; hostPlayer.team=null; if(Game.matchSettings.teams)this.assignInitialTeams();
+      hostPlayer.clientIdentity=getClientIdentity(); hostPlayer.weapon=validWeapon(document.getElementById('hostWeapon')?.value||Storage.get('weaponChoice','sword'));
+      Game.players={}; Game.players[id]=hostPlayer; hostPlayer.team=null; if(Game.matchSettings.teams)this.assignInitialTeams();
             document.getElementById('lobbyTitleDisplay').textContent=this.title;
       Chat.clear();
       document.getElementById('lobbyHostName').textContent=Game.myName;
@@ -9558,7 +10554,6 @@ const Lobby = {
       document.getElementById('lobbyMode').textContent=GameModes[Game.mode].label;
       this.renderSettings();
       document.getElementById('btnStartMatch').classList.remove('hidden');
-      document.getElementById('btnReady').classList.add('hidden');
       UI.goto('lobby');
       this.pushSettings(); this.render();
     }).catch(err=>{
@@ -9640,7 +10635,7 @@ const Lobby = {
     NetworkManager.joinHost(info.index).then(()=>{
       Game.isHost=false; NetworkManager.isHost=false; Game.myId=NetworkManager.myId;
       const cust=Storage.get('customization',{hue:200,hue2:40,saturation:80,saturation2:60,gradientPattern:'radial-out',dashEffect:'basic',trailEffect:'none',hitEffect:'impactSpark'});
-      NetworkManager.sendToHost({t:'join_request',name:Game.myName,cust,clientIdentity:getClientIdentity(),password:String(password||'')},true);
+      NetworkManager.sendToHost({t:'join_request',name:Game.myName,cust,clientIdentity:getClientIdentity(),password:String(password||''),weapon:validWeapon(Storage.get('weaponChoice','sword'))},true);
     }).catch(err=>{status.textContent='Unable to connect to that lobby. Refresh the list and try again.';});
   },
   joinByNumber(index){
@@ -9655,10 +10650,12 @@ const Lobby = {
     if(Object.keys(Game.players).length >= (Game.matchSettings.maxPlayers||8)){ NetworkManager.send(pid,{t:'join_accept',ok:false,reason:'Lobby is full.'},true); return; }
     const lobbyPassword=this.password||''; if(lobbyPassword && String(data.password||'')!==lobbyPassword){ NetworkManager.send(pid,{t:'join_accept',ok:false,reason:'Incorrect lobby password.'},true); return; }
     const p=new Player(pid,data.name||'Player',data.cust,{x:0,y:0}); p.clientIdentity=clientId;
+    const lockedWeapon=(Game.mode==='weaponry' && Game.matchSettings?.weaponLock)?validWeapon(Game.matchSettings.weaponLock):null;
+    p.weapon=lockedWeapon||validWeapon(data.weapon||'sword');
     const roundActive=(Game.state==='playing'||Game.state==='countdown');
     p.spectator=!!roundActive; p.autoSpectator=!!roundActive; p.alive=!p.spectator;
     p.team=(Game.matchSettings?.teams && !p.spectator)?this.assignJoiningTeam():null;
-    Game.players[pid]=p; this.ready[pid]=false;
+    Game.players[pid]=p;
     NetworkManager.send(pid,{t:'join_accept',ok:true,code:this.code,index:this.index,title:this.title,protected:!!this.password,map:Game.map,mode:Game.mode,matchSettings:Game.matchSettings,players:this.serializePlayers(),hostName:Game.myName,currentRound:Game.roundNumber,roundState:Game.state,matchTime:Game.matchTime,roundElapsed:Game.roundElapsed,spectatorStates:this.getSpectatorStates(),mutedPlayers:Chat.mutedPlayerIds()},true);
     NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),mutedPlayers:Chat.mutedPlayerIds(),title:this.title,index:this.index,hostName:Game.myName,spectatorStates:this.getSpectatorStates()},true);
     this.render();
@@ -9667,8 +10664,8 @@ const Lobby = {
     const seen={};
     for(const pd of list){
       seen[pd.id]=true; let existing=Game.players[pd.id];
-      if(existing){existing.name=pd.name;existing.cust=pd.cust||existing.cust;existing.clientIdentity=pd.clientIdentity||existing.clientIdentity;existing.spectator=!!pd.spectator;existing.autoSpectator=!!pd.autoSpectator;existing.team=existing.spectator?null:normalizedTeam(pd.team);existing.alive=existing.spectator?false:existing.alive;}
-      else{const spawn=(Game.map&&Game.map.spawnPoints&&Game.map.spawnPoints[0])||{x:400,y:400}; Game.players[pd.id]=new Player(pd.id,pd.name,pd.cust,spawn); Game.players[pd.id].clientIdentity=pd.clientIdentity||null; Game.players[pd.id].spectator=!!pd.spectator; Game.players[pd.id].autoSpectator=!!pd.autoSpectator; Game.players[pd.id].team=Game.players[pd.id].spectator?null:normalizedTeam(pd.team); if(Game.players[pd.id].spectator) Game.players[pd.id].alive=false;}
+      if(existing){existing.name=pd.name;existing.cust=pd.cust||existing.cust;existing.clientIdentity=pd.clientIdentity||existing.clientIdentity;existing.spectator=!!pd.spectator;existing.autoSpectator=!!pd.autoSpectator;existing.team=existing.spectator?null:normalizedTeam(pd.team);existing.weapon=validWeapon(pd.weapon||existing.weapon);existing.alive=existing.spectator?false:existing.alive;}
+      else{const spawn=(Game.map&&Game.map.spawnPoints&&Game.map.spawnPoints[0])||{x:400,y:400}; Game.players[pd.id]=new Player(pd.id,pd.name,pd.cust,spawn); Game.players[pd.id].clientIdentity=pd.clientIdentity||null; Game.players[pd.id].weapon=validWeapon(pd.weapon); Game.players[pd.id].spectator=!!pd.spectator; Game.players[pd.id].autoSpectator=!!pd.autoSpectator; Game.players[pd.id].team=Game.players[pd.id].spectator?null:normalizedTeam(pd.team); if(Game.players[pd.id].spectator) Game.players[pd.id].alive=false;}
     }
     for(const id in Game.players){if(!seen[id])delete Game.players[id];}
   },
@@ -9680,7 +10677,7 @@ const Lobby = {
     document.getElementById('lobbyTitleDisplay').textContent=this.title;
     document.getElementById('lobbyHostName').textContent=data.hostName; Game.lobbyHostName=data.hostName;
     document.getElementById('lobbyMap').textContent=Game.map.name; document.getElementById('lobbyMode').textContent=GameModes[Game.mode].label;
-    this.renderSettings(); document.getElementById('btnStartMatch').classList.add('hidden'); document.getElementById('btnReady').classList.remove('hidden');
+    this.renderSettings(); document.getElementById('btnStartMatch').classList.add('hidden');
     const me=Game.players[Game.myId];
     if(me?.spectator && (data.roundState==='playing'||data.roundState==='countdown')){
       Game.state='playing'; UI.showHUD();
@@ -9725,7 +10722,7 @@ const Lobby = {
       if(!migrated){ UI.showHostGone(); return; }
       const newHostId=NetworkManager.myId;
       this.index=target; this.code=String(target);
-      if(hostPlayer){ delete Game.players[oldPeerId]; hostPlayer.id=newHostId; Game.players[newHostId]=hostPlayer; const r=this.ready[oldPeerId]; delete this.ready[oldPeerId]; this.ready[newHostId]=!!r; const s=this.scores[oldPeerId]; if(s!=null){delete this.scores[oldPeerId];this.scores[newHostId]=s;} }
+      if(hostPlayer){ delete Game.players[oldPeerId]; hostPlayer.id=newHostId; Game.players[newHostId]=hostPlayer; const s=this.scores[oldPeerId]; if(s!=null){delete this.scores[oldPeerId];this.scores[newHostId]=s;} }
       Game.myId=newHostId; Game.isHost=true; NetworkManager.isHost=true; Game.lobbyHostName=Game.myName;
       document.getElementById('lobbyTitleDisplay').textContent=this.title||'PLUNK Lobby'; document.getElementById('lobbyHostName').textContent=Game.myName;
       this.pushSettings(); this.render();
@@ -9733,8 +10730,7 @@ const Lobby = {
       setTimeout(()=>{NetworkManager.sendControlToLobby(target+1,{t:'lobby_shift',newIndex:target+1},1700);},250);
     },450);
   },
-  removePlayer(pid){ this.players=this.players.filter(p=>p.id!==pid); delete this.ready[pid]; this.render(); },
-  setReady(pid,ready){this.ready[pid]=!!ready;NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),mutedPlayers:Chat.mutedPlayerIds(),title:this.title,index:this.index,hostName:Game.myName,spectatorStates:this.getSpectatorStates()},true);this.render();},
+  removePlayer(pid){ this.players=this.players.filter(p=>p.id!==pid); this.render(); },
   settingsPayload(){return {hostName:Game.myName,map:Game.map,mode:Game.mode,matchSettings:Object.assign({},Game.matchSettings),roundConfig:Object.assign({},Game.roundConfig),title:this.title,index:this.index,passwordProtected:!!this.password,spectatorStates:this.getSpectatorStates(),mutedPlayers:Chat.mutedPlayerIds()};},
   pushSettings(){
     if(!Game.isHost)return;
@@ -9751,9 +10747,19 @@ const Lobby = {
     if(cfg.mode)Game.mode=cfg.mode; if(cfg.matchSettings)Game.matchSettings=Object.assign({},Game.matchSettings,cfg.matchSettings); if(cfg.roundConfig)Game.roundConfig=Object.assign({},Game.roundConfig,cfg.roundConfig); if(cfg.title){this.title=String(cfg.title).slice(0,32);document.getElementById('lobbyTitleDisplay').textContent=this.title;} if(cfg.index){this.index=Number(cfg.index);this.code=String(this.index);} if(cfg.hostName){Game.lobbyHostName=cfg.hostName;document.getElementById('lobbyHostName').textContent=cfg.hostName;} document.getElementById('lobbyMap').textContent=Game.map?.name||'-';document.getElementById('lobbyMode').textContent=GameModes[Game.mode]?.label||Game.mode;if(Array.isArray(data.players)){this.players=data.players;this.syncGamePlayers(data.players);}if(data.spectatorStates)this.applySpectatorStates(data.spectatorStates);this.renderSettings();this.render();
   },
   renderSettings(){
-    const hostMode=document.getElementById('lobbyModeSelect'),gravity=document.getElementById('lobbyGravity'),kb=document.getElementById('lobbyKB'),maxP=document.getElementById('lobbyMaxP'),roundMode=document.getElementById('lobbyRoundMode'),roundCount=document.getElementById('lobbyRoundCount'),pointTarget=document.getElementById('lobbyPointTarget'),mapSel=document.getElementById('lobbyMapSelect'),mapPrev=document.getElementById('lobbyMapPreview'); if(!hostMode||!gravity||!kb||!maxP||!roundMode||!roundCount||!pointTarget||!mapSel)return;
-    const savedName=getSavedUsername(); Game.myName=savedName; hostMode.value=Game.mode||'regular'; gravity.value=Game.matchSettings.gravity??1; kb.value=Game.matchSettings.kb??1; maxP.value=Game.matchSettings.maxPlayers??8; const teams=document.getElementById('lobbyTeams'); if(teams)teams.checked=!!Game.matchSettings.teams; const smash=document.getElementById('lobbySmash'); if(smash)smash.checked=!!Game.matchSettings.smash; const combo=document.getElementById('lobbyCombo'); if(combo)combo.checked=!!Game.matchSettings.combo; const parry=document.getElementById('lobbyParry'); if(parry)parry.checked=!!Game.matchSettings.parry; const shrinkray=document.getElementById('lobbyShrinkray'); if(shrinkray)shrinkray.checked=!!Game.matchSettings.shrinkray; const growthray=document.getElementById('lobbyGrowthray'); if(growthray)growthray.checked=!!Game.matchSettings.growthray; const whiplash=document.getElementById('lobbyWhiplash'); if(whiplash)whiplash.checked=!!Game.matchSettings.whiplash; const magnet=document.getElementById('lobbyMagnet'); if(magnet)magnet.checked=!!Game.matchSettings.magnet; const repulsor=document.getElementById('lobbyRepulsor'); if(repulsor)repulsor.checked=!!Game.matchSettings.repulsor; const hotpotato=document.getElementById('lobbyHotPotato'); if(hotpotato)hotpotato.checked=!!Game.matchSettings.hotpotato; const zeroGravity=document.getElementById('lobbyZeroGravity'); if(zeroGravity)zeroGravity.checked=!!Game.matchSettings.zeroGravity; const playerSize=document.getElementById('lobbyPlayerSize'); if(playerSize)playerSize.value=Game.matchSettings.playerSize??1; const spikewall=document.getElementById('lobbySpikewall'); if(spikewall)spikewall.checked=!!Game.matchSettings.spikewall; roundMode.value=Game.roundConfig.mode||'rounds'; roundCount.value=Game.roundConfig.count??3; pointTarget.value=Game.roundConfig.target??3;
-    if(Game.map){const wanted=selectedMapOptionValue(Game.map);if([...mapSel.options].some(o=>o.value===wanted))mapSel.value=wanted;if(mapPrev)drawMapThumb(mapPrev,Game.map);} const scoreMode=roundMode.value==='score'; document.getElementById('lobbyRoundCountField')?.classList.toggle('hidden',scoreMode);document.getElementById('lobbyPointTargetField')?.classList.toggle('hidden',!scoreMode); const controls=[hostMode,gravity,kb,playerSize,maxP,roundMode,roundCount,pointTarget,mapSel,document.getElementById('lobbySpikewall'),document.getElementById('lobbyTeams'),document.getElementById('lobbySmash'),document.getElementById('lobbyCombo'),document.getElementById('lobbyParry')].filter(Boolean);controls.forEach(el=>el.disabled=!Game.isHost);
+    const lobbyScreen=document.getElementById('screen-lobby'); if(lobbyScreen){ lobbyScreen.classList.toggle('is-host',!!Game.isHost); lobbyScreen.classList.toggle('weaponry-active',Game.mode==='weaponry'); }
+    const hostMode=document.getElementById('lobbyModeSelect'),gravity=document.getElementById('lobbyGravity'),kb=document.getElementById('lobbyKB'),maxP=document.getElementById('lobbyMaxP'),roundMode=document.getElementById('lobbyRoundMode'),roundCount=document.getElementById('lobbyRoundCount'),pointTarget=document.getElementById('lobbyPointTarget'),mapSel=document.getElementById('lobbyMapSelect'),mapPrev=document.getElementById('lobbyMapPreview'); if(!hostMode||!gravity||!kb||!maxP||!roundMode||!roundCount||!pointTarget||!mapSel)return; const lobbyWeapon=document.getElementById('lobbyWeapon');
+    const savedName=getSavedUsername(); Game.myName=savedName; hostMode.value=Game.mode||'regular'; if(lobbyWeapon) lobbyWeapon.value=validWeapon(Game.players[Game.myId]?.weapon||Storage.get('weaponChoice','sword')); gravity.value=Game.matchSettings.gravity??1; kb.value=Game.matchSettings.kb??1; maxP.value=Game.matchSettings.maxPlayers??8; const teams=document.getElementById('lobbyTeams'); if(teams)teams.checked=!!Game.matchSettings.teams; const smash=document.getElementById('lobbySmash'); if(smash)smash.checked=!!Game.matchSettings.smash; const combo=document.getElementById('lobbyCombo'); if(combo)combo.checked=!!Game.matchSettings.combo; const parry=document.getElementById('lobbyParry'); if(parry)parry.checked=!!Game.matchSettings.parry; const shrinkray=document.getElementById('lobbyShrinkray'); if(shrinkray)shrinkray.checked=!!Game.matchSettings.shrinkray; const growthray=document.getElementById('lobbyGrowthray'); if(growthray)growthray.checked=!!Game.matchSettings.growthray; const whiplash=document.getElementById('lobbyWhiplash'); if(whiplash)whiplash.checked=!!Game.matchSettings.whiplash; const magnet=document.getElementById('lobbyMagnet'); if(magnet)magnet.checked=!!Game.matchSettings.magnet; const repulsor=document.getElementById('lobbyRepulsor'); if(repulsor)repulsor.checked=!!Game.matchSettings.repulsor; const hotpotato=document.getElementById('lobbyHotPotato'); if(hotpotato)hotpotato.checked=!!Game.matchSettings.hotpotato; const zeroGravity=document.getElementById('lobbyZeroGravity'); if(zeroGravity)zeroGravity.checked=!!Game.matchSettings.zeroGravity; const playerSize=document.getElementById('lobbyPlayerSize'); if(playerSize)playerSize.value=Game.matchSettings.playerSize??1; const spikewall=document.getElementById('lobbySpikewall'); if(spikewall)spikewall.checked=!!Game.matchSettings.spikewall; roundMode.value=Game.roundConfig.mode||'rounds'; roundCount.value=Game.roundConfig.count??3; pointTarget.value=Game.roundConfig.target??3;
+    if(Game.map){const wanted=selectedMapOptionValue(Game.map);if([...mapSel.options].some(o=>o.value===wanted))mapSel.value=wanted;if(mapPrev)drawMapThumb(mapPrev,Game.map);} const scoreMode=roundMode.value==='score';
+    document.getElementById('lobbyRoundCountField')?.classList.toggle('hidden',scoreMode);
+    document.getElementById('lobbyPointTargetField')?.classList.toggle('hidden',!scoreMode);
+    const weaponryActive=Game.mode==='weaponry', lockedWeapon=weaponryActive&&Game.matchSettings?.weaponLock?validWeapon(Game.matchSettings.weaponLock):null;
+    document.getElementById('lobbyWeaponField')?.classList.toggle('hidden',!weaponryActive);
+    document.getElementById('lobbyWeaponLockField')?.classList.toggle('hidden',!(weaponryActive&&Game.isHost));
+    const lockBtn=document.getElementById('btnWeaponLock');
+    if(lockBtn){ lockBtn.textContent=lockedWeapon?'Unlock':'Lock'; lockBtn.disabled=!Game.isHost||!weaponryActive; }
+    if(lobbyWeapon) { lobbyWeapon.value=validWeapon(Game.players[Game.myId]?.weapon||Storage.get('weaponChoice','sword')); lobbyWeapon.disabled=!!Game.players[Game.myId]?.spectator||!!lockedWeapon; }
+    const controls=[hostMode,gravity,kb,playerSize,maxP,roundMode,roundCount,pointTarget,mapSel,document.getElementById('lobbySpikewall'),document.getElementById('lobbyTeams'),document.getElementById('lobbySmash'),document.getElementById('lobbyCombo'),document.getElementById('lobbyParry')].filter(Boolean);controls.forEach(el=>el.disabled=!Game.isHost);
     hostMode.dispatchEvent(new Event('change'));
     // These picker constants are initialized later in this script. Calling renderSettings
     // before that initialization used to hit the temporal dead zone and abort lobby creation.
@@ -9779,16 +10785,23 @@ const Lobby = {
     const mapSel=document.getElementById('lobbyMapSelect');
     const chosenMap=(String(mapSel?.value||'').startsWith('requested:') && this._requestedMap) ? this._requestedMap : selectedMapFromSelect(mapSel);
     Game.map=ensureMapSpawn(chosenMap || BUILTIN_MAPS[0]);
-    Game.mode=document.getElementById('lobbyModeSelect').value; Game.matchSettings={gravity:Math.max(.1,Math.min(3,+document.getElementById('lobbyGravity').value||1)),kb:Math.max(.2,Math.min(3,+document.getElementById('lobbyKB').value||1)),playerSize:Math.max(.5,Math.min(2,+document.getElementById('lobbyPlayerSize').value||1)),maxPlayers:Math.max(Object.keys(Game.players).length,Math.min(8,+document.getElementById('lobbyMaxP').value||8)),spikewall:!!document.getElementById('lobbySpikewall')?.checked,teams:!!document.getElementById('lobbyTeams')?.checked,smash:!!document.getElementById('lobbySmash')?.checked,combo:!!document.getElementById('lobbyCombo')?.checked,parry:!!document.getElementById('lobbyParry')?.checked,shrinkray:!!document.getElementById('lobbyShrinkray')?.checked,growthray:!!document.getElementById('lobbyGrowthray')?.checked,whiplash:!!document.getElementById('lobbyWhiplash')?.checked,magnet:!!document.getElementById('lobbyMagnet')?.checked,repulsor:!!document.getElementById('lobbyRepulsor')?.checked,hotpotato:!!document.getElementById('lobbyHotPotato')?.checked,zeroGravity:!!document.getElementById('lobbyZeroGravity')?.checked}; Game.roundConfig={mode:document.getElementById('lobbyRoundMode').value,count:Math.max(1,Math.min(99,+document.getElementById('lobbyRoundCount').value||3)),target:Math.max(1,Math.min(99,+document.getElementById('lobbyPointTarget').value||3))}; this.pushSettings();
+    Game.mode=document.getElementById('lobbyModeSelect').value;
+    const lobbyWeapon=document.getElementById('lobbyWeapon');
+    const existingLock=(Game.mode==='weaponry'&&Game.matchSettings?.weaponLock)?validWeapon(Game.matchSettings.weaponLock):null;
+    const selectedHostWeapon=validWeapon(lobbyWeapon?.value||hostPlayer?.weapon||Storage.get('weaponChoice','sword'));
+    if(lobbyWeapon&&hostPlayer) hostPlayer.weapon=existingLock||selectedHostWeapon;
+    if(hostPlayer) Storage.set('weaponChoice',hostPlayer.weapon);
+    Game.matchSettings={gravity:Math.max(.1,Math.min(3,+document.getElementById('lobbyGravity').value||1)),kb:Math.max(.2,Math.min(3,+document.getElementById('lobbyKB').value||1)),playerSize:Math.max(.5,Math.min(2,+document.getElementById('lobbyPlayerSize').value||1)),maxPlayers:Math.max(Object.keys(Game.players).length,Math.min(8,+document.getElementById('lobbyMaxP').value||8)),spikewall:!!document.getElementById('lobbySpikewall')?.checked,teams:!!document.getElementById('lobbyTeams')?.checked,smash:!!document.getElementById('lobbySmash')?.checked,combo:!!document.getElementById('lobbyCombo')?.checked,parry:!!document.getElementById('lobbyParry')?.checked,shrinkray:!!document.getElementById('lobbyShrinkray')?.checked,growthray:!!document.getElementById('lobbyGrowthray')?.checked,whiplash:!!document.getElementById('lobbyWhiplash')?.checked,magnet:!!document.getElementById('lobbyMagnet')?.checked,repulsor:!!document.getElementById('lobbyRepulsor')?.checked,hotpotato:!!document.getElementById('lobbyHotPotato')?.checked,zeroGravity:!!document.getElementById('lobbyZeroGravity')?.checked,weaponLock:existingLock};
+    if(existingLock){ for(const p of Object.values(Game.players)){ if(p&&!p.spectator) p.weapon=existingLock; } }
+    Game.roundConfig={mode:document.getElementById('lobbyRoundMode').value,count:Math.max(1,Math.min(99,+document.getElementById('lobbyRoundCount').value||3)),target:Math.max(1,Math.min(99,+document.getElementById('lobbyPointTarget').value||3))}; this.pushSettings();
   },
   render(){
     document.getElementById('btnLeaveLobby').textContent=Game.isHost?'CLOSE LOBBY':'LEAVE';
     const box=document.getElementById('lobbyPlayers');box.innerHTML='';const list=Game.isHost?this.serializePlayers():this.players;
     for(const p of list){
       const div=document.createElement('div');div.className='player-card';const dot=document.createElement('div');dot.className='dot';dot.style.background=`hsl(${p.cust?.hue||200},80%,60%)`;div.appendChild(dot);
-      const nameWrap=document.createElement('div');nameWrap.style.flex='1';nameWrap.style.minWidth='0';const nameSpan=document.createElement('div');nameSpan.style.fontWeight='800';nameSpan.style.overflow='hidden';nameSpan.style.textOverflow='ellipsis';nameSpan.style.whiteSpace='nowrap';nameSpan.textContent=p.name; if(p.host){const tag=document.createElement('span');tag.className='lobby-host-tag';tag.textContent='HOST';nameSpan.appendChild(tag);} nameWrap.appendChild(nameSpan); div.appendChild(nameWrap);
+      const nameWrap=document.createElement('div');nameWrap.style.flex='1';nameWrap.style.minWidth='0';const nameSpan=document.createElement('div');nameSpan.style.fontWeight='800';nameSpan.style.overflow='hidden';nameSpan.style.textOverflow='ellipsis';nameSpan.style.whiteSpace='nowrap';nameSpan.textContent=p.name; if(p.host){const tag=document.createElement('span');tag.className='lobby-host-tag';tag.textContent='HOST';nameSpan.appendChild(tag);} if(Game.mode==='weaponry'&&!p.spectator){const w=document.createElement('span');w.className='weapon-lobby-chip';w.textContent=weaponLabel(p.weapon).toUpperCase();nameSpan.appendChild(w);} nameWrap.appendChild(nameSpan); div.appendChild(nameWrap);
       const ping=NetworkManager.pings[p.id],pingSpan=document.createElement('span');pingSpan.style.fontSize='11px';pingSpan.style.color='var(--text-dim)';pingSpan.textContent=(p.id===Game.myId?'you':(ping!=null?ping+'ms':'-'));div.appendChild(pingSpan);
-      const readySpan=document.createElement('span');readySpan.textContent=p.ready?'READY':'';readySpan.style.color=p.ready?'#5dff8f':'var(--text-dim)';readySpan.style.fontWeight='800';readySpan.style.fontSize='11px';div.appendChild(readySpan);
       if(Game.matchSettings?.teams && !p.spectator){
         const teamBtn=document.createElement('button');
         teamBtn.type='button'; teamBtn.className='btn small lobby-team-btn '+(p.team||'');
@@ -9825,7 +10838,7 @@ const Lobby = {
   },
   handleTabClosed(pid){
     if(!Game.isHost||!Game.players[pid])return;
-    delete Game.players[pid]; delete this.ready[pid]; delete NetworkManager.pings[pid];
+    delete Game.players[pid]; delete NetworkManager.pings[pid];
     NetworkManager.disconnectPeer(pid);
     NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),mutedPlayers:Chat.mutedPlayerIds(),title:this.title,index:this.index,hostName:Game.myName,spectatorStates:this.getSpectatorStates()},true);
     this.render();
@@ -9845,16 +10858,16 @@ const Lobby = {
     }
   },
   kickPlayer(pid){
-    if(!Game.isHost||!Game.players[pid])return; const p=Game.players[pid]; if(!confirm(`Kick ${p.name||'this player'} from the lobby?`))return; NetworkManager.send(pid,{t:'kicked',reason:'You were kicked by the host.'},true); delete Game.players[pid]; delete this.ready[pid]; NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),title:this.title,index:this.index,hostName:Game.myName},true); this.render(); setTimeout(()=>NetworkManager.disconnectPeer(pid),120);
+    if(!Game.isHost||!Game.players[pid])return; const p=Game.players[pid]; if(!confirm(`Kick ${p.name||'this player'} from the lobby?`))return; NetworkManager.send(pid,{t:'kicked',reason:'You were kicked by the host.'},true); delete Game.players[pid]; NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),title:this.title,index:this.index,hostName:Game.myName},true); this.render(); setTimeout(()=>NetworkManager.disconnectPeer(pid),120);
   },
   banPlayer(pid){
-    if(!Game.isHost||!Game.players[pid])return; const p=Game.players[pid]; if(!confirm(`Ban ${p.name||'this player'} from this lobby?`))return; const key=String(p.clientIdentity||pid); this.banned[key]=true; this.banned[pid]=true; NetworkManager.send(pid,{t:'banned',reason:'You were banned by the host.'},true); delete Game.players[pid]; delete this.ready[pid]; NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),title:this.title,index:this.index,hostName:Game.myName},true); this.render(); setTimeout(()=>NetworkManager.disconnectPeer(pid),120);
+    if(!Game.isHost||!Game.players[pid])return; const p=Game.players[pid]; if(!confirm(`Ban ${p.name||'this player'} from this lobby?`))return; const key=String(p.clientIdentity||pid); this.banned[key]=true; this.banned[pid]=true; NetworkManager.send(pid,{t:'banned',reason:'You were banned by the host.'},true); delete Game.players[pid]; NetworkManager.broadcast({t:'lobby_update',players:this.serializePlayers(),title:this.title,index:this.index,hostName:Game.myName},true); this.render(); setTimeout(()=>NetworkManager.disconnectPeer(pid),120);
   },
   handleRemoval(kind,message){
     Chat.clear();
     NetworkManager.disconnectAll();
     Game.players={};
-    this.players=[];this.ready={};this.code=null;this.index=null;this.title='';this.password='';
+    this.players=[];this.code=null;this.index=null;this.title='';this.password='';
     const title=kind==='banned'?'BANNED FROM LOBBY':'KICKED FROM LOBBY';
     alert(message);
     UI.goto('join');
@@ -9895,12 +10908,15 @@ const Lobby = {
   },
   requestSpectator(value){ if(Game.isHost){ this.setSpectator(Game.myId,!!value,false); } else { NetworkManager.sendToHost({t:'spectator_set',spectator:!!value},true); } },
   applySpectatorState(data){ if(data?.states) this.applySpectatorStates(data.states); else if(data?.id){ const p=Game.players[data.id]; if(p){p.spectator=!!data.spectator;p.autoSpectator=!!data.autoSpectator;if(p.spectator)p.alive=false;} this.render(); } },
-  toggleReady(){const cur=!this.ready[Game.myId];this.ready[Game.myId]=cur;document.getElementById('btnReady').textContent=cur?'UNREADY':'READY';NetworkManager.sendToHost({t:'ready',ready:cur},true);},
   startMatch(){if(!Game.isHost)return;
     if(Game.matchSettings?.teams){
       const active=this.activeTeamPlayers();
       for(const p of active){ if(!normalizedTeam(p.team)) p.team=this.assignJoiningTeam(); }
       if(!active.some(p=>p.team==='red')||!active.some(p=>p.team==='blue')){ alert('Both teams need at least one active player.'); return; }
+    }
+    if(Game.mode==='weaponry' && Game.matchSettings?.weaponLock){
+      const locked=validWeapon(Game.matchSettings.weaponLock);
+      for(const p of Object.values(Game.players)){ if(p&&!p.spectator) p.weapon=locked; }
     }
     Game.roundNumber=1;Game.roundConfig=Object.assign({},Game.roundConfig);Game.scores={};Game.teamScores={red:0,blue:0};Object.keys(Game.players).forEach(id=>{ if(Game.scores[id]==null) Game.scores[id]=0; });for(const p of Object.values(Game.players))p.score=0;
     NetworkManager.broadcast({t:'map_data',map:Game.map},true);Game.resetPlayers();const spectatorStates={}; for(const id in Game.players) spectatorStates[id]=!!Game.players[id].spectator;
@@ -9951,7 +10967,7 @@ const Lobby = {
     Game.isHost=false;
     Game.players={};
     this.players=[];
-    this.ready={};
+   
     this.code=null;
     this.index=null;
     this.title='';
@@ -11738,6 +12754,8 @@ window.addEventListener('DOMContentLoaded', ()=>{
         const b=document.createElement('button'); b.type='button'; b.className='mode-picker-option folder'; b.textContent=folderName;
         b.addEventListener('click',e=>{e.stopPropagation();folder=folderName;render();}); panel.appendChild(b);
       }
+      const weaponBtn=document.createElement('button'); weaponBtn.type='button'; weaponBtn.className='mode-picker-option'; weaponBtn.textContent='Weaponry';
+      weaponBtn.addEventListener('click',e=>{e.stopPropagation();select.value='weaponry';select.dispatchEvent(new Event('change',{bubbles:true}));close();render();}); panel.appendChild(weaponBtn);
     };
     main.addEventListener('click',e=>{e.stopPropagation();if(main.disabled)return;if(picker.classList.contains('open')) close(); else {picker.classList.add('open');main.setAttribute('aria-expanded','true');render();}});
     select.addEventListener('change',()=>{valueEl.textContent=labelFor(select.value);});
@@ -11784,28 +12802,53 @@ window.addEventListener('DOMContentLoaded', ()=>{
       if(!enabledDisplay) return;
       enabledDisplay.innerHTML='';
       const active=defs.filter(([k,label,desc,id])=>document.getElementById(id)?.checked);
-      const expanded=picker.dataset.enabledExpanded==='1';
-      const visible=expanded?active:active.slice(0,4);
-      visible.forEach(([k,label])=>{
-        const span=document.createElement('span');
-        span.textContent=label;
-        enabledDisplay.appendChild(span);
-      });
-      if(!expanded && active.length>4){
+      if(!active.length){
+        picker.classList.remove('has-enabled');
+        return;
+      }
+
+      // Keep the summary compact: show the first enabled modifier and then a
+      // +N button for every additional enabled modifier. This makes the compact
+      // row behave consistently whether there are 2, 3, or many modifiers.
+      const first=document.createElement('span');
+      first.textContent=active[0][1];
+      enabledDisplay.appendChild(first);
+
+      if(active.length>1){
+        const moreWrap=document.createElement('span');
+        moreWrap.className='modifier-enabled-more-wrap';
+        moreWrap.style.position='relative';
+        moreWrap.style.display='inline-flex';
+        moreWrap.style.flex='0 0 auto';
+
         const more=document.createElement('button');
         more.type='button';
         more.className='modifier-enabled-more';
-        more.textContent='+'+(active.length-4);
-        more.setAttribute('aria-label','Show '+(active.length-4)+' more enabled modifiers');
+        more.textContent='+'+(active.length-1);
+        more.setAttribute('aria-label','Show '+(active.length-1)+' more enabled modifier'+(active.length-1===1?'':'s'));
+
+        const popup=document.createElement('div');
+        popup.className='modifier-enabled-popup';
+        popup.setAttribute('role','dialog');
+        popup.setAttribute('aria-label','Enabled modifiers');
+        popup.innerHTML=active.map(([k,label])=>`<span class=\"modifier-enabled-popup-item\">${esc(label)}</span>`).join('');
+        popup.hidden=true;
+
         more.addEventListener('click',e=>{
           e.preventDefault();
           e.stopPropagation();
-          picker.dataset.enabledExpanded='1';
-          updateEnabledDisplay();
+          const willOpen=popup.hidden;
+          document.querySelectorAll('.modifier-enabled-popup').forEach(el=>{el.hidden=true;el.classList.remove('open');});
+          if(willOpen){
+            popup.hidden=false;
+            popup.classList.add('open');
+          }
         });
-        enabledDisplay.appendChild(more);
+        popup.addEventListener('click',e=>e.stopPropagation());
+        moreWrap.append(more,popup);
+        enabledDisplay.appendChild(moreWrap);
       }
-      picker.classList.toggle('has-enabled',active.length>0);
+      picker.classList.toggle('has-enabled',true);
     };
     const refresh=()=>{
       const active=[];
@@ -11850,7 +12893,11 @@ window.addEventListener('DOMContentLoaded', ()=>{
   }
   const hostModifierPicker=setupModifierPicker('host');
   const lobbyModifierPicker=setupModifierPicker('lobby');
-  document.addEventListener('click',()=>{[hostModePicker,lobbyModePicker].forEach(p=>{if(p){p.classList.remove('open');p.querySelector('.mode-picker-main')?.setAttribute('aria-expanded','false');}}); document.querySelectorAll('.modifier-picker').forEach(p=>{p.classList.remove('open');p.querySelector('.modifier-picker-main')?.setAttribute('aria-expanded','false');});});
+  document.addEventListener('click',()=>{
+    [hostModePicker,lobbyModePicker].forEach(p=>{if(p){p.classList.remove('open');p.querySelector('.mode-picker-main')?.setAttribute('aria-expanded','false');}});
+    document.querySelectorAll('.modifier-picker').forEach(p=>{p.classList.remove('open');p.querySelector('.modifier-picker-main')?.setAttribute('aria-expanded','false');});
+    document.querySelectorAll('.modifier-enabled-popup').forEach(el=>{el.hidden=true;el.classList.remove('open');});
+  });
 
   const roundModeSel=document.getElementById('hostRoundMode');
   const roundCountField=document.getElementById('hostRoundCountField');
@@ -11895,12 +12942,55 @@ window.addEventListener('DOMContentLoaded', ()=>{
   hostLobbyTitleInput?.addEventListener('input',()=>{ hostLobbyTitleInput.dataset.edited='1'; });
   refreshDefaultLobbyTitle();
 
+  const syncWeaponFields=()=>{
+    const hostWeaponVisible=document.getElementById('hostMode')?.value==='weaponry';
+    const lobbyWeaponVisible=Game.mode==='weaponry';
+    document.getElementById('screen-lobby')?.classList.toggle('weaponry-active',lobbyWeaponVisible);
+    document.getElementById('hostWeaponField')?.classList.toggle('hidden',!hostWeaponVisible);
+    document.getElementById('lobbyWeaponField')?.classList.toggle('hidden',!lobbyWeaponVisible);
+    document.getElementById('lobbyWeaponLockField')?.classList.toggle('hidden',!(lobbyWeaponVisible&&Game.isHost));
+  };
+  document.getElementById('hostMode')?.addEventListener('change',syncWeaponFields);
+  document.getElementById('lobbyModeSelect')?.addEventListener('change',syncWeaponFields);
+  const savedWeapon=validWeapon(Storage.get('weaponChoice','sword'));
+  const hostWeapon=document.getElementById('hostWeapon'); if(hostWeapon) hostWeapon.value=savedWeapon;
+  document.getElementById('lobbyWeapon')?.addEventListener('change',()=>{
+    const me=Game.players[Game.myId]; if(!me||me.spectator)return;
+    if(Game.mode==='weaponry'&&Game.matchSettings?.weaponLock){
+      document.getElementById('lobbyWeapon').value=validWeapon(Game.matchSettings.weaponLock); Lobby.renderSettings(); return;
+    }
+    me.weapon=validWeapon(document.getElementById('lobbyWeapon').value); Storage.set('weaponChoice',me.weapon);
+    if(Game.isHost) NetworkManager.broadcast({t:'lobby_update',players:Lobby.serializePlayers(),mutedPlayers:Chat.mutedPlayerIds(),title:Lobby.title,index:Lobby.index,hostName:Game.myName,spectatorStates:Lobby.getSpectatorStates()},true);
+    else NetworkManager.sendToHost({t:'weapon_select',weapon:me.weapon},true);
+    Lobby.render();
+  });
+  document.getElementById('btnWeaponLock')?.addEventListener('click',()=>{
+    if(!Game.isHost||Game.mode!=='weaponry')return;
+    if(Game.matchSettings?.weaponLock){
+      Game.matchSettings.weaponLock=null;
+      AudioManager.click();
+      Lobby.pushSettings();
+      return;
+    }
+    const me=Game.players[Game.myId];
+    const selected=validWeapon(document.getElementById('lobbyWeapon')?.value||me?.weapon||Storage.get('weaponChoice','sword'));
+    Game.matchSettings.weaponLock=selected;
+    for(const p of Object.values(Game.players)){
+      if(p&&!p.spectator){p.weapon=selected;p.weaponPhase='idle';p.weaponCooldown=0;p.weaponHitIds={};}
+    }
+    Storage.set('weaponChoice',selected);
+    AudioManager.click();
+    Lobby.pushSettings();
+  });
+  syncWeaponFields();
+
   document.getElementById('btnHostCreate').addEventListener('click', ()=>{
     AudioManager.init(); AudioManager.resume();
     Game.myName=getSavedUsername();
     Game.map=ensureMapSpawn(selectedMapFromSelect(document.getElementById('hostMap')));
     Game.mode=document.getElementById('hostMode').value;
-    Game.matchSettings={gravity:+document.getElementById('hostGravity').value,kb:+document.getElementById('hostKB').value,playerSize:Math.max(0.5,Math.min(2,+document.getElementById('hostPlayerSize').value||1)),maxPlayers:+document.getElementById('hostMaxP').value,spikewall:!!document.getElementById('hostSpikewall')?.checked,teams:!!document.getElementById('hostTeams')?.checked,smash:!!document.getElementById('hostSmash')?.checked,combo:!!document.getElementById('hostCombo')?.checked,parry:!!document.getElementById('hostParry')?.checked,shrinkray:!!document.getElementById('hostShrinkray')?.checked,growthray:!!document.getElementById('hostGrowthray')?.checked,whiplash:!!document.getElementById('hostWhiplash')?.checked,magnet:!!document.getElementById('hostMagnet')?.checked,repulsor:!!document.getElementById('hostRepulsor')?.checked,hotpotato:!!document.getElementById('hostHotPotato')?.checked,zeroGravity:!!document.getElementById('hostZeroGravity')?.checked};
+    Storage.set('weaponChoice',validWeapon(document.getElementById('hostWeapon')?.value||Storage.get('weaponChoice','sword')));
+    Game.matchSettings={gravity:+document.getElementById('hostGravity').value,kb:+document.getElementById('hostKB').value,playerSize:Math.max(0.5,Math.min(2,+document.getElementById('hostPlayerSize').value||1)),maxPlayers:+document.getElementById('hostMaxP').value,spikewall:!!document.getElementById('hostSpikewall')?.checked,teams:!!document.getElementById('hostTeams')?.checked,smash:!!document.getElementById('hostSmash')?.checked,combo:!!document.getElementById('hostCombo')?.checked,parry:!!document.getElementById('hostParry')?.checked,shrinkray:!!document.getElementById('hostShrinkray')?.checked,growthray:!!document.getElementById('hostGrowthray')?.checked,whiplash:!!document.getElementById('hostWhiplash')?.checked,magnet:!!document.getElementById('hostMagnet')?.checked,repulsor:!!document.getElementById('hostRepulsor')?.checked,hotpotato:!!document.getElementById('hostHotPotato')?.checked,zeroGravity:!!document.getElementById('hostZeroGravity')?.checked,weaponLock:null};
     Game.roundConfig={mode:document.getElementById('hostRoundMode').value,count:Math.max(1,+document.getElementById('hostRoundCount').value||3),target:Math.max(1,+document.getElementById('hostPointTarget').value||3)};
     Lobby.createAsHost();
   });
@@ -11912,7 +13002,6 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('joinPassConfirm')?.addEventListener('click', ()=>{const info=Lobby.pendingJoin; if(!info)return; const pw=document.getElementById('joinPassInput').value; if(!pw){document.getElementById('joinPassErr').textContent='Enter the lobby password.';return;} document.getElementById('joinPassOverlay').classList.remove('active');Lobby.connectToDiscovered(info,pw);Lobby.pendingJoin=null;});
   document.getElementById('joinPassInput')?.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('joinPassConfirm')?.click();});
 
-  document.getElementById('btnReady').addEventListener('click', ()=>Lobby.toggleReady());
   document.getElementById('btnLobbySpectate')?.addEventListener('click', ()=>{ const me=Game.players[Game.myId]; if(me) Lobby.requestSpectator(!me.spectator); });
   const chatMuteBtn=document.getElementById('chatMuteBtn');
   const lobbyChatMute=document.getElementById('lobbyChatMute');
@@ -11943,7 +13032,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
   document.getElementById('btnLeaveLobby').addEventListener('click', ()=>{
     Lobby.intentionalLeave=true;
     if(Game.isHost){ Lobby.closeAsHost(); }
-    else{ Chat.clear(); NetworkManager.disconnectAll(); Game.players={}; Lobby.players=[]; Lobby.ready={}; Lobby.code=null; Lobby.index=null; Lobby.title=''; UI.goto('main'); }
+    else{ Chat.clear(); NetworkManager.disconnectAll(); Game.players={}; Lobby.players=[]; Lobby.code=null; Lobby.index=null; Lobby.title=''; UI.goto('main'); }
   });
   document.getElementById('btnRematch').addEventListener('click', ()=>{
     if(Game.isHost){ Game.teamScores={red:0,blue:0}; Game.resetPlayers(); NetworkManager.broadcast({t:'rematch'},true); Lobby.goToLobby(); }
@@ -11992,6 +13081,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
       shake: prev.shake!==false, particles: prev.particles!==false,
       fps: !!prev.fps, ping: !!prev.ping,
       quality: document.getElementById('setQuality').value,
+      weaponChoice: validWeapon(Storage.get('weaponChoice','sword')),
       keybinds: Object.assign({}, InputManager.keybinds)
     };
     Storage.set('settings', s);
@@ -12251,6 +13341,244 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
 }
 </style>
 
+
+<style id="weapon-selector-shorter-final">
+/* Shorter Weaponry selector with the Lock control immediately beside it. */
+#screen-lobby .weapon-selector-lock-field{min-width:0!important;width:auto!important;}
+#screen-lobby .weapon-selector-lock-row{display:flex!important;align-items:flex-end!important;justify-content:flex-start!important;gap:6px!important;width:max-content!important;max-width:100%!important;}
+#screen-lobby .weapon-selector-lock-row > select#lobbyWeapon{width:190px!important;min-width:190px!important;max-width:190px!important;height:34px!important;box-sizing:border-box!important;}
+#screen-lobby .weapon-selector-lock-row #lobbyWeaponLockField{width:58px!important;min-width:58px!important;max-width:58px!important;height:34px!important;margin:0!important;padding:0!important;box-sizing:border-box!important;align-self:flex-end!important;}
+#screen-lobby .weapon-selector-lock-row #btnWeaponLock{width:58px!important;min-width:58px!important;max-width:58px!important;height:34px!important;min-height:34px!important;margin:0!important;padding:7px 6px!important;box-sizing:border-box!important;line-height:1!important;}
+@media(max-width:760px){
+  #screen-lobby .weapon-selector-lock-row{width:100%!important;max-width:100%!important;}
+  #screen-lobby .weapon-selector-lock-row > select#lobbyWeapon{width:calc(100% - 64px)!important;min-width:0!important;max-width:none!important;flex:1 1 auto!important;}
+  #screen-lobby .weapon-selector-lock-row #lobbyWeaponLockField{flex:0 0 58px!important;}
+}
+</style>
+
+<style id="weaponry-ui-and-chakram-final-fix">
+/* Weapon selector: the field itself becomes as narrow as its controls. */
+#screen-lobby .setting-grid.compact .weapon-selector-lock-field{
+  justify-self:start!important;
+  width:198px!important;
+  min-width:198px!important;
+  max-width:198px!important;
+  box-sizing:border-box!important;
+}
+#screen-lobby .weapon-selector-lock-row{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:flex-end!important;
+  justify-content:flex-start!important;
+  gap:5px!important;
+  width:198px!important;
+  min-width:198px!important;
+  max-width:198px!important;
+  margin:0!important;
+  padding:0!important;
+  box-sizing:border-box!important;
+}
+#screen-lobby .weapon-selector-lock-row > select#lobbyWeapon{
+  width:140px!important;
+  min-width:140px!important;
+  max-width:140px!important;
+  flex:0 0 140px!important;
+  height:34px!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+}
+#screen-lobby .weapon-selector-lock-row #lobbyWeaponLockField{
+  width:53px!important;
+  min-width:53px!important;
+  max-width:53px!important;
+  flex:0 0 53px!important;
+  height:34px!important;
+  margin:0!important;
+  padding:0!important;
+  align-self:flex-end!important;
+  box-sizing:border-box!important;
+}
+#screen-lobby .weapon-selector-lock-row #btnWeaponLock{
+  width:53px!important;
+  min-width:53px!important;
+  max-width:53px!important;
+  height:34px!important;
+  min-height:34px!important;
+  margin:0!important;
+  padding:6px 4px!important;
+  line-height:1!important;
+  box-sizing:border-box!important;
+}
+
+/* Do not let the compact modifier summary reserve the old horizontal popup space. */
+#screen-lobby .lobby-modifier-picker .modifier-picker-enabled{
+  position:relative!important;
+  left:auto!important;
+  top:auto!important;
+  transform:none!important;
+  width:max-content!important;
+  max-width:220px!important;
+  margin:0 0 0 5px!important;
+  flex:0 1 auto!important;
+}
+
+/* Main modifier selector opens downward, directly under its button. */
+#screen-create .modifier-picker-panel,
+#screen-lobby .lobby-modifier-picker .modifier-picker-panel{
+  left:0!important;
+  right:auto!important;
+  top:calc(100% + 5px)!important;
+  bottom:auto!important;
+  width:min(430px,92vw)!important;
+  min-width:0!important;
+  max-width:min(430px,92vw)!important;
+}
+
+/* The +N equipped-modifier popup opens downward from the +N button as well. */
+#screen-lobby .lobby-modifier-picker .modifier-enabled-popup,
+#screen-lobby .modifier-enabled-popup{
+  left:0!important;
+  right:auto!important;
+  top:calc(100% + 5px)!important;
+  bottom:auto!important;
+  transform:none!important;
+  width:max-content!important;
+  max-width:min(320px,70vw)!important;
+  margin:0!important;
+}
+#screen-lobby .lobby-modifier-picker .modifier-enabled-popup::after,
+#screen-lobby .modifier-enabled-popup::after{
+  left:12px!important;
+  right:auto!important;
+  top:-5px!important;
+  transform:rotate(45deg)!important;
+  border-top:1px solid #503622!important;
+  border-left:1px solid #503622!important;
+  border-right:0!important;
+  border-bottom:0!important;
+}
+
+@media(max-width:760px){
+  #screen-lobby .setting-grid.compact .weapon-selector-lock-field{
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+  }
+  #screen-lobby .weapon-selector-lock-row{
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  #screen-lobby .weapon-selector-lock-row > select#lobbyWeapon{
+    width:calc(100% - 58px)!important;
+    min-width:0!important;
+    max-width:none!important;
+    flex:1 1 auto!important;
+  }
+  #screen-lobby .lobby-modifier-picker .modifier-picker-panel{
+    width:calc(100vw - 40px)!important;
+    max-width:calc(100vw - 40px)!important;
+  }
+  #screen-lobby .lobby-modifier-picker .modifier-enabled-popup,
+  #screen-lobby .modifier-enabled-popup{
+    max-width:calc(100vw - 44px)!important;
+  }
+}
+</style>
+
+<style id="weaponry-lobby-final-alignment-plus-fix">
+/* Chakram: a slightly larger actual active hitbox without changing its visual size. */
+
+/* Restore the non-host Round Rule alignment. Hosts alone get the extra right offset
+   needed to line the first Round Rule control up with the Lock button. */
+@media(min-width:761px){
+  #screen-lobby .lobby-round-settings{
+    margin-left:0!important;
+    width:100%!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby.is-host .lobby-round-settings{
+    margin-left:165px!important;
+    width:calc(100% - 165px)!important;
+  }
+}
+
+/* Keep the selector/round-rule sizing consistent in both host and non-host lobbies. */
+@media(min-width:761px){
+  #screen-lobby .lobby-round-settings{
+    grid-template-columns:132px 83px 223px minmax(0,1fr)!important;
+    gap:8px!important;
+    align-items:end!important;
+  }
+  #screen-lobby .lobby-round-settings>.field{
+    width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby .lobby-round-settings>.field select,
+  #screen-lobby .lobby-round-settings>.field input{
+    width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby .lobby-round-settings>.modifier-picker{
+    grid-column:3!important;
+    width:223px!important;
+    min-width:223px!important;
+    max-width:223px!important;
+    margin:0!important;
+  }
+}
+
+/* The enabled-modifier summary must not clip its +N popup. */
+#screen-lobby .lobby-round-settings>.modifier-picker .modifier-picker-enabled,
+#screen-lobby .modifier-picker-enabled{
+  overflow:visible!important;
+  pointer-events:auto!important;
+}
+#screen-lobby .modifier-enabled-more-wrap{
+  position:relative!important;
+  display:inline-flex!important;
+  overflow:visible!important;
+  z-index:120!important;
+  pointer-events:auto!important;
+}
+#screen-lobby .modifier-enabled-more{
+  position:relative!important;
+  z-index:122!important;
+  pointer-events:auto!important;
+  cursor:pointer!important;
+}
+#screen-lobby .modifier-enabled-popup{
+  display:flex!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  left:auto!important;
+  right:calc(100% + 5px)!important;
+  top:50%!important;
+  bottom:auto!important;
+  transform:translateY(-50%)!important;
+  z-index:200!important;
+}
+#screen-lobby .modifier-enabled-popup[hidden]{display:none!important;}
+
+@media(max-width:760px){
+  #screen-lobby .lobby-round-settings{
+    margin-left:0!important;
+    width:100%!important;
+    grid-template-columns:1fr 1fr!important;
+  }
+  #screen-lobby .modifier-enabled-more-wrap{z-index:120!important;}
+  #screen-lobby .modifier-enabled-popup{
+    right:calc(100% + 4px)!important;
+    left:auto!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    max-width:calc(100vw - 44px)!important;
+  }
+}
+</style>
+
 </body>
 
 <style id="legendary-hit-effect-polish">
@@ -12380,7 +13708,74 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
 }
 </style>
 
-</html>
+
+<style id="chakram-lobby-round-tight-final">
+/* Final overrides: keep the Chakram at the endpoint longer; cooldown remains defined in WEAPONS. */
+
+/* Weapon selector + Lock is a compact 223px unit. Match the round-rule controls
+   to that same visual footprint instead of the previous wide tracks. */
+#screen-lobby .lobby-round-settings{
+  display:grid!important;
+  grid-template-columns:132px 83px 223px minmax(0,1fr)!important;
+  gap:8px!important;
+  align-items:end!important;
+}
+#screen-lobby .lobby-round-settings>.field{
+  width:100%!important;
+  min-width:0!important;
+}
+#screen-lobby .lobby-round-settings>.field select,
+#screen-lobby .lobby-round-settings>.field input{
+  width:100%!important;
+  min-width:0!important;
+  box-sizing:border-box!important;
+}
+#screen-lobby .lobby-round-settings>.modifier-picker{
+  grid-column:3!important;
+  width:223px!important;
+  min-width:223px!important;
+  max-width:223px!important;
+  justify-self:start!important;
+  margin:0!important;
+}
+
+/* Narrower Modifiers drawer, still anchored below its button. */
+#screen-lobby .lobby-modifier-picker .modifier-picker-panel,
+#screen-create .modifier-picker-panel{
+  width:320px!important;
+  min-width:320px!important;
+  max-width:320px!important;
+}
+#screen-lobby .lobby-modifier-picker.open .modifier-picker-panel{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+}
+#screen-lobby .modifier-enabled-popup{
+  max-width:250px!important;
+}
+
+@media(max-width:760px){
+  #screen-lobby .lobby-round-settings{
+    grid-template-columns:1fr 1fr!important;
+    gap:7px!important;
+  }
+  #screen-lobby .lobby-round-settings>.modifier-picker{
+    grid-column:1/-1!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:100%!important;
+  }
+  #screen-lobby .lobby-modifier-picker .modifier-picker-panel,
+  #screen-create .modifier-picker-panel{
+    width:min(320px,calc(100vw - 40px))!important;
+    min-width:0!important;
+    max-width:calc(100vw - 40px)!important;
+  }
+  #screen-lobby .modifier-enabled-popup{
+    max-width:calc(100vw - 44px)!important;
+  }
+}
+</style>
+\n<style id="ready-removed-and-latest-ui-fix">\n/* Equipped modifier +N opens to the LEFT of its button. */\n#screen-lobby .modifier-enabled-popup{\n  left:auto!important;\n  right:calc(100% + 5px)!important;\n  top:50%!important;\n  bottom:auto!important;\n  transform:translateY(-50%)!important;\n}\n#screen-lobby .modifier-enabled-popup::after{\n  left:auto!important;\n  right:-5px!important;\n  top:50%!important;\n  transform:translateY(-50%) rotate(45deg)!important;\n}\n\n/* The round-rule controls shift right to line up with the compact Weapon + Lock group. */\n@media(min-width:761px){\n  #screen-lobby .lobby-round-settings{\n    margin-left:58px!important;\n    width:calc(100% - 58px)!important;\n  }\n}\n\n/* No lobby Ready control remains; the host Start Match control is the only start action. */\n#screen-lobby #btnReady{display:none!important;}\n</style>\n</html>
 
 <style id="modifier-panel-final-fix">
 .modifier-picker-panel{contain:layout paint;}
@@ -13001,3 +14396,513 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
 }
 </style>
 
+
+<style id="end-results-customize-modifier-final">
+/* Final results: the list is rebuilt per match; don't let old round/match DOM linger. */
+#screen-results #resultsList{overflow:visible;}
+
+/* Customize: extend the screen's own brown background to the full viewport. */
+#screen-customize{
+  background:var(--bg-panel)!important;
+}
+
+/* Host weapon lock uses the same vertical footprint as the neighboring select/input. */
+.weapon-lock-button-field{
+  align-items:stretch!important;
+  justify-content:flex-end!important;
+  padding-top:16px!important;
+  box-sizing:border-box!important;
+}
+#btnWeaponLock{
+  width:100%!important;
+  min-height:34px!important;
+  height:34px!important;
+  box-sizing:border-box!important;
+  padding:8px 12px!important;
+  font-size:12px!important;
+  line-height:1!important;
+}
+
+/* Compact modifier summary: first modifier + +N. */
+.modifier-picker-enabled{
+  align-items:center!important;
+  gap:4px!important;
+  overflow:visible!important;
+}
+.modifier-picker-enabled > span:first-child{
+  max-width:180px!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+  white-space:nowrap!important;
+}
+.modifier-enabled-more-wrap{z-index:70;}
+.modifier-enabled-more-wrap .modifier-enabled-more{position:relative;z-index:72;}
+.modifier-enabled-popup{
+  position:absolute;
+  right:calc(100% + 5px);
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:flex-start;
+  gap:5px;
+  width:max-content;
+  max-width:min(320px,70vw);
+  padding:6px;
+  background:#110c08f8;
+  border:1px solid #503622;
+  border-radius:3px;
+  box-shadow:0 10px 24px #000b;
+  z-index:71;
+  box-sizing:border-box;
+}
+.modifier-enabled-popup[hidden]{display:none!important;}
+.modifier-enabled-popup::after{
+  content:'';
+  position:absolute;
+  right:-5px;
+  top:50%;
+  width:8px;
+  height:8px;
+  transform:translateY(-50%) rotate(45deg);
+  background:#110c08f8;
+  border-top:1px solid #503622;
+  border-right:1px solid #503622;
+}
+.modifier-enabled-popup-item{
+  display:inline-flex;
+  align-items:center;
+  min-height:22px;
+  padding:4px 7px;
+  border:1px solid #503622;
+  border-radius:3px;
+  background:#1a100b;
+  color:#d8b894;
+  font-size:9px!important;
+  line-height:1!important;
+  font-weight:900;
+  letter-spacing:.45px;
+  text-transform:uppercase;
+  white-space:nowrap;
+}
+@media(max-width:760px){
+  .weapon-lock-button-field{padding-top:15px!important;}
+  .modifier-enabled-popup{
+    max-width:calc(100vw - 175px);
+    right:calc(100% + 4px);
+  }
+}
+</style>
+
+<style id="weapon-and-modifier-polish-final">
+/* Keep the weapon lock compact and directly alongside the weapon selector. */
+#screen-lobby #lobbyWeaponLockField{
+  width:58px!important;
+  min-width:58px!important;
+  justify-self:start!important;
+  align-self:end!important;
+  margin:0!important;
+  padding-top:16px!important;
+  box-sizing:border-box!important;
+}
+#screen-lobby #lobbyWeaponLockField #btnWeaponLock{
+  width:58px!important;
+  min-width:58px!important;
+  max-width:58px!important;
+  height:32px!important;
+  min-height:32px!important;
+  padding:6px 8px!important;
+  font-size:10px!important;
+  letter-spacing:.5px!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:760px){
+  #screen-lobby #lobbyWeaponLockField{
+    width:58px!important;min-width:58px!important;
+  }
+  #screen-lobby #lobbyWeaponLockField #btnWeaponLock{
+    width:58px!important;min-width:58px!important;max-width:58px!important;
+  }
+}
+
+/* The compact +N button must be clickable even though the summary row itself
+   is visually overlaid beside the modifier selector. */
+.modifier-picker-enabled{
+  overflow:visible!important;
+  pointer-events:none!important;
+}
+.modifier-enabled-more-wrap{
+  pointer-events:auto!important;
+  position:relative!important;
+  z-index:80!important;
+}
+.modifier-enabled-more{
+  pointer-events:auto!important;
+  cursor:pointer!important;
+  position:relative!important;
+  z-index:82!important;
+}
+.modifier-enabled-popup{
+  pointer-events:auto!important;
+  z-index:81!important;
+}
+.modifier-enabled-popup-item{
+  pointer-events:none!important;
+}
+</style>
+
+
+
+\n<style id="weaponry-chakram-ui-final">\n/* Tight Weapon selector row: shrink the selector without leaving the old field width behind. */\n#screen-lobby .weapon-selector-lock-field{width:223px!important;min-width:223px!important;max-width:223px!important;}\n#screen-lobby .weapon-selector-lock-row{display:flex!important;align-items:flex-end!important;gap:6px!important;width:223px!important;max-width:223px!important;}\n#screen-lobby .weapon-selector-lock-row > select#lobbyWeapon{width:159px!important;min-width:159px!important;max-width:159px!important;height:34px!important;flex:0 0 159px!important;box-sizing:border-box!important;}\n#screen-lobby .weapon-selector-lock-row #lobbyWeaponLockField{width:58px!important;min-width:58px!important;max-width:58px!important;height:34px!important;flex:0 0 58px!important;margin:0!important;padding:0!important;align-self:flex-end!important;}\n#screen-lobby .weapon-selector-lock-row #btnWeaponLock{width:58px!important;min-width:58px!important;max-width:58px!important;height:34px!important;min-height:34px!important;margin:0!important;padding:6px 5px!important;box-sizing:border-box!important;}\n\n/* The enabled-modifier drawer belongs underneath its selector, never beside it. */\n#screen-lobby .lobby-modifier-picker{position:relative!important;}\n#screen-lobby .lobby-modifier-picker .modifier-picker-panel{\n  left:0!important;right:auto!important;top:calc(100% + 6px)!important;\n  width:min(430px,92vw)!important;min-width:0!important;max-width:min(430px,92vw)!important;\n  max-height:240px!important;overflow:auto!important;white-space:normal!important;\n  display:none;\n  box-sizing:border-box!important;\n}\n#screen-lobby .lobby-modifier-picker.open .modifier-picker-panel{\n  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:6px!important;\n}\n#screen-lobby .lobby-modifier-picker .modifier-picker-enabled{\n  order:1!important;\n  margin:0 0 0 5px!important;\n  max-width:220px!important;\n  flex:0 1 auto!important;\n}\n@media(max-width:760px){\n  #screen-lobby .weapon-selector-lock-field{width:100%!important;min-width:0!important;max-width:none!important;}\n  #screen-lobby .weapon-selector-lock-row{width:100%!important;max-width:100%!important;}\n  #screen-lobby .weapon-selector-lock-row > select#lobbyWeapon{width:calc(100% - 64px)!important;min-width:0!important;max-width:none!important;flex:1 1 auto!important;}\n  #screen-lobby .lobby-modifier-picker .modifier-picker-panel{width:calc(100vw - 40px)!important;max-width:calc(100vw - 40px)!important;}\n  #screen-lobby .lobby-modifier-picker.open .modifier-picker-panel{grid-template-columns:1fr!important;}\n}\n</style>\n
+
+<style id="round-rule-lock-alignment-and-modifier-popup-final">
+/* Align the lobby Round Rule row to the Lock button when Weaponry is active.
+   The weapon control is the first item in the compact settings grid, so the
+   row is allowed to span the full grid and then begins exactly at the Lock
+   control's horizontal position (159px selector + 6px gap). */
+@media(min-width:761px){
+  #screen-lobby #lobbyWeaponField:not(.hidden) ~ .lobby-round-settings{
+    grid-column:1 / -1!important;
+    width:calc(100% - 165px)!important;
+    margin-left:165px!important;
+    margin-right:0!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+
+  #screen-lobby #lobbyWeaponField:not(.hidden) ~ .lobby-round-settings > .field:first-child{
+    width:132px!important;
+    min-width:132px!important;
+    max-width:132px!important;
+  }
+  #screen-lobby #lobbyWeaponField:not(.hidden) ~ .lobby-round-settings > .round-count-slot{
+    width:83px!important;
+    min-width:83px!important;
+    max-width:83px!important;
+  }
+  #screen-lobby #lobbyWeaponField:not(.hidden) ~ .lobby-round-settings > .modifier-picker{
+    width:223px!important;
+    min-width:223px!important;
+    max-width:223px!important;
+  }
+}
+
+/* The main MODIFIERS selector opens DOWN from its own button. */
+#screen-lobby .lobby-modifier-picker .modifier-picker-panel{
+  left:0!important;
+  right:auto!important;
+  top:calc(100% + 6px)!important;
+  bottom:auto!important;
+  transform:none!important;
+}
+
+/* The compact +N equipped-modifier popup opens LEFT from the +N button. */
+#screen-lobby .modifier-enabled-more-wrap{
+  position:relative!important;
+  overflow:visible!important;
+}
+#screen-lobby .modifier-enabled-popup{
+  left:auto!important;
+  right:calc(100% + 5px)!important;
+  top:50%!important;
+  bottom:auto!important;
+  transform:translateY(-50%)!important;
+  z-index:100!important;
+}
+#screen-lobby .modifier-enabled-popup::after{
+  left:auto!important;
+  right:-5px!important;
+  top:50%!important;
+  transform:translateY(-50%) rotate(45deg)!important;
+}
+
+@media(max-width:760px){
+  /* On narrow screens the existing stacked lobby layout is more reliable than
+     forcing the desktop Lock alignment. */
+  #screen-lobby #lobbyWeaponField:not(.hidden) ~ .lobby-round-settings{
+    grid-column:1 / -1!important;
+    width:100%!important;
+    margin-left:0!important;
+    margin-right:0!important;
+  }
+  #screen-lobby .lobby-modifier-picker .modifier-picker-panel{
+    left:0!important;
+    right:auto!important;
+    top:calc(100% + 6px)!important;
+    bottom:auto!important;
+  }
+  #screen-lobby .modifier-enabled-popup{
+    right:calc(100% + 4px)!important;
+    left:auto!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    max-width:calc(100vw - 44px)!important;
+  }
+}
+</style>
+
+<style id="ABSOLUTE-FINAL-weaponry-lobby-layout-fix">
+/* ===== Absolute final lobby layout correction ===== */
+@media(min-width:761px){
+  /* Non-hosts keep the normal Round Rule position. Hosts shift it right so
+     the first Round Rule field starts exactly where the Lock button starts. */
+  #screen-lobby .lobby-round-settings{
+    margin-left:0!important;
+    width:100%!important;
+    grid-column:1 / -1!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby.is-host .lobby-round-settings{
+    margin-left:165px!important;
+    width:calc(100% - 165px)!important;
+  }
+
+  #screen-lobby .lobby-round-settings>.field{
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby .lobby-round-settings>.field select,
+  #screen-lobby .lobby-round-settings>.field input{
+    width:100%!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby .lobby-round-settings>.modifier-picker{
+    grid-column:3!important;
+    width:223px!important;
+    min-width:223px!important;
+    max-width:223px!important;
+    margin:0!important;
+  }
+}
+
+/* ===== Absolutely functional +N equipped-modifier button ===== */
+#screen-lobby .lobby-round-settings>.modifier-picker .modifier-picker-enabled,
+#screen-lobby .modifier-picker-enabled{
+  overflow:visible!important;
+  pointer-events:auto!important;
+}
+#screen-lobby .modifier-enabled-more-wrap{
+  position:relative!important;
+  display:inline-flex!important;
+  overflow:visible!important;
+  pointer-events:auto!important;
+  z-index:1000!important;
+}
+#screen-lobby .modifier-enabled-more{
+  pointer-events:auto!important;
+  cursor:pointer!important;
+  position:relative!important;
+  z-index:1002!important;
+}
+#screen-lobby .modifier-enabled-popup{
+  position:absolute!important;
+  left:auto!important;
+  right:calc(100% + 6px)!important;
+  top:50%!important;
+  bottom:auto!important;
+  transform:translateY(-50%)!important;
+  display:flex!important;
+  visibility:visible!important;
+  pointer-events:auto!important;
+  z-index:1001!important;
+  width:max-content!important;
+  max-width:min(320px,70vw)!important;
+  box-sizing:border-box!important;
+}
+#screen-lobby .modifier-enabled-popup[hidden]{display:none!important;visibility:hidden!important;}
+#screen-lobby .modifier-enabled-popup-item{pointer-events:none!important;}
+
+@media(max-width:760px){
+  #screen-lobby .lobby-round-settings{
+    margin-left:0!important;
+    width:100%!important;
+    grid-column:1 / -1!important;
+  }
+  #screen-lobby .modifier-enabled-popup{
+    right:calc(100% + 4px)!important;
+    left:auto!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    max-width:calc(100vw - 44px)!important;
+  }
+}
+</style>
+
+<style id="weaponry-conditional-roundrule-layout-final">
+/* Keep the normal lobby Round Rule layout untouched in every non-Weaponry mode. */
+@media(min-width:761px){
+  #screen-lobby:not(.weaponry-active) .setting-grid.compact{
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  }
+  #screen-lobby:not(.weaponry-active) .lobby-round-settings{
+    grid-column:1 / -1!important;
+    margin-left:0!important;
+    width:100%!important;
+    box-sizing:border-box!important;
+  }
+
+  /* Weaponry gets one dedicated column for Weapon + Lock. The Round Rule block
+     sits beside it on the same row and is pulled left just enough for its first
+     control to line up with the Lock button rather than dropping underneath. */
+  #screen-lobby.weaponry-active .setting-grid.compact{
+    grid-template-columns:198px repeat(4,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+  #screen-lobby.weaponry-active .weapon-selector-lock-field{
+    grid-column:1!important;
+    justify-self:start!important;
+    width:198px!important;
+    min-width:198px!important;
+    max-width:198px!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby.weaponry-active .lobby-round-settings{
+    grid-column:2 / -1!important;
+    margin-left:-58px!important;
+    width:calc(100% + 58px)!important;
+    min-width:0!important;
+    box-sizing:border-box!important;
+  }
+}
+
+/* Mobile remains the existing stacked layout. */
+@media(max-width:760px){
+  #screen-lobby .lobby-round-settings{
+    grid-column:1 / -1!important;
+    margin-left:0!important;
+    width:100%!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby .setting-grid.compact{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  }
+}
+</style>
+
+
+<style id="FINAL_HOST_ROUND_ROW_AND_LOBBY_PLUS_LEFT">
+/* ================================================================
+   HOST WEAPONRY ROW — DO NOT CHANGE NON-HOST LAYOUT
+   The old Weaponry override changed the outer grid to a special 198px
+   first column, which caused the Host lobby controls to wrap badly.
+   Restore the normal five-column settings grid and explicitly place the
+   Weapon + Lock field and Round Rule block on row 2.
+   ================================================================ */
+@media (min-width:761px){
+  #screen-lobby.weaponry-active.is-host .setting-grid.compact{
+    grid-template-columns:repeat(5,minmax(0,1fr))!important;
+    gap:5px!important;
+  }
+
+  #screen-lobby.weaponry-active.is-host #lobbyWeaponField{
+    grid-column:1!important;
+    grid-row:2!important;
+    justify-self:start!important;
+    align-self:start!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    box-sizing:border-box!important;
+  }
+
+  #screen-lobby.weaponry-active.is-host .lobby-round-settings{
+    grid-column:2 / -1!important;
+    grid-row:2!important;
+    margin:0!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    box-sizing:border-box!important;
+  }
+
+  /* Keep every Round Rule control in one horizontal row. */
+  #screen-lobby.weaponry-active.is-host .lobby-round-settings{
+    display:grid!important;
+    grid-template-columns:minmax(140px,1.15fr) minmax(95px,.85fr) minmax(132px,223px) minmax(0,1fr)!important;
+    gap:8px!important;
+    align-items:end!important;
+  }
+  #screen-lobby.weaponry-active.is-host .lobby-round-settings > .field{
+    min-width:0!important;
+    width:100%!important;
+    max-width:none!important;
+    box-sizing:border-box!important;
+  }
+  #screen-lobby.weaponry-active.is-host .lobby-round-settings > .modifier-picker{
+    grid-column:3!important;
+    grid-row:1!important;
+    justify-self:start!important;
+    width:132px!important;
+    min-width:132px!important;
+    max-width:223px!important;
+    margin:0!important;
+  }
+
+  /* Weaponry non-hosts keep the normal lobby Round Rule placement. */
+  #screen-lobby.weaponry-active:not(.is-host) .lobby-round-settings{
+    grid-column:1 / -1!important;
+    grid-row:auto!important;
+    margin-left:0!important;
+    width:100%!important;
+  }
+}
+
+/* ================================================================
+   LOBBY +N POPUP — LEFT ONLY IN THE ACTUAL LOBBY
+   The creation-menu modifier UI is intentionally untouched.
+   ================================================================ */
+#screen-lobby .lobby-modifier-picker .modifier-enabled-more-wrap{
+  position:relative!important;
+  display:inline-flex!important;
+  overflow:visible!important;
+  z-index:1000!important;
+  pointer-events:auto!important;
+}
+#screen-lobby .lobby-modifier-picker .modifier-enabled-more{
+  position:relative!important;
+  z-index:1002!important;
+  pointer-events:auto!important;
+  cursor:pointer!important;
+}
+#screen-lobby .lobby-modifier-picker .modifier-enabled-popup{
+  position:absolute!important;
+  left:auto!important;
+  right:calc(100% + 6px)!important;
+  top:50%!important;
+  bottom:auto!important;
+  transform:translateY(-50%)!important;
+  z-index:1001!important;
+  pointer-events:auto!important;
+  margin:0!important;
+}
+#screen-lobby .lobby-modifier-picker .modifier-enabled-popup[hidden]{
+  display:none!important;
+  visibility:hidden!important;
+}
+#screen-lobby .lobby-modifier-picker .modifier-enabled-popup::after{
+  left:auto!important;
+  right:-5px!important;
+  top:50%!important;
+  transform:translateY(-50%) rotate(45deg)!important;
+}
+
+@media(max-width:760px){
+  #screen-lobby .lobby-round-settings{
+    grid-column:1 / -1!important;
+    grid-row:auto!important;
+    margin-left:0!important;
+    width:100%!important;
+  }
+  #screen-lobby .lobby-modifier-picker .modifier-enabled-popup{
+    left:auto!important;
+    right:calc(100% + 4px)!important;
+    top:50%!important;
+    transform:translateY(-50%)!important;
+    max-width:calc(100vw - 44px)!important;
+  }
+}
+</style>
