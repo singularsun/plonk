@@ -1892,7 +1892,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button><button class="btn small" type="button" data-sphere-quick="hit">HIT EFFECTS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.90 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.94 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -20693,5 +20693,145 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     ctx.drawImage(tmp,-W/2,-H/2);
     ctx.restore();
   };
+})();
+</script>
+
+
+<script id="final-orbit-weapon-hitbox-knockback-v42">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined'||typeof WEAPONS==='undefined')return;
+  const IDS=new Set(['twinblades','anchor','gyroblade','bombardier']);
+  const finite=v=>Number.isFinite(Number(v))?Number(v):0;
+
+  // Give all four orbiting weapons a small, deliberate contact allowance around
+  // their visible geometry so the hitbox is usable without needing pixel-perfect overlap.
+  const oldSpec=Game.weaponSpec.bind(Game);
+  Game.weaponSpec=function(p){
+    const s=oldSpec(p),id=validWeapon(p?.weapon||'sword');
+    if(IDS.has(id))s.orbitHitboxBonus=6;
+    if(id==='bombardier'){
+      // A substantial increase to Bombardier's explosive knockback.
+      s.bombKnockback=Math.max(180,950*Math.max(.05,1+(Number(p?.weaponUpgrades?.knockbackPct)||0)));
+    }
+    return s;
+  };
+
+  // The existing four-weapon collision geometry is already based on the actual
+  // weapon silhouettes. Inflate only the target's effective radius for the
+  // idle/orbit state, leaving thrown/active hit detection unchanged.
+  const oldSegmentHit=Game.weaponSegmentHit.bind(Game);
+  Game.weaponSegmentHit=function(p,angle,inner,outer,width,target){
+    const id=validWeapon(p?.weapon||'sword');
+    if(!IDS.has(id)||!target)return oldSegmentHit(p,angle,inner,outer,width,target);
+    const phase=String(p.weaponPhase||'idle');
+    if(phase!=='idle')return oldSegmentHit(p,angle,inner,outer,width,target);
+    const bonus=Math.max(0,finite(this.weaponSpec(p).orbitHitboxBonus));
+    if(!bonus)return oldSegmentHit(p,angle,inner,outer,width,target);
+    const expanded=Object.assign({},target,{radius:Math.max(0,finite(target.radius)||26)+bonus});
+    return oldSegmentHit(p,angle,inner,outer,width,expanded);
+  };
+
+  // Hammer previously had an orbit position but no idle collision check. Add its
+  // normal host-authoritative orbit contact without touching its grounded state.
+  const oldUpdateWeapons=Game.updateWeapons.bind(Game);
+  Game.updateWeapons=function(dt){
+    oldUpdateWeapons(dt);
+    if(!this.isHost||!this.isWeaponry())return;
+    const now=performance.now();
+    for(const p of Object.values(this.players||{})){
+      if(!p||p.spectator||!p.alive||validWeapon(p.weapon)!=='anchor')continue;
+      if(p.weaponPhase!=='idle'||p.anchorGrounded)continue;
+      const s=this.weaponSpec(p);
+      this.weaponPlayerContact(p,p.weaponOrbitAngle,s.idleInner,s.idleOuter,s.idleWidth,'idle',now);
+    }
+  };
+
+  Game.__orbitWeaponHitboxKnockbackV42=true;
+})();
+</script>
+
+
+<script id="grounded-hammer-permanent-hitbox-v1">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined')return;
+  const PAD=1.75;
+  const finite=v=>Number.isFinite(Number(v))?Number(v):0;
+  const segCircle=(px,py,r,a,b)=>{
+    const dx=b.x-a.x,dy=b.y-a.y,l2=dx*dx+dy*dy;
+    const t=l2>1e-9?Math.max(0,Math.min(1,((px-a.x)*dx+(py-a.y)*dy)/l2)):0;
+    const qx=a.x+dx*t,qy=a.y+dy*t,ax=px-qx,ay=py-qy;
+    return ax*ax+ay*ay<=r*r;
+  };
+  const polyCircle=(px,py,r,poly)=>{
+    for(let i=0;i<poly.length;i++){
+      if(segCircle(px,py,r,poly[i],poly[(i+1)%poly.length]))return true;
+    }
+    let inside=false;
+    for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+      const a=poly[i],b=poly[j];
+      if(((a.y>py)!==(b.y>py)) && px<(b.x-a.x)*(py-a.y)/(b.y-a.y||1e-9)+a.x)inside=!inside;
+    }
+    return inside;
+  };
+  const worldPt=(cx,cy,x,y,a)=>{const c=Math.cos(a),s=Math.sin(a);return{x:cx+x*c-y*s,y:cy+x*s+y*c};};
+
+  function groundedHammerHit(game,owner,now){
+    if(!game.isHost||!owner?.alive||owner.spectator||owner.weapon!=='anchor'||owner.weaponPhase!=='hold'||!owner.anchorGrounded)return;
+    const g=game.weaponRenderGeometry(owner),s=game.weaponSpec(owner);
+    const rrBase=Math.max(0,Number(s.anchorHeadRadius)||11);
+    const length=Math.max(1,Number(s.anchorLength)||68);
+    const chain=Math.max(2,Number(s.anchorChainWidth)||6);
+    const rot=finite(g.rotation),ox=finite(g.worldX),oy=finite(g.worldY);
+    const locks=owner.weaponContactLocks||(owner.weaponContactLocks={});
+    const lockMs=Math.max(0.01,Number(s.contactCooldown)||0.24)*1000;
+    for(const target of Object.values(game.players||{})){
+      if(!target||target.id===owner.id||!target.alive||target.spectator)continue;
+      if(Number(locks[target.id]||0)>now)continue;
+      const r=Math.max(0,Number(target.radius)||26)+PAD;
+      const tr=(x,y)=>worldPt(ox,oy,x,y,rot);
+      let hit=false;
+      // Chain / handle.
+      if(segCircle(target.x,target.y,r+chain*.5,tr(-length*.53,0),tr(-length*.02,0)))hit=true;
+      // Hammer neck/shank.
+      if(!hit && segCircle(target.x,target.y,r+rrBase*.45,tr(length*.12,-10),tr(length*.12,12)))hit=true;
+      // Hammer head/hook silhouette, matching the existing grounded weapon geometry.
+      if(!hit){
+        const hc=tr(length*.12,8),head=rrBase;
+        const hookR=Math.max(9,head*.18*head/11),pts=[];
+        for(let i=0;i<=32;i++){
+          const a=.18*Math.PI+.64*Math.PI*(i/32);
+          pts.push(worldPt(hc.x,hc.y,Math.cos(a)*hookR,Math.sin(a)*hookR,rot));
+        }
+        for(let i=0;i<pts.length-1&&!hit;i++)if(segCircle(target.x,target.y,r+4,pts[i],pts[i+1]))hit=true;
+        if(!hit){
+          // Also protect the thick hammer head itself with a circular contact area.
+          const dx=target.x-hc.x,dy=target.y-hc.y;
+          hit=dx*dx+dy*dy<=(r+head*.55)*(r+head*.55);
+        }
+      }
+      if(!hit)continue;
+      locks[target.id]=now+lockMs;
+      if(typeof game.weaponDeathEnabled==='function'&&game.weaponDeathEnabled()){
+        if(typeof game.weaponEliminate==='function')game.weaponEliminate(owner,target,'anchor',target.x,target.y);
+      }else if(typeof game.weaponApplyKnockback==='function'){
+        const speed=typeof game.weaponHitSpeed==='function'?game.weaponHitSpeed(owner,'anchor'):Number(s.contactKnockback||500);
+        game.weaponApplyKnockback(owner,target,'anchor',speed);
+      }
+    }
+  }
+
+  const oldUpdateWeapons=Game.updateWeapons.bind(Game);
+  Game.updateWeapons=function(dt){
+    oldUpdateWeapons(dt);
+    if(!this.isHost||!this.players)return;
+    const now=performance.now();
+    for(const p of Object.values(this.players)){
+      if(p?.weapon==='anchor'&&p.weaponPhase==='hold'&&p.anchorGrounded)groundedHammerHit(this,p,now);
+    }
+  };
+
+  Game.__groundedHammerPermanentHitbox=true;
 })();
 </script>
