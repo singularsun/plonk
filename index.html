@@ -1444,6 +1444,112 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
   }
 }
 </style>
+
+<style id="roguelike-slider-edge-polish">
+.slider-field input[type=range]{
+  -webkit-appearance:none!important;appearance:none!important;
+  width:100%!important;min-width:0!important;
+  padding:0!important;margin:7px 0 1px!important;
+  background:transparent!important;border:0!important;
+  height:18px!important;overflow:visible!important;
+}
+.slider-field input[type=range]::-webkit-slider-runnable-track{
+  width:100%;height:6px;background:linear-gradient(90deg,#3d2718,#b9783c);
+  border:1px solid #5a3e25;border-radius:999px;box-sizing:border-box;
+}
+.slider-field input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:15px;height:15px;margin-top:-5px;border-radius:50%;
+  border:2px solid #ffe0a0;background:#c9793a;
+  box-shadow:0 0 0 1px #000,0 0 12px #c9793a88;
+}
+.slider-field input[type=range]::-moz-range-track{
+  width:100%;height:6px;background:linear-gradient(90deg,#3d2718,#b9783c);
+  border:1px solid #5a3e25;border-radius:999px;box-sizing:border-box;
+}
+.slider-field input[type=range]::-moz-range-progress{height:6px;background:#b9783c;border-radius:999px;}
+.slider-field input[type=range]::-moz-range-thumb{
+  width:15px;height:15px;border-radius:50%;border:2px solid #ffe0a0;background:#c9793a;
+  box-shadow:0 0 0 1px #000,0 0 12px #c9793a88;
+}
+.weaponry-variant-option.selected{border-color:var(--accent3)!important;background:linear-gradient(180deg,#3a2412,#21140b)!important;color:#fff1bc!important;box-shadow:0 0 0 1px #c9793a33,0 0 12px #c9793a22;}
+.weapon-rogue-chat{position:absolute;right:18px;bottom:18px;width:min(285px,29vw);height:210px;display:flex;flex-direction:column;gap:5px;padding:8px;background:#100b08ee;border:1px solid #5a3c25;border-radius:6px;box-shadow:0 16px 40px #000b,0 0 22px #c9793a15;z-index:4;}
+.weapon-rogue-chat-head{font-size:9px;font-weight:1000;letter-spacing:2px;color:var(--accent3);padding:1px 2px;}
+.weapon-rogue-chat-log{flex:1;min-height:0;overflow-y:auto;padding:6px;background:#00000055;border:1px solid #2e2116;border-radius:3px;font-size:10px;line-height:1.35;white-space:pre-wrap;}
+.weapon-rogue-chat-log>div{margin-bottom:2px;word-break:break-word;}
+.weapon-rogue-chat-input-wrap{display:flex;gap:4px;}
+#weaponRogueChatInput{flex:1;min-width:0;padding:6px 7px;font-size:10px;}
+#weaponRogueChatSend{padding:6px 8px;font-size:9px;}
+@media(max-width:980px){
+  .weapon-rogue-chat{position:relative;right:auto;bottom:auto;width:min(420px,92vw);height:155px;margin:12px auto 0;z-index:3;}
+  #weaponRogueOverlay{align-items:flex-start;overflow:auto;padding:12px;}
+  .weapon-rogue-panel{margin:auto;}
+}
+</style>
+
+<style id="weapon-rogue-draft-layout-fix">
+/* Keep the roguelike choices and chat in separate columns so neither can overlap. */
+#weaponRogueOverlay{
+  display:none;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+}
+#weaponRogueOverlay.active{display:grid;grid-template-columns:minmax(0,860px) 230px;}
+#weaponRogueOverlay .weapon-rogue-panel{
+  width:100%;
+  max-width:860px;
+  min-width:0;
+}
+#weaponRogueOverlay .weapon-rogue-cards{
+  width:100%;
+  min-width:0;
+}
+#weaponRogueOverlay .weapon-rogue-chat{
+  position:relative!important;
+  right:auto!important;
+  bottom:auto!important;
+  left:auto!important;
+  top:auto!important;
+  width:230px!important;
+  height:390px!important;
+  margin:0!important;
+  align-self:center;
+  min-width:0;
+  z-index:3;
+}
+#weaponRogueOverlay .weapon-rogue-chat-log{
+  min-height:0;
+}
+@media(max-width:1160px){
+  #weaponRogueOverlay.active{grid-template-columns:minmax(0,1fr) 210px;gap:10px;width:min(100vw,1090px);}
+  #weaponRogueOverlay .weapon-rogue-chat{width:210px!important;}
+}
+@media(max-width:900px){
+  #weaponRogueOverlay.active{
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    align-items:center;
+    overflow:auto;
+    padding:12px;
+  }
+  #weaponRogueOverlay .weapon-rogue-panel{width:min(860px,96vw);max-width:none;}
+  #weaponRogueOverlay .weapon-rogue-chat{width:min(420px,92vw)!important;height:250px!important;margin:0 auto 10px!important;flex:0 0 auto;}
+}
+</style>
+
+<style id="roguelike-variety-final-css">
+/* Final slider treatment: boxed cards and tracks terminate exactly at the field edges. */
+.slider-field{position:relative;overflow:visible;}
+.slider-field input[type=range]{appearance:none;-webkit-appearance:none;box-sizing:border-box;width:100%;}
+.slider-field input[type=range]::-webkit-slider-runnable-track{box-sizing:border-box;width:100%;}
+.slider-field input[type=range]::-moz-range-track{box-sizing:border-box;width:100%;}
+.slider-field input[type=range]::-webkit-slider-thumb{position:relative;}
+.slider-field input[type=range]::-moz-range-thumb{box-sizing:border-box;}
+@media(max-width:760px){.slider-field{min-height:64px;padding:8px 8px 7px;}}
+</style>
+
 </head>
 <body>
 <div id="app">
@@ -1484,14 +1590,15 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
             </div>
             <select id="hostMode" class="hidden"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="grapple_hook">Grapple Hook</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option><option value="bouncy_arrows">Bouncy Arrows</option><option value="mines">Mines</option><option value="large_mines">Large Mines</option><option value="death_mines">Death Mines</option><option value="weaponry">Weaponry</option></select>
           </div>
-          <div class="field"><label>Max Players</label><input type="number" id="hostMaxP" min="2" max="8" value="8"></div>
+          <div class="field slider-field"><label>Max Players <output id="hostMaxPVal">8</output></label><input type="range" id="hostMaxP" min="2" max="8" step="1" value="8"></div>
           <div class="field hidden" id="hostWeaponField"><label>Weapon</label><select id="hostWeapon"><option value="sword">Sword</option><option value="wand">Wand</option><option value="bo_staff">Bo Staff</option><option value="axe">Shovel</option><option value="flail">Flail</option><option value="chakram">Chakram</option></select></div>
+          <div class="field hidden" id="hostWeaponRogueField" aria-hidden="true"><input type="checkbox" id="hostWeaponRoguelike" tabindex="-1" hidden></div>
         </div>
         <h3>PHYSICS</h3>
         <div class="setting-grid">
-          <div class="field"><label>Gravity</label><input type="number" id="hostGravity" min="0.1" max="3" step="0.1" value="1"></div>
-          <div class="field"><label>Knockback ×</label><input type="number" id="hostKB" min="0.2" max="3" step="0.1" value="1"></div>
-          <div class="field"><label>Player Size</label><input type="number" id="hostPlayerSize" min="0.5" max="2" step="0.1" value="1"></div>
+          <div class="field slider-field"><label>Gravity <output id="hostGravityVal">1.0×</output></label><input type="range" id="hostGravity" min="0.1" max="3" step="0.1" value="1"></div>
+          <div class="field slider-field"><label>Knockback × <output id="hostKBVal">1.0×</output></label><input type="range" id="hostKB" min="0.2" max="3" step="0.1" value="1"></div>
+          <div class="field slider-field"><label>Player Size <output id="hostPlayerSizeVal">1.0×</output></label><input type="range" id="hostPlayerSize" min="0.5" max="2" step="0.1" value="1"></div>
         </div>
         <h3>ROUND RULES</h3>
         <div class="setting-grid create-round-rule-fields">
@@ -1575,11 +1682,12 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
             </div>
             <select id="lobbyModeSelect" class="hidden"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="grapple_hook">Grapple Hook</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option><option value="bouncy_arrows">Bouncy Arrows</option><option value="mines">Mines</option><option value="large_mines">Large Mines</option><option value="death_mines">Death Mines</option><option value="weaponry">Weaponry</option></select>
           </div>
-          <div class="field"><label>Gravity</label><input type="number" id="lobbyGravity" min="0.1" max="3" step="0.1" value="1"></div>
-          <div class="field"><label>Knockback ×</label><input type="number" id="lobbyKB" min="0.2" max="3" step="0.1" value="1"></div>
-          <div class="field"><label>Player Size</label><input type="number" id="lobbyPlayerSize" min="0.5" max="2" step="0.1" value="1"></div>
-          <div class="field"><label>Max Players</label><input type="number" id="lobbyMaxP" min="2" max="8" value="8"></div>
+          <div class="field slider-field"><label>Gravity <output id="lobbyGravityVal">1.0×</output></label><input type="range" id="lobbyGravity" min="0.1" max="3" step="0.1" value="1"></div>
+          <div class="field slider-field"><label>Knockback × <output id="lobbyKBVal">1.0×</output></label><input type="range" id="lobbyKB" min="0.2" max="3" step="0.1" value="1"></div>
+          <div class="field slider-field"><label>Player Size <output id="lobbyPlayerSizeVal">1.0×</output></label><input type="range" id="lobbyPlayerSize" min="0.5" max="2" step="0.1" value="1"></div>
+          <div class="field slider-field"><label>Max Players <output id="lobbyMaxPVal">8</output></label><input type="range" id="lobbyMaxP" min="2" max="8" step="1" value="8"></div>
           <div class="field hidden weapon-selector-lock-field" id="lobbyWeaponField"><label>Your Weapon</label><div class="weapon-selector-lock-row"><div class="weapon-picker" id="lobbyWeaponPicker" data-weapon-picker="lobby"><button class="btn small weapon-picker-main" type="button" aria-haspopup="true" aria-expanded="false"><span class="weapon-picker-value">Sword</span><span class="weapon-picker-caret">▾</span></button><div class="weapon-picker-panel" role="menu"></div></div><select id="lobbyWeapon" class="hidden" aria-hidden="true"><option value="sword">Sword</option><option value="wand">Wand</option><option value="bo_staff">Bo Staff</option><option value="axe">Shovel</option><option value="flail">Flail</option><option value="chakram">Chakram</option></select><div id="lobbyWeaponLockField"><button class="btn small" type="button" id="btnWeaponLock">Lock</button></div></div></div>
+          <div class="field hidden" id="lobbyWeaponRogueField" aria-hidden="true"><input type="checkbox" id="lobbyWeaponRoguelike" tabindex="-1" hidden></div>
           <div class="round-settings-grid lobby-round-settings">
             <div class="field"><label>Round Rule</label><select id="lobbyRoundMode"><option value="rounds">Fixed Rounds</option><option value="score">First to Points</option></select></div>
             <div class="field round-count-slot" id="lobbyRoundCountField"><label>Rounds</label><input type="number" id="lobbyRoundCount" min="1" max="99" value="3"></div>
@@ -1758,6 +1866,25 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
   </div>
 </div>
 
+<!-- ============ WEAPONRY ROGUELIKE DRAFT ============ -->
+<div id="weaponRogueOverlay" aria-live="polite" aria-modal="true">
+  <div class="weapon-rogue-panel">
+    <div class="weapon-rogue-kicker">WEAPONRY ROGUELIKE</div>
+    <div class="weapon-rogue-title" id="weaponRogueTitle">ROUND UPGRADE</div>
+    <div class="weapon-rogue-sub" id="weaponRogueSub">Choose 1 of 3 upgrades. The next round waits for everyone.</div>
+    <div class="weapon-rogue-progress" id="weaponRogueProgress">0 / 0 PLAYERS PICKED</div>
+    <div class="weapon-rogue-summary" id="weaponRogueSummary" aria-live="polite"></div>
+    <div class="weapon-rogue-cards" id="weaponRogueCards"></div>
+  </div>
+  <div class="weapon-rogue-chat" id="weaponRogueChatBox">
+    <div class="weapon-rogue-chat-head">CHAT</div>
+    <div class="weapon-rogue-chat-log" id="weaponRogueChatLog"></div>
+    <div class="weapon-rogue-chat-input-wrap">
+      <input type="text" id="weaponRogueChatInput" maxlength="120" placeholder="Type a message...">
+      <button class="btn small" id="weaponRogueChatSend" type="button">SEND</button>
+    </div>
+  </div>
+</div>
 <div id="roundIntermissionOverlay" aria-live="polite"><div class="panel"><h2>ROUND LEADERBOARD</h2><div id="roundIntermissionContent"></div></div></div>
 
 <!-- ============ IN-GAME HUD ============ -->
@@ -3658,22 +3785,22 @@ const WEAPONS={
   sword:{label:'Sword',orbitSpeed:3.35,cooldown:.78,contactCooldown:.20,
     idleInner:36,idleOuter:84,idleWidth:8,attackExtend:.11,attackActive:.12,attackRetract:.15,
     bladeLength:48,idleCenter:60,attackCenter:98,activeWidth:9,contactKnockback:390},
-  wand:{label:'Wand',orbitSpeed:2.55,cooldown:2.05,contactCooldown:.24,
-    idleInner:34,idleOuter:78,idleWidth:7,castTime:.16,projectileSpeed:880,projectileRange:620,
-    projectileRadius:7,contactKnockback:300},
-  bo_staff:{label:'Bo Staff',orbitSpeed:2.05,cooldown:8.80,contactCooldown:.22,
+  wand:{label:'Wand',orbitSpeed:2.55,cooldown:2.25,contactCooldown:.24,
+    idleInner:34,idleOuter:78,idleWidth:7,castTime:.16,projectileSpeed:880,projectileRange:560,
+    projectileRadius:6,contactKnockback:300},
+  bo_staff:{label:'Bo Staff',orbitSpeed:2.05,cooldown:9.70,contactCooldown:.22,
     idleInner:42,idleOuter:114,idleWidth:7,attackExtend:.24,attackHold:1.85,attackReturn:.46,returnSpeed:420,
-    staffLength:92,idleCenter:78,throwStart:78,throwEnd:245,activeWidth:8,contactKnockback:370,spinSpeed:12.5},
-  axe:{label:'Shovel',orbitSpeed:3.00,cooldown:2.00,contactCooldown:.21,
-    idleInner:40,idleOuter:84,idleWidth:9,attackExtend:.09,attackActive:.28,attackRetract:.15,
-    handleLength:48,idleCenter:62,attackCenter:96,activeWidth:11,swingInner:42,swingOuter:126,
+    staffLength:92,idleCenter:78,throwStart:78,throwEnd:224,activeWidth:7.2,contactKnockback:370,spinSpeed:12.5},
+  axe:{label:'Shovel',orbitSpeed:3.00,cooldown:2.90,contactCooldown:.21,
+    idleInner:40,idleOuter:84,idleWidth:9,attackExtend:.09,attackActive:.24,attackRetract:.15,
+    handleLength:48,idleCenter:62,attackCenter:92,activeWidth:9.5,swingInner:42,swingOuter:114,
     swingStart:-1.08,swingEnd:1.08,contactKnockback:430},
   flail:{label:'Flail',orbitSpeed:2.70,cooldown:2.45,contactCooldown:.23,
     idleInner:34,idleOuter:74,idleWidth:8,attackExtend:.095,attackActive:.09,attackRetract:.12,returnSpeed:1240,
-    idleCenter:52,strikeRange:218,ballRadius:10,chainWidth:4,activeWidth:10,contactKnockback:350},
-  chakram:{label:'Chakram',orbitSpeed:3.05,cooldown:2.1,contactCooldown:.18,
-    idleInner:36,idleOuter:78,idleWidth:8,attackExtend:.20,attackActive:.08,attackHold:1.25,attackRetract:.20,returnSpeed:820,
-    idleCenter:60,throwRange:154,discRadius:15,discThickness:5,activeWidth:14,contactKnockback:330,spinSpeed:14}
+    idleCenter:52,strikeRange:218,ballRadius:14,chainWidth:4,activeWidth:10,hitboxBonus:4,contactKnockback:350},
+  chakram:{label:'Chakram',orbitSpeed:3.05,cooldown:2.40,contactCooldown:.18,
+    idleInner:36,idleOuter:78,idleWidth:8,attackExtend:.18,attackActive:.08,attackHold:99,attackRetract:.12,returnSpeed:1650,
+    idleCenter:60,throwRange:158,discRadius:17,discThickness:5,activeWidth:15,hitboxBonus:8,contactKnockback:330,spinSpeed:14}
 };
 function validWeapon(id){ return Object.prototype.hasOwnProperty.call(WEAPONS,id)?id:'sword'; }
 function weaponLabel(id){ return WEAPONS[validWeapon(id)].label; }
@@ -4274,7 +4401,7 @@ const Game = {
       p.dashSerial=0; p.netDashSerial=0; p.grappleSerial=0; p.netGrappleSerial=0; p._dashChargeSfxLevel=0;
       p.grappleEventSeq=0; p.lastGrappleEventSeq=null; p.pendingGrappleTargetId=null; p.remoteGrappleActive=false; p.remoteGrappleEventSeq=null;
       p.actionAiming=false; p.actionAngle=-Math.PI/2; p.actionAimStartAngle=-Math.PI/2; p.actionAimStartTime=0; p.actionEventSeq=0; p.lastActionEventSeq=null; p.pendingActionAngle=null; p.remoteActionActive=false; p.actionCooldown=0; p.actionCooldownMax=GameModes[this.mode]?.mine?PHYS.mineCooldown:PHYS.actionProjectileCooldown; p.actionCharge=0; p.actionChargeStartTime=0; p.actionPower=0; p.actionKind=null; p._actionChargeFxAcc=0;
-      p.weapon=validWeapon(p.weapon||'sword'); p.weaponPhase='idle'; p.weaponPhaseTime=0; p.weaponAttackAngle=p.weaponOrbitAngle; p.weaponActionSerial=0; p.netWeaponActionSerial=0; p.weaponEventSeq=0; p.lastWeaponEventSeq=null; p.weaponCooldown=0; p.weaponCooldownMax=0; p.weaponHitIds={}; p.weaponContactLocks={}; p.weaponWallBlocked=false;
+      p.weapon=validWeapon(p.weapon||'sword'); p.weaponPhase='idle'; p.weaponPhaseTime=0; p.weaponAttackAngle=p.weaponOrbitAngle; p.weaponActionSerial=0; p.netWeaponActionSerial=0; p.weaponEventSeq=0; p.lastWeaponEventSeq=null; p.weaponCooldown=0; p.weaponCooldownMax=0; p.weaponHitIds={}; p.weaponContactLocks={}; p.weaponWallBlocked=false; p.weaponLastNetSyncAt=0; p.weaponNetSeq=0; p.weaponNetAppliedSeq=0;
       p._jumpTrackActive=false; p._jumpStartY=p.y; p._jumpPeakY=p.y; p._jumpApexFxDone=false; p._wallTouchFxAt=0;
       p.remoteJumpHeld=false; p.remoteJumpHoldSeq=0; p.remoteJumpReleaseSeq=0;
     }
@@ -4314,8 +4441,11 @@ const Game = {
       if(me && this.mode==='weaponry'){
         if(me.input.grapplePressed){
           me.input.grapplePressed=false;
-          if(!this.startWeaponAttack(me,me.weaponOrbitAngle,true,null)) this.showActionFailureFeedback(me,'action');
+          if(me.weapon==='chakram' && me.weaponPhase==='hold'){
+            if(!this.returnChakram(me,true,null)) this.showActionFailureFeedback(me,'action');
+          }else if(!this.startWeaponAttack(me,me.weaponOrbitAngle,true,null)) this.showActionFailureFeedback(me,'action');
         }
+        if(me && !this.isHost) this.updateWeaponNetSync(me, dt);
       } else if(me && (this.mode==='grapple' || this.mode==='pypg' || this.mode==='grapple_hook' || this.mode==='arrows' || this.mode==='death_arrows' || this.mode==='bouncy_arrows' || this.mode==='mines' || this.mode==='large_mines' || this.mode==='death_mines')){
         const actionMode=this.mode;
         if(actionMode==='grapple' || actionMode==='pypg'){
@@ -4602,19 +4732,40 @@ const Game = {
     const verticalDir = input.jump && !input.down ? -1 : (input.down && !input.jump ? 1 : 0);
     const maxS = (PHYS.maxSpeed / (p.heavy?1.25:1)) * chargeMoveFactor;
     if(zeroGravity){
+      // ZERO GRAVITY ONLY: keep real momentum, but use a much quicker
+      // acceleration than normal air movement. This makes Zero Gravity feel
+      // responsive without turning it into a velocity-teleport controller.
       const axisLen=Math.hypot(moveDir,verticalDir)||1;
       const ax=moveDir/axisLen, ay=verticalDir/axisLen;
-      const topDownAccel=(PHYS.accel/(p.heavy?1.4:1))*chargeMoveFactor;
+      const zgTopSpeed=(PHYS.maxSpeed*0.60)/(p.heavy?1.25:1);
+      // Normal airborne movement accelerates at PHYS.airAccel (~610 px/s²).
+      // Zero Gravity gets substantially more acceleration, but still needs
+      // multiple frames to build speed and turn, preserving a noticeable glide.
+      const zgAccel=3900/(p.heavy?1.08:1);
+      const zgTurnAccel=6200/(p.heavy?1.12:1);
+      const zgReleaseDamping=0.968;
       if(moveDir || verticalDir){
-        p.vx += ax*topDownAccel*dt;
-        p.vy += ay*topDownAccel*dt;
+        const curSpeed=Math.hypot(p.vx,p.vy);
+        let accelNow=zgAccel;
+        if(curSpeed>0.001){
+          const curX=p.vx/curSpeed, curY=p.vy/curSpeed;
+          const dot=curX*ax+curY*ay;
+          // Opposite input brakes/reverses more strongly, while angled input
+          // bends the trajectory progressively instead of snapping it.
+          if(dot<0.15) accelNow=zgTurnAccel;
+        }
+        p.vx += ax*accelNow*dt*chargeMoveFactor;
+        p.vy += ay*accelNow*dt*chargeMoveFactor;
         if(moveDir) p.facing=moveDir<0?-1:1;
       }else{
-        p.vx *= PHYS.airFriction;
-        p.vy *= PHYS.airFriction;
+        // Keep some glide when the keys are released. Zero Gravity should still
+        // feel lighter and more momentum-based than a normal grounded controller.
+        p.vx *= zgReleaseDamping;
+        p.vy *= zgReleaseDamping;
+        if(Math.hypot(p.vx,p.vy)<10){ p.vx=0; p.vy=0; }
       }
       const spd=Math.hypot(p.vx,p.vy);
-      if(spd>maxS){ const scale=maxS/spd; p.vx*=scale; p.vy*=scale; }
+      if(spd>zgTopSpeed){ const scale=zgTopSpeed/spd; p.vx*=scale; p.vy*=scale; }
     }else{
       if(moveDir<0){ p.vx -= accel*dt; p.facing=-1; }
       else if(moveDir>0){ p.vx += accel*dt; p.facing=1; }
@@ -5585,12 +5736,12 @@ const Game = {
       return this.weaponSegmentHitsTarget(g.worldX-ca*half,g.worldY-sa*half,g.worldX+ca*half,g.worldY+sa*half,width,target);
     }
     if(id==='chakram' && p.weaponPhase!=='idle'){
-      const g=this.weaponRenderGeometry(p),rad=(g.discRadius||15)+(Number(width)||6);
-      return (target.x-g.worldX)*(target.x-g.worldX)+(target.y-g.worldY)*(target.y-g.worldY)<=Math.max(rad,target.radius||26)**2;
+      const g=this.weaponRenderGeometry(p),rad=(target.radius||26)+(g.discRadius||15)*.50+(this.weaponSpec(p).hitboxBonus||0)+(Number(width)||6)*.22;
+      return (target.x-g.worldX)*(target.x-g.worldX)+(target.y-g.worldY)*(target.y-g.worldY)<=rad*rad;
     }
     if(id==='flail' && p.weaponPhase!=='idle'){
-      const g=this.weaponRenderGeometry(p),rad=(g.ballRadius||10)+(Number(width)||6);
-      return (target.x-g.worldX)*(target.x-g.worldX)+(target.y-g.worldY)*(target.y-g.worldY)<=Math.max(rad,target.radius||26)**2;
+      const g=this.weaponRenderGeometry(p),rad=(target.radius||26)+(g.ballRadius||10)*.50+(this.weaponSpec(p).hitboxBonus||0)+(Number(width)||6)*.28;
+      return (target.x-g.worldX)*(target.x-g.worldX)+(target.y-g.worldY)*(target.y-g.worldY)<=rad*rad;
     }
     const a=this.weaponPoint(p,angle,inner),b=this.weaponPoint(p,angle,outer);
     return this.weaponSegmentHitsTarget(a.x,a.y,b.x,b.y,width,target);
@@ -5671,13 +5822,102 @@ const Game = {
       if(this.weaponSegmentHit(attacker,angle,inner,outer,width,other)){ hits[other.id]=true; this.weaponEliminate(attacker,other,kind,other.x,other.y); }
     }
   },
+  weaponPointPathContact(attacker,x1,y1,x2,y2,kind,bonus=0){
+    if(!this.isHost||!attacker?.alive||attacker.spectator)return;
+    const hits=attacker.weaponHitIds||(attacker.weaponHitIds={});
+    const extra=Math.max(0,Number(bonus)||0);
+    const ax=Number(x1)||0,ay=Number(y1)||0,bx=Number(x2)||0,by=Number(y2)||0;
+    const dx=bx-ax,dy=by-ay,len2=dx*dx+dy*dy;
+    for(const other of Object.values(this.players)){
+      if(!other||other.id===attacker.id||!other.alive||other.spectator||hits[other.id])continue;
+      const reach=Math.max(1,other.radius||26)+extra;
+      const t=len2>1e-8?Math.max(0,Math.min(1,((other.x-ax)*dx+(other.y-ay)*dy)/len2)):0;
+      const cx=ax+dx*t,cy=ay+dy*t;
+      if((other.x-cx)*(other.x-cx)+(other.y-cy)*(other.y-cy)<=reach*reach){
+        hits[other.id]=true; this.weaponEliminate(attacker,other,kind,other.x,other.y);
+      }
+    }
+  },
+  returnChakram(p,fromInput=false,remoteSeq=null){
+    if(!this.isWeaponry()||!p||p.spectator||!p.alive||p.weapon!=='chakram'||p.weaponPhase!=='hold')return false;
+    const serial=Number(p.weaponActionSerial)||0;
+    p.weaponPhase='return'; p.weaponPhaseTime=0;
+    p.weaponReturnX=p.x+Math.cos(p.weaponAttackAngle)*this.weaponSpec(p).idleCenter;
+    p.weaponReturnY=p.y+Math.sin(p.weaponAttackAngle)*this.weaponSpec(p).idleCenter;
+    p.weaponReturnRequested=true;
+    if(this.isHost){
+      NetworkManager.broadcast({t:'weapon_return',id:p.id,serial},true);
+    }else if(fromInput){
+      p.weaponEventSeq=((p.weaponEventSeq||0)+1)&65535;
+      NetworkManager.sendToHost({t:'weapon_return',seq:p.weaponEventSeq,serial,weapon:'chakram'},true);
+    }
+    return true;
+  },
+  updateWeaponNetSync(p,dt){
+    if(!p||this.isHost||!this.isWeaponry()||p.spectator||!p.alive)return;
+    p.weaponLastNetSyncAt=(p.weaponLastNetSyncAt||0)+Math.max(0,Number(dt)||0);
+    if(p.weaponLastNetSyncAt<0.08)return;
+    p.weaponLastNetSyncAt=0;
+    const seq=((p.weaponNetSeq||0)+1)&65535; p.weaponNetSeq=seq;
+    const spec=this.weaponSpec(p);
+    const a=Number.isFinite(p.weaponOrbitAngle)?p.weaponOrbitAngle:0;
+    const msg={t:'weapon_sync',seq,weapon:validWeapon(p.weapon),serial:Number(p.weaponActionSerial)||0,
+      phase:p.weaponPhase||'idle',phaseTime:Number(p.weaponPhaseTime)||0,
+      attackAngle:Number.isFinite(p.weaponAttackAngle)?p.weaponAttackAngle:0,
+      orbitAngle:a,
+      x:Number.isFinite(p.weaponWorldX)?p.weaponWorldX:(p.x+Math.cos(a)*(spec.idleCenter||60)),
+      y:Number.isFinite(p.weaponWorldY)?p.weaponWorldY:(p.y+Math.sin(a)*(spec.idleCenter||60))};
+    NetworkManager.sendToHost(msg,false);
+  },
+  receiveWeaponNetSync(data,pid){
+    if(!this.isHost||!this.isWeaponry()||!data||!pid)return;
+    const p=this.players[pid]; if(!p||p.spectator||!p.alive)return;
+    if(validWeapon(data.weapon)!==p.weapon)return;
+    const seq=Number(data.seq)||0,prev=Number(p.weaponNetAppliedSeq)||0;
+    if(seq && prev && (((seq-prev+65536)&65535)>=32768 || seq===prev))return;
+    if(seq)p.weaponNetAppliedSeq=seq;
+    const serial=Number(data.serial)||0;
+    if(serial && serial!==Number(p.weaponActionSerial||0))return;
+    const phase=String(data.phase||p.weaponPhase||'idle');
+    if(!['idle','extend','active','hold','retract','return'].includes(phase))return;
+    p.weaponAttackAngle=this.normalizeAngle(Number(data.attackAngle));
+    p.weaponOrbitAngle=this.normalizeAngle(Number(data.orbitAngle));
+    if(Number.isFinite(Number(data.phaseTime)))p.weaponPhaseTime=Math.max(0,Number(data.phaseTime));
+    if(phase==='idle'){
+      p.weaponPhase='idle';
+      p.weaponWorldX=p.x+Math.cos(p.weaponOrbitAngle)*this.weaponSpec(p).idleCenter;
+      p.weaponWorldY=p.y+Math.sin(p.weaponOrbitAngle)*this.weaponSpec(p).idleCenter;
+    }else if(Number.isFinite(Number(data.x))&&Number.isFinite(Number(data.y))){
+      // The non-host periodically reports its actual world-space weapon location.
+      // The host uses that sample for collision/display convergence until the next
+      // simulation tick produces the next sample.
+      p.weaponWorldX=Number(data.x); p.weaponWorldY=Number(data.y);
+    }
+    NetworkManager.broadcast({t:'weapon_sync',id:p.id,seq,weapon:p.weapon,serial:p.weaponActionSerial,phase:p.weaponPhase,phaseTime:p.weaponPhaseTime,attackAngle:p.weaponAttackAngle,orbitAngle:p.weaponOrbitAngle,x:p.weaponWorldX,y:p.weaponWorldY},false,pid);
+  },
+  applyRemoteWeaponNetSync(data){
+    if(this.isHost||!this.isWeaponry()||!data||!data.id)return;
+    const p=this.players[data.id]; if(!p||p.id===this.myId||p.spectator)return;
+    if(validWeapon(data.weapon)!==p.weapon)return;
+    const serial=Number(data.serial)||0;
+    if(serial && serial<Number(p.netWeaponActionSerial||0))return;
+    p.netWeaponActionSerial=serial||p.netWeaponActionSerial||0;
+    const phase=String(data.phase||p.weaponPhase||'idle');
+    if(!['idle','extend','active','hold','retract','return'].includes(phase))return;
+    p.weaponAttackAngle=this.normalizeAngle(Number(data.attackAngle));
+    p.weaponOrbitAngle=this.normalizeAngle(Number(data.orbitAngle));
+    if(Number.isFinite(Number(data.phaseTime)))p.weaponPhaseTime=Number(data.phaseTime);
+    p.weaponPhase=phase;
+    if(Number.isFinite(Number(data.x)))p.weaponWorldX=Number(data.x);
+    if(Number.isFinite(Number(data.y)))p.weaponWorldY=Number(data.y);
+  },
   startWeaponAttack(p,angle,fromInput=false,remoteSeq=null){
     if(!this.isWeaponry()||!p||p.spectator||!p.alive)return false;
     const spec=this.weaponSpec(p); if((p.weaponCooldown||0)>0||p.weaponPhase!=='idle')return false;
     const a=this.normalizeAngle(Number.isFinite(angle)?angle:p.weaponOrbitAngle);
     p.weaponAttackAngle=a; p.weaponPhase='extend'; p.weaponPhaseTime=0;
     p.weaponCooldown=spec.cooldown; p.weaponCooldownMax=spec.cooldown;
-    p.weaponHitIds={}; p.weaponContactLocks={}; p.weaponActionSerial=(p.weaponActionSerial||0)+1;
+    p.weaponHitIds={}; p.weaponContactLocks={}; p.weaponActionSerial=(p.weaponActionSerial||0)+1; p.weaponReturnRequested=false;
     // Bo Staff keeps an exact world-space position while thrown. Its return target
     // is the same floating orbit point it occupied at the moment of the throw, so
     // finishing the return never snaps into the player's body or jumps back out.
@@ -5852,34 +6092,40 @@ const Game = {
       }else if(p.weapon==='chakram'){
         const a=p.weaponAttackAngle;
         if(p.weaponPhase==='extend'){
+          const oldX=p.weaponWorldX,oldY=p.weaponWorldY;
           const t=Math.min(1,p.weaponPhaseTime/spec.attackExtend),d=spec.idleCenter+(spec.throwRange-spec.idleCenter)*(t*t*(3-2*t));
           // Like the Bo Staff, the disc travels from the original throw position;
           // player movement cannot drag it around while it is being thrown.
           p.weaponWorldX=p.weaponThrowOriginX+Math.cos(a)*d; p.weaponWorldY=p.weaponThrowOriginY+Math.sin(a)*d;
-          // The disc is lethal for the entire outward throw, not only at the endpoint.
-          this.weaponActiveContact(p,a,0,0,spec.activeWidth,'chakram');
+          this.weaponPointPathContact(p,oldX,oldY,p.weaponWorldX,p.weaponWorldY,'chakram',(spec.discRadius||17)*.50+(spec.hitboxBonus||8)+(spec.activeWidth||15)*.22);
           if(p.weaponPhaseTime>=spec.attackExtend){
             p.weaponWorldX=p.weaponThrowOriginX+Math.cos(a)*spec.throwRange;
             p.weaponWorldY=p.weaponThrowOriginY+Math.sin(a)*spec.throwRange;
             p.weaponPhase='active';p.weaponPhaseTime=0;
           }
         }else if(p.weaponPhase==='active'){
-          // Brief lethal contact at the endpoint, then hold the disc there.
+          // Reach the endpoint, then wait for the second action press.
           p.weaponActiveRotation=(p.weaponActiveRotation||0)+spec.spinSpeed*dt;
           this.weaponActiveContact(p,a,0,0,spec.activeWidth,'chakram');
           if(p.weaponPhaseTime>=spec.attackActive){p.weaponPhase='hold';p.weaponPhaseTime=0;}
         }else if(p.weaponPhase==='hold'){
-          // World-space hold: keep the Chakram exactly where it reached until the
-          // hold finishes, matching the Bo Staff's thrown behavior.
+          // World-space hold: the disc stays exactly where it was thrown until the
+          // player presses the action button again.
           p.weaponActiveRotation=(p.weaponActiveRotation||0)+spec.spinSpeed*dt;
           this.weaponActiveContact(p,a,0,0,spec.activeWidth,'chakram');
-          if(p.weaponPhaseTime>=spec.attackHold){p.weaponPhase='retract';p.weaponPhaseTime=0;}
-        }else if(p.weaponPhase==='retract'){
+        }else if(p.weaponPhase==='return'){
           const targetX=p.x+Math.cos(a)*spec.idleCenter,targetY=p.y+Math.sin(a)*spec.idleCenter;
+          const oldX=p.weaponWorldX,oldY=p.weaponWorldY;
           const dx=targetX-p.weaponWorldX,dy=targetY-p.weaponWorldY,dist=Math.hypot(dx,dy),step=spec.returnSpeed*dt;
           p.weaponActiveRotation=(p.weaponActiveRotation||0)+spec.spinSpeed*dt;
-          if(dist<=Math.max(4,step)){p.weaponWorldX=targetX;p.weaponWorldY=targetY;p.weaponOrbitAngle=this.normalizeAngle(a);this.endWeaponAttack(p);}
-          else {p.weaponWorldX+=(dx/dist)*step;p.weaponWorldY+=(dy/dist)*step;}
+          if(dist<=Math.max(4,step)){
+            p.weaponWorldX=targetX;p.weaponWorldY=targetY;
+            this.weaponPointPathContact(p,oldX,oldY,p.weaponWorldX,p.weaponWorldY,'chakram',(spec.discRadius||17)*.50+(spec.hitboxBonus||8)+(spec.activeWidth||15)*.22);
+            p.weaponOrbitAngle=this.normalizeAngle(a);this.endWeaponAttack(p);
+          }else{
+            p.weaponWorldX+=(dx/dist)*step;p.weaponWorldY+=(dy/dist)*step;
+            this.weaponPointPathContact(p,oldX,oldY,p.weaponWorldX,p.weaponWorldY,'chakram',(spec.discRadius||17)*.50+(spec.hitboxBonus||8)+(spec.activeWidth||15)*.22);
+          }
           if(p.weaponPhase!=='idle')this.weaponActiveContact(p,a,0,0,spec.activeWidth,'chakram');
         }
       }else if(p.weapon==='axe'){
@@ -5992,7 +6238,13 @@ const Game = {
       const a=p.weaponPhase==='idle'?p.weaponOrbitAngle:p.weaponAttackAngle;
       const wx=p.weaponPhase==='idle'?p.x+Math.cos(a)*spec.idleOuter:Number.isFinite(p.weaponWorldX)?p.weaponWorldX:p.x+Math.cos(a)*spec.idleCenter;
       const wy=p.weaponPhase==='idle'?p.y+Math.sin(a)*spec.idleOuter:Number.isFinite(p.weaponWorldY)?p.weaponWorldY:p.y+Math.sin(a)*spec.idleCenter;
-      return {angle:a,center:spec.idleCenter,rotation:a,inner:spec.idleInner,outer:spec.idleOuter,length:spec.idleOuter-spec.idleInner,worldX:wx,worldY:wy,ballRadius:spec.ballRadius};
+      // The flail briefly blossoms with longer spikes as soon as it reaches the
+      // end of its strike. This is based on the retract timer, so both a max-range
+      // stop and a wall stop get the same visible impact without another network field.
+      let spikeExpand=0;
+      if(p.weaponPhase==='active') spikeExpand=1;
+      else if(p.weaponPhase==='retract') spikeExpand=Math.max(0,1-Math.min(1,(Number(p.weaponPhaseTime)||0)/0.20));
+      return {angle:a,center:spec.idleCenter,rotation:a,inner:spec.idleInner,outer:spec.idleOuter,length:spec.idleOuter-spec.idleInner,worldX:wx,worldY:wy,ballRadius:spec.ballRadius,spikeExpand};
     }
 
     // Bo Staff uses the world-space position that updateWeapons maintains.
@@ -6030,7 +6282,7 @@ const Game = {
     }
     else if(id==='flail'){
       const dx=g.worldX-x,dy=g.worldY-y;
-      this.drawWeaponFlail(ctx,dx,dy,g.center,g.inner,g.ballRadius,primary,secondary,active);
+      this.drawWeaponFlail(ctx,dx,dy,g.center,g.inner,g.ballRadius,primary,secondary,active,g.spikeExpand||0);
     }else{
       // Bo Staff uses absolute world coordinates while thrown, so player movement
       // cannot drag it around; on return, geometry itself converges to the player.
@@ -6111,7 +6363,7 @@ const Game = {
     }
     ctx.shadowBlur=0;
   },
-  drawWeaponFlail(ctx,dx,dy,startRadius,inner,ballRadius,primary,secondary,active){
+  drawWeaponFlail(ctx,dx,dy,startRadius,inner,ballRadius,primary,secondary,active,spikeExpand=0){
     const dist=Math.hypot(dx,dy)||1,ang=Math.atan2(dy,dx);
     const chainStart=Math.max(inner,startRadius*.7),chainEnd=Math.max(chainStart,dist-ballRadius-2);
     ctx.save();ctx.rotate(ang);
@@ -6133,16 +6385,29 @@ const Game = {
       ctx.fillStyle=i%2?'#a4a8a7':'#d0d3d1';ctx.fillRect(lx-2.5,-4,5,8);
     }
 
-    const ball=ctx.createRadialGradient(dist-3,-3,1,dist,0,ballRadius+3);
+    const pulse=Math.max(0,Math.min(1,Number(spikeExpand)||0));
+    const ball=ctx.createRadialGradient(dist-3,-3,1,dist,0,ballRadius+3+2*pulse);
     ball.addColorStop(0,'#eef0ee');ball.addColorStop(.45,'#9fa4a2');ball.addColorStop(1,'#3f4242');
-    ctx.fillStyle=ball;ctx.beginPath();ctx.arc(dist,0,ballRadius,0,Math.PI*2);ctx.fill();
-    for(let i=0;i<6;i++){
-      const a=(Math.PI*2*i)/6,ir=ballRadius-1,or=ballRadius+6;
-      const bx=dist+Math.cos(a-.18)*ir,by=Math.sin(a-.18)*ir;
-      const tx=dist+Math.cos(a)*or,ty=Math.sin(a)*or;
-      const cx=dist+Math.cos(a+.18)*ir,cy=Math.sin(a+.18)*ir;
-      ctx.fillStyle='#666a69';ctx.beginPath();ctx.moveTo(bx,by);ctx.lineTo(tx,ty);ctx.lineTo(cx,cy);ctx.closePath();ctx.fill();
+    ctx.fillStyle=ball;ctx.beginPath();ctx.arc(dist,0,ballRadius+2*pulse,0,Math.PI*2);ctx.fill();
+
+    // Six compact resting spikes become long, visibly separated steel spikes
+    // when the ball reaches its endpoint, then fold back during the return.
+    const spikeBase=ballRadius+1, spikeLength=6+13*pulse;
+    const spikeInner=spikeBase-.5, spikeOuter=spikeBase+spikeLength;
+    const spikeGrad=ctx.createLinearGradient(dist+spikeInner,0,dist+spikeOuter,0);
+    spikeGrad.addColorStop(0,'#686c6b');spikeGrad.addColorStop(.45,'#d9dcda');spikeGrad.addColorStop(1,'#777b7a');
+    for(let i=0;i<8;i++){
+      const a=(Math.PI*2*i)/8 + Math.PI/8;
+      const baseHalf=.28;
+      const bx1=dist+Math.cos(a-baseHalf)*spikeInner,by1=Math.sin(a-baseHalf)*spikeInner;
+      const bx2=dist+Math.cos(a+baseHalf)*spikeInner,by2=Math.sin(a+baseHalf)*spikeInner;
+      const tx=dist+Math.cos(a)*spikeOuter,ty=Math.sin(a)*spikeOuter;
+      ctx.fillStyle=spikeGrad;ctx.beginPath();ctx.moveTo(bx1,by1);ctx.lineTo(tx,ty);ctx.lineTo(bx2,by2);ctx.closePath();ctx.fill();
     }
+    // Re-draw the hub over the spike roots so the expansion looks mechanical rather
+    // than like eight independent triangles sitting on top of the ball.
+    ctx.fillStyle='#4e5251';ctx.beginPath();ctx.arc(dist,0,ballRadius*.36+1.1*pulse,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle=primary;ctx.lineWidth=2.2;ctx.beginPath();ctx.arc(dist,0,ballRadius*.36+1.1*pulse,0,Math.PI*2);ctx.stroke();
     ctx.restore();
   },
   drawWeaponBoStaff(ctx,length,primary,secondary,active){
@@ -7413,6 +7678,11 @@ const Game = {
         AudioManager.victory();
       }, 900);
     }else{
+      if(this.isWeaponry() && this.matchSettings?.weaponRoguelike){
+        const nextRound=this.roundNumber+1;
+        this.beginWeaponRogueDraft(nextRound,transitionId,payload);
+        return;
+      }
       const nextRound=this.roundNumber+1;
       let started=false;
       const startNext=()=>{
@@ -8349,12 +8619,38 @@ const Game = {
           }
         }
         break;
+      case 'weapon_draft_start':
+        if(!this.isHost && data.data){ this.receiveWeaponRogueDraftStart(data.data); }
+        break;
+      case 'weapon_draft_pick':
+        if(this.isHost){ this.receiveWeaponRoguePick(pid,data); }
+        break;
+      case 'weapon_draft_progress':
+        if(!this.isHost && data.data){ this.receiveWeaponRogueDraftProgress(data.data); }
+        break;
+      case 'weapon_draft_done':
+        if(!this.isHost && data.data){ this.receiveWeaponRogueDraftDone(data.data); }
+        break;
       case 'weapon_attack':
         if(this.isHost){
           const p=this.players[pid]; if(!p||p.spectator||!this.isWeaponry()) return;
           const seq=(data.seq||0)&65535,prev=p.lastWeaponEventSeq,newer=prev===null||(((seq-(prev||0)+65536)&65535)<32768&&seq!==prev); if(!newer)return;
           if(validWeapon(data.weapon)!==p.weapon)return; p.lastWeaponEventSeq=seq; this.startWeaponAttack(p,Number(data.angle),false,seq);
         }else if(data.id){ this.receiveWeaponAttack(data); }
+        break;
+      case 'weapon_return':
+        if(this.isHost){
+          const p=this.players[pid]; if(!p||p.spectator||!this.isWeaponry()||p.weapon!=='chakram') return;
+          const seq=(data.seq||0)&65535,prev=p.lastWeaponEventSeq,newer=prev===null||(((seq-(prev||0)+65536)&65535)<32768&&seq!==prev); if(!newer)return;
+          if(Number(data.serial)!==Number(p.weaponActionSerial||0))return;
+          p.lastWeaponEventSeq=seq; this.returnChakram(p,false,null);
+        }else if(data.id){
+          const p=this.players[data.id]; if(p&&p.weapon==='chakram') this.returnChakram(p,false,null);
+        }
+        break;
+      case 'weapon_sync':
+        if(this.isHost){ this.receiveWeaponNetSync(data,pid); }
+        else if(data.id){ this.applyRemoteWeaponNetSync(data); }
         break;
       case 'weapon_select':
         if(this.isHost){
@@ -10791,7 +11087,7 @@ const Lobby = {
     const selectedHostWeapon=validWeapon(lobbyWeapon?.value||hostPlayer?.weapon||Storage.get('weaponChoice','sword'));
     if(lobbyWeapon&&hostPlayer) hostPlayer.weapon=existingLock||selectedHostWeapon;
     if(hostPlayer) Storage.set('weaponChoice',hostPlayer.weapon);
-    Game.matchSettings={gravity:Math.max(.1,Math.min(3,+document.getElementById('lobbyGravity').value||1)),kb:Math.max(.2,Math.min(3,+document.getElementById('lobbyKB').value||1)),playerSize:Math.max(.5,Math.min(2,+document.getElementById('lobbyPlayerSize').value||1)),maxPlayers:Math.max(Object.keys(Game.players).length,Math.min(8,+document.getElementById('lobbyMaxP').value||8)),spikewall:!!document.getElementById('lobbySpikewall')?.checked,teams:!!document.getElementById('lobbyTeams')?.checked,smash:!!document.getElementById('lobbySmash')?.checked,combo:!!document.getElementById('lobbyCombo')?.checked,parry:!!document.getElementById('lobbyParry')?.checked,shrinkray:!!document.getElementById('lobbyShrinkray')?.checked,growthray:!!document.getElementById('lobbyGrowthray')?.checked,whiplash:!!document.getElementById('lobbyWhiplash')?.checked,magnet:!!document.getElementById('lobbyMagnet')?.checked,repulsor:!!document.getElementById('lobbyRepulsor')?.checked,hotpotato:!!document.getElementById('lobbyHotPotato')?.checked,zeroGravity:!!document.getElementById('lobbyZeroGravity')?.checked,weaponLock:existingLock};
+    Game.matchSettings={gravity:Math.max(.1,Math.min(3,+document.getElementById('lobbyGravity').value||1)),kb:Math.max(.2,Math.min(3,+document.getElementById('lobbyKB').value||1)),playerSize:Math.max(.5,Math.min(2,+document.getElementById('lobbyPlayerSize').value||1)),maxPlayers:Math.max(Object.keys(Game.players).length,Math.min(8,+document.getElementById('lobbyMaxP').value||8)),spikewall:!!document.getElementById('lobbySpikewall')?.checked,teams:!!document.getElementById('lobbyTeams')?.checked,smash:!!document.getElementById('lobbySmash')?.checked,combo:!!document.getElementById('lobbyCombo')?.checked,parry:!!document.getElementById('lobbyParry')?.checked,shrinkray:!!document.getElementById('lobbyShrinkray')?.checked,growthray:!!document.getElementById('lobbyGrowthray')?.checked,whiplash:!!document.getElementById('lobbyWhiplash')?.checked,magnet:!!document.getElementById('lobbyMagnet')?.checked,repulsor:!!document.getElementById('lobbyRepulsor')?.checked,hotpotato:!!document.getElementById('lobbyHotPotato')?.checked,zeroGravity:!!document.getElementById('lobbyZeroGravity')?.checked,weaponRoguelike:!!document.getElementById('lobbyWeaponRoguelike')?.checked,weaponLock:existingLock};
     if(existingLock){ for(const p of Object.values(Game.players)){ if(p&&!p.spectator) p.weapon=existingLock; } }
     Game.roundConfig={mode:document.getElementById('lobbyRoundMode').value,count:Math.max(1,Math.min(99,+document.getElementById('lobbyRoundCount').value||3)),target:Math.max(1,Math.min(99,+document.getElementById('lobbyPointTarget').value||3))}; this.pushSettings();
   },
@@ -10918,10 +11214,10 @@ const Lobby = {
       const locked=validWeapon(Game.matchSettings.weaponLock);
       for(const p of Object.values(Game.players)){ if(p&&!p.spectator) p.weapon=locked; }
     }
-    Game.roundNumber=1;Game.roundConfig=Object.assign({},Game.roundConfig);Game.scores={};Game.teamScores={red:0,blue:0};Object.keys(Game.players).forEach(id=>{ if(Game.scores[id]==null) Game.scores[id]=0; });for(const p of Object.values(Game.players))p.score=0;
+    Game.roundNumber=1;Game.roundConfig=Object.assign({},Game.roundConfig);Game.scores={};Game.teamScores={red:0,blue:0};Object.keys(Game.players).forEach(id=>{ if(Game.scores[id]==null) Game.scores[id]=0; });for(const p of Object.values(Game.players)){p.score=0;p.weaponUpgrades={};p.weaponRogueCards=[];}
     NetworkManager.broadcast({t:'map_data',map:Game.map},true);Game.resetPlayers();const spectatorStates={}; for(const id in Game.players) spectatorStates[id]=!!Game.players[id].spectator;
     NetworkManager.broadcast({t:'match_start',map:Game.map,mode:Game.mode,matchSettings:Game.matchSettings,roundConfig:Game.roundConfig,round:Game.roundNumber,scores:Game.scores,teamScores:Game.teamScores,spawnAssignments:Game.spawnAssignments,teamAssignments:Object.fromEntries(Object.entries(Game.players).map(([id,p])=>[id,normalizedTeam(p.team)])),spectatorStates},true);Game.beginCountdown();},
-  clientStartMatch(data){Game.map=data.map;Game.mode=data.mode;Game.matchSettings=data.matchSettings;Game.roundConfig=data.roundConfig||{mode:'rounds',count:3,target:3};Game.roundNumber=data.round||1;Game.scores=data.scores||{};Game.teamScores=data.teamScores||{red:0,blue:0};if(data.teamAssignments){for(const id in data.teamAssignments){if(Game.players[id])Game.players[id].team=normalizedTeam(data.teamAssignments[id]);}}Game.spawnAssignments=data.spawnAssignments||{};if(data.spectatorStates)this.applySpectatorStates(data.spectatorStates);Game.beginCountdown();},
+  clientStartMatch(data){Game.map=data.map;Game.mode=data.mode;Game.matchSettings=data.matchSettings;for(const p of Object.values(Game.players)){p.weaponUpgrades={};p.weaponRogueCards=[];} Game.roundConfig=data.roundConfig||{mode:'rounds',count:3,target:3};Game.roundNumber=data.round||1;Game.scores=data.scores||{};Game.teamScores=data.teamScores||{red:0,blue:0};if(data.teamAssignments){for(const id in data.teamAssignments){if(Game.players[id])Game.players[id].team=normalizedTeam(data.teamAssignments[id]);}}Game.spawnAssignments=data.spawnAssignments||{};if(data.spectatorStates)this.applySpectatorStates(data.spectatorStates);Game.beginCountdown();},
   receiveMap(map){
     if(!map) return;
     Game.map=ensureMapSpawn(JSON.parse(JSON.stringify(map)));
@@ -12720,18 +13016,38 @@ window.addEventListener('DOMContentLoaded', ()=>{
   refreshSavedMapSelectors().then(()=>{ updateHostPreview(); updateLobbyPreview(); });
 
   function setupModePicker(selectId){
-    const select=document.getElementById(selectId), picker=document.querySelector(`[data-mode-picker=\"${selectId}\"]`);
+    const select=document.getElementById(selectId), picker=document.querySelector(`[data-mode-picker="${selectId}"]`);
     if(!select || !picker) return null;
     const main=picker.querySelector('.mode-picker-main'), valueEl=picker.querySelector('.mode-picker-value'), panel=picker.querySelector('.mode-picker-panel');
+    const rogueId=selectId==='hostMode'?'hostWeaponRoguelike':'lobbyWeaponRoguelike';
+    const rogueCb=()=>document.getElementById(rogueId);
     const groups={
       regular:[['regular','Regular']],
       Grapple:[['grapple','Grapple'],['pypg','PYPG'],['grapple_hook','Grapple Hook']],
       Arrows:[['arrows','Arrows'],['death_arrows','Death Arrows'],['bouncy_arrows','Bouncy Arrows']],
-      Mines:[['mines','Mines'],['large_mines','Large Mines'],['death_mines','Death Mines']]
+      Mines:[['mines','Mines'],['large_mines','Large Mines'],['death_mines','Death Mines']],
+      Weaponry:[['weaponry:classic','Classic'],['weaponry:roguelike','Roguelike']]
     };
-    const labelFor=v=>{ for(const entries of Object.values(groups)) for(const [k,l] of entries) if(k===v) return l; return GameModes[v]?.label||v; };
+    const weaponryLabel=()=>{
+      const cb=rogueCb();
+      return cb?.checked ? 'Weaponry · Roguelike' : 'Weaponry · Classic';
+    };
+    const labelFor=v=>{
+      if(v==='weaponry') return weaponryLabel();
+      for(const entries of Object.values(groups)) for(const [k,l] of entries) if(k===v) return l;
+      return GameModes[v]?.label||v;
+    };
     let folder=null;
     const close=()=>{folder=null;picker.classList.remove('open');main.setAttribute('aria-expanded','false');};
+    const chooseWeaponryVariant=(variant)=>{
+      select.value='weaponry';
+      const cb=rogueCb();
+      if(cb) cb.checked=(variant==='roguelike');
+      select.dispatchEvent(new Event('change',{bubbles:true}));
+      if(cb) cb.dispatchEvent(new Event('change',{bubbles:true}));
+      if(selectId==='lobbyModeSelect' && Game.isHost && typeof Lobby?.commitSettingsFromUI==='function') setTimeout(()=>Lobby.commitSettingsFromUI(),0);
+      close(); render();
+    };
     const render=()=>{
       valueEl.textContent=labelFor(select.value);
       panel.innerHTML='';
@@ -12739,10 +13055,16 @@ window.addEventListener('DOMContentLoaded', ()=>{
         const back=document.createElement('button'); back.type='button'; back.className='mode-picker-option mode-picker-back'; back.textContent='‹ BACK';
         back.addEventListener('click',e=>{e.stopPropagation();folder=null;render();}); panel.appendChild(back);
         const title=document.createElement('div'); title.className='mode-picker-subtitle'; title.textContent=folder; panel.appendChild(title);
-        for(const [v,l] of groups[folder]){
-          const b=document.createElement('button'); b.type='button'; b.className='mode-picker-option'; b.textContent=l; b.setAttribute('role','menuitem');
-          b.addEventListener('click',e=>{e.stopPropagation();select.value=v;select.dispatchEvent(new Event('change',{bubbles:true}));close();render();});
-          panel.appendChild(b);
+        if(folder==='Weaponry'){
+          for(const [v,l] of groups.Weaponry){
+            const b=document.createElement('button'); b.type='button'; b.className='mode-picker-option weaponry-variant-option'+(v.endsWith('roguelike')&&rogueCb()?.checked?' selected':'')+(v.endsWith('classic')&&!rogueCb()?.checked?' selected':''); b.textContent=l;
+            b.addEventListener('click',e=>{e.stopPropagation();chooseWeaponryVariant(v.split(':')[1]);}); panel.appendChild(b);
+          }
+        }else{
+          for(const [v,l] of groups[folder]){
+            const b=document.createElement('button'); b.type='button'; b.className='mode-picker-option'; b.textContent=l; b.setAttribute('role','menuitem');
+            b.addEventListener('click',e=>{e.stopPropagation();select.value=v;select.dispatchEvent(new Event('change',{bubbles:true}));close();render();}); panel.appendChild(b);
+          }
         }
         return;
       }
@@ -12750,15 +13072,14 @@ window.addEventListener('DOMContentLoaded', ()=>{
         const b=document.createElement('button'); b.type='button'; b.className='mode-picker-option'; b.textContent=l;
         b.addEventListener('click',e=>{e.stopPropagation();select.value=k;select.dispatchEvent(new Event('change',{bubbles:true}));close();render();}); panel.appendChild(b);
       }
-      for(const folderName of ['Grapple','Arrows','Mines']){
+      for(const folderName of ['Grapple','Arrows','Mines','Weaponry']){
         const b=document.createElement('button'); b.type='button'; b.className='mode-picker-option folder'; b.textContent=folderName;
         b.addEventListener('click',e=>{e.stopPropagation();folder=folderName;render();}); panel.appendChild(b);
       }
-      const weaponBtn=document.createElement('button'); weaponBtn.type='button'; weaponBtn.className='mode-picker-option'; weaponBtn.textContent='Weaponry';
-      weaponBtn.addEventListener('click',e=>{e.stopPropagation();select.value='weaponry';select.dispatchEvent(new Event('change',{bubbles:true}));close();render();}); panel.appendChild(weaponBtn);
     };
     main.addEventListener('click',e=>{e.stopPropagation();if(main.disabled)return;if(picker.classList.contains('open')) close(); else {picker.classList.add('open');main.setAttribute('aria-expanded','true');render();}});
     select.addEventListener('change',()=>{valueEl.textContent=labelFor(select.value);});
+    rogueCb()?.addEventListener('change',()=>{ if(select.value==='weaponry') valueEl.textContent=labelFor('weaponry'); });
     picker._modePickerRefresh=()=>{valueEl.textContent=labelFor(select.value);main.disabled=!!select.disabled;if(main.disabled)close();};
     render();picker._modePickerRefresh();
     return picker;
@@ -13035,7 +13356,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
     Game.map=ensureMapSpawn(selectedMapFromSelect(document.getElementById('hostMap')));
     Game.mode=document.getElementById('hostMode').value;
     Storage.set('weaponChoice',validWeapon(document.getElementById('hostWeapon')?.value||Storage.get('weaponChoice','sword')));
-    Game.matchSettings={gravity:+document.getElementById('hostGravity').value,kb:+document.getElementById('hostKB').value,playerSize:Math.max(0.5,Math.min(2,+document.getElementById('hostPlayerSize').value||1)),maxPlayers:+document.getElementById('hostMaxP').value,spikewall:!!document.getElementById('hostSpikewall')?.checked,teams:!!document.getElementById('hostTeams')?.checked,smash:!!document.getElementById('hostSmash')?.checked,combo:!!document.getElementById('hostCombo')?.checked,parry:!!document.getElementById('hostParry')?.checked,shrinkray:!!document.getElementById('hostShrinkray')?.checked,growthray:!!document.getElementById('hostGrowthray')?.checked,whiplash:!!document.getElementById('hostWhiplash')?.checked,magnet:!!document.getElementById('hostMagnet')?.checked,repulsor:!!document.getElementById('hostRepulsor')?.checked,hotpotato:!!document.getElementById('hostHotPotato')?.checked,zeroGravity:!!document.getElementById('hostZeroGravity')?.checked,weaponLock:null};
+    Game.matchSettings={gravity:+document.getElementById('hostGravity').value,kb:+document.getElementById('hostKB').value,playerSize:Math.max(0.5,Math.min(2,+document.getElementById('hostPlayerSize').value||1)),maxPlayers:+document.getElementById('hostMaxP').value,spikewall:!!document.getElementById('hostSpikewall')?.checked,teams:!!document.getElementById('hostTeams')?.checked,smash:!!document.getElementById('hostSmash')?.checked,combo:!!document.getElementById('hostCombo')?.checked,parry:!!document.getElementById('hostParry')?.checked,shrinkray:!!document.getElementById('hostShrinkray')?.checked,growthray:!!document.getElementById('hostGrowthray')?.checked,whiplash:!!document.getElementById('hostWhiplash')?.checked,magnet:!!document.getElementById('hostMagnet')?.checked,repulsor:!!document.getElementById('hostRepulsor')?.checked,hotpotato:!!document.getElementById('hostHotPotato')?.checked,zeroGravity:!!document.getElementById('hostZeroGravity')?.checked,weaponRoguelike:!!document.getElementById('hostWeaponRoguelike')?.checked,weaponLock:null};
     Game.roundConfig={mode:document.getElementById('hostRoundMode').value,count:Math.max(1,+document.getElementById('hostRoundCount').value||3),target:Math.max(1,+document.getElementById('hostPointTarget').value||3)};
     Lobby.createAsHost();
   });
@@ -13648,6 +13969,625 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
   #lobbyWeaponPicker .weapon-picker-panel{width:160px;max-width:calc(100vw - 34px);}
 }
 </style>
+<style id="weapon-roguelike-and-slider-ui">
+/* Draggable lobby sliders: boxed controls so the physics area reads as one uniform grid. */
+.slider-field{min-height:66px;padding:8px 9px 7px;background:linear-gradient(180deg,#19110b,#0e0906);border:1px solid #3a2a1a;border-radius:4px;box-shadow:inset 0 1px 0 #ffffff08,0 3px 10px #0004;}
+.slider-field label{display:flex;align-items:center;justify-content:space-between;gap:8px;}
+.slider-field output{font-size:10px;color:var(--accent3);font-weight:1000;letter-spacing:.5px;text-transform:none;}
+.slider-field input[type=range]{display:block;width:100%;min-width:0;padding:0;margin:8px 0 0;cursor:pointer;accent-color:var(--accent3);height:18px;background:transparent;}
+.slider-field input[type=range]::-webkit-slider-runnable-track{width:100%;height:6px;background:linear-gradient(90deg,#3d2718,#b9783c);border:1px solid #5a3e25;border-radius:5px;}
+.slider-field input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;margin-top:-5px;border-radius:50%;border:2px solid #ffe0a0;background:#c9793a;box-shadow:0 0 0 1px #000,0 0 12px #c9793a88;}
+.slider-field input[type=range]::-moz-range-track{width:100%;height:6px;background:linear-gradient(90deg,#3d2718,#b9783c);border:1px solid #5a3e25;border-radius:5px;}
+.slider-field input[type=range]::-moz-range-thumb{width:14px;height:14px;border-radius:50%;border:2px solid #ffe0a0;background:#c9793a;box-shadow:0 0 0 1px #000,0 0 12px #c9793a88;}
+.slider-field input[type=range]:focus-visible{outline:1px solid #ffd27b;outline-offset:2px;}
+.slider-field:hover{border-color:#5a4128;background:linear-gradient(180deg,#21170f,#120c08);}
+.rogue-toggle{height:34px!important;min-height:34px!important;}
+#weaponRogueOverlay{position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;padding:18px;background:radial-gradient(circle at 50% 42%,#6a3a1a22,rgba(5,3,2,.82) 58%),rgba(5,3,2,.60);backdrop-filter:blur(3px);}
+#weaponRogueOverlay.active{display:flex;animation:rogueOverlayIn .22s ease both;}
+.weapon-rogue-panel{position:relative;width:min(930px,95vw);max-height:min(90vh,690px);padding:22px 24px 25px;background:linear-gradient(180deg,#21150cdF,#0c0805f5);border:2px solid #7c4c28;border-radius:9px;box-shadow:0 24px 80px #000d,0 0 45px #e0a35c1c;overflow:hidden;text-align:center;}
+.weapon-rogue-panel::before{content:'';position:absolute;inset:-2px;background:linear-gradient(120deg,transparent 0%,#ffd47a18 45%,transparent 60%);transform:translateX(-110%);animation:rogueSheen 2.8s ease-in-out infinite;pointer-events:none;}
+.weapon-rogue-kicker{position:relative;font-size:9px;font-weight:1000;letter-spacing:4px;color:#d49a58;text-transform:uppercase;}
+.weapon-rogue-title{position:relative;margin-top:4px;font-size:27px;font-weight:1000;letter-spacing:1.5px;color:#fff0c9;text-shadow:0 3px 0 #000,0 0 18px #d58c4055;}
+.weapon-rogue-sub{position:relative;margin-top:6px;font-size:11px;color:#a9947e;letter-spacing:.3px;}
+.weapon-rogue-progress{position:relative;margin:12px auto 14px;width:max-content;max-width:100%;padding:5px 10px;border:1px solid #634326;border-radius:999px;background:#0d0906c7;color:#e0a35c;font-size:9px;font-weight:1000;letter-spacing:1.5px;}
+.weapon-rogue-cards{position:relative;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;align-items:stretch;}
+.weapon-rogue-card{position:relative;min-height:245px;padding:15px 13px 14px;border:2px solid #4f3927;border-radius:8px;background:linear-gradient(180deg,#17100b,#0a0705);color:#fff;cursor:pointer;text-align:left;transition:transform .16s cubic-bezier(.15,1.45,.35,1),border-color .14s ease,box-shadow .14s ease,filter .14s ease;overflow:hidden;}
+.weapon-rogue-card:hover{transform:translateY(-7px) scale(1.015);border-color:#ffd27b;box-shadow:0 15px 32px #000b,0 0 22px #ffd27b2d;filter:brightness(1.08);}
+.weapon-rogue-card:active{transform:translateY(-2px) scale(.995);}
+.weapon-rogue-card.picked{border-color:#fff1b0;box-shadow:0 0 0 2px #ffd56a44,0 0 35px #ffcc5c55;cursor:default;filter:brightness(1.15);}
+.weapon-rogue-card.disabled{opacity:.62;cursor:not-allowed;filter:saturate(.55);}
+.weapon-rogue-rarity{display:inline-flex;align-items:center;min-height:20px;padding:3px 7px;border-radius:999px;font-size:8px;font-weight:1000;letter-spacing:1.3px;text-transform:uppercase;border:1px solid #66513a;background:#120c08;color:#d9c4a4;}
+.weapon-rogue-card.common .weapon-rogue-rarity{border-color:#796957;color:#cbbda9;}
+.weapon-rogue-card.uncommon .weapon-rogue-rarity{border-color:#5e9a72;color:#8be2a7;box-shadow:0 0 12px #5ecf7c18;}
+.weapon-rogue-card.rare .weapon-rogue-rarity{border-color:#5d83c8;color:#8cb4ff;box-shadow:0 0 12px #5d83c833;}
+.weapon-rogue-card.epic .weapon-rogue-rarity{border-color:#a264dc;color:#d6a0ff;box-shadow:0 0 15px #a264dc38;}
+.weapon-rogue-card.legendary .weapon-rogue-rarity{border-color:#d99a3e;color:#ffe08b;box-shadow:0 0 20px #d99a3e42;}
+.weapon-rogue-card.cursed{border-color:#6a2d48;background:linear-gradient(180deg,#1c0b16,#0a0609);box-shadow:inset 0 0 24px #8d27531a,0 0 18px #6f244028;}
+.weapon-rogue-card.cursed .weapon-rogue-rarity{border-color:#b6406f;color:#ff7ca8;background:#1b0711;box-shadow:0 0 16px #b6406f44;}
+.weapon-rogue-card.cursed .weapon-rogue-card-effect{color:#ff789f;text-shadow:0 2px 0 #000,0 0 16px #b43d684d;}
+.weapon-rogue-card.cursed:hover{border-color:#ff78a5;box-shadow:0 15px 32px #000b,0 0 30px #d34a7b44;}
+.weapon-rogue-card.cursed .weapon-rogue-card-shape{background:radial-gradient(circle,#d4497e26,transparent 66%);}
+.weapon-rogue-card.cursed .weapon-rogue-card-foot{color:#9e536e;}
+.weapon-rogue-card-title{margin-top:18px;font-size:18px;font-weight:1000;color:#fff3d2;line-height:1.05;letter-spacing:.4px;}
+.weapon-rogue-card-effect{margin-top:11px;font-size:27px;line-height:1;font-weight:1000;color:#ffd06d;text-shadow:0 2px 0 #000,0 0 13px #d9913555;}
+.weapon-rogue-card-desc{margin-top:12px;font-size:10px;line-height:1.45;color:#aa9a87;min-height:43px;}
+.weapon-rogue-card-note{display:inline-block;margin-left:4px;color:#ffd27b;font-size:8px;letter-spacing:.65px;font-weight:1000;}
+.weapon-rogue-card-foot{position:absolute;left:13px;right:13px;bottom:12px;padding-top:8px;border-top:1px solid #332417;color:#726350;font-size:8px;font-weight:900;letter-spacing:1px;text-transform:uppercase;}
+.weapon-rogue-card-shape{position:absolute;right:-20px;top:-28px;width:95px;height:95px;border-radius:50%;border:1px solid #ffffff10;background:radial-gradient(circle,#ffd27a12,transparent 66%);}
+.weapon-rogue-card.uncommon .weapon-rogue-card-shape{background:radial-gradient(circle,#62db8d18,transparent 66%);}
+.weapon-rogue-card.rare .weapon-rogue-card-shape{background:radial-gradient(circle,#6e9cff20,transparent 66%);}
+.weapon-rogue-card.epic .weapon-rogue-card-shape{background:radial-gradient(circle,#be7bff22,transparent 66%);}
+.weapon-rogue-card.legendary .weapon-rogue-card-shape{background:radial-gradient(circle,#ffcf6328,transparent 66%);}
+@keyframes rogueOverlayIn{from{opacity:0}to{opacity:1}}
+@keyframes rogueSheen{0%,42%{transform:translateX(-110%)}72%,100%{transform:translateX(125%)}}
+@media(max-width:720px){.weapon-rogue-panel{padding:18px 12px}.weapon-rogue-cards{grid-template-columns:1fr;max-height:61vh;overflow:auto;padding:2px 4px 8px}.weapon-rogue-card{min-height:170px}.weapon-rogue-card-desc{min-height:0}.weapon-rogue-title{font-size:23px}}
+</style>
+
+
+
+<script id="weapon-roguelike-runtime">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined') return;
+
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const escRogue=(v)=>{ const d=document.createElement('div'); d.textContent=String(v??''); return d.innerHTML; };
+
+  /* -------- weapon scaling + roguelike stat application -------- */
+  const baseWeaponSpec=Game.weaponSpec.bind(Game);
+  Game.weaponSpec=function(p){
+    const id=validWeapon(p?.weapon||'sword');
+    const s=Object.assign({},WEAPONS[id]);
+    const u=p?.weaponUpgrades||{};
+    const playerScale=clamp((Number(p?.radius)||26)/26,.25,4);
+    // Hitbox upgrades intentionally make the actual weapon model larger too, so a
+    // wider attack never feels visually disconnected from the thing being hit by.
+    const hitboxUpgradeForSize=clamp(Number(u.hitboxPct)||0,-.5,.8);
+    const sizeMult=playerScale*(1+clamp(Number(u.sizePct)||0,-.5,.85)+hitboxUpgradeForSize);
+    const sizeFields=['idleInner','idleOuter','idleWidth','bladeLength','idleCenter','attackCenter','activeWidth','staffLength','throwStart','throwEnd','returnSpeed','strikeRange','ballRadius','chainWidth','handleLength','swingInner','swingOuter','discRadius','discThickness','projectileRadius','projectileSpeed'];
+    for(const k of sizeFields){ if(Number.isFinite(Number(s[k]))) s[k]=Number(s[k])*sizeMult; }
+    // ProjectileSpeed/returnSpeed should not actually grow with player size as aggressively
+    // as the model itself; normalize those two back to their stat-upgrade multiplier only.
+    if(Number.isFinite(Number(s.projectileSpeed))) s.projectileSpeed=WEAPONS[id].projectileSpeed*(1+clamp(Number(u.speedPct)||0,-.65,2));
+    if(Number.isFinite(Number(s.returnSpeed))) s.returnSpeed=WEAPONS[id].returnSpeed*(1+clamp(Number(u.speedPct)||0,-.65,2));
+
+    const rangeMult=1+clamp(Number(u.rangePct)||0,-.35,.95);
+    if(id==='sword'){s.attackCenter*=rangeMult;}
+    else if(id==='wand'){s.projectileRange*=rangeMult;}
+    else if(id==='bo_staff'){s.throwEnd*=rangeMult;}
+    else if(id==='axe'){s.attackCenter*=rangeMult;s.swingOuter*=rangeMult;}
+    else if(id==='flail'){s.strikeRange*=rangeMult;}
+    else if(id==='chakram'){s.throwRange*=rangeMult;}
+
+    const cooldownReduction=clamp(Number(u.cooldownPct)||0,-.65,.65);
+    s.cooldown=Math.max(.22,Number(s.cooldown||0)*(1-cooldownReduction));
+    s.hitboxMult=1+clamp(Number(u.hitboxPct)||0,-.5,.8);
+    s.hitboxBonus=(Number(s.hitboxBonus)||0)*(1+clamp(Number(u.hitboxPct)||0,-.5,.8));
+    const kbMult=1+clamp(Number(u.knockbackPct)||0,-.6,.9);
+    s.contactKnockback*=kbMult;
+    const attackSpeed=clamp(Number(u.attackSpeedPct)||0,-.55,.55);
+    const timeKeys=['attackExtend','attackActive','attackRetract','castTime','attackHold','attackReturn'];
+    for(const k of timeKeys){ if(Number.isFinite(Number(s[k]))) s[k]=Math.max(.025,Number(s[k])*(1-attackSpeed)); }
+    return s;
+  };
+
+  const baseWeaponRenderGeometry=Game.weaponRenderGeometry.bind(Game);
+  Game.weaponRenderGeometry=function(p){
+    const g=baseWeaponRenderGeometry(p);
+    if(g && validWeapon(p?.weapon)==='axe') g.headReach=27*clamp((Number(p?.radius)||26)/26,0.25,4)*(1+clamp(Number(p?.weaponUpgrades?.sizePct)||0,-.5,.85));
+    return g;
+  };
+  const baseWeaponSegmentHit=Game.weaponSegmentHit.bind(Game);
+  Game.weaponSegmentHit=function(p,angle,inner,outer,width,target){
+    const spec=this.weaponSpec(p),w=(Number(width)||6)*(spec.hitboxMult||1);
+    return baseWeaponSegmentHit(p,angle,inner,outer,w,target);
+  };
+  const baseWeaponPathContact=Game.weaponPointPathContact.bind(Game);
+  Game.weaponPointPathContact=function(attacker,x1,y1,x2,y2,kind,bonus=0){
+    const spec=this.weaponSpec(attacker),b=(Number(bonus)||0)*(spec.hitboxMult||1);
+    return baseWeaponPathContact(attacker,x1,y1,x2,y2,kind,b);
+  };
+
+  const ROGUE_CARDS=[
+    // Common: small, reliable stat nudges.
+    {id:'range08',rarity:'common',name:'Long Grip',effect:'+8% RANGE',desc:'Your weapon reaches a little farther.',key:'rangePct',value:.08},
+    {id:'range12',rarity:'common',name:'Extended Grip',effect:'+12% RANGE',desc:'Your weapon reaches 12% farther.',key:'rangePct',value:.12},
+    {id:'cool08',rarity:'common',name:'Quick Hands',effect:'−8% COOLDOWN',desc:'Recover from attacks a little faster.',key:'cooldownPct',value:.08},
+    {id:'cool10',rarity:'common',name:'Fast Hands',effect:'−10% COOLDOWN',desc:'Recover from attacks 10% faster.',key:'cooldownPct',value:.10},
+    {id:'size08',rarity:'common',name:'Light Build',effect:'+8% SIZE',desc:'Your weapon becomes 8% larger.',key:'sizePct',value:.08},
+    {id:'size10',rarity:'common',name:'Reinforced',effect:'+10% SIZE',desc:'Your weapon becomes 10% larger.',key:'sizePct',value:.10},
+    {id:'hit08',rarity:'common',name:'Broad Edge',effect:'+8% HITBOX',desc:'Your weapon model and contact area widen together.',key:'hitboxPct',value:.08},
+    {id:'hit12',rarity:'common',name:'Wide Edge',effect:'+12% HITBOX',desc:'A little more forgiving when you connect.',key:'hitboxPct',value:.12},
+    {id:'speed10',rarity:'common',name:'Light Mechanism',effect:'+10% WEAPON SPEED',desc:'Projectiles and returning weapons move 10% faster.',key:'speedPct',value:.10},
+    {id:'kb10',rarity:'common',name:'Firm Impact',effect:'+10% KNOCKBACK',desc:'Successful hits launch opponents a little harder.',key:'knockbackPct',value:.10},
+
+    // Uncommon: stronger single-stat upgrades and early hybrid picks.
+    {id:'range18',rarity:'uncommon',name:'Extended',effect:'+18% RANGE',desc:'Push your weapon farther into space.',key:'rangePct',value:.18},
+    {id:'cool16',rarity:'uncommon',name:'Fast Mechanism',effect:'−16% COOLDOWN',desc:'Your attack comes back noticeably sooner.',key:'cooldownPct',value:.16},
+    {id:'size18',rarity:'uncommon',name:'Heavy Build',effect:'+18% SIZE',desc:'Bigger visuals and a larger physical weapon.',key:'sizePct',value:.18},
+    {id:'hit18',rarity:'uncommon',name:'Heavy Edge',effect:'+18% HITBOX',desc:'More forgiving contact with a matching larger weapon.',key:'hitboxPct',value:.18},
+    {id:'speed18',rarity:'uncommon',name:'Overclock',effect:'+18% WEAPON SPEED',desc:'Thrown and returning weapons move noticeably faster.',key:'speedPct',value:.18},
+    {id:'kb15',rarity:'uncommon',name:'Sharpened Force',effect:'+15% KNOCKBACK',desc:'Hits throw opponents harder.',key:'knockbackPct',value:.15},
+    {id:'attack12',rarity:'uncommon',name:'Quick Swing',effect:'+12% ATTACK SPEED',desc:'Weapon wind-up and recovery animations finish faster.',key:'attackSpeedPct',value:.12},
+    {id:'balanced18',rarity:'uncommon',name:'Balanced Core',effect:'+10% RANGE · +10% SIZE',desc:'A clean two-stat upgrade with no downside.',key:'multi',value:{rangePct:.10,sizePct:.10}},
+
+    // Rare: meaningful power spikes.
+    {id:'range25',rarity:'rare',name:'Long Weapon',effect:'+25% RANGE',desc:'A major reach increase.',key:'rangePct',value:.25},
+    {id:'cool25',rarity:'rare',name:'Rapid Mechanism',effect:'−25% COOLDOWN',desc:'A strong cooldown reduction.',key:'cooldownPct',value:.25},
+    {id:'size28',rarity:'rare',name:'Oversized Weapon',effect:'+28% SIZE',desc:'Your weapon swells to a much more imposing size.',key:'sizePct',value:.28},
+    {id:'hit28',rarity:'rare',name:'Wide Swing',effect:'+28% HITBOX',desc:'A large contact upgrade that also enlarges the weapon.',key:'hitboxPct',value:.28},
+    {id:'speed28',rarity:'rare',name:'Rapid Fire',effect:'+28% WEAPON SPEED',desc:'Thrown and returning weapons become much faster.',key:'speedPct',value:.28},
+    {id:'kb28',rarity:'rare',name:'Brutal Force',effect:'+28% KNOCKBACK',desc:'Turn successful hits into bigger launches.',key:'knockbackPct',value:.28},
+    {id:'attack22',rarity:'rare',name:'Quick Cycle',effect:'+22% ATTACK SPEED',desc:'Attack animations complete considerably faster.',key:'attackSpeedPct',value:.22},
+    {id:'reachForce',rarity:'rare',name:'Hunter',effect:'+18% RANGE · +15% KNOCKBACK',desc:'Reach farther and make every clean hit matter more.',key:'multi',value:{rangePct:.18,knockbackPct:.15}},
+    {id:'denseEdge',rarity:'rare',name:'Dense Edge',effect:'+20% SIZE · +18% HITBOX',desc:'A visibly larger weapon with more forgiving contact.',key:'multi',value:{sizePct:.20,hitboxPct:.18}},
+    {id:'swiftEdge',rarity:'rare',name:'Swift Edge',effect:'−18% COOLDOWN · +15% SPEED',desc:'Cycle attacks faster while improving thrown/returning speed.',key:'multi',value:{cooldownPct:.18,speedPct:.15}},
+
+    // Epic: dramatic upgrades.
+    {id:'range40',rarity:'epic',name:'Giant Reach',effect:'+40% RANGE',desc:'A massive range upgrade suited to long-control weapons.',key:'rangePct',value:.40},
+    {id:'cool38',rarity:'epic',name:'Hypercharge',effect:'−38% COOLDOWN',desc:'Your weapon cycles extremely quickly.',key:'cooldownPct',value:.38},
+    {id:'size42',rarity:'epic',name:'Colossal',effect:'+42% SIZE',desc:'A huge weapon with a correspondingly larger presence.',key:'sizePct',value:.42},
+    {id:'hit42',rarity:'epic',name:'Massive Contact',effect:'+42% HITBOX',desc:'Your weapon becomes dramatically larger and easier to connect with.',key:'hitboxPct',value:.42},
+    {id:'speed35',rarity:'epic',name:'Overdrive',effect:'+35% WEAPON SPEED',desc:'Faster projectiles and returning weapons.',key:'speedPct',value:.35},
+    {id:'attack30',rarity:'epic',name:'Flash Strike',effect:'+30% ATTACK SPEED',desc:'Your attack timing becomes sharply faster.',key:'attackSpeedPct',value:.30},
+    {id:'titanForce',rarity:'epic',name:'Titan Force',effect:'+25% SIZE · +25% KNOCKBACK',desc:'A larger weapon backed by substantially stronger impacts.',key:'multi',value:{sizePct:.25,knockbackPct:.25}},
+    {id:'predator',rarity:'epic',name:'Predator',effect:'+25% RANGE · +22% SPEED',desc:'A fast, far-reaching upgrade for aggressive pressure.',key:'multi',value:{rangePct:.25,speedPct:.22}},
+    {id:'stormCycle',rarity:'epic',name:'Storm Cycle',effect:'−28% COOLDOWN · +20% ATTACK SPEED',desc:'A weapon built around very frequent attacks.',key:'multi',value:{cooldownPct:.28,attackSpeedPct:.20}},
+
+    // Legendary: rare build-defining choices.
+    {id:'masterwork',rarity:'legendary',name:'Masterwork',effect:'+30% RANGE · +25% SIZE · +12% HITBOX',desc:'A premium all-around weapon enhancement.',key:'multi',value:{rangePct:.30,sizePct:.25,hitboxPct:.12}},
+    {id:'executioner',rarity:'legendary',name:'Executioner',effect:'+40% KNOCKBACK · +28% HITBOX',desc:'A terrifying upgrade for finishing close fights.',key:'multi',value:{knockbackPct:.40,hitboxPct:.28}},
+    {id:'timebreaker',rarity:'legendary',name:'Timebreaker',effect:'−42% COOLDOWN · +20% SPEED',desc:'Extremely fast weapon cycling with faster motion.',key:'multi',value:{cooldownPct:.42,speedPct:.20}},
+    {id:'apex',rarity:'legendary',name:'Apex Arsenal',effect:'+25% RANGE · +25% SIZE · +25% SPEED',desc:'A high-powered three-stat weapon transformation.',key:'multi',value:{rangePct:.25,sizePct:.25,speedPct:.25}},
+    {id:'juggernaut',rarity:'legendary',name:'Juggernaut',effect:'+35% SIZE · +30% KNOCKBACK · +15% HITBOX',desc:'An enormous weapon designed to make every connection count.',key:'multi',value:{sizePct:.35,knockbackPct:.30,hitboxPct:.15}},
+
+    // Cursed: unusually strong trade-offs. They are intentionally tempting, but every pick has a real drawback.
+    {id:'glassCannon',rarity:'cursed',name:'Glass Cannon',effect:'+55% RANGE · +35% SPEED · +25% COOLDOWN',desc:'Reach and weapon speed surge, but your attack recovers 25% slower.',key:'multi',value:{rangePct:.55,speedPct:.35,cooldownPct:-.25}},
+    {id:'bloodRush',rarity:'cursed',name:'Blood Rush',effect:'−32% COOLDOWN · +38% ATTACK · −22% SIZE',desc:'Attack rapidly, but the weapon becomes noticeably smaller.',key:'multi',value:{cooldownPct:.32,attackSpeedPct:.38,sizePct:-.22}},
+    {id:'brittleEdge',rarity:'cursed',name:'Brittle Edge',effect:'+50% HITBOX · +28% SIZE · −30% SPEED',desc:'A huge, forgiving weapon that moves much more slowly.',key:'multi',value:{hitboxPct:.50,sizePct:.28,speedPct:-.30}},
+    {id:'heavyReach',rarity:'cursed',name:'Heavy Reach',effect:'+70% RANGE · +35% SIZE · −25% SPEED',desc:'Massive reach and a huge model, at the cost of weapon speed.',key:'multi',value:{rangePct:.70,sizePct:.35,speedPct:-.25}},
+    {id:'backlash',rarity:'cursed',name:'Backlash',effect:'+55% KNOCKBACK · +30% HITBOX · −30% RANGE',desc:'Every hit is brutal, but you must fight much closer.',key:'multi',value:{knockbackPct:.55,hitboxPct:.30,rangePct:-.30}},
+    {id:'overloaded',rarity:'cursed',name:'Overloaded Core',effect:'−40% COOLDOWN · +45% SPEED · −25% SIZE',desc:'The mechanism is overclocked to the limit and the weapon shrinks under the strain.',key:'multi',value:{cooldownPct:.40,speedPct:.45,sizePct:-.25}},
+    {id:'recklessEdge',rarity:'cursed',name:'Reckless Edge',effect:'+45% HITBOX · +35% KNOCKBACK · +28% COOLDOWN',desc:'Hits are easier and stronger, but your next attack takes much longer to recover.',key:'multi',value:{hitboxPct:.45,knockbackPct:.35,cooldownPct:-.28}},
+    {id:'fragileVelocity',rarity:'cursed',name:'Fragile Velocity',effect:'+50% SPEED · +25% ATTACK · −35% KNOCKBACK',desc:'A lightning-fast weapon that loses some of its impact.',key:'multi',value:{speedPct:.50,attackSpeedPct:.25,knockbackPct:-.35}},
+    {id:'longBurden',rarity:'cursed',name:'Long Burden',effect:'+85% RANGE · −28% SIZE · +20% COOLDOWN',desc:'An extreme reach extension with a smaller weapon and slower recovery.',key:'multi',value:{rangePct:.85,sizePct:-.28,cooldownPct:-.20}}
+  ];
+  const rarityWeight={common:54,uncommon:28,rare:12,epic:5,legendary:1,cursed:3};
+  function weightedCard(excluded){
+    let pool=ROGUE_CARDS.filter(c=>!excluded.has(c.id));
+    if(!pool.length) pool=ROGUE_CARDS.slice();
+    let total=0; for(const c of pool) total+=rarityWeight[c.rarity]||1;
+    let r=Math.random()*total;
+    for(const c of pool){r-=rarityWeight[c.rarity]||1;if(r<=0)return c;}
+    return pool[pool.length-1];
+  }
+  function cardPublic(c){return {id:c.id,rarity:c.rarity,name:c.name,effect:c.effect,desc:c.desc,key:c.key,value:c.value};}
+  function generateCards(){const out=[],used=new Set();while(out.length<3){const c=weightedCard(used);used.add(c.id);out.push(cardPublic(c));}return out;}
+  const baseSpawnWeaponProjectile=Game.spawnWeaponProjectile.bind(Game);
+  Game.spawnWeaponProjectile=function(owner,angle,serial){const before=this.weaponProjectiles.length;baseSpawnWeaponProjectile(owner,angle,serial);const q=this.weaponProjectiles[this.weaponProjectiles.length-1];if(q&&this.weaponProjectiles.length>before&&owner){q.radius*=this.weaponSpec(owner).hitboxMult||1;}};
+
+  Game.applyWeaponRogueUpgrade=function(p,card){
+    if(!p||!card)return;
+    const key=String(card.key||'');
+    p.weaponUpgrades=p.weaponUpgrades||{};
+    const add=(k,v)=>{p.weaponUpgrades[k]=(Number(p.weaponUpgrades[k])||0)+(Number(v)||0);};
+    if(key==='multi'){
+      for(const [k,v] of Object.entries(card.value||{})) add(k,v);
+    }else add(key,card.value);
+    p.weaponRogueLastCard=card.id;
+    p.weaponRogueLastCardName=card.name||card.id;
+    // Re-anchor a held/thrown weapon when its physical size or range changes between rounds.
+    p.weaponPhase='idle';p.weaponPhaseTime=0;p.weaponCooldown=0;p.weaponHitIds={};p.weaponContactLocks={};
+    const spec=this.weaponSpec(p),a=Number.isFinite(p.weaponOrbitAngle)?p.weaponOrbitAngle:0;
+    p.weaponWorldX=p.x+Math.cos(a)*(spec.idleCenter||60);p.weaponWorldY=p.y+Math.sin(a)*(spec.idleCenter||60);
+  };
+
+  /* -------- draft UI -------- */
+  Game._weaponRogueDraft=null;
+  Game._weaponRoguePickPending=false;
+  function rogueOverlay(){return document.getElementById('weaponRogueOverlay');}
+  Game.renderWeaponRogueDraft=function(data){
+    const o=rogueOverlay(),cardsEl=document.getElementById('weaponRogueCards'); if(!o||!cardsEl)return;
+    const cards=data?.cards||[];
+    document.getElementById('weaponRogueTitle').textContent=`ROUND ${Number(data?.round)||''} UPGRADE`;
+    document.getElementById('weaponRogueSub').textContent=this._weaponRoguePickPending?'CHOOSING AN UPGRADE…':'Choose exactly 1 of these 3 upgrades.';
+    const picked=!!data?.picked;
+    const progress=Array.isArray(data?.pickedIds)?data.pickedIds.length:Number(data?.pickedCount)||0;
+    const total=Number(data?.total)||0;
+    document.getElementById('weaponRogueProgress').textContent=`${progress} / ${total} PLAYERS PICKED`;
+    cardsEl.innerHTML='';
+    cards.forEach((c,i)=>{
+      const b=document.createElement('button');b.type='button';b.className=`weapon-rogue-card ${c.rarity||'common'}${picked?' picked':''}${this._weaponRoguePickPending&&!picked?' disabled':''}`;
+      b.disabled=picked||this._weaponRoguePickPending;
+      const hitboxNote=String(c.effect||'').includes('HITBOX')?' <b class="weapon-rogue-card-note">WEAPON GROWS TOO</b>':'';
+      const curseNote=c.rarity==='cursed'?' <b class="weapon-rogue-card-note">HIGH RISK / HIGH REWARD</b>':'';
+      b.innerHTML=`<span class="weapon-rogue-card-shape"></span><span class="weapon-rogue-rarity">${escRogue(c.rarity)}</span><div class="weapon-rogue-card-title">${escRogue(c.name)}</div><div class="weapon-rogue-card-effect">${escRogue(c.effect)}</div><div class="weapon-rogue-card-desc">${escRogue(c.desc)}${hitboxNote}${curseNote}</div><div class="weapon-rogue-card-foot">CHOOSE THIS UPGRADE</div>`;
+      b.addEventListener('click',()=>this.chooseWeaponRogueCard(i));
+      cardsEl.appendChild(b);
+    });
+    o.classList.add('active');
+  };
+  Game.hideWeaponRogueDraft=function(){const o=rogueOverlay(); if(o)o.classList.remove('active'); this._weaponRoguePickPending=false;};
+
+  Game.beginWeaponRogueDraft=function(nextRound,transitionId,payload){
+    if(!this.isHost || !this.isWeaponry() || !this.matchSettings?.weaponRoguelike)return;
+    const participants=Object.values(this.players).filter(p=>p&&!p.spectator);
+    const drafts={};const picked={};
+    for(const p of participants){p.weaponRogueCards=generateCards();p.weaponRogueDraftRound=Number(nextRound)||0;drafts[p.id]=p.weaponRogueCards;picked[p.id]=false;}
+    this._weaponRogueDraft={round:Number(nextRound)||0,transitionId:Number(transitionId)||0,payload,drafts,picked,participants:participants.map(p=>p.id)};
+    this._weaponRoguePickPending=false;
+    const me=this.players[this.myId],cards=me?.weaponRogueCards||[];
+    this.renderWeaponRogueDraft({round:nextRound,cards,picked:false,total:participants.length,pickedCount:0,pickedIds:[]});
+    NetworkManager.broadcast({t:'weapon_draft_start',data:{round:nextRound,transitionId,payload,drafts,total:participants.length}},true);
+    this.updateWeaponRogueDraftProgress();
+    this.checkWeaponRogueDraftComplete();
+  };
+
+  Game.receiveWeaponRogueDraftStart=function(data){
+    if(this.isHost || !data || !this.isWeaponry())return;
+    const myId=this.myId, cards=(data.drafts||{})[myId]||[];
+    this._weaponRogueDraft={round:Number(data.round)||0,transitionId:Number(data.transitionId)||0,payload:data.payload||null,drafts:data.drafts||{},picked:{},participants:Object.keys(data.drafts||{})};
+    for(const id of this._weaponRogueDraft.participants)this._weaponRogueDraft.picked[id]=false;
+    const me=this.players[myId]; if(me){me.weaponRogueCards=cards;me.weaponRogueDraftRound=this._weaponRogueDraft.round;}
+    this._weaponRoguePickPending=false;
+    this.renderWeaponRogueDraft({round:data.round,cards,picked:false,total:this._weaponRogueDraft.participants.length,pickedCount:0,pickedIds:[]});
+  };
+
+  Game.chooseWeaponRogueCard=function(index){
+    const d=this._weaponRogueDraft; if(!d||!this.isWeaponry())return;
+    const me=this.players[this.myId]; if(!me||me.spectator)return;
+    const cards=me.weaponRogueCards||[]; const c=cards[Number(index)]; if(!c||this._weaponRoguePickPending||d.picked?.[me.id])return;
+    if(this.isHost){
+      this.receiveWeaponRoguePick(this.myId,{index:Number(index)});
+    }else{
+      this._weaponRoguePickPending=true;
+      this.renderWeaponRogueDraft({round:d.round,cards,picked:false,total:d.participants.length,pickedIds:Object.keys(d.picked||{}).filter(id=>d.picked[id])});
+      NetworkManager.sendToHost({t:'weapon_draft_pick',index:Number(index)},true);
+    }
+  };
+
+  Game.receiveWeaponRoguePick=function(pid,data){
+    if(!this.isHost)return;
+    const d=this._weaponRogueDraft; if(!d||this.state!=='roundResults')return;
+    if(!d.participants.includes(pid)||d.picked[pid])return;
+    const p=this.players[pid];if(!p||p.spectator)return;
+    const cards=d.drafts?.[pid]||[]; const c=cards[Number(data?.index)]; if(!c)return;
+    this.applyWeaponRogueUpgrade(p,c); d.picked[pid]=true;
+    this.updateWeaponRogueDraftProgress();
+    this.checkWeaponRogueDraftComplete();
+  };
+
+  Game.updateWeaponRogueDraftProgress=function(){
+    const d=this._weaponRogueDraft;if(!d)return;
+    const pickedIds=Object.keys(d.picked||{}).filter(id=>d.picked[id]);
+    const me=this.players[this.myId],mePicked=!!d.picked?.[this.myId];
+    this.renderWeaponRogueDraft({round:d.round,cards:me?.weaponRogueCards||[],picked:mePicked,total:d.participants.length,pickedIds});
+    if(this.isHost)NetworkManager.broadcast({t:'weapon_draft_progress',data:{round:d.round,pickedIds}},true);
+  };
+
+  Game.receiveWeaponRogueDraftProgress=function(data){
+    const d=this._weaponRogueDraft;if(!d||Number(data.round)!==Number(d.round))return;
+    const ids=Array.isArray(data.pickedIds)?data.pickedIds:[]; for(const id of d.participants)d.picked[id]=ids.includes(id);
+    const me=this.players[this.myId];
+    this.renderWeaponRogueDraft({round:d.round,cards:me?.weaponRogueCards||[],picked:!!d.picked?.[this.myId],total:d.participants.length,pickedIds:ids});
+  };
+
+  Game.checkWeaponRogueDraftComplete=function(){
+    if(!this.isHost)return;
+    const d=this._weaponRogueDraft;if(!d)return;
+    // A player who leaves the lobby during a draft no longer blocks progression.
+    d.participants=d.participants.filter(id=>this.players[id]&&!this.players[id].spectator);
+    for(const id of d.participants)if(!d.picked[id])return;
+    this.finishWeaponRogueDraft();
+  };
+
+  Game.finishWeaponRogueDraft=function(){
+    if(!this.isHost)return;
+    const d=this._weaponRogueDraft;if(!d)return;
+    const upgrades={};
+    for(const id of d.participants){const p=this.players[id];if(p)upgrades[id]=Object.assign({},p.weaponUpgrades||{});}
+    this._weaponRogueDraft=null;
+    this.hideWeaponRogueDraft();
+    NetworkManager.broadcast({t:'weapon_draft_done',data:{round:d.round,transitionId:d.transitionId,upgrades}},true);
+    const nextRound=d.round,transitionId=d.transitionId;
+    if(this.roundTransitionId!==transitionId||this.state!=='roundResults')return;
+    const startNext=()=>{
+      if(this.roundTransitionId!==transitionId||this.state!=='roundResults')return;
+      this.roundNumber=nextRound;
+      const startFacings={};for(const id in this.players)startFacings[id]=this.players[id].facing||1;
+      const spectatorStates={};for(const id in this.players)spectatorStates[id]=!!this.players[id].spectator;
+      const nextSpawnPositions=this.getNextRoundSpawnPositions();
+      NetworkManager.broadcast({t:'round_start',round:nextRound,scores:this.scores,teamScores:this.teamScores,transitionId,facings:startFacings,spawnAssignments:this.spawnAssignments,spawnPositions:nextSpawnPositions,spectatorStates,previousRoundResult:d.payload},true);
+      this.beginRoundImmediate(nextRound,transitionId,nextSpawnPositions);
+    };
+    UI.fadeToNextRound(startNext);
+    this._roundTransitionTimer=setTimeout(startNext,700);
+  };
+
+  Game.receiveWeaponRogueDraftDone=function(data){
+    if(this.isHost)return;
+    if(!data)return;
+    const d=this._weaponRogueDraft;
+    if(d && Number(data.transitionId)!==Number(d.transitionId))return;
+    const ups=data.upgrades||{};
+    for(const [id,u] of Object.entries(ups))if(this.players[id])this.players[id].weaponUpgrades=Object.assign({},u||{});
+    this._weaponRogueDraft=null;
+    this.hideWeaponRogueDraft();
+  };
+
+  // In case a client sees the draft but its own pick is still in-flight when
+  // progress arrives, clear the pending state once its player is marked picked.
+  const oldReceiveProgress=Game.receiveWeaponRogueDraftProgress;
+  Game.receiveWeaponRogueDraftProgress=function(data){oldReceiveProgress.call(this,data);const d=this._weaponRogueDraft;if(d&&d.picked?.[this.myId])this._weaponRoguePickPending=false;};
+
+  /* -------- UI integration for the lobby sliders + roguelike toggle -------- */
+  function setupSlider(id,outId,kind){
+    const el=document.getElementById(id),out=document.getElementById(outId);if(!el)return;
+    const paint=()=>{const v=Number(el.value);if(out)out.textContent=kind==='players'?String(Math.round(v)):v.toFixed(1)+'×';};
+    el.addEventListener('input',paint);paint();
+  }
+  setupSlider('hostGravity','hostGravityVal','mult');setupSlider('hostKB','hostKBVal','mult');setupSlider('hostPlayerSize','hostPlayerSizeVal','size');setupSlider('hostMaxP','hostMaxPVal','players');
+  setupSlider('lobbyGravity','lobbyGravityVal','mult');setupSlider('lobbyKB','lobbyKBVal','mult');setupSlider('lobbyPlayerSize','lobbyPlayerSizeVal','size');setupSlider('lobbyMaxP','lobbyMaxPVal','players');
+  function syncRogueFields(){
+    const hostWeapon= document.getElementById('hostWeaponRogueField');
+    const lobbyWeapon=document.getElementById('lobbyWeaponRogueField');
+    const hostActive=document.getElementById('hostMode')?.value==='weaponry';
+    const lobbyActive=Game.mode==='weaponry';
+    hostWeapon?.classList.toggle('hidden',!hostActive);
+    lobbyWeapon?.classList.toggle('hidden',!lobbyActive);
+    const h=document.getElementById('hostWeaponRoguelike');if(h)h.disabled=!hostActive;
+    const l=document.getElementById('lobbyWeaponRoguelike');if(l)l.disabled=!Game.isHost||!lobbyActive;
+  }
+  document.getElementById('hostMode')?.addEventListener('change',syncRogueFields);
+  document.getElementById('lobbyModeSelect')?.addEventListener('change',()=>setTimeout(syncRogueFields,0));
+  document.getElementById('hostWeaponRoguelike')?.addEventListener('change',()=>{});
+  document.getElementById('lobbyWeaponRoguelike')?.addEventListener('change',()=>{if(Game.isHost)Lobby.commitSettingsFromUI();});
+
+  const oldRenderSettings=Lobby.renderSettings;
+  Lobby.renderSettings=function(){
+    oldRenderSettings.apply(this,arguments);
+    const h=document.getElementById('hostWeaponRoguelike'),l=document.getElementById('lobbyWeaponRoguelike');
+    if(h)h.checked=!!Game.matchSettings?.weaponRoguelike;
+    if(l)l.checked=!!Game.matchSettings?.weaponRoguelike;
+    syncRogueFields();
+    const vals={hostGravity:Game.matchSettings?.gravity,hostKB:Game.matchSettings?.kb,hostPlayerSize:Game.matchSettings?.playerSize,hostMaxP:Game.matchSettings?.maxPlayers,lobbyGravity:Game.matchSettings?.gravity,lobbyKB:Game.matchSettings?.kb,lobbyPlayerSize:Game.matchSettings?.playerSize,lobbyMaxP:Game.matchSettings?.maxPlayers};
+    for(const [id,v] of Object.entries(vals)){const el=document.getElementById(id);if(el&&v!=null){el.value=v;el.dispatchEvent(new Event('input'));}}
+  };
+
+  // Slider changes should commit only when the drag ends, avoiding a network flood.
+  for(const id of ['lobbyGravity','lobbyKB','lobbyPlayerSize','lobbyMaxP'])document.getElementById(id)?.addEventListener('change',()=>{if(Game.isHost)Lobby.commitSettingsFromUI();});
+
+  // Wrap player removals so a departure cannot hold up the card gate forever.
+  for(const name of ['removePlayer','handleTabClosed','kickPlayer','banPlayer']){
+    if(typeof Lobby[name]==='function'){
+      const fn=Lobby[name];
+      Lobby[name]=function(){const r=fn.apply(this,arguments);Game.checkWeaponRogueDraft?.();return r;};
+    }
+  }
+
+  // Keep an old lobby setting sane when loading an older file/match.
+  if(!('weaponRoguelike' in (Game.matchSettings||{})))Game.matchSettings.weaponRoguelike=false;
+  syncRogueFields();
+})();
+</script>
+
+
+<script id="weaponry-mode-variant-refresh">
+(function(){
+  const refresh=()=>{
+    ['hostMode','lobbyModeSelect'].forEach(id=>{
+      const sel=document.getElementById(id);
+      const picker=document.querySelector(`[data-mode-picker="${id}"]`);
+      if(sel&&picker?._modePickerRefresh) picker._modePickerRefresh();
+    });
+  };
+  document.getElementById('hostWeaponRoguelike')?.addEventListener('change',refresh);
+  document.getElementById('lobbyWeaponRoguelike')?.addEventListener('change',refresh);
+})();
+</script>
+
+<script id="weapon-rogue-chat-runtime">
+(function(){
+  'use strict';
+  if(typeof Chat==='undefined') return;
+  const oldAppend=Chat.append.bind(Chat);
+  Chat.append=function(msg){
+    oldAppend(msg);
+    const log=document.getElementById('weaponRogueChatLog');
+    if(!log) return;
+    const row=document.createElement('div');
+    const name=document.createElement('span');
+    name.style.color=msg?.color||'#fff'; name.style.fontWeight='900'; name.textContent=String(msg?.name||'Player')+': ';
+    const text=document.createElement('span'); text.textContent=String(msg?.text||'');
+    row.appendChild(name); row.appendChild(text); log.appendChild(row);
+    log.scrollTop=log.scrollHeight;
+    while(log.children.length>60) log.removeChild(log.firstChild);
+  };
+  const oldClear=Chat.clear.bind(Chat);
+  Chat.clear=function(){ oldClear(); const log=document.getElementById('weaponRogueChatLog'); if(log)log.innerHTML=''; };
+  const oldSync=Chat.syncMuteUI.bind(Chat);
+  Chat.syncMuteUI=function(){
+    oldSync();
+    const input=document.getElementById('weaponRogueChatInput');
+    if(input){
+      const muted=!Game.isHost && this.isPlayerMuted(Game.myId);
+      input.disabled=muted;
+      input.placeholder=muted?'You have been muted by the host.':'Type a message...';
+      if(muted){input.value='';if(document.activeElement===input)input.blur();}
+    }
+  };
+  const input=document.getElementById('weaponRogueChatInput');
+  const send=document.getElementById('weaponRogueChatSend');
+  if(input){
+    input.addEventListener('focus',()=>{InputManager.chatFocused=true;});
+    input.addEventListener('blur',()=>{InputManager.chatFocused=false;});
+    input.addEventListener('keydown',e=>{e.stopImmediatePropagation();if(e.key==='Enter'){e.preventDefault();send?.click();}});
+  }
+  send?.addEventListener('click',()=>{
+    if(!input || input.disabled)return;
+    const txt=input.value;
+    if(txt.trim()){Chat.send(txt);input.value='';input.focus();}
+  });
+})();
+</script>
+
+<style id="roguelike-summary-and-knockback-label-final">
+/* Keep the lobby Knockback label compact enough to stay inside its boxed slider field. */
+#screen-lobby .knockback-slider label{
+  font-size:8px!important;
+  letter-spacing:.65px!important;
+  white-space:nowrap;
+}
+#screen-lobby .knockback-slider output{
+  font-size:9px!important;
+  letter-spacing:0!important;
+}
+
+/* Compact persistent build summary shown during every roguelike draft. */
+.weapon-rogue-summary{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  min-height:24px;
+  margin:7px 0 8px;
+  padding:5px 7px;
+  background:linear-gradient(180deg,#171009e8,#0b0806e8);
+  border:1px solid #49311f;
+  border-radius:4px;
+  box-shadow:inset 0 1px 0 #ffffff08,0 6px 18px #0005;
+}
+.weapon-rogue-summary.empty{
+  color:#8d7b68;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+.weapon-rogue-summary-title{
+  flex:0 0 100%;
+  color:var(--accent3);
+  font-size:8px;
+  font-weight:1000;
+  letter-spacing:1.4px;
+  text-transform:uppercase;
+}
+.weapon-rogue-summary-weapon{
+  color:#fff0c0;
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.9px;
+  margin-right:2px;
+}
+.weapon-rogue-summary-chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:18px;
+  padding:2px 5px;
+  border:1px solid #493522;
+  border-radius:3px;
+  background:#120d09;
+  color:#d6c6b7;
+  font-size:8px;
+  font-weight:1000;
+  letter-spacing:.45px;
+  white-space:nowrap;
+}
+.weapon-rogue-summary-chip.positive{
+  border-color:#5a4326;
+  color:#f4d28d;
+}
+.weapon-rogue-summary-chip.negative{
+  border-color:#4e3128;
+  color:#e8a98d;
+}
+.weapon-rogue-summary-last{
+  flex:0 0 100%;
+  margin-top:1px;
+  color:#927d69;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.55px;
+  text-transform:uppercase;
+}
+@media(max-width:900px){
+  .weapon-rogue-summary{margin-bottom:7px;}
+}
+</style>
+
+<script>
+(function(){
+  if(typeof Game==='undefined') return;
+
+  // Mark the existing lobby Knockback slider field once, without changing its DOM structure.
+  const kb=document.getElementById('lobbyKB');
+  if(kb && kb.closest('.slider-field')) kb.closest('.slider-field').classList.add('knockback-slider');
+
+  function esc(v){
+    const d=document.createElement('div'); d.textContent=String(v??''); return d.innerHTML;
+  }
+  function pct(v,negative=false){
+    const n=Math.round(Math.abs(Number(v||0))*100);
+    return negative ? `−${n}%` : `+${n}%`;
+  }
+
+  function renderRogueBuildSummary(){
+    const el=document.getElementById('weaponRogueSummary');
+    if(!el)return;
+    const p=Game.players?.[Game.myId];
+    const u=p?.weaponUpgrades||{};
+    const weapon=(typeof weaponLabel==='function'?weaponLabel(p?.weapon):String(p?.weapon||'Sword')).toUpperCase();
+    const entries=[
+      ['RANGE','rangePct'],
+      ['COOLDOWN','cooldownPct'],
+      ['SIZE','sizePct'],
+      ['HITBOX','hitboxPct'],
+      ['SPEED','speedPct'],
+      ['ATTACK','attackSpeedPct'],
+      ['KNOCKBACK','knockbackPct']
+    ].filter(([,k])=>Math.abs(Number(u[k]||0))>0.0005);
+
+    const lastName = p?.weaponRogueLastCardName ? String(p.weaponRogueLastCardName) : '';
+    const lastId = p?.weaponRogueLastCard ? String(p.weaponRogueLastCard) : '';
+    el.classList.remove('empty');
+    if(!entries.length){
+      el.classList.add('empty');
+      el.innerHTML='<div>NO UPGRADES YET · THIS IS YOUR STARTING BUILD</div>';
+      return;
+    }
+    const chips=entries.map(([label,key])=>{
+      const val=Number(u[key]||0);
+      const negative=val<0;
+      return `<span class="weapon-rogue-summary-chip ${negative?'negative':'positive'}">${esc(label)} ${negative?'−':'+'}${Math.round(Math.abs(val)*100)}%</span>`;
+    }).join('');
+    const last=lastName ? `<div class="weapon-rogue-summary-last">CURRENT BUILD · LAST PICK: ${esc(lastName.replace(/([a-z])([A-Z])/g,'$1 $2').replace(/_/g,' '))}</div>` : '';
+    el.innerHTML=`<div class="weapon-rogue-summary-title">YOUR WEAPON BUILD · <span class="weapon-rogue-summary-weapon">${esc(weapon)}</span></div>${chips}${last}`;
+  }
+
+  const baseRender=Game.renderWeaponRogueDraft;
+  if(typeof baseRender==='function'){
+    Game.renderWeaponRogueDraft=function(data){
+      baseRender.call(this,data);
+      renderRogueBuildSummary();
+    };
+  }
+
+  const baseApply=Game.applyWeaponRogueUpgrade;
+  if(typeof baseApply==='function'){
+    Game.applyWeaponRogueUpgrade=function(p,card){
+      baseApply.call(this,p,card);
+      if(p?.id===this.myId) setTimeout(renderRogueBuildSummary,0);
+    };
+  }
+
+  // Also refresh when settings/player state is rebuilt between rounds.
+  const refreshEvents=['weaponRogueOverlay'];
+  void refreshEvents;
+})();
+</script>
+
 </body>
 
 <style id="legendary-hit-effect-polish">
@@ -14982,4 +15922,84 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
 #lobbyWeaponPicker .weapon-picker-caret{font-size:11px!important;}
 #lobbyWeaponPicker .weapon-picker-option{font-size:11px!important;}
 #lobbyWeaponPicker .weapon-picker-option.selected::after{font-size:11px!important;}
+</style>
+
+
+<style id="weapon-selector-compact-final">
+/* Compact the visible Weapon selector without changing the hidden backing <select>. */
+#screen-lobby .weapon-selector-lock-row{
+  gap:5px!important;
+  width:max-content!important;
+  max-width:100%!important;
+}
+#screen-lobby #lobbyWeaponPicker{
+  flex:0 0 148px!important;
+  width:148px!important;
+  min-width:148px!important;
+  max-width:148px!important;
+}
+#screen-lobby #lobbyWeaponPicker .weapon-picker-main{
+  width:148px!important;
+  min-width:148px!important;
+  max-width:148px!important;
+  height:31px!important;
+  min-height:31px!important;
+  padding:5px 8px!important;
+  gap:5px!important;
+}
+#screen-lobby #lobbyWeaponPicker .weapon-picker-value{
+  font-size:11px!important;
+  letter-spacing:.45px!important;
+}
+#screen-lobby #lobbyWeaponPicker .weapon-picker-caret{
+  font-size:10px!important;
+}
+#screen-lobby #lobbyWeaponPicker .weapon-picker-panel{
+  width:156px!important;
+  min-width:156px!important;
+  max-width:156px!important;
+  gap:2px!important;
+  padding:4px!important;
+}
+#screen-lobby #lobbyWeaponPicker .weapon-picker-option{
+  padding:6px 8px!important;
+  font-size:10px!important;
+  letter-spacing:.45px!important;
+}
+#screen-lobby #lobbyWeaponPicker .weapon-picker-option.selected::after{
+  font-size:10px!important;
+  margin-left:7px!important;
+}
+#screen-lobby #btnWeaponLock{
+  height:31px!important;
+  min-height:31px!important;
+  padding:5px 6px!important;
+}
+
+@media(max-width:760px){
+  #screen-lobby .weapon-selector-lock-row{width:100%!important;}
+  #screen-lobby #lobbyWeaponPicker{
+    flex:0 1 148px!important;
+    width:148px!important;
+    min-width:110px!important;
+    max-width:148px!important;
+  }
+  #screen-lobby #lobbyWeaponPicker .weapon-picker-main{
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+  }
+  #screen-lobby #lobbyWeaponPicker .weapon-picker-panel{
+    width:156px!important;
+    min-width:0!important;
+    max-width:calc(100vw - 34px)!important;
+  }
+}
+</style>
+
+
+
+<style id="weaponry-mode-checkbox-hidden-final">
+/* Roguelike is chosen from the Weaponry submenu; the legacy checkbox is no longer shown. */
+#hostWeaponRogueField, #lobbyWeaponRogueField{display:none!important;}
 </style>
