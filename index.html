@@ -1892,7 +1892,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button><button class="btn small" type="button" data-sphere-quick="hit">HIT EFFECTS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.94 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 3.00 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -7927,9 +7927,16 @@ const Game = {
     for(const id in this.players) if(!this.players[id].spectator) this.collideWithMap(this.players[id], dt);
 
     const arr=Object.values(this.players).filter(p=>p.alive && !p.spectator);
+    // Non-host Weaponry clients should predict their own body collisions, but
+    // must not simulate remote-vs-remote collisions against stale remote copies.
+    // The host is authoritative for those remote bodies, and correcting both
+    // sides locally was causing extra pushes/jitter when weapon knockback was
+    // also arriving from the host. Local-vs-remote prediction remains enabled.
+    const clientWeaponCollision = !this.isHost && this.isWeaponry();
     for(let i=0;i<arr.length;i++){
       for(let j=i+1;j<arr.length;j++){
         const a=arr[i], b=arr[j];
+        if(clientWeaponCollision && a.id!==this.myId && b.id!==this.myId) continue;
         const a0x=Number.isFinite(a.prevX)?a.prevX:a.x, a0y=Number.isFinite(a.prevY)?a.prevY:a.y;
         const b0x=Number.isFinite(b.prevX)?b.prevX:b.x, b0y=Number.isFinite(b.prevY)?b.prevY:b.y;
         const startDx=b0x-a0x, startDy=b0y-a0y;
@@ -8129,6 +8136,7 @@ const Game = {
       for(let i=0;i<arr.length;i++){
         for(let j=i+1;j<arr.length;j++){
           const a=arr[i], b=arr[j];
+          if(clientWeaponCollision && a.id!==this.myId && b.id!==this.myId) continue;
           if(!a.alive || !b.alive || a.spectator || b.spectator) continue;
           const dx=b.x-a.x, dy=b.y-a.y;
           const d=Math.hypot(dx,dy);
@@ -18300,6 +18308,167 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
   };
 })();
 </script>
+
+
+<script id="hammer-round-state-reset-v48">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined')return;
+
+  function resetHammerRoundState(game,p){
+    if(!p || p.weapon!=='anchor') return;
+    const s=(typeof game.weaponSpec==='function') ? game.weaponSpec(p) : null;
+    const a=Number.isFinite(Number(p.weaponOrbitAngle)) ? Number(p.weaponOrbitAngle) : 0;
+    const center=Number(s?.idleCenter)||58;
+
+    // A new round always starts with the Hammer in its normal orbiting/idle
+    // state. Never carry a landed Hammer, pickup state, or grounded pose
+    // across the round boundary.
+    p.anchorGrounded=false;
+    p.anchorPickupPending=false;
+    p.anchorVx=0;
+    p.anchorVy=0;
+    p.anchorRotation=0;
+    p.weaponPhase='idle';
+    p.weaponPhaseTime=0;
+    p.weaponAttackAngle=a;
+    p.weaponActiveRotation=0;
+    p.weaponWorldX=Number(p.x)||0;
+    p.weaponWorldY=Number(p.y)||0;
+    p.weaponWorldX+=(Math.cos(a)*center);
+    p.weaponWorldY+=(Math.sin(a)*center);
+    p.weaponHitIds={};
+    p.weaponContactLocks={};
+    p.weaponCooldown=0;
+    p.weaponCooldownMax=0;
+  }
+
+  function resetAllHammers(game){
+    if(!game?.players)return;
+    for(const p of Object.values(game.players)) resetHammerRoundState(game,p);
+  }
+
+  // Host: clear the landed Hammer as soon as the round ends, before the
+  // intermission state is broadcast. This prevents the host from carrying a
+  // different weapon pose into the next-round transition.
+  const oldEndRound=Game.endRound;
+  if(typeof oldEndRound==='function'){
+    Game.endRound=function(teamWinner=null){
+      if(this.state==='roundResults'||this.state==='results')return;
+      resetAllHammers(this);
+      return oldEndRound.call(this,teamWinner);
+    };
+  }
+
+  // Both hosts and clients use resetPlayers() at the start of a round. The
+  // original reset leaves anchorGrounded untouched, so explicitly normalize it
+  // afterward and put the weapon at the player's normal orbit position.
+  const oldResetPlayers=Game.resetPlayers;
+  if(typeof oldResetPlayers==='function'){
+    Game.resetPlayers=function(){
+      const result=oldResetPlayers.apply(this,arguments);
+      resetAllHammers(this);
+      return result;
+    };
+  }
+
+  // Non-hosts receive the round boundary through intermission/round-start
+  // packets. Normalize immediately on either packet so there is no visible
+  // grounded Hammer lingering between rounds while the leaderboard is shown.
+  const oldHandleNetData=Game.handleNetData;
+  if(typeof oldHandleNetData==='function'){
+    Game.handleNetData=function(pid,data){
+      if(!this.isHost && (data?.t==='round_intermission'||data?.t==='round_end'||data?.t==='round_result_sync')){
+        resetAllHammers(this);
+      }
+      if(!this.isHost && data?.t==='round_start'){
+        resetAllHammers(this);
+      }
+      return oldHandleNetData.call(this,pid,data);
+    };
+  }
+
+  Game.__hammerRoundStateResetV48=true;
+})();
+</script>
+
+<script id="weapon-hit-particles-sfx-final-v51">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined')return;
+
+  // Weapon impacts already had a networked visual event, but the host-only
+  // impact routine did not play the impact sound locally and remote clients
+  // only rendered the basic two-layer burst. Keep the existing event name so
+  // there is only one authoritative weapon-hit FX path.
+  const priorWeaponImpactFx=Game.weaponImpactFx;
+  if(typeof priorWeaponImpactFx==='function'){
+    Game.weaponImpactFx=function(x,y,kind,strong=true){
+      const result=priorWeaponImpactFx.call(this,x,y,kind,strong);
+      if(this.isHost && typeof AudioManager!=='undefined'){
+        const strength=strong?0.95:0.65;
+        AudioManager.impact(strength);
+      }
+      return result;
+    };
+  }
+
+  function nearestHitPlayer(game,x,y){
+    let best=null,bestD=Infinity;
+    for(const p of Object.values(game.players||{})){
+      if(!p||!p.alive||p.spectator)continue;
+      const dx=(Number(p.x)||0)-x,dy=(Number(p.y)||0)-y,d=dx*dx+dy*dy;
+      if(d<bestD){best=p;bestD=d;}
+    }
+    return bestD<=130*130?best:null;
+  }
+
+  const priorHandleNetData=Game.handleNetData;
+  if(typeof priorHandleNetData==='function'){
+    Game.handleNetData=function(pid,data){
+      if(data?.t==='weapon_hit_fx'){
+        if(this.isHost)return;
+        const x=Number(data.x)||0,y=Number(data.y)||0;
+        const impact=Number.isFinite(Number(data.impact))?Number(data.impact):520;
+        const strong=data.strong!==false;
+        const victim=nearestHitPlayer(this,x,y);
+        const effectId=victim?.cust?.hitEffect||'impactSpark';
+
+        // Same bright impact burst used by normal player collisions.
+        this.particles.burst(x,y,'#ffffff',strong?10:7,strong?260:190,
+          {gravity:360,life:.40,size:3.5,sizeEnd:.5,twinkle:true,shape:'spark'});
+
+        // Also play the equipped hit-effect particle set, making weapon hits
+        // visually match the game's normal hit reaction/cosmetic system.
+        if(typeof this.spawnHitEffectAt==='function'){
+          const spec=this.weaponSpec?.(victim);
+          const nx=victim?((victim.x-x)/(Math.hypot(victim.x-x,victim.y-y)||1)):0;
+          const ny=victim?((victim.y-y)/(Math.hypot(victim.x-x,victim.y-y)||1)):0;
+          this.spawnHitEffectAt(x,y,impact,effectId,nx,ny);
+        }
+
+        // Weapon hit SFX must be audible on non-host clients as well.
+        if(typeof AudioManager!=='undefined'){
+          AudioManager.init();
+          AudioManager.impact(Math.min(1.5,Math.max(.15,impact/200)));
+        }
+        return;
+      }
+      if(data?.t==='weapon_wand_fx' && !this.isHost && data.reason==='hit'){
+        // Wand uses its own legacy FX packet; give it the same hit sound too.
+        if(typeof AudioManager!=='undefined'){
+          AudioManager.init();
+          AudioManager.impact(.95);
+        }
+        return priorHandleNetData.call(this,pid,data);
+      }
+      return priorHandleNetData.call(this,pid,data);
+    };
+  }
+
+  Game.__weaponHitParticlesSfxFinalV51=true;
+})();
+</script>
 </body>
 
 <style id="weapon-selector-character-preview-primary-style-v1">
@@ -20833,5 +21002,231 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
   };
 
   Game.__groundedHammerPermanentHitbox=true;
+})();
+</script>
+
+
+<script id="authoritative-orbit-hitboxes-v45">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined'||typeof WEAPONS==='undefined')return;
+  const IDS=new Set(['twinblades','anchor','gyroblade','bombardier']);
+  const PAD=3;
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const rotPt=(ox,oy,x,y,a)=>{const c=Math.cos(a),s=Math.sin(a);return{x:ox+x*c-y*s,y:oy+x*s+y*c};};
+  const segCircle=(px,py,r,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,l2=dx*dx+dy*dy;const t=l2>1e-9?clamp(((px-a.x)*dx+(py-a.y)*dy)/l2,0,1):0;const qx=a.x+dx*t,qy=a.y+dy*t;return(px-qx)*(px-qx)+(py-qy)*(py-qy)<=r*r;};
+  const polyCircle=(px,py,r,poly)=>{
+    for(let i=0;i<poly.length;i++)if(segCircle(px,py,r,poly[i],poly[(i+1)%poly.length]))return true;
+    let inside=false;
+    for(let i=0,j=poly.length-1;i<poly.length;j=i++){const a=poly[i],b=poly[j];if(((a.y>py)!==(b.y>py))&&px<(b.x-a.x)*(py-a.y)/(b.y-a.y||1e-9)+a.x)inside=!inside;}
+    return inside;
+  };
+  function hitTwin(p,t,s){
+    const r=(Number(t.radius)||26)+PAD,c=Number(s.idleCenter)||55,L=Number(s.twinBladeLength)||Number(s.bladeLength)||45,a=Number(p.weaponOrbitAngle)||0,off=Number(s.twinOffset)||.25;
+    for(const side of [-1,1]){const rot=a+side*off,tr=(x,y)=>rotPt(p.x,p.y,x,y,rot),gp=c-L*.08,tip=c+L*.56;
+      if(segCircle(t.x,t.y,r+4,tr(c-L*.47,0),tr(gp,0)))return true;
+      if(polyCircle(t.x,t.y,r,[tr(gp+1,-6),tr(tip-5,-6),tr(tip,0),tr(tip-5,6),tr(gp+1,6)]))return true;}
+    return false;
+  }
+  function hitHammerOrbit(p,t,s){
+    const r=(Number(t.radius)||26)+PAD,a=Number(p.weaponOrbitAngle)||0,L=Number(s.anchorLength)||68,head=Number(s.anchorHeadRadius)||11,chain=Number(s.anchorChainWidth)||6,tr=(x,y)=>rotPt(p.x,p.y,x,y,a);
+    if(segCircle(t.x,t.y,r+chain*.5,tr(-L*.53,0),tr(-L*.02,0)))return true;
+    if(segCircle(t.x,t.y,r+head*.6,tr(L*.12,-12),tr(L*.12,13)))return true;
+    const hc=tr(L*.12,8),hr=head*1.7,dx=t.x-hc.x,dy=t.y-hc.y;
+    return dx*dx+dy*dy<=(r+hr*.5)*(r+hr*.5);
+  }
+  function hitGyroOrbit(p,t,s){
+    const g=Game.weaponRenderGeometry(p),ox=Number.isFinite(Number(g.worldX))?Number(g.worldX):p.x+Math.cos(Number(p.weaponOrbitAngle)||0)*(Number(s.idleCenter)||61),oy=Number.isFinite(Number(g.worldY))?Number(g.worldY):p.y+Math.sin(Number(p.weaponOrbitAngle)||0)*(Number(s.idleCenter)||61),rot=Number(g.rotation)||Number(p.weaponOrbitAngle)||0,r=(Number(t.radius)||26)+PAD,hub=Number(s.gyroRadius)||15,R=hub*(Number(s.gyroBladeReach)||1.28),dx=t.x-ox,dy=t.y-oy;
+    if(dx*dx+dy*dy<=(r+hub)*(r+hub))return true;
+    for(let i=0;i<4;i++){const aa=rot+i*Math.PI/2+Math.PI/4,c=Math.cos(aa),ss=Math.sin(aa),tr=(x,y)=>({x:ox+x*c-y*ss,y:oy+x*ss+y*c});if(polyCircle(t.x,t.y,r,[tr(3,-4),tr(R-1,-8),tr(R+1,0),tr(R-1,8),tr(3,4)]))return true;}
+    return false;
+  }
+  function hitBombOrbit(p,t,s){
+    const g=Game.weaponRenderGeometry(p),a=Number(p.weaponOrbitAngle)||0,ox=Number.isFinite(Number(g.worldX))?Number(g.worldX):p.x+Math.cos(a)*(Number(s.idleCenter)||55),oy=Number.isFinite(Number(g.worldY))?Number(g.worldY):p.y+Math.sin(a)*(Number(s.idleCenter)||55),br=Number(g.bombRadius)||Number(s.bombRadius)||7,r=(Number(t.radius)||26)+PAD,dx=t.x-ox,dy=t.y-oy;
+    return dx*dx+dy*dy<=(r+br)*(r+br);
+  }
+  function shapeHit(game,p,t){
+    const id=validWeapon(p.weapon),s=game.weaponSpec(p);
+    if(id==='twinblades')return hitTwin(p,t,s);
+    if(id==='anchor')return p.anchorGrounded?false:hitHammerOrbit(p,t,s);
+    if(id==='gyroblade')return p.gyroProjectileActive?false:hitGyroOrbit(p,t,s);
+    if(id==='bombardier')return hitBombOrbit(p,t,s);
+    return false;
+  }
+  function contact(game,p,t,now){
+    if(!game.isHost||!p||!t||p.id===t.id||!p.alive||p.spectator||!t.alive||t.spectator)return;
+    const locks=p.weaponContactLocks||(p.weaponContactLocks={}),key=String(t.id),until=Number(locks[key]||0);
+    if(until>now||!shapeHit(game,p,t))return;
+    const s=game.weaponSpec(p),id=validWeapon(p.weapon),lockMs=Math.max(.05,Number(s.contactCooldown)||.20)*1000;
+    locks[key]=now+lockMs;
+    const attackActive=(p.weaponPhase!=='idle');
+    if(game.weaponDeathEnabled()&&attackActive){
+      game.weaponEliminate(p,t,id,t.x,t.y);
+    }else{
+      game.weaponApplyKnockback(p,t,id,typeof game.weaponHitSpeed==='function'?game.weaponHitSpeed(p,id):Number(s.contactKnockback)||320);
+    }
+    // Match the normal player-vs-player impact flash. The weapon knockback and
+    // elimination helpers use shorter flashes, so explicitly restore the full
+    // player-hit duration after every weapon contact.
+    t.hitFlash=Math.max(Number(t.hitFlash)||0,10);
+    t.lastHitBy=p.id;
+    t.lastHitAt=performance.now();
+  }
+  function groundedHammer(game,p,t,now){
+    if(!game.isHost||!p?.alive||p.spectator||p.weapon!=='anchor'||p.weaponPhase!=='hold'||!p.anchorGrounded||!t||t.id===p.id||!t.alive||t.spectator)return;
+    const s=game.weaponSpec(p),r=(Number(t.radius)||26)+PAD,rot=Number(p.anchorRotation)||0,ox=Number(p.weaponWorldX)||p.x,oy=Number(p.weaponWorldY)||p.y,L=Number(s.anchorLength)||68,head=Number(s.anchorHeadRadius)||11,chain=Number(s.anchorChainWidth)||6,tr=(x,y)=>rotPt(ox,oy,x,y,rot);
+    let hit=segCircle(t.x,t.y,r+chain*.55,tr(-L*.53,0),tr(-L*.02,0));
+    if(!hit)hit=segCircle(t.x,t.y,r+head*.65,tr(L*.12,-12),tr(L*.12,13));
+    if(!hit){const hc=tr(L*.12,8),dx=t.x-hc.x,dy=t.y-hc.y,hr=head*1.8;hit=dx*dx+dy*dy<=(r+hr*.52)*(r+hr*.52);}
+    if(!hit)return;
+    const locks=p.weaponContactLocks||(p.weaponContactLocks={}),key=String(t.id),until=Number(locks[key]||0);if(until>now)return;
+    locks[key]=now+Math.max(.05,Number(s.contactCooldown)||.24)*1000;
+    // Grounded Hammer is the still-active thrown attack, so it remains lethal
+    // under Death Weapons while sitting on the floor.
+    if(game.weaponDeathEnabled())game.weaponEliminate(p,t,'anchor',t.x,t.y);else game.weaponApplyKnockback(p,t,'anchor',typeof game.weaponHitSpeed==='function'?game.weaponHitSpeed(p,'anchor'):Number(s.contactKnockback)||500);
+    t.hitFlash=Math.max(Number(t.hitFlash)||0,10);
+    t.lastHitBy=p.id;
+    t.lastHitAt=performance.now();
+  }
+
+  const oldStepHost=Game.stepHost.bind(Game);
+  Game.stepHost=function(dt){
+    oldStepHost(dt);
+    if(!this.isHost||!this.isWeaponry())return;
+    const now=performance.now(),players=Object.values(this.players||{});
+    for(const p of players){
+      if(!p||p.spectator||!p.alive||!IDS.has(validWeapon(p.weapon)))continue;
+      if(p.weapon==='anchor'&&p.weaponPhase==='hold'&&p.anchorGrounded){for(const t of players)groundedHammer(this,p,t,now);continue;}
+      if(p.weapon==='gyroblade'&&p.gyroProjectileActive)continue;
+      // These weapons remain dangerous around the player whenever their physical
+      // orbiting form is present. Bombardier's thrown bomb and Gyroblade's thrown
+      // projectile continue using their separate projectile collision systems.
+      for(const t of players)contact(this,p,t,now);
+    }
+  };
+  Game.__authoritativeOrbitHitboxesV45=true;
+})();
+</script>
+
+<script id="weapon-hit-flash-network-v47">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined')return;
+
+  function broadcast(game,victim,kind){
+    if(!game?.isHost||!victim?.id||typeof NetworkManager==='undefined')return;
+    NetworkManager.broadcast({
+      t:'weapon_hit_flash',
+      id:victim.id,
+      kind:kind||'weapon'
+    },true);
+  }
+
+  // Weapon hit helpers are authoritative on the host. Replicate the same
+  // 10-frame character flash used by normal player-vs-player collisions.
+  const oldKnockback=Game.weaponApplyKnockback;
+  if(typeof oldKnockback==='function'){
+    Game.weaponApplyKnockback=function(attacker,victim,kind,weaponSpeed=0){
+      const result=oldKnockback.call(this,attacker,victim,kind,weaponSpeed);
+      if(victim){
+        victim.hitFlash=Math.max(Number(victim.hitFlash)||0,10);
+        broadcast(this,victim,kind||'weapon');
+      }
+      return result;
+    };
+  }
+
+  const oldEliminate=Game.weaponEliminate;
+  if(typeof oldEliminate==='function'){
+    Game.weaponEliminate=function(attacker,victim,kind,x,y){
+      const result=oldEliminate.call(this,attacker,victim,kind,x,y);
+      if(victim){
+        victim.hitFlash=Math.max(Number(victim.hitFlash)||0,10);
+        broadcast(this,victim,kind||'weapon');
+      }
+      return result;
+    };
+  }
+
+  const oldHandleNetData=Game.handleNetData;
+  if(typeof oldHandleNetData==='function'){
+    Game.handleNetData=function(pid,data){
+      if(data?.t==='weapon_hit_flash'){
+        if(!this.isHost){
+          const p=this.players?.[data.id];
+          if(p) p.hitFlash=Math.max(Number(p.hitFlash)||0,10);
+        }
+        return;
+      }
+      return oldHandleNetData.call(this,pid,data);
+    };
+  }
+
+  Game.__weaponHitFlashNetworkV47=true;
+})();
+</script>
+<script id="nonhost-weaponry-player-collision-fix-v49">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined')return;
+  Game.__nonHostWeaponryCollisionFixV49=true;
+})();
+</script>
+
+<script id="final-weaponry-render-mode-guard-v50">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined')return;
+
+  /* Several later weapon-specific render overrides were added after the original
+     renderWeapon() guard. Put one final gate around the completed chain so a
+     retained weapon can never render unless the actual Game.mode is Weaponry. */
+  const completedRenderWeapon=Game.renderWeapon.bind(Game);
+  Game.renderWeapon=function(ctx,p){
+    if(this.mode!=='weaponry')return;
+    return completedRenderWeapon(ctx,p);
+  };
+
+  /* The projectile renderer already checks isWeaponry(), but immediately discard
+     stale weapon projectiles when a non-Weaponry mode is active as an extra safety
+     barrier during mode transitions. */
+  const completedRenderProjectiles=Game.renderWeaponProjectiles.bind(Game);
+  Game.renderWeaponProjectiles=function(ctx){
+    if(this.mode!=='weaponry'){
+      if(Array.isArray(this.weaponProjectiles))this.weaponProjectiles.length=0;
+      return;
+    }
+    return completedRenderProjectiles(ctx);
+  };
+
+  /* Clear stale projectile/transient weapon objects at the actual match-start
+     boundary on both the host Lobby path and the client Lobby path. Do not clear
+     the selected weapon itself: it is still a valid lobby preference for a future
+     Weaponry match. */
+  const clearNonWeaponryProjectiles=function(){
+    if(Game.mode!=='weaponry' && Array.isArray(Game.weaponProjectiles)){
+      Game.weaponProjectiles.length=0;
+    }
+  };
+
+  if(typeof Lobby!=='undefined' && typeof Lobby.startMatch==='function'){
+    const oldLobbyStartMatch=Lobby.startMatch.bind(Lobby);
+    Lobby.startMatch=function(){
+      clearNonWeaponryProjectiles();
+      return oldLobbyStartMatch(...arguments);
+    };
+  }
+
+  if(typeof Lobby!=='undefined' && typeof Lobby.clientStartMatch==='function'){
+    const oldLobbyClientStartMatch=Lobby.clientStartMatch.bind(Lobby);
+    Lobby.clientStartMatch=function(data){
+      if(data?.mode!=='weaponry' && Array.isArray(Game.weaponProjectiles))Game.weaponProjectiles.length=0;
+      const result=oldLobbyClientStartMatch(...arguments);
+      clearNonWeaponryProjectiles();
+      return result;
+    };
+  }
+
+  Game.__finalWeaponryRenderModeGuardV50=true;
 })();
 </script>
