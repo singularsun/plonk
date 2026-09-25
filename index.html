@@ -1874,6 +1874,51 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
   #weaponRogueStartStats .weapon-rogue-start-stat{font-size:7px;min-height:18px;}
   #weaponRogueStartStats .weapon-rogue-start-stats-title{font-size:8px;}
 }
+
+/* V70 spherebox chat typography: SYSTEM copy is plain; only the effect name is decorated. */
+.chat-system,
+.chat-system *{
+  font-family:inherit!important;
+  font-style:normal!important;
+  font-weight:400!important;
+  letter-spacing:normal!important;
+  text-shadow:none!important;
+}
+.chat-system .spherebox-effect-name{
+  font-style:normal!important;
+  font-weight:800!important;
+}
+.chat-system .spherebox-effect-common{
+  font-family:"Trebuchet MS",Arial,sans-serif!important;
+  color:inherit!important;
+}
+.chat-system .spherebox-effect-uncommon{
+  font-family:Georgia,"Times New Roman",serif!important;
+  color:#b9e4ff!important;
+  font-weight:700!important;
+}
+.chat-system .spherebox-effect-rare{
+  font-family:"Courier New",monospace!important;
+  color:#9fd3ff!important;
+  font-weight:800!important;
+}
+.chat-system .spherebox-effect-epic{
+  font-family:"Trebuchet MS",Arial,sans-serif!important;
+  color:#d6b0ff!important;
+  font-weight:900!important;
+}
+.chat-system .spherebox-effect-legendary{
+  font-family:Impact,"Arial Black",sans-serif!important;
+  color:#ffe083!important;
+  font-weight:900!important;
+}
+.chat-system .spherebox-effect-mythic{
+  font-family:Georgia,"Times New Roman",serif!important;
+  color:#ff9fd4!important;
+  font-weight:900!important;
+  font-style:italic!important;
+}
+
 </style>
 </head>
 <body>
@@ -1892,7 +1937,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button><button class="btn small" type="button" data-sphere-quick="hit">HIT EFFECTS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 3.00 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.80 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -1997,7 +2042,8 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
         </div>
       </section>
       <section class="lobby-settings-col">
-        <div class="section-header-row"><div><h3>HOST SETTINGS</h3><div class="subhint" id="settingsOwnerHint">Only the host can change these.</div></div><div class="host-only-badge" id="hostControlBadge">HOST CONTROL</div></div>
+        <div class="section-header-row"><div><h3>HOST SETTINGS</h3><div class="subhint hidden" id="settingsOwnerHint"></div></div><div class="host-only-badge" id="hostControlBadge">HOST CONTROL</div></div>
+        <div id="lobbyChangeIndicator" aria-live="polite" aria-atomic="true"></div>
         <div class="setting-grid compact">
           <div class="field"><label>Mode</label>
             <div class="mode-picker" data-mode-picker="lobbyModeSelect">
@@ -3912,6 +3958,26 @@ const Chat = {
     if(!Game.isHost && this.isPlayerMuted(Game.myId)) return false;
     const raw=String(text||'');
     const trimmed=raw.trim();
+    const now=Date.now();
+    if(now-(this.lastSent||0)<3000){
+      const remain=Math.max(0,3000-(now-(this.lastSent||0)));
+      if(typeof plunkChatCooldownNotice==='function') plunkChatCooldownNotice(remain);
+      return false;
+    }
+    this.lastSent=now;
+    if(/^!catalog$/i.test(trimmed)){
+      if(typeof plunkHandleSphereCatalogCommand==='function') return plunkHandleSphereCatalogCommand();
+      return false;
+    }
+    if(/^!open(?:\s+)([^\s]+)$/i.test(trimmed)){
+      const token=trimmed.match(/^!open\s+([^\s]+)$/i)[1];
+      if(typeof plunkOpenSphereFromChat==='function') return plunkOpenSphereFromChat(token);
+      return false;
+    }
+    if(/^!help$/i.test(trimmed)){
+      this.append({t:'chat',name:'SYSTEM',color:'#ffcf88',text:'Commands: !kick username  ·  !exit  ·  !catalog  ·  !open <code>',ts:Date.now(),system:true});
+      return true;
+    }
     if(Game.isHost){
       if(/^!kick(?:\s+)(.+)$/i.test(trimmed)){
         const wanted=trimmed.replace(/^!kick\s+/i,'').trim().toLowerCase();
@@ -3919,18 +3985,11 @@ const Chat = {
         if(match){ Lobby.kickPlayerCommand(match.id); this.append({t:'chat',name:'SYSTEM',color:'#ff8f72',text:`Kicked ${match.name}.`,ts:Date.now()}); return true; }
         this.append({t:'chat',name:'SYSTEM',color:'#ffcf88',text:`Player not found: ${trimmed.replace(/^!kick\s+/i,'').trim()}`,ts:Date.now()}); return true;
       }
-      if(/^!help$/i.test(trimmed)){
-        this.append({t:'chat',name:'SYSTEM',color:'#ffcf88',text:'Commands: !kick username  ·  !exit',ts:Date.now()});
-        return true;
-      }
       if(trimmed.toLowerCase()==='!exit' && ['playing','countdown','roundResults','results'].includes(Game.state)){
         Lobby.exitMatchToLobby();
         return true;
       }
     }
-    const now = Date.now();
-    if(now-this.lastSent < 500) return false;
-    this.lastSent = now;
     text = ChatFilter.clean(text);
     const msg = {t:'chat', name: Game.myName, color: Game.myColor(), text, ts: now};
     this.append(msg);
@@ -4419,7 +4478,7 @@ function updateHotPotatoState(){
     carrier=chooseHotPotatoCarrier();
   }
   if(carrier && performance.now()>=Number(Game.hotPotato?.expiresAt||0)){
-    carrier.forceEliminate=true;
+    carrier.forceEliminate=true; carrier.lastDeathCause='HOT POTATO EXPLODED';
     Game.hotPotato={carrierId:null,expiresAt:0,serial:(Game.hotPotato?.serial||0)+1};
     Game.particles.burst(carrier.x,carrier.y,'#ff3f36',24,330,{gravity:80,life:.45,size:4.5,sizeEnd:.25,twinkle:true,shape:'shard'});
     Game.particles.burst(carrier.x,carrier.y,'#ffd75a',14,220,{gravity:20,life:.35,size:3,sizeEnd:.2,twinkle:true,shape:'spark'});
@@ -4575,7 +4634,7 @@ const Game = {
     for(const p of Object.values(this.players)){
       if(!p || !p.alive || p.spectator) continue;
       const overlapX=p.x+p.radius>wall.left && p.x-p.radius<wall.right+PHYS.spikewallSpikeLength;
-      if(overlapX) p.forceEliminate=true;
+      if(overlapX){ p.forceEliminate=true; p.lastDeathCause='CAUGHT BY SPIKEWALL'; }
     }
   },
 
@@ -5608,6 +5667,7 @@ const Game = {
       const deathMine=!!GameModes[this.mode]?.deathMine;
       if(!air && deathMine && hitPlayer.id!==mine.ownerId){
         hitPlayer.forceEliminate=true;
+        hitPlayer.lastDeathCause='DEATH MINE';
         hitPlayer.hitFlash=10;
       }
       const dx=hitPlayer.x-x, dy=hitPlayer.y-y;
@@ -6011,12 +6071,13 @@ const Game = {
             if(this.projectileHitsPlayerAt(q,sx,sy,p)){
               const firstHit=!q.hitPlayers.includes(p.id); if(firstHit) q.hitPlayers.push(p.id);
               if(q.deadly){
-                p.lastHitBy=q.ownerId||null; p.lastHitAt=performance.now();
+                p.lastHitBy=q.ownerId||null; p.lastHitAt=performance.now(); p.lastDeathCause='DEATH ARROW';
                 if(this.matchSettings?.combo) this.registerHit(q.ownerId,p.id,sx,sy,'death arrow');
                 p.alive=false;p.forceEliminate=false;
                 if(!this.eliminationOrder.includes(p.id))this.eliminationOrder.push(p.id);
                 this.reportElimination(p);
-                NetworkManager.broadcast({t:'eliminated',id:p.id,x:p.x,y:p.y},true);
+                const deathArrowOwner=this.players[q.ownerId];
+                NetworkManager.broadcast({t:'eliminated',id:p.id,x:p.x,y:p.y,killerId:q.ownerId||null,killerName:deathArrowOwner?.name||null,reason:'death_arrow',kind:'death arrow',deathCause:'DEATH ARROW',cause:'DEATH ARROW'},true);
                 this.spawnFx(p,'death');AudioManager.death();
               }else if(firstHit){
                 const travelLen=Math.hypot(q.vx,q.vy)||1,nx=q.vx/travelLen,ny=q.vy/travelLen,knock=(420+900*(q.power||0))*(this.matchSettings.kb||1)*getSmashKnockbackMultiplier(p)*getComboKnockbackMultiplier(this.players[q.ownerId],true);
@@ -6262,10 +6323,11 @@ const Game = {
   },
   weaponEliminate(attacker,victim,kind,x,y){
     if(!this.isHost||!attacker||!victim||!victim.alive||victim.spectator)return;
-    victim.alive=false; victim.vx=0; victim.vy=0; victim.lastHitBy=attacker.id; victim.lastHitAt=performance.now(); victim.hitFlash=8;
+    victim.alive=false; victim.vx=0; victim.vy=0; victim.lastHitBy=attacker.id; victim.lastHitAt=performance.now(); victim.lastDeathCause=weaponLabel(kind).toUpperCase(); victim.hitFlash=8;
     if(!this.eliminationOrder.includes(victim.id)) this.eliminationOrder.push(victim.id);
     this.weaponImpactFx(x,y,kind,true);
-    NetworkManager.broadcast({t:'eliminated',id:victim.id,killerId:attacker.id,reason:'weapon',kind},true);
+    const deathPacket={t:'eliminated',id:victim.id,killerId:attacker.id,killerName:attacker.name,reason:'weapon',kind,deathCause:weaponLabel(kind).toUpperCase(),cause:weaponLabel(kind).toUpperCase()};
+    NetworkManager.broadcast(deathPacket,true);
     AudioManager.death();
     this.reportElimination(victim);
   },
@@ -7907,7 +7969,7 @@ const Game = {
       }
       if(!overlap) continue;
       if(hz.type==='arrow'){
-        if(hz.deadly) p.forceEliminate=true;
+        if(hz.deadly){ p.forceEliminate=true; p.lastDeathCause='DEADLY ARROW'; }
         else{
           const spd=640;
           if(hz.dir==='right') p.vx=Math.max(p.vx,spd);
@@ -7916,12 +7978,13 @@ const Game = {
           else if(hz.dir==='down') p.vy=Math.max(p.vy,spd);
         }
       }else{
-        p.forceEliminate=true;
+        p.forceEliminate=true; p.lastDeathCause='DEADLY HAZARD';
       }
     }
   },
 
   resolveCollisions(dt){
+    this._v75LastImpact=0;
     applyPlayerProximityModifierForces(dt);
     // First resolve player/map contact using the exact current overlap.
     for(const id in this.players) if(!this.players[id].spectator) this.collideWithMap(this.players[id], dt);
@@ -8062,6 +8125,7 @@ const Game = {
           const effectiveRelativeNormal=effectiveVbN-effectiveVaN;
           const relativeSpeed=Math.max(Math.hypot(rvx,rvy),Math.abs(effectiveRelativeNormal));
           const impact=relativeSpeed;
+          this._v75LastImpact=impact;
           if(impact>50){
             const dmg=impact*0.010;
             // Calculate Smash knockback from the damage that existed BEFORE this
@@ -8217,7 +8281,8 @@ const Game = {
     if(!this.isHost || !p) return;
     const killerId=(p.lastHitBy && (performance.now()-(p.lastHitAt||0)<=3000)) ? p.lastHitBy : null;
     const killer=this.players[killerId];
-    const payload={killerId:killer?.id||null,killerName:killer?.name||null,victimId:p.id,victimName:p.name||'Player',kind:killer?'elimination':'fall',ts:Date.now()};
+    const cause=String(p.lastDeathCause||(killer?'ELIMINATED':'FELL OUT OF BOUNDS'));
+    const payload={killerId:killer?.id||null,killerName:killer?.name||null,victimId:p.id,victimName:p.name||'Player',kind:killer?(p.lastDeathCause||'elimination'):'fall',cause,deathCause:cause,ts:Date.now()};
     UI.addKillFeed(payload);
     NetworkManager.broadcast({t:'kill_feed',data:payload},true);
   },
@@ -8233,13 +8298,16 @@ const Game = {
           p.offMapX=p.x;
           p.offMapY=p.y;
           p.offMapMarkerUntil=performance.now()+1400;
+          p.lastDeathCause='FELL OUT OF BOUNDS';
         }
         p.alive=false; p.forceEliminate=false;
         this.eliminationOrder.push(id);
         this.reportElimination(p);
         this.spawnFx(p,'death');
         AudioManager.death();
-        NetworkManager.broadcast({t:'eliminated', id, x:p.x, y:p.y}, true);
+        const deathKiller=this.players[p.lastHitBy];
+        const deathCause=String(p.lastDeathCause||(deathKiller?'ELIMINATED':'FELL OUT OF BOUNDS'));
+        NetworkManager.broadcast({t:'eliminated', id, x:p.x, y:p.y, killerId:deathKiller?.id||null, killerName:deathKiller?.name||null, deathCause, cause:deathCause}, true);
       }
     }
   },
@@ -11383,7 +11451,7 @@ const UI = {
     row.dataset.feedKey=String(data.ts||'')+'|'+String(data.victimId||victim);
     if([...box.children].some(el=>el.dataset.feedKey===row.dataset.feedKey)) return;
     row.innerHTML=killer
-      ? `<span class="killfeed-killer">${esc(killer)}</span><span class="killfeed-arrow">✕</span><span class="killfeed-victim">${esc(victim)}</span><span class="killfeed-cause">${esc(String(data.kind||'hit').replace(/_/g,' '))}</span>`
+      ? `<span class="killfeed-killer">${esc(killer)}</span><span class="killfeed-arrow">✕</span><span class="killfeed-victim">${esc(victim)}</span><span class="killfeed-cause">${esc(String(data.cause||data.kind||'hit').replace(/_/g,' '))}</span>`
       : `<span class="killfeed-solo">${esc(victim)} was eliminated</span>`;
     box.appendChild(row);
     while(box.children.length>5)box.firstElementChild.remove();
@@ -11674,53 +11742,155 @@ const Lobby = {
       document.getElementById('hostErr').textContent='Unable to create lobby: '+(err.message||err);
     }).finally(()=>{if(btn){btn.disabled=false;btn.textContent='CREATE LOBBY';}});
   },
-  openBrowser(){ this.intentionalLeave=false; UI.goto('join'); this.renderDiscovery(); this.scanLobbies(); },
+  openBrowser(){
+    this.intentionalLeave=false;
+    UI.goto('join');
+    this.renderDiscovery();
+    this.scanLobbies();
+  },
   async scanLobbies(){
     const list=document.getElementById('lobbyBrowserList'), status=document.getElementById('joinBrowserStatus');
     if(!list||!status)return;
-    const btn=document.getElementById('btnRefreshLobbies'); if(btn){btn.disabled=true;btn.textContent='SCANNING...';}
+    /* Fast/adaptive discovery: probe short ranges concurrently, expand only when
+       the previous range actually contains a lobby, retry only slow probes, and
+       render once per chunk instead of rebuilding the list for every result. */
+    if(this._discoveryScanRunning){
+      this._discoveryScanCancel=true;
+      await new Promise(r=>setTimeout(r,0));
+    }
+    this._discoveryScanRunning=true;
+    this._discoveryScanCancel=false;
+    const scanToken=((this._discoveryScanToken||0)+1);
+    this._discoveryScanToken=scanToken;
+
+    const btn=document.getElementById('btnRefreshLobbies');
+    if(btn){btn.disabled=true;btn.textContent='SCANNING...';}
     status.textContent='SCANNING';
-    list.innerHTML=''; this.discoveryResults=[];
+    list.innerHTML='';
+    this.discoveryResults=[];
+
     let scanPeer=null;
     try{
       scanPeer=await new Promise((resolve,reject)=>{
-        const p=new Peer({debug:0}); let done=false;
-        p.on('open',()=>{done=true;resolve(p)});
-        p.on('error',e=>{if(!done){done=true;reject(e)}});
-        setTimeout(()=>{if(!done){done=true;reject(new Error('Lobby discovery timed out.'))}},12000);
+        let settled=false;
+        let p=null;
+        try{p=new Peer({debug:0});}catch(e){reject(e);return;}
+        const finish=(ok,val)=>{
+          if(settled)return;
+          settled=true;
+          if(!ok){try{p&&p.destroy();}catch(e){};reject(val);}
+          else resolve(p);
+        };
+        p.on('open',()=>finish(true,p));
+        p.on('error',e=>{if(!p.open)finish(false,e||new Error('Unable to start lobby scanner.'));});
+        setTimeout(()=>{if(!settled)finish(false,new Error('Lobby discovery timed out while connecting to the signaling server.'));},8500);
       });
-      let emptyStreak=0;
-      for(let i=1;i<=999;i++){
-        status.textContent='SCANNING';
-        const info=await this.probeLobbyWithPeer(scanPeer,i);
-        if(!info){
-          emptyStreak++;
-          if(emptyStreak>=3) break;
-          continue;
+
+      const foundByIndex=new Map();
+      let sawAny=false;
+      let previousEnd=0;
+      const chunkSizes=[64,128,256,512,999];
+
+      for(const chunkEnd of chunkSizes){
+        if(this._discoveryScanCancel||this._discoveryScanToken!==scanToken)break;
+        const chunkStart=previousEnd+1;
+        const indices=[];
+        for(let i=chunkStart;i<=chunkEnd;i++)indices.push(i);
+        previousEnd=chunkEnd;
+
+        const chunkResults=[];
+        let cursor=0;
+        const worker=async()=>{
+          while(true){
+            if(this._discoveryScanCancel||this._discoveryScanToken!==scanToken)return;
+            const pos=cursor++;
+            if(pos>=indices.length)return;
+            const idx=indices[pos];
+            let result=await this.probeLobbyWithPeer(scanPeer,idx,1250);
+            if(!result?.info&&result?.retryable){
+              result=await this.probeLobbyWithPeer(scanPeer,idx,2600);
+            }
+            if(result?.info){
+              const info=result.info;
+              chunkResults.push(info);
+              const idx=Number(info?.index)||0;
+              if(idx>=1&&idx<=999&&!foundByIndex.has(idx)){
+                foundByIndex.set(idx,info);
+                this.discoveryResults=[...foundByIndex.entries()].sort((a,b)=>a[0]-b[0]).map(([,v])=>v);
+                // Show each lobby the moment its discovery response arrives instead
+                // of waiting for the entire scan chunk (or whole scan) to finish.
+                this.renderDiscovery();
+                status.textContent=`FOUND ${this.discoveryResults.length} ${this.discoveryResults.length===1?'LOBBY':'LOBBIES'} · SCANNING...`;
+              }
+            }
+          }
+        };
+        const workerCount=Math.min(24,indices.length);
+        await Promise.all(Array.from({length:workerCount},()=>worker()));
+        if(this._discoveryScanCancel||this._discoveryScanToken!==scanToken)break;
+
+        // Results were already inserted/rendered individually as they arrived.
+        // Reconcile the chunk once more in case multiple workers returned between
+        // UI turns, while keeping the same deduplicated ordering.
+        for(const info of chunkResults){
+          const idx=Number(info?.index)||0;
+          if(idx>=1&&idx<=999)foundByIndex.set(idx,info);
         }
-        emptyStreak=0;
-        this.discoveryResults.push(info);
+        this.discoveryResults=[...foundByIndex.entries()].sort((a,b)=>a[0]-b[0]).map(([,v])=>v);
+        if(chunkResults.length){
+          sawAny=true;
+          this.renderDiscovery();
+          status.textContent=`FOUND ${this.discoveryResults.length} ${this.discoveryResults.length===1?'LOBBY':'LOBBIES'} · SCANNING...`;
+        }
+        // Always cover the first 128 slots before stopping. This preserves the
+        // speed benefit of the chunked scan while tolerating an unusual empty/gapped
+        // low slot caused by a recent host migration or transient lobby shutdown.
+        if(!chunkResults.length && chunkEnd>=128)break;
+      }
+
+      if(this._discoveryScanToken===scanToken&&!this._discoveryScanCancel){
+        status.textContent=this.discoveryResults.length
+          ? `FOUND ${this.discoveryResults.length} ${this.discoveryResults.length===1?'LOBBY':'LOBBIES'}`
+          : 'NO LOBBIES FOUND';
         this.renderDiscovery();
       }
-      status.textContent='FINISHED SCANNING';
+      void sawAny;
     }catch(err){
-      status.textContent='Lobby scan failed: '+(err.message||err);
+      if(this._discoveryScanToken===scanToken&&!this._discoveryScanCancel){
+        status.textContent='Lobby scan failed: '+(err?.message||err);
+      }
     }finally{
       try{scanPeer&&scanPeer.destroy();}catch(e){}
-      if(btn){btn.disabled=false;btn.textContent='SCAN FOR LOBBIES';}
+      if(this._discoveryScanToken===scanToken){
+        this._discoveryScanRunning=false;
+        this._discoveryScanCancel=false;
+        if(btn){btn.disabled=false;btn.textContent='SCAN FOR LOBBIES';}
+      }
     }
   },
-  probeLobbyWithPeer(peer,index){
+  probeLobbyWithPeer(peer,index,timeoutMs=1250){
     return new Promise(resolve=>{
-      const code=NetworkManager.lobbyPeerCode(index); let settled=false; let conn=null;
-      const done=(value)=>{if(settled)return;settled=true;try{conn&&conn.close();}catch(e){};resolve(value)};
+      const code=NetworkManager.lobbyPeerCode(index);
+      let settled=false,conn=null,opened=false,responseTimer=null,openTimer=null;
+      const finish=(info,retryable=false)=>{
+        if(settled)return;
+        settled=true;
+        clearTimeout(responseTimer);clearTimeout(openTimer);
+        try{conn&&conn.close();}catch(e){}
+        resolve({info:info||null,retryable:!!retryable});
+      };
       try{
-        conn=peer.connect(code,{reliable:true,metadata:{kind:'control'}});
-        conn.on('open',()=>{ try{conn.send({t:'lobby_discovery_request'});}catch(e){} });
-        conn.on('data',data=>{if(data&&data.t==='lobby_discovery')done(data)});
-        conn.on('error',()=>done(null));
-        setTimeout(()=>done(null),2200);
-      }catch(e){done(null)}
+        conn=peer.connect(code,{reliable:true,metadata:{kind:'control',purpose:'discovery',v:2}});
+        conn.on('open',()=>{
+          opened=true;
+          try{conn.send({t:'lobby_discovery_request',v:2});}
+          catch(e){finish(null,false);return;}
+          responseTimer=setTimeout(()=>finish(null,true),Math.max(700,timeoutMs-120));
+        });
+        conn.on('data',data=>{if(data&&data.t==='lobby_discovery')finish(data,false);});
+        conn.on('error',()=>finish(null,!opened));
+        openTimer=setTimeout(()=>finish(null,!opened),Math.max(900,timeoutMs));
+      }catch(e){finish(null,false);}
     });
   },
   renderDiscovery(){
@@ -11891,7 +12061,7 @@ const Lobby = {
     const hostPickerValue=hostPickerRoot?.querySelector('.mode-picker-value');
     if(hostPickerValue) hostPickerValue.textContent=GameModes[document.getElementById('hostMode')?.value||'regular']?.label||document.getElementById('hostMode')?.value||'Regular';
     if(hostPickerMain){ hostPickerMain.disabled=false; }
-    document.getElementById('hostControlBadge')?.classList.toggle('hidden',!Game.isHost); const hint=document.getElementById('settingsOwnerHint');if(hint)hint.textContent=Game.isHost?'Changes apply to everyone in the room immediately.':'The host controls these settings. Click Map to request one.';syncMapPickerButtons();const picker=document.getElementById('lobbyMapPicker');if(picker)picker.disabled=false;
+    document.getElementById('hostControlBadge')?.classList.toggle('hidden',!Game.isHost); const hint=document.getElementById('settingsOwnerHint');if(hint){hint.textContent='';hint.classList.add('hidden');}syncMapPickerButtons();const picker=document.getElementById('lobbyMapPicker');if(picker)picker.disabled=false;
   },
   commitSettingsFromUI(){
     if(!Game.isHost)return; Game.myName=getSavedUsername(); const hostPlayer=Game.players[Game.myId];if(hostPlayer)hostPlayer.name=Game.myName;
@@ -15143,7 +15313,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     {id:'hit18',rarity:'uncommon',name:'Heavy Edge',effect:'+12% HITBOX',desc:'More forgiving contact.',key:'hitboxPct',value:.12},
     {id:'speed18',rarity:'uncommon',name:'Overclock',effect:'+12% WEAPON SPEED',desc:'Thrown and returning weapons move faster.',key:'speedPct',value:.12},
     {id:'kb15',rarity:'uncommon',name:'Sharpened Force',effect:'+12% KNOCKBACK',desc:'Hits throw opponents harder.',key:'knockbackPct',value:.12},
-    {id:'attack12',rarity:'uncommon',name:'Quick Swing',effect:'−10% ATTACK SPEED',desc:'Weapon wind-up and recovery finish faster.',key:'attackSpeedPct',value:.10},
+    {id:'attack12',rarity:'uncommon',name:'Quick Swing',effect:'−10% ATTACK TIME',desc:'Weapon wind-up and recovery finish faster.',key:'attackSpeedPct',value:.10},
     {id:'balanced18',rarity:'uncommon',name:'Balanced Core',effect:'+8% RANGE · +8% SIZE',desc:'A clean two-stat upgrade with no downside.',key:'multi',value:{rangePct:.08,sizePct:.08}},
 
     // Rare: strong specialization.
@@ -15153,7 +15323,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     {id:'hit28',rarity:'rare',name:'Wide Swing',effect:'+18% HITBOX',desc:'A solid contact upgrade that also enlarges the weapon.',key:'hitboxPct',value:.18},
     {id:'speed28',rarity:'rare',name:'Rapid Fire',effect:'+18% WEAPON SPEED',desc:'Thrown and returning weapons become faster.',key:'speedPct',value:.18},
     {id:'kb28',rarity:'rare',name:'Brutal Force',effect:'+18% KNOCKBACK',desc:'Turn successful hits into stronger launches.',key:'knockbackPct',value:.18},
-    {id:'attack22',rarity:'rare',name:'Quick Cycle',effect:'−16% ATTACK SPEED',desc:'Attack animations complete faster.',key:'attackSpeedPct',value:.16},
+    {id:'attack22',rarity:'rare',name:'Quick Cycle',effect:'−16% ATTACK TIME',desc:'Attack animations complete faster.',key:'attackSpeedPct',value:.16},
     {id:'reachForce',rarity:'rare',name:'Hunter',effect:'+14% RANGE · +12% KNOCKBACK',desc:'Reach farther and make clean hits matter more.',key:'multi',value:{rangePct:.14,knockbackPct:.12}},
     {id:'denseEdge',rarity:'rare',name:'Dense Edge',effect:'+14% SIZE · +12% HITBOX',desc:'A visibly larger weapon with more forgiving contact.',key:'multi',value:{sizePct:.14,hitboxPct:.12}},
     {id:'swiftEdge',rarity:'rare',name:'Swift Edge',effect:'−14% COOLDOWN · +12% WEAPON SPEED',desc:'Cycle attacks faster while improving weapon movement.',key:'multi',value:{cooldownPct:.14,speedPct:.12}},
@@ -15164,10 +15334,10 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     {id:'size42',rarity:'epic',name:'Colossal',effect:'+30% SIZE',desc:'A large increase to weapon presence.',key:'sizePct',value:.30},
     {id:'hit42',rarity:'epic',name:'Massive Contact',effect:'+28% HITBOX',desc:'Your weapon becomes dramatically easier to connect with.',key:'hitboxPct',value:.28},
     {id:'speed35',rarity:'epic',name:'Overdrive',effect:'+26% WEAPON SPEED',desc:'Faster projectiles and returning weapons.',key:'speedPct',value:.26},
-    {id:'attack30',rarity:'epic',name:'Flash Strike',effect:'−22% ATTACK SPEED',desc:'Your attack timing becomes sharply faster.',key:'attackSpeedPct',value:.22},
+    {id:'attack30',rarity:'epic',name:'Flash Strike',effect:'−22% ATTACK TIME',desc:'Your attack timing becomes sharply faster.',key:'attackSpeedPct',value:.22},
     {id:'titanForce',rarity:'epic',name:'Titan Force',effect:'+18% SIZE · +18% KNOCKBACK',desc:'A larger weapon backed by stronger impacts.',key:'multi',value:{sizePct:.18,knockbackPct:.18}},
     {id:'predator',rarity:'epic',name:'Predator',effect:'+20% RANGE · +18% WEAPON SPEED',desc:'A fast, far-reaching weapon build.',key:'multi',value:{rangePct:.20,speedPct:.18}},
-    {id:'stormCycle',rarity:'epic',name:'Storm Cycle',effect:'−22% COOLDOWN · −18% ATTACK SPEED',desc:'A build centered on frequent attacks.',key:'multi',value:{cooldownPct:.22,attackSpeedPct:.18}},
+    {id:'stormCycle',rarity:'epic',name:'Storm Cycle',effect:'−22% COOLDOWN · −18% ATTACK TIME',desc:'A build centered on frequent attacks.',key:'multi',value:{cooldownPct:.22,attackSpeedPct:.18}},
 
     // Legendary: powerful build-defining picks.
     {id:'masterwork',rarity:'legendary',name:'Masterwork',effect:'+22% RANGE · +18% SIZE · +10% HITBOX',desc:'A premium all-around weapon enhancement.',key:'multi',value:{rangePct:.22,sizePct:.18,hitboxPct:.10}},
@@ -15178,13 +15348,13 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
 
     // Cursed: stronger spikes with clear, meaningful drawbacks.
     {id:'glassCannon',rarity:'cursed',name:'Glass Cannon',effect:'+38% RANGE · +25% WEAPON SPEED · +18% COOLDOWN',desc:'Reach and weapon speed surge, but attacks recover more slowly.',key:'multi',value:{rangePct:.38,speedPct:.25,cooldownPct:-.18}},
-    {id:'bloodRush',rarity:'cursed',name:'Blood Rush',effect:'−25% COOLDOWN · −28% ATTACK SPEED · −18% SIZE',desc:'Attack rapidly, but the weapon becomes smaller.',key:'multi',value:{cooldownPct:.25,attackSpeedPct:.28,sizePct:-.18}},
+    {id:'bloodRush',rarity:'cursed',name:'Blood Rush',effect:'−25% COOLDOWN · −28% ATTACK TIME · −18% SIZE',desc:'Attack rapidly, but the weapon becomes smaller.',key:'multi',value:{cooldownPct:.25,attackSpeedPct:.28,sizePct:-.18}},
     {id:'brittleEdge',rarity:'cursed',name:'Brittle Edge',effect:'+35% HITBOX · +20% SIZE · −24% WEAPON SPEED',desc:'A large, forgiving weapon that moves substantially slower.',key:'multi',value:{hitboxPct:.35,sizePct:.20,speedPct:-.24}},
     {id:'heavyReach',rarity:'cursed',name:'Heavy Reach',effect:'+45% RANGE · +25% SIZE · −20% WEAPON SPEED',desc:'Massive reach and bulk at the cost of weapon speed.',key:'multi',value:{rangePct:.45,sizePct:.25,speedPct:-.20}},
     {id:'backlash',rarity:'cursed',name:'Backlash',effect:'+36% KNOCKBACK · +22% HITBOX · −22% RANGE',desc:'Every hit is brutal, but you must fight closer.',key:'multi',value:{knockbackPct:.36,hitboxPct:.22,rangePct:-.22}},
     {id:'overloaded',rarity:'cursed',name:'Overloaded Core',effect:'−28% COOLDOWN · +32% WEAPON SPEED · −20% SIZE',desc:'Extreme weapon speed at the cost of bulk.',key:'multi',value:{cooldownPct:.28,speedPct:.32,sizePct:-.20}},
     {id:'recklessEdge',rarity:'cursed',name:'Reckless Edge',effect:'+32% HITBOX · +26% KNOCKBACK · +22% COOLDOWN',desc:'Hits are stronger and easier, but recovery takes longer.',key:'multi',value:{hitboxPct:.32,knockbackPct:.26,cooldownPct:-.22}},
-    {id:'fragileVelocity',rarity:'cursed',name:'Fragile Velocity',effect:'+38% WEAPON SPEED · −20% ATTACK SPEED · −25% KNOCKBACK',desc:'A lightning-fast weapon that loses some impact.',key:'multi',value:{speedPct:.38,attackSpeedPct:.20,knockbackPct:-.25}},
+    {id:'fragileVelocity',rarity:'cursed',name:'Fragile Velocity',effect:'+38% WEAPON SPEED · −20% ATTACK TIME · −25% KNOCKBACK',desc:'A lightning-fast weapon that loses some impact.',key:'multi',value:{speedPct:.38,attackSpeedPct:.20,knockbackPct:-.25}},
     {id:'longBurden',rarity:'cursed',name:'Long Burden',effect:'+55% RANGE · −20% SIZE · +18% COOLDOWN',desc:'Extreme reach with a smaller weapon and slower recovery.',key:'multi',value:{rangePct:.55,sizePct:-.20,cooldownPct:-.18}},
 
     // Pattern cards: extra, visibly angled attacks rather than stacked copies.
@@ -15195,6 +15365,62 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     {id:'longHandle',rarity:'rare',name:'Long Handle',effect:'+32% RANGE · +12% SIZE',desc:'Your weapon reaches farther without becoming unwieldy.',key:'multi',value:{rangePct:.32,sizePct:.12}},
     {id:'compoundInterest',rarity:'legendary',name:'Compound Interest',effect:'EVERY 3RD PICK IS 35% STRONGER',desc:'Every third, sixth, ninth, and later third pick gains a 35% bonus.',key:'compound',value:1.35}
   ];
+
+  /* Condense legacy Size+Hitbox and Attack Time+Weapon Speed card data into the
+     five-stat system. This mutates only the card definitions and leaves the
+     weapon selector/menu code completely untouched. */
+  (function consolidateRogueCardStats(){
+    const effectPct=(key,v)=>{
+      const n=Math.round(Math.abs(Number(v||0))*100);
+      const inverted=(key==='cooldownPct');
+      const negative=inverted ? Number(v||0)>0 : Number(v||0)<0;
+      return `${negative?'−':'+'}${n}%`;
+    };
+    const rebuildMultiEffect=(v)=>{
+      const order=[['rangePct','RANGE'],['cooldownPct','COOLDOWN'],['sizePct','SIZE'],['attackSpeedPct','ATTACK TIME'],['knockbackPct','KNOCKBACK']];
+      return order.filter(([k])=>Math.abs(Number(v?.[k]||0))>.0005)
+        .map(([k,label])=>`${effectPct(k,v[k])} ${label}`).join(' · ');
+    };
+    for(const card of ROGUE_CARDS){
+      if(!card) continue;
+      if(card.key==='hitboxPct'){
+        const v=Number(card.value)||0;
+        card.key='sizePct';
+        card.value=v + (v>=0 ? .03 : -.03);
+        card.effect=`${effectPct('sizePct',card.value)} SIZE`;
+      }else if(card.key==='speedPct'){
+        card.key='attackSpeedPct';
+        card.effect=`${effectPct('attackSpeedPct',card.value)} ATTACK TIME`;
+      }else if(card.key==='multi' && card.value && typeof card.value==='object'){
+        const v=card.value;
+        const h=Number(v.hitboxPct||0), z=Number(v.sizePct||0);
+        if(Math.abs(h)>.0005){
+          if(Math.abs(z)>.0005){
+            const sign=(Math.abs(h)>=Math.abs(z)?h:z)>=0?1:-1;
+            v.sizePct=sign*(Math.max(Math.abs(h),Math.abs(z))+.03);
+          }else{
+            v.sizePct=h+(h>=0?.03:-.03);
+          }
+          delete v.hitboxPct;
+        }
+        const ws=Number(v.speedPct||0), at=Number(v.attackSpeedPct||0);
+        if(Math.abs(ws)>.0005){
+          if(Math.abs(at)>.0005 && Math.sign(ws)!==Math.sign(at)){
+            // Opposing old movement/timing modifiers: keep the stronger magnitude
+            // so consolidation does not silently invert the card's intent.
+            v.attackSpeedPct=(Math.abs(ws)>=Math.abs(at)?ws:at);
+          }else if(Math.abs(at)>.0005){
+            v.attackSpeedPct=(Math.abs(ws)>=Math.abs(at)?ws:at);
+          }else{
+            v.attackSpeedPct=ws;
+          }
+          delete v.speedPct;
+        }
+        card.effect=rebuildMultiEffect(v);
+      }
+    }
+  })();
+
   const rarityWeight={common:54,uncommon:28,rare:12,epic:5,legendary:1,cursed:3};
   function weightedCard(excluded,player){
     const patternCompatible=new Set(['sword','wand','axe','scythe','lance','katana','twinblades']);
@@ -15212,7 +15438,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     const pct=v=>`${v>0?'+':''}${Math.round(v*100)}%`;
     const statPct=(key,v)=>{
       const n=Math.round(Math.abs(Number(v||0))*100);
-      const inverted=(key==='cooldownPct'||key==='attackSpeedPct');
+      const inverted=(key==='cooldownPct');
       const negative=inverted ? Number(v||0)>0 : Number(v||0)<0;
       return `${negative?'−':'+'}${n}%`;
     };
@@ -15640,9 +15866,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
       ['RANGE','rangePct'],
       ['COOLDOWN','cooldownPct'],
       ['SIZE','sizePct'],
-      ['HITBOX','hitboxPct'],
-      ['WEAPON SPEED','speedPct'],
-      ['ATTACK SPEED','attackSpeedPct'],
+      ['ATTACK TIME','attackSpeedPct'],
       ['KNOCKBACK','knockbackPct']
     ].filter(([,k])=>Math.abs(Number(u[k]||0))>0.0005);
 
@@ -15656,7 +15880,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     }
     const chips=entries.map(([label,key])=>{
       const val=Number(u[key]||0);
-      const inverted=(key==='cooldownPct'||key==='attackSpeedPct');
+      const inverted=(key==='cooldownPct');
       const negative=inverted ? val>0 : val<0;
       return `<span class="weapon-rogue-summary-chip ${negative?'negative':'positive'}">${esc(label)} ${negative?'−':'+'}${Math.round(Math.abs(val)*100)}%</span>`;
     }).join('');
@@ -18256,14 +18480,12 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     ['RANGE','rangePct'],
     ['COOLDOWN','cooldownPct'],
     ['SIZE','sizePct'],
-    ['HITBOX','hitboxPct'],
-    ['WEAPON SPEED','speedPct'],
-    ['ATTACK SPEED','attackSpeedPct'],
+    ['ATTACK TIME','attackSpeedPct'],
     ['KNOCKBACK','knockbackPct']
   ];
   function statText(label,key,val){
     const n=Math.round(Math.abs(Number(val||0))*100);
-    const inverted=(key==='cooldownPct'||key==='attackSpeedPct');
+    const inverted=(key==='cooldownPct');
     const negative=inverted ? Number(val||0)>0 : Number(val||0)<0;
     return `${negative?'−':'+'}${n}%`;
   }
@@ -18279,7 +18501,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     list.innerHTML=fields.map(([label,key])=>{
       const val=Number(u[key]||0);
       const shown=statText(label,key,val);
-      const negative=((key==='cooldownPct'||key==='attackSpeedPct')?val>0:val<0);
+      const negative=((key==='cooldownPct')?val>0:val<0);
       return `<div class="weapon-rogue-start-stat"><span class="weapon-rogue-start-stat-label">${esc(label)}</span><span class="weapon-rogue-start-stat-value ${negative?'negative':''}">${shown}</span></div>`;
     }).join('');
     root.setAttribute('aria-hidden','false');
@@ -18469,6 +18691,1486 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
   Game.__weaponHitParticlesSfxFinalV51=true;
 })();
 </script>
+<script id="weaponry-roguelike-condensed-stats-v52">
+(function(){
+'use strict';
+if(typeof Game==='undefined'||typeof WEAPONS==='undefined')return;
+const valid=id=>typeof validWeapon==='function'?validWeapon(id||'sword'):(id||'sword');
+function mergedUpgrades(p){const u=p?.weaponUpgrades||{};return{rangePct:Number(u.rangePct)||0,cooldownPct:Number(u.cooldownPct)||0,sizePct:(Number(u.sizePct)||0)+(Number(u.hitboxPct)||0),attackSpeedPct:(Number(u.attackSpeedPct)||0)+(Number(u.speedPct)||0),knockbackPct:Number(u.knockbackPct)||0};}
+
+/* Retire the old HITBOX and WEAPON SPEED card vocabulary. Old saved builds are
+   still understood by mergedUpgrades(), while every newly generated card uses
+   SIZE and ATTACK TIME only. */
+if(typeof ROGUE_CARDS!=='undefined'&&Array.isArray(ROGUE_CARDS)){
+  for(const c of ROGUE_CARDS){
+    if(c.key==='hitboxPct'){c.key='sizePct';c.effect=String(c.effect||'').replace(/HITBOX/gi,'SIZE');c.desc=String(c.desc||'').replace(/hitbox/gi,'weapon size and hit area');}
+    else if(c.key==='speedPct'){c.key='attackSpeedPct';c.effect=String(c.effect||'').replace(/WEAPON SPEED/gi,'ATTACK TIME');c.desc=String(c.desc||'').replace(/weapon speed/gi,'attack time').replace(/weapon movement/gi,'attack time');}
+    if(c.key==='multi'&&c.value){
+      if(Number(c.value.hitboxPct)){c.value.sizePct=(Number(c.value.sizePct)||0)+Number(c.value.hitboxPct);delete c.value.hitboxPct;}
+      if(Number(c.value.speedPct)){c.value.attackSpeedPct=(Number(c.value.attackSpeedPct)||0)+Number(c.value.speedPct);delete c.value.speedPct;}
+      c.effect=String(c.effect||'').replace(/HITBOX/g,'SIZE').replace(/WEAPON SPEED/g,'ATTACK TIME');
+      c.desc=String(c.desc||'').replace(/hitbox/gi,'weapon size and hit area').replace(/weapon speed/gi,'attack time');
+    }
+  }
+  const add=c=>{if(!ROGUE_CARDS.some(x=>x.id===c.id))ROGUE_CARDS.push(c);};
+  add({id:'sizeTempo',rarity:'common',name:'Balanced Edge',effect:'+10% SIZE · +10% ATTACK TIME',desc:'A slightly larger weapon that starts and moves more quickly.',key:'multi',value:{sizePct:.10,attackSpeedPct:.10}});
+  add({id:'reachTempo',rarity:'uncommon',name:'Swift Reach',effect:'+14% RANGE · +12% ATTACK TIME',desc:'Extend your reach while making the weapon act faster.',key:'multi',value:{rangePct:.14,attackSpeedPct:.12}});
+  add({id:'heavyTempo',rarity:'uncommon',name:'Heavy Rhythm',effect:'+18% SIZE · +14% KNOCKBACK · −12% ATTACK TIME',desc:'A bigger, harder-hitting weapon with slower attack motion.',key:'multi',value:{sizePct:.18,knockbackPct:.14,attackSpeedPct:-.12}});
+  add({id:'quickCycle',rarity:'rare',name:'Quick Cycle',effect:'−16% COOLDOWN · +10% ATTACK TIME',desc:'Attack more often and get through each weapon motion faster.',key:'multi',value:{cooldownPct:.16,attackSpeedPct:.10}});
+  add({id:'longLight',rarity:'rare',name:'Long & Light',effect:'+25% RANGE · −10% SIZE · +16% ATTACK TIME',desc:'Trade weapon bulk for reach and faster handling.',key:'multi',value:{rangePct:.25,sizePct:-.10,attackSpeedPct:.16}});
+  add({id:'ironTempo',rarity:'epic',name:'Iron Tempo',effect:'+24% SIZE · +20% KNOCKBACK · −14% ATTACK TIME',desc:'A huge, forceful weapon that takes longer to swing around.',key:'multi',value:{sizePct:.24,knockbackPct:.20,attackSpeedPct:-.14}});
+  add({id:'overclockedEdge',rarity:'epic',name:'Overclocked Edge',effect:'−22% COOLDOWN · +24% ATTACK TIME · −12% SIZE',desc:'Extremely fast attacks with a smaller weapon.',key:'multi',value:{cooldownPct:.22,attackSpeedPct:.24,sizePct:-.12}});
+  add({id:'grandReach',rarity:'legendary',name:'Grand Reach',effect:'+35% RANGE · +18% SIZE · +18% ATTACK TIME',desc:'A broad, far-reaching weapon that also moves aggressively.',key:'multi',value:{rangePct:.35,sizePct:.18,attackSpeedPct:.18}});
+}
+
+/* Final stat application. Size is one multiplier for both model dimensions and
+   collision dimensions. Attack Time controls both attack timing and weapon
+   movement/return speed. */
+const oldSpec=Game.weaponSpec.bind(Game);
+Game.weaponSpec=function(p){
+  if(!p)return oldSpec(p);
+  const original=p.weaponUpgrades||{},u=mergedUpgrades(p);
+  p.weaponUpgrades=Object.assign({},original,{sizePct:u.sizePct,hitboxPct:0,attackSpeedPct:u.attackSpeedPct,speedPct:0});
+  let s;try{s=oldSpec(p);}finally{p.weaponUpgrades=original;}
+  const a=Math.max(.20,1+u.attackSpeedPct);
+  for(const k of ['attackExtend','attackActive','attackRetract','attackHold','castTime','lungeTime'])if(Number.isFinite(Number(s[k])))s[k]=Number(s[k])/a;
+  for(const k of ['returnSpeed','projectileSpeed','slashSpeed','gyroProjectileSpeed','gyroSpinSpeed','spinSpeed','lungeSpeed'])if(Number.isFinite(Number(s[k])))s[k]=Number(s[k])*a;
+  return s;
+};
+
+/* Requested base weapon changes. */
+WEAPONS.wand.cooldown=2.70;
+WEAPONS.bo_staff.attackHold=1.55;
+WEAPONS.axe.cooldown=3.15*1.05;
+WEAPONS.chakram.cooldown=2.40*1.10;
+WEAPONS.scythe.cooldown=4.55*1.30;
+for(const k of ['idleInner','idleOuter','idleWidth','bladeLength','idleCenter','attackCenter','activeWidth'])if(Number.isFinite(Number(WEAPONS.twinblades[k])))WEAPONS.twinblades[k]*=.5;
+WEAPONS.twinblades.cooldown=1.85*1.60;
+const gyroCooldownBase=5.00;
+const gyroRangeMult=1.50;
+const gyroGroundSpeedMult=.62;
+const tunedSpec=Game.weaponSpec.bind(Game);
+Game.weaponSpec=function(p){
+  const s=tunedSpec(p),id=valid(p?.weapon),u=mergedUpgrades(p);
+  if(id==='wand')s.cooldown=2.70*Math.max(.10,1-u.cooldownPct);
+  else if(id==='bo_staff')s.attackHold=1.55;
+  else if(id==='axe')s.cooldown=3.15*1.05*Math.max(.10,1-u.cooldownPct);
+  else if(id==='chakram')s.cooldown=2.40*1.10*Math.max(.10,1-u.cooldownPct);
+  else if(id==='scythe')s.cooldown=4.55*1.30*Math.max(.10,1-u.cooldownPct);
+  else if(id==='twinblades'){s.cooldown=1.85*1.60*Math.max(.10,1-u.cooldownPct);if(Number.isFinite(Number(s.twinBladeLength)))s.twinBladeLength*=.5;if(Number.isFinite(Number(s.activeWidth)))s.activeWidth*=.5;}
+  else if(id==='scythe'){if(Number.isFinite(Number(s.bladeLength)))s.bladeLength*=.85;if(Number.isFinite(Number(s.activeWidth)))s.activeWidth*=.85;if(Number.isFinite(Number(s.attackCenter)))s.attackCenter*=.85;}
+  else if(id==='flail')s.attackActive=1.0;
+  else if(id==='gyroblade'){
+    s.cooldown=gyroCooldownBase*Math.max(.10,1-u.cooldownPct);
+    s.projectileRange=(Number(s.projectileRange)||510)*gyroRangeMult;
+    s.gyroGroundSpeed=(Number(s.gyroProjectileSpeed)||420)*gyroGroundSpeedMult;
+  }
+  return s;
+};
+
+/* Weapon hits now contribute to the normal Smash percentage resource. */
+const oldKB=Game.weaponApplyKnockback;
+if(typeof oldKB==='function')Game.weaponApplyKnockback=function(attacker,victim,kind,weaponSpeed=0){
+  if(this.isHost&&this.matchSettings?.smash&&attacker&&victim&&victim.alive&&!victim.spectator){
+    const impact=Math.max(0,Number(weaponSpeed)||Number(this.weaponHitSpeed?.(attacker,kind)||0)),before=Math.max(0,Number(victim.damage)||0),dmg=impact>50?impact*.010:0;
+    if(dmg>0){
+      victim.damage=before+dmg;
+      if(typeof this.spawnDamagePop==='function')this.spawnDamagePop(victim.x,victim.y-(victim.radius||26)-18,dmg,true);
+      const boost=impact*(.07+before*.00125),dx=victim.x-attacker.x,dy=victim.y-attacker.y,dist=Math.hypot(dx,dy)||1;
+      victim.vx+=(dx/dist)*boost;victim.vy+=(dy/dist)*boost;victim._smashKnockbackTimer=.18;
+    }
+  }
+  return oldKB.call(this,attacker,victim,kind,weaponSpeed);
+};
+
+/* Flail: reach max range, remain extended for one second, then rapidly return.
+   The active phase already uses the authoritative weapon contact routine, so the
+   whole one-second hold is lethal when Death Weapons is enabled. */
+const oldStart=Game.startWeaponAttack.bind(Game);
+Game.startWeaponAttack=function(p,angle,fromInput=false,remoteSeq=null){const r=oldStart(p,angle,fromInput,remoteSeq);if(r&&p&&valid(p.weapon)==='flail'){p._flailHoldStarted=false;}return r;};
+const oldUpdate=Game.updateWeapons.bind(Game);
+Game.updateWeapons=function(dt){
+  const before=new Map();for(const p of Object.values(this.players||{}))if(p&&valid(p.weapon)==='flail')before.set(p.id,{phase:p.weaponPhase,x:p.weaponWorldX,y:p.weaponWorldY});
+  oldUpdate(dt);
+  for(const p of Object.values(this.players||{})){
+    const b=before.get(p?.id);if(!b||valid(p.weapon)!=='flail')continue;
+    if(b.phase==='extend'&&p.weaponPhase==='retract'&&!p._flailHoldStarted){
+      if(Number.isFinite(Number(b.x)))p.weaponWorldX=b.x;if(Number.isFinite(Number(b.y)))p.weaponWorldY=b.y;
+      p.weaponPhase='active';p.weaponPhaseTime=0;p._flailHoldStarted=true;
+    }
+  }
+};
+
+/* Bombardier: replace the old single bomb with two symmetric ballistic bombs. */
+function replaceBombPair(game,p,angle,serial){
+  if(!p||valid(p.weapon)!=='bombardier')return;
+  const a=game.normalizeAngle(Number(angle)||0),spread=.135,s=Number(serial)||Number(p.weaponActionSerial)||0;
+  const ids=new Set(['bd:'+p.id+':'+s,'bd:'+p.id+':'+(s*100+1),'bd:'+p.id+':'+(s*100+2)]);
+  game.weaponProjectiles=(game.weaponProjectiles||[]).filter(q=>!(q&&q.kind==='bombardier'&&q.ownerId===p.id&&ids.has(q.id)));
+  game.spawnBombardierProjectile(p,game.normalizeAngle(a-spread),s*100+1);
+  game.spawnBombardierProjectile(p,game.normalizeAngle(a+spread),s*100+2);
+}
+const oldBombStart=Game.startWeaponAttack.bind(Game);
+Game.startWeaponAttack=function(p,angle,fromInput=false,remoteSeq=null){const r=oldBombStart(p,angle,fromInput,remoteSeq);if(r&&p&&valid(p.weapon)==='bombardier')replaceBombPair(this,p,angle,p.weaponActionSerial);return r;};
+const oldBombReceive=Game.receiveWeaponAttack?.bind(Game);
+if(oldBombReceive)Game.receiveWeaponAttack=function(data){const r=oldBombReceive(data),p=data?.id?this.players?.[data.id]:null;if(p&&valid(p.weapon)==='bombardier')replaceBombPair(this,p,p.weaponAttackAngle,p.netWeaponActionSerial||p.weaponActionSerial);return r;};
+
+/* Gyroblade ground roll speed is reduced without reducing throw speed. */
+const oldProj=Game.updateWeaponProjectiles?.bind(Game);
+if(oldProj)Game.updateWeaponProjectiles=function(dt){
+  for(const q of this.weaponProjectiles||[]){if(q?.kind==='gyroblade'&&q.gyroState==='roll'){const owner=this.players?.[q.ownerId],sp=this.weaponSpec(owner||{weapon:'gyroblade',weaponUpgrades:{}}),v=Math.max(1,Number(sp.gyroGroundSpeed)||420);q.gyroSpeed=v;q.vx=(Number(q.vx)||0)>=0?v:-v;q.vy=0;}}
+  return oldProj(dt);
+};
+
+/* Pattern upgrade: melee/non-projectile weapons get real temporary weapon copies
+   on the attack frame. Two extras become three swords in a cone; projectile weapons
+   keep their projectile behavior. */
+const projectile=new Set(['wand','bombardier']);
+const patternable=new Set(['sword','bo_staff','axe','flail','chakram','scythe','lance','twinblades','anchor','gyroblade','katana']);
+function setPattern(game,p){
+  if(!p||!patternable.has(valid(p.weapon)))return;
+  const u=p.weaponUpgrades||{},count=Math.max(0,Math.min(6,Math.floor(Number(u.patternConeCount)||0))),interval=Math.max(1,Number(u.patternConeInterval)||2),spread=Math.max(.03,Math.min(.70,Number(u.patternConeSpread)||.24));
+  p.weaponPatternAngles=[];p._weaponPatternAngles=[];if(!count||(Number(p.weaponActionCount)||0)%interval!==0)return;
+  const offs=[];for(let i=0;i<count;i++){const ring=Math.floor(i/2)+1;offs.push((i%2===0?-1:1)*ring*spread);}
+  p.weaponPatternAngles=offs.map(o=>game.normalizeAngle(Number(p.weaponAttackAngle)+o));p._weaponPatternAngles=p.weaponPatternAngles.slice();
+}
+const oldPatternStart=Game.startWeaponAttack.bind(Game);
+Game.startWeaponAttack=function(p,angle,fromInput=false,remoteSeq=null){const r=oldPatternStart(p,angle,fromInput,remoteSeq);if(r&&p&&!projectile.has(valid(p.weapon)))setPattern(this,p);return r;};
+const oldPatternReceive=Game.receiveWeaponAttack?.bind(Game);
+if(oldPatternReceive)Game.receiveWeaponAttack=function(data){const r=oldPatternReceive(data),p=data?.id?this.players?.[data.id]:null;if(p&&!projectile.has(valid(p.weapon)))setPattern(this,p);return r;};
+const oldContact=Game.weaponActiveContact.bind(Game);
+Game.weaponActiveContact=function(attacker,angle,inner,outer,width,kind){
+  if(!attacker||projectile.has(valid(attacker.weapon)))return oldContact(attacker,angle,inner,outer,width,kind);
+  const extras=Array.isArray(attacker._weaponPatternAngles)?attacker._weaponPatternAngles.slice():[],saved=attacker._weaponPatternAngles;
+  attacker._weaponPatternAngles=[];const main=oldContact(attacker,angle,inner,outer,width,kind);
+  for(const a of extras){attacker._weaponPatternAngles=[];oldContact(attacker,a,inner,outer,width,kind);}attacker._weaponPatternAngles=saved;return main;
+};
+const oldRender=Game.renderWeapon.bind(Game);
+Game.renderWeapon=function(ctx,p){
+  if(!p||projectile.has(valid(p.weapon)))return oldRender(ctx,p);
+  const extras=Array.isArray(p._weaponPatternAngles)?p._weaponPatternAngles.slice():[],saved=p._weaponPatternAngles;p._weaponPatternAngles=[];oldRender(ctx,p);p._weaponPatternAngles=saved;
+  if(!extras.length||p.weaponPhase==='idle')return;
+  for(const a of extras){const fake=Object.assign({},p,{weaponAttackAngle:a,_weaponPatternAngles:[]});ctx.save();ctx.globalAlpha=.58;oldRender(ctx,fake);ctx.restore();}
+};
+
+/* Condensed five-stat build summary and countdown card. */
+function refreshSummary(){
+  const el=document.getElementById('weaponRogueSummary');if(!el)return;const p=this.players?.[this.myId],u=mergedUpgrades(p),esc=v=>{const d=document.createElement('div');d.textContent=String(v??'');return d.innerHTML;};
+  const labels=[['RANGE','rangePct'],['COOLDOWN','cooldownPct'],['SIZE','sizePct'],['ATTACK TIME','attackSpeedPct'],['KNOCKBACK','knockbackPct']],entries=labels.filter(([,k])=>Math.abs(Number(u[k]||0))>.0005);
+  const weapon=(typeof weaponLabel==='function'?weaponLabel(p?.weapon):String(p?.weapon||'Sword')).toUpperCase();el.classList.remove('empty');
+  if(!entries.length){el.classList.add('empty');el.innerHTML='<div>NO UPGRADES YET · THIS IS YOUR STARTING BUILD</div>';return;}
+  const chips=entries.map(([label,key])=>{const v=Number(u[key]||0),inv=key==='cooldownPct'||key==='attackSpeedPct',neg=inv?v>0:v<0;return '<span class="weapon-rogue-summary-chip '+(neg?'negative':'positive')+'">'+esc(label)+' '+(neg?'−':'+')+Math.round(Math.abs(v)*100)+'%</span>';}).join('');
+  const last=p?.weaponRogueLastCardName?'<div class="weapon-rogue-summary-last">CURRENT BUILD · LAST PICK: '+esc(p.weaponRogueLastCardName)+'</div>':'';el.innerHTML='<div class="weapon-rogue-summary-title">YOUR WEAPON BUILD · <span class="weapon-rogue-summary-weapon">'+esc(weapon)+'</span></div>'+chips+last;
+}
+const oldDraft=Game.renderWeaponRogueDraft;if(typeof oldDraft==='function')Game.renderWeaponRogueDraft=function(data){oldDraft.call(this,data);refreshSummary.call(this);};
+const oldCountdown=Game.showWeaponRogueStartCountdown;if(typeof oldCountdown==='function')Game.showWeaponRogueStartCountdown=function(startAt,round){oldCountdown.call(this,startAt,round);const list=document.getElementById('weaponRogueStartStatsList'),weaponEl=document.getElementById('weaponRogueStartStatsWeapon'),p=this.players?.[this.myId],u=mergedUpgrades(p);if(list&&weaponEl){weaponEl.textContent=(typeof weaponLabel==='function'?weaponLabel(p?.weapon):String(p?.weapon||'Sword')).toUpperCase();const labels=[['RANGE','rangePct'],['COOLDOWN','cooldownPct'],['SIZE','sizePct'],['ATTACK TIME','attackSpeedPct'],['KNOCKBACK','knockbackPct']];list.innerHTML=labels.map(([l,k])=>{const v=Number(u[k]||0),inv=k==='cooldownPct',neg=inv?v>0:v<0;return '<div class="weapon-rogue-start-stat"><span class="weapon-rogue-start-stat-label">'+l+'</span><span class="weapon-rogue-start-stat-value '+(neg?'negative':'')+'">'+(neg?'−':'+')+Math.round(Math.abs(v)*100)+'%</span></div>';}).join('');}};
+
+const oldApply=Game.applyWeaponRogueUpgrade;if(typeof oldApply==='function')Game.applyWeaponRogueUpgrade=function(p,card){
+  if(card?.key==='hitboxPct')card=Object.assign({},card,{key:'sizePct',effect:String(card.effect||'').replace(/HITBOX/gi,'SIZE')});
+  if(card?.key==='speedPct')card=Object.assign({},card,{key:'attackSpeedPct',effect:String(card.effect||'').replace(/WEAPON SPEED/gi,'ATTACK TIME')});
+  if(card?.key==='multi'&&card.value){const v=Object.assign({},card.value);if(Number(v.hitboxPct)){v.sizePct=(Number(v.sizePct)||0)+Number(v.hitboxPct);delete v.hitboxPct;}if(Number(v.speedPct)){v.attackSpeedPct=(Number(v.attackSpeedPct)||0)+Number(v.speedPct);delete v.speedPct;}card=Object.assign({},card,{value:v,effect:String(card.effect||'').replace(/HITBOX/gi,'SIZE').replace(/WEAPON SPEED/gi,'ATTACK TIME')});}
+  return oldApply.call(this,p,card);
+};
+Game.__weaponryRoguelikeCondensedStatsV52=true;
+})();
+</script>
+
+
+<script id="roguelike-balanced-cards-double-trouble-v58">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined')return;
+
+  const valid=id=>typeof validWeapon==='function'?validWeapon(id||'sword'):(id||'sword');
+
+  /* ---------------------------------------------------------------
+     Balanced card pass
+     Net benefit is counted in the direction that helps the player:
+       RANGE +, COOLDOWN -, SIZE +, ATTACK TIME -, KNOCKBACK +.
+     New cards in each rarity are kept within a narrow power band.
+     --------------------------------------------------------------- */
+  const benefitOf=(key,v)=>{
+    const n=Number(v)||0;
+    if(key==='cooldownPct'||key==='attackSpeedPct')return -n;
+    return n;
+  };
+  const netOfValue=v=>{
+    let net=0;
+    for(const [k,n] of Object.entries(v||{})){
+      if(['rangePct','cooldownPct','sizePct','attackSpeedPct','knockbackPct'].includes(k)){
+        const x=Number(n)||0; net+=benefitOf(k,x);
+      }
+    }
+    return net;
+  };
+  const budgetCard=(id,rarity,name,effect,desc,value)=>({id,rarity,name,effect,desc,key:'multi',value});
+
+  if(typeof ROGUE_CARDS!=='undefined'&&Array.isArray(ROGUE_CARDS)){
+    // Keep the older common pool tightly clustered as well.
+    const set=(id,obj)=>{
+      const c=ROGUE_CARDS.find(x=>x.id===id);
+      if(c)Object.assign(c,obj);
+    };
+
+    set('range08',{key:'rangePct',value:.08,effect:'+8% RANGE',desc:'A reliable reach increase.'});
+    set('range12',{key:'rangePct',value:.08,effect:'+8% RANGE',desc:'A reliable reach increase.'});
+    set('cool08',{key:'cooldownPct',value:.08,effect:'−8% COOLDOWN',desc:'Recover from attacks a little faster.'});
+    set('cool10',{key:'cooldownPct',value:.08,effect:'−8% COOLDOWN',desc:'Recover from attacks a little faster.'});
+    set('size08',{key:'sizePct',value:.08,effect:'+8% SIZE',desc:'Your weapon becomes slightly larger.'});
+    set('size10',{key:'sizePct',value:.08,effect:'+8% SIZE',desc:'Your weapon becomes slightly larger.'});
+    set('hit08',{key:'sizePct',value:.08,effect:'+8% SIZE',desc:'Your weapon becomes larger in both appearance and contact area.'});
+    set('hit12',{key:'sizePct',value:.08,effect:'+8% SIZE',desc:'Your weapon becomes larger in both appearance and contact area.'});
+    set('speed10',{key:'attackSpeedPct',value:-.08,effect:'−8% ATTACK TIME',desc:'Your weapon starts, travels, and returns faster.'});
+    set('kb10',{key:'knockbackPct',value:.08,effect:'+8% KNOCKBACK',desc:'Successful hits launch opponents a little harder.'});
+    set('sizeTempo',{key:'multi',value:{sizePct:.12,attackSpeedPct:.04},effect:'+12% SIZE · +4% ATTACK TIME',desc:'A larger weapon that trades a little attack time for its extra bulk.'});
+
+    const add=c=>{if(!ROGUE_CARDS.some(x=>x.id===c.id))ROGUE_CARDS.push(c);};
+
+    // Common: 8% net benefit, with at most a few percentage points of raw spread.
+    add(budgetCard('tightGrip','common','Tight Grip','+10% SIZE · +2% ATTACK TIME','A compact handling trade: more weapon presence for slightly longer attack motion.',{sizePct:.10,attackSpeedPct:.02}));
+    add(budgetCard('cleanForm','common','Clean Form','−6% COOLDOWN · +2% SIZE','A small timing upgrade with a touch of extra size.',{cooldownPct:.06,sizePct:.02}));
+
+    // Uncommon: roughly 14% net benefit.
+    add(budgetCard('longHandlePlus','uncommon','Long Handle','+17% RANGE · +3% COOLDOWN','Push your weapon farther away while accepting a little longer recovery.',{rangePct:.17,cooldownPct:-.03}));
+    add(budgetCard('heavyRhythm','uncommon','Heavy Rhythm','+20% SIZE · +16% KNOCKBACK · +22% ATTACK TIME','A bigger, harder-hitting weapon that takes longer to swing and recover.',{sizePct:.20,knockbackPct:.16,attackSpeedPct:.22}));
+    add(budgetCard('reachRhythm','uncommon','Reach & Rhythm','+18% RANGE · +4% ATTACK TIME','More reach with a small attack-time tax.',{rangePct:.18,attackSpeedPct:.04}));
+    add(budgetCard('lightweight','uncommon','Lightweight','−6% SIZE · −20% ATTACK TIME','Trim the weapon down to make it move much faster.',{sizePct:-.06,attackSpeedPct:-.20}));
+
+    // Rare: roughly 24% net benefit.
+    add(budgetCard('momentum','rare','Momentum','+18% KNOCKBACK · −6% ATTACK TIME','Hits land harder while the weapon moves through its attack cycle faster.',{knockbackPct:.18,attackSpeedPct:-.06}));
+    add(budgetCard('compactPower','rare','Compact Power','+34% KNOCKBACK · −10% SIZE','Lose some weapon size to gain much stronger impacts.',{knockbackPct:.34,sizePct:-.10}));
+    add(budgetCard('longwinded','rare','Longwinded','+30% RANGE · +6% ATTACK TIME','A very long weapon that takes a little more time to handle.',{rangePct:.30,attackSpeedPct:.06}));
+    add(budgetCard('glassRhythm','rare','Glass Rhythm','+28% KNOCKBACK · +4% ATTACK TIME','A harder-hitting weapon with a little more attack time.',{knockbackPct:.28,attackSpeedPct:.04}));
+
+    // Epic: roughly 34% net benefit.
+    add(budgetCard('titanReach','epic','Titan Reach','+42% RANGE · +18% SIZE · +26% ATTACK TIME','Huge reach and presence balanced by a noticeably slower attack cycle.',{rangePct:.42,sizePct:.18,attackSpeedPct:.26}));
+    add(budgetCard('hyperTempo','epic','Hyper Tempo','−18% COOLDOWN · −16% ATTACK TIME','A fast-cycle build that also moves through weapon attacks quickly.',{cooldownPct:.18,attackSpeedPct:-.16}));
+    add(budgetCard('ironTempo','epic','Iron Tempo','+30% SIZE · +18% KNOCKBACK · +14% ATTACK TIME','A huge, forceful weapon that takes longer to swing around.',{sizePct:.30,knockbackPct:.18,attackSpeedPct:.14}));
+    add(budgetCard('overclockedEdge','epic','Overclocked Edge','−20% COOLDOWN · −16% ATTACK TIME · −2% SIZE','Extremely fast attacks with a nearly invisible size sacrifice.',{cooldownPct:.20,attackSpeedPct:-.16,sizePct:-.02}));
+
+    // Legendary: roughly 48% net benefit.
+    add(budgetCard('perfectForm','legendary','Perfect Form','+18% RANGE · +18% SIZE · −12% ATTACK TIME','A polished all-around build with more reach, presence, and speed.',{rangePct:.18,sizePct:.18,attackSpeedPct:-.12}));
+    add(budgetCard('grandReach','legendary','Grand Reach','+35% RANGE · +18% SIZE · +5% ATTACK TIME','Extreme reach and size with a little extra attack time as the cost.',{rangePct:.35,sizePct:.18,attackSpeedPct:.05}));
+    add(budgetCard('overwhelmingForce','legendary','Overwhelming Force','+32% SIZE · +28% KNOCKBACK · +12% ATTACK TIME','A giant, brutal weapon that takes a little longer to move.',{sizePct:.32,knockbackPct:.28,attackSpeedPct:.12}));
+
+    // Cursed: large net benefit with meaningful drawbacks.
+    add(budgetCard('featherblade','cursed','Featherblade','+65% RANGE · +15% KNOCKBACK · −30% ATTACK TIME · +30% COOLDOWN · −20% SIZE','An extreme long-range speed build: much faster attacks and stronger reach, but a smaller weapon and much longer cooldown.',{rangePct:.65,knockbackPct:.15,attackSpeedPct:-.30,cooldownPct:-.30,sizePct:-.20}));
+    add(budgetCard('slowGiant','cursed','Slow Giant','+55% SIZE · +40% KNOCKBACK · +32% ATTACK TIME','An enormous powerhouse. It hits hard, but its attack motion is much slower.',{sizePct:.55,knockbackPct:.40,attackSpeedPct:.32}));
+
+    // Special Cursed upgrade: one automatic follow-up attack, then the extended cooldown.
+    add({
+      id:'doubleTrouble',rarity:'cursed',name:'Double Trouble',
+      effect:'ATTACK TWICE IN A ROW · +75% COOLDOWN',
+      desc:'Every attack automatically chains into one immediate second attack with no cooldown between them. The cooldown after the pair is 75% longer.',
+      key:'multi',value:{cooldownPct:-.75,doubleTrouble:1}
+    });
+  }
+
+  /* Double Trouble's percentage part uses the normal consolidated cooldown system;
+     this flag makes the first attack chain directly into a second attack. */
+  const hasDoubleTrouble=p=>!!p&&Number(p.weaponUpgrades?.doubleTrouble||0)>0;
+
+  // Teach the generic card helpers how to describe the special card without adding
+  // any legacy stat vocabulary to the generated draft.
+  const oldRenderDraft=Game.renderWeaponRogueDraft?.bind(Game);
+  if(oldRenderDraft){
+    Game.renderWeaponRogueDraft=function(data){
+      const cloned=Object.assign({},data,{cards:(data?.cards||[]).map(c=>
+        c?.id==='doubleTrouble'
+          ?Object.assign({},c,{effect:'ATTACK TWICE IN A ROW · +75% COOLDOWN',desc:'Every attack automatically chains into one immediate second attack with no cooldown between them. The cooldown after the pair is 75% longer.'})
+          :c
+      )});
+      return oldRenderDraft(cloned);
+    };
+  }
+
+  // Apply the hidden gameplay flag while preserving the card's public numeric effects.
+  const oldApply=Game.applyWeaponRogueUpgrade?.bind(Game);
+  if(oldApply){
+    Game.applyWeaponRogueUpgrade=function(p,card){
+      const result=oldApply(p,card);
+      if(p&&card?.id==='doubleTrouble')p.weaponUpgrades.doubleTrouble=Math.max(1,Number(p.weaponUpgrades.doubleTrouble)||0);
+      return result;
+    };
+  }
+
+  // Chain exactly one immediate follow-up attack. The first attack's cooldown is
+  // temporarily suppressed; the pair gets the card's +75% cooldown only after the
+  // second attack finishes. Flail keeps its existing post-return multiplier too.
+  const oldStart=Game.startWeaponAttack?.bind(Game);
+  const oldEnd=Game.endWeaponAttack?.bind(Game);
+  if(oldStart&&oldEnd){
+    Game.startWeaponAttack=function(p,angle,fromInput=false,remoteSeq=null){
+      const chaining=!!(p?._doubleTroubleChainInProgress);
+      const r=oldStart(p,angle,fromInput,remoteSeq);
+      if(r&&p&&hasDoubleTrouble(p)&&!chaining){
+        p._doubleTroublePending=1;
+        p._doubleTroubleChainInProgress=false;
+      }
+      return r;
+    };
+
+    Game.endWeaponAttack=function(p){
+      if(!p)return oldEnd(p);
+      const shouldChain=hasDoubleTrouble(p)&&p.alive&&!p.spectator&&!p._doubleTroubleChainInProgress&&Number(p._doubleTroublePending||0)>0;
+      if(shouldChain){
+        // Finish the first attack normally so the weapon returns to the idle state.
+        oldEnd(p);
+        p._doubleTroublePending=0;
+        p._doubleTroubleChainInProgress=true;
+        // There is intentionally no cooldown between the two attacks.
+        p.weaponCooldown=0;
+        p.weaponCooldownMax=0;
+        const a=Number.isFinite(Number(p.weaponAttackAngle))?Number(p.weaponAttackAngle):Number(p.weaponOrbitAngle)||0;
+        const chained=Game.startWeaponAttack(p,a,true,null);
+        p._doubleTroubleChainInProgress=false;
+        if(chained){
+          p._doubleTroubleFinalCooldownPending=true;
+          return;
+        }
+        // Safety fallback if this weapon could not be restarted.
+        p._doubleTroubleFinalCooldownPending=false;
+        return;
+      }
+
+      oldEnd(p);
+      if(p&&p._doubleTroubleFinalCooldownPending){
+        p._doubleTroubleFinalCooldownPending=false;
+        const spec=this.weaponSpec(p);
+        const flailFactor=valid(p.weapon)==='flail'?3:1;
+        const finalCooldown=Math.max(0,Number(spec.cooldown)||0)*1.75*flailFactor;
+        p.weaponCooldown=finalCooldown;
+        p.weaponCooldownMax=finalCooldown;
+      }
+    };
+  }
+
+  // The special card contains a +75% cooldown penalty as a multi-stat value. Do not
+  // let legacy consolidation code expose its hidden boolean as a visible stat.
+  if(typeof ROGUE_CARDS!=='undefined'&&Array.isArray(ROGUE_CARDS)){
+    const dt=ROGUE_CARDS.find(c=>c.id==='doubleTrouble');
+    if(dt)dt.effect='ATTACK TWICE IN A ROW · +75% COOLDOWN';
+  }
+
+  Game.__balancedRogueCardsDoubleTroubleV58=true;
+})();
+</script>
+
+
+<style id="plunk-v65-qol-styles">
+#plunkMomentIndicator{
+  position:fixed;
+  left:50%;
+  top:18%;
+  z-index:9100;
+  transform:translate(-50%,-10px) scale(.84) rotate(-2deg);
+  opacity:0;
+  pointer-events:none;
+  text-align:center;
+  min-width:min(360px,88vw);
+  padding:14px 26px;
+  border:2px solid #fff3cd;
+  border-radius:5px;
+  background:linear-gradient(180deg,#25180cf5,#0b0806ee);
+  box-shadow:0 12px 34px #000c,0 0 26px #ffd76a44,0 0 60px #ffd76a1c;
+}
+#plunkMomentIndicator.active{
+  animation:plunkMomentPop 1.18s cubic-bezier(.17,1.22,.32,1) both;
+}
+#plunkMomentIndicator .plunk-moment-title{
+  font-size:clamp(22px,4vw,36px);
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:3px;
+  color:#fff4cf;
+  text-shadow:0 2px 5px #000,0 0 18px #ffd76a99;
+}
+@keyframes plunkMomentPop{
+  0%{opacity:0;transform:translate(-50%,-18px) scale(.78) rotate(-4deg)}
+  16%{opacity:1;transform:translate(-50%,0) scale(1.08) rotate(1deg)}
+  27%{transform:translate(-50%,0) scale(1) rotate(0)}
+  78%{opacity:1;transform:translate(-50%,0) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-5px) scale(.98)}
+}
+
+#lobbyChangeIndicator{
+  min-height:0;
+  height:0;
+  overflow:hidden;
+  opacity:0;
+  margin:0 0 0 0;
+  padding:0;
+  color:var(--text-dim);
+  font-size:9px;
+  line-height:1.1;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+  pointer-events:none;
+  transition:opacity .14s ease,height .14s ease,margin .14s ease,padding .14s ease;
+}
+#lobbyChangeIndicator.active{
+  height:14px;
+  margin:1px 0 3px;
+  opacity:1;
+}
+#lobbyChangeIndicator strong{
+  color:var(--accent3);
+  font-weight:900;
+}
+
+/* ---------------- V65: small presentation / QoL polish ---------------- */
+.btn.plunk-pressing{
+  transform:scale(.965) translateY(2px)!important;
+  filter:brightness(.96)!important;
+  box-shadow:0 0 0 1px #ffd77a33,0 2px 6px #0009!important;
+}
+#plunkScreenTransition{
+  position:fixed;inset:0;z-index:9000;pointer-events:none;
+  opacity:0;background:
+    radial-gradient(circle at 50% 45%,rgba(224,163,92,.11),transparent 40%),
+    rgba(10,7,5,.38);
+  backdrop-filter:blur(.8px);
+  transform:scale(1.015);
+  transition:opacity .105s ease,transform .14s ease;
+}
+#plunkScreenTransition.active{opacity:1;transform:scale(1);}
+#plunkScreenTransition.fade{opacity:0;transform:scale(.995);}
+
+#settingsOwnerHint{display:none!important;}
+#screen-lobby .section-header-row{margin-bottom:1px!important;}
+
+#deathCauseCard{
+  position:fixed;left:50%;top:17%;z-index:8650;
+  transform:translate(-50%,-12px) scale(.95);
+  min-width:min(390px,86vw);max-width:min(560px,90vw);
+  padding:13px 18px 15px;
+  text-align:center;pointer-events:none;
+  background:linear-gradient(180deg,#21150deF,#0d0906eF);
+  border:2px solid #6b4a1f;border-radius:6px;
+  box-shadow:0 14px 42px #000a,0 0 26px #ffd76a1f;
+  opacity:0;
+}
+#deathCauseCard.active{animation:plunkDeathCardIn 1.95s ease both;}
+.death-cause-kicker{font-size:10px;letter-spacing:2px;color:var(--text-dim);font-weight:1000;}
+.death-cause-main{margin-top:4px;font-size:clamp(17px,3vw,25px);line-height:1.12;font-weight:1000;color:#fff1d0;text-shadow:0 2px 5px #000;}
+.death-cause-sub{margin-top:7px;font-size:10px;letter-spacing:1px;color:var(--accent3);font-weight:1000;}
+@keyframes plunkDeathCardIn{
+  0%{opacity:0;transform:translate(-50%,-20px) scale(.92)}
+  13%{opacity:1;transform:translate(-50%,0) scale(1)}
+  76%{opacity:1;transform:translate(-50%,0) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-6px) scale(.985)}
+}
+
+/* Rare spherebox chat announcements get their own visual treatment. */
+#lobbyChatLog > div.chat-system,
+#chatlog > div.chat-system,
+#weaponRogueChatLog > div.chat-system{font-weight:1000;}
+.chat-system{padding:3px 4px;margin:2px 0;border-left:2px solid #6b4a1f;background:#18100866;}
+.chat-rarity-rare{font-family:Georgia,'Times New Roman',serif;font-style:italic;letter-spacing:.15px;color:#9fd3ff!important;text-shadow:0 0 8px #70b7ff44;}
+.chat-rarity-epic{font-family:'Trebuchet MS',Arial,sans-serif;font-weight:1000;letter-spacing:.8px;color:#d6b0ff!important;text-shadow:0 0 8px #a67cff55;}
+.chat-rarity-legendary{font-family:Impact,'Arial Black',sans-serif;font-weight:1000;letter-spacing:1.3px;color:#ffe083!important;text-shadow:0 0 9px #ffb52e66;}
+.chat-rarity-mythic{font-family:Georgia,'Times New Roman',serif;font-weight:1000;letter-spacing:1px;color:#ff9fd4!important;text-shadow:0 0 8px #ff4fa466,0 0 18px #9a5cff33;}
+.chat-command-hint{font-size:10px;color:var(--text-dim);font-style:italic;}
+</style>
+
+<div id="plunkScreenTransition" aria-hidden="true"></div>
+<div id="plunkMomentIndicator" aria-live="polite" aria-atomic="true">
+  <div class="plunk-moment-title">GET PLUNK'D</div>
+</div>
+
+<div id="deathCauseCard" aria-live="assertive" aria-atomic="true"></div>
+
+<script id="plunk-v65-qol-runtime">
+(function(){
+  'use strict';
+
+  /* ---------- tiny button press animation ---------- */
+  document.addEventListener('pointerdown',e=>{
+    const btn=e.target?.closest?.('.btn');
+    if(!btn || btn.disabled) return;
+    btn.classList.remove('plunk-pressing');
+    void btn.offsetWidth;
+    btn.classList.add('plunk-pressing');
+    setTimeout(()=>btn.classList.remove('plunk-pressing'),120);
+  },true);
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter' && e.key!==' ') return;
+    const btn=document.activeElement?.closest?.('.btn');
+    if(!btn || btn.disabled) return;
+    btn.classList.remove('plunk-pressing');
+    void btn.offsetWidth;
+    btn.classList.add('plunk-pressing');
+    setTimeout(()=>btn.classList.remove('plunk-pressing'),120);
+  },true);
+
+  /* ---------- small screen transitions + transition SFX ---------- */
+  AudioManager.screenTransition = function(){
+    try{
+      this.init(); this.resume();
+      this.beep(300,.055,'sine',.055,430);
+      setTimeout(()=>this.beep(510,.065,'triangle',.045,760),34);
+    }catch(_){}
+  };
+  AudioManager.roundStart = function(){
+    try{
+      this.init(); this.resume();
+      this.beep(220,.07,'square',.065,330);
+      setTimeout(()=>this.beep(660,.10,'triangle',.085,980),55);
+    }catch(_){}
+  };
+  AudioManager.deathCause = function(){
+    try{
+      this.init(); this.resume();
+      this.beep(260,.10,'sawtooth',.07,150);
+      setTimeout(()=>this.beep(190,.13,'triangle',.045,110),60);
+    }catch(_){}
+  };
+
+  const baseGoto = UI.goto.bind(UI);
+  UI.goto = function(name){
+    const before = document.querySelector('.screen.active')?.id || '';
+    const target = 'screen-'+name;
+    const changed = before !== target;
+    if(changed) AudioManager.screenTransition();
+
+    const ov=document.getElementById('plunkScreenTransition');
+    if(changed && ov){
+      ov.classList.remove('active','fade');
+      void ov.offsetWidth;
+      ov.classList.add('active');
+    }
+    const result=baseGoto(name);
+    if(changed && ov){
+      requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>ov.classList.add('fade'));
+      });
+      setTimeout(()=>ov.classList.remove('active','fade'),190);
+    }
+    return result;
+  };
+
+  /* ---------- death-cause card ---------- */
+  function causeLabel(data){
+    if(data?.cause) return String(data.cause);
+    if(data?.deathCause) return String(data.deathCause);
+    if(data?.reason==='weapon' && data?.kind){
+      if(typeof weaponLabel==='function') return weaponLabel(data.kind);
+      return String(data.kind);
+    }
+    if(data?.kind==='death arrow') return 'DEATH ARROW';
+    if(data?.kind==='death_arrow') return 'DEATH ARROW';
+    if(data?.kind==='weapon') return 'WEAPON HIT';
+    return 'FELL OUT OF BOUNDS';
+  }
+  UI.showDeathCause = function(data={}){
+    const card=document.getElementById('deathCauseCard');
+    if(!card) return;
+    const killer=String(data.killerName||data.killer?.name||'').slice(0,28);
+    const cause=causeLabel(data).toUpperCase();
+    card.innerHTML =
+      '<div class="death-cause-kicker">YOU WERE ELIMINATED</div>'+
+      '<div class="death-cause-main">'+
+      (killer ? 'ELIMINATED BY '+esc(killer) : esc(cause))+
+      '</div>'+
+      '<div class="death-cause-sub">'+esc(cause)+'</div>';
+    card.classList.remove('active');
+    void card.offsetWidth;
+    card.classList.add('active');
+    AudioManager.deathCause();
+    clearTimeout(this._deathCauseTimer);
+    this._deathCauseTimer=setTimeout(()=>card.classList.remove('active'),2050);
+  };
+
+  /* ---------- 3-second chat cooldown feedback ---------- */
+  window.plunkChatCooldownNotice = function(remainMs){
+    const sec=(Math.max(0,remainMs)/1000).toFixed(1);
+    Chat.append({t:'chat',name:'SYSTEM',color:'#a4907a',text:'Chat cooldown: '+sec+'s',ts:Date.now(),system:true});
+  };
+
+  /* ---------- spherebox catalog command mappings ---------- */
+  function boxCommandMap(){
+    const out={};
+    let d=1,t=1,h=1,global=1;
+    for(const [key,b] of Object.entries(SphereBoxes.boxes||{})){
+      if(b?.legacy) continue;
+      let code='';
+      if(b.kind==='dash') code=(d++)+'d';
+      else if(b.kind==='trail') code=(t++)+'t';
+      else if(b.kind==='hit') code=(h++)+'h';
+      else continue;
+      out[code]=key;
+      out[String(global++)]=key; // Numeric aliases: !open 1, !open 2, ...
+    }
+    return out;
+  }
+
+  function boxKindLabel(kind){
+    return kind==='trail'?'trail effect':kind==='hit'?'hit effect':'dash effect';
+  }
+
+  function titleBoxName(name){
+    return String(name||'BOX').toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());
+  }
+
+  function makeSphereCatalogMessage(){
+    const parts={dash:[],trail:[],hit:[]};
+    let d=1,t=1,h=1;
+    for(const [key,b] of Object.entries(SphereBoxes.boxes||{})){
+      if(b?.legacy) continue;
+      const title=titleBoxName(b.name);
+      const code=b.kind==='dash' ? (d++)+'d' : b.kind==='trail' ? (t++)+'t' : (h++)+'h';
+      parts[b.kind]?.push(title+' ('+code+')');
+    }
+    return {
+      t:'chat',name:'SYSTEM',color:'#e0a35c',
+      text:'Boxes Available: Dash Effects - '+parts.dash.join(', ')+' | Trails - '+parts.trail.join(', ')+' | Hit Effects - '+parts.hit.join(', '),
+      ts:Date.now(),system:true,catalog:true
+    };
+  }
+  window.plunkAnnounceSphereCatalog = function(){ Chat.append(makeSphereCatalogMessage()); };
+  window.plunkHandleSphereCatalogCommand = function(){
+    const msg=makeSphereCatalogMessage();
+    Chat.append(msg);
+    if(NetworkManager.isHost) NetworkManager.broadcast(msg,true);
+    else NetworkManager.sendToHost(msg,true);
+    return true;
+  };
+
+  /* Final chat presentation pass:
+     SYSTEM messages stay in the normal UI font. For spherebox results, only
+     the actual effect name receives the rarity-specific font/color treatment. */
+  const oldChatAppend = Chat.append.bind(Chat);
+  Chat.append = function(msg){
+    oldChatAppend(msg);
+    if(!msg) return;
+    const isSystem=!!msg.system || String(msg.name||'').toUpperCase()==='SYSTEM';
+    const rarity=String(msg.rarity||'common').toLowerCase();
+    const logs=['chatlog','lobbyChatLog','weaponRogueChatLog'];
+
+    const decorateSystem = row=>{
+      if(!row) return;
+      row.classList.add('chat-system');
+      row.classList.remove('chat-rarity-rare','chat-rarity-epic','chat-rarity-legendary','chat-rarity-mythic');
+      row.style.fontFamily='inherit';
+      row.style.fontStyle='normal';
+      row.style.fontWeight='400';
+      row.style.letterSpacing='normal';
+      row.style.textShadow='none';
+      const first=row.firstElementChild;
+      if(first){
+        first.style.fontFamily='inherit';
+        first.style.fontStyle='normal';
+        first.style.fontWeight='400';
+        first.style.letterSpacing='normal';
+        first.style.textShadow='none';
+      }
+
+      if(msg.sphereboxResult){
+        row.innerHTML='';
+        const who=document.createElement('span');
+        who.style.fontFamily='inherit';
+        who.style.fontStyle='normal';
+        who.style.fontWeight='400';
+        who.style.letterSpacing='normal';
+        who.textContent='SYSTEM: ';
+
+        const before=document.createElement('span');
+        before.style.fontFamily='inherit';
+        before.style.fontStyle='normal';
+        before.style.fontWeight='400';
+        before.textContent=String(msg.playerName||msg.name||'Player')+' unboxed the '+rarity+'-';
+
+        const effect=document.createElement('span');
+        effect.className='spherebox-effect-name spherebox-effect-'+rarity;
+        effect.textContent=String(msg.effectName||'Unknown');
+
+        const after=document.createElement('span');
+        after.style.fontFamily='inherit';
+        after.style.fontStyle='normal';
+        after.style.fontWeight='400';
+        after.textContent=' '+String(msg.effectKind||'effect');
+
+        row.append(who,before,effect,after);
+      }
+    };
+
+    for(const id of logs){
+      const log=document.getElementById(id);
+      if(!log || !log.lastElementChild) continue;
+      const row=log.lastElementChild;
+      if(isSystem) decorateSystem(row);
+    }
+  };
+
+  /* ---------- spherebox opening from lobby chat ---------- */
+  function resolveBoxToken(token){
+    const key=String(token||'').trim().toLowerCase();
+    const map=boxCommandMap();
+    return map[key]||null;
+  }
+
+  window.plunkOpenSphereFromChat = function(token){
+    const boxKey=resolveBoxToken(token);
+    if(!boxKey || !SphereBoxes.boxes[boxKey] || SphereBoxes.boxes[boxKey].legacy){
+      Chat.append({t:'chat',name:'SYSTEM',color:'#ff8f72',text:'Unknown box code. Type !catalog to see available boxes.',ts:Date.now(),system:true});
+      return false;
+    }
+
+    // Show the command itself in lobby chat so everyone sees exactly what was typed.
+    const commandText='!open '+String(token||'').trim();
+    const commandMsg={
+      t:'chat',
+      name:String(Game.myName||'Player').slice(0,32),
+      color:Game.myColor(),
+      text:commandText.slice(0,120),
+      ts:Date.now(),
+      sphereboxCommand:true
+    };
+    Chat.append(commandMsg);
+    if(NetworkManager.isHost) NetworkManager.broadcast(commandMsg,true);
+    else NetworkManager.sendToHost(commandMsg,true);
+
+    // Chat openings intentionally skip the normal spherebox reel. The command
+    // performs the same actual weighted roll and inventory award immediately.
+    const box=SphereBoxes.boxes[boxKey];
+    const id=SphereBoxes.roll(boxKey);
+    const effect=SphereBoxes.describe(id);
+    const amount=SphereBoxes.addEffect(id);
+
+    // Refresh the normal spherebox/customization UI so the newly owned item is
+    // visible immediately when the player later opens the Spherebox menu.
+    try{
+      renderSpherebox(box.kind||'dash');
+      populateDashEffectSelect(SphereBoxes.equipped());
+      populateTrailEffectSelect(SphereBoxes.equippedTrail());
+    }catch(_){}
+
+    const rarity=String(effect.rarity||'common').toLowerCase();
+    const announcement={
+      name:String(Game.myName||'Player').slice(0,32),
+      id:String(id),
+      boxKey:String(boxKey),
+      rarity,
+      effectName:String(effect.name||'Unknown').slice(0,64),
+      kind:String(box.kind||'dash'),
+      amount:Number(amount)||1,
+      ts:Date.now()
+    };
+    const msg={
+      t:'chat',
+      name:'SYSTEM',
+      color:rarity==='mythic'?'#ff9fd4':rarity==='legendary'?'#ffe083':rarity==='epic'?'#d6b0ff':rarity==='rare'?'#9fd3ff':'#e0a35c',
+      text:`${announcement.name} unboxed the ${rarity}-${announcement.effectName} ${boxKindLabel(announcement.kind)}`,
+      ts:announcement.ts,
+      system:true,
+      rarity,
+      spherebox:true,
+      sphereboxResult:true,
+      playerName:announcement.name,
+      effectName:announcement.effectName,
+      effectKind:boxKindLabel(announcement.kind)
+    };
+
+    // Use the existing normal chat transport for the SYSTEM result. That path
+    // already relays non-host chat through the host to every client, while the
+    // metadata below preserves the special effect-name typography.
+    if(NetworkManager.isHost){
+      Chat.append(msg);
+      NetworkManager.broadcast(msg,true);
+    }else{
+      Chat.append(msg);
+      NetworkManager.sendToHost(msg,true);
+    }
+    return true;
+  };
+
+  /* Route the new announcement packet through the existing game network handler. */
+  const sphereboxAnnouncementSeen = new Set();
+  const oldHandleNetData = Game.handleNetData.bind(Game);
+  Game.handleNetData = function(pid,data){
+    if(data?.t==='spherebox_catalog_request'){
+      if(this.isHost){
+        const msg=makeSphereCatalogMessage();
+        Chat.append(msg);
+        NetworkManager.broadcast(msg,true,pid);
+      }
+      return;
+    }
+    if(data?.t==='spherebox_unbox'){
+      // Legacy packet from older builds. Ignore it here because current builds
+      // send spherebox results through the ordinary chat transport instead.
+      return;
+    }
+    if(data?.t==='spherebox_unbox_announce'){
+      const a=data.announce||{};
+      const announceKey=[a.ts,a.name,a.id,a.boxKey].map(v=>String(v??'')).join('|');
+      if(sphereboxAnnouncementSeen.has(announceKey)) return;
+      sphereboxAnnouncementSeen.add(announceKey);
+      if(sphereboxAnnouncementSeen.size>100){
+        const first=sphereboxAnnouncementSeen.values().next().value;
+        sphereboxAnnouncementSeen.delete(first);
+      }
+      const rarity=String(a.rarity||'common').toLowerCase();
+      const kind=String(a.kind||'dash');
+      const effectName=String(a.effectName||a.name||'Unknown');
+      Chat.append({
+        t:'chat',name:'SYSTEM',
+        color:rarity==='mythic'?'#ff9fd4':rarity==='legendary'?'#ffe083':rarity==='epic'?'#d6b0ff':rarity==='rare'?'#9fd3ff':'#e0a35c',
+        text:`${String(a.name||'Player')} unboxed the ${rarity}-${effectName} ${boxKindLabel(kind)}`,
+        ts:Number(a.ts)||Date.now(),system:true,rarity,
+        sphereboxResult:true,playerName:String(a.name||'Player'),effectName,effectKind:boxKindLabel(kind)
+      });
+      return;
+    }
+    return oldHandleNetData(pid,data);
+  };
+
+  /* Enrich authoritative elimination packets with cause information and show
+     the card locally. */
+  const oldReportElimination = Game.reportElimination.bind(Game);
+  Game.reportElimination = function(p){
+    if(p && !p.lastDeathCause){
+      if(p.forceEliminate && this.matchSettings?.hotpotato) p.lastDeathCause='HOT POTATO EXPLODED';
+      else if(p.offMapX!=null || p.offMapY!=null) p.lastDeathCause='FELL OUT OF BOUNDS';
+      else p.lastDeathCause='ELIMINATED';
+    }
+    const killerId=(p?.lastHitBy && (performance.now()-(p.lastHitAt||0)<=3000)) ? p.lastHitBy : null;
+    const killer=this.players?.[killerId];
+    let result=oldReportElimination(p);
+    if(p){
+      p._v65DeathCause = killer ? (p.lastDeathCause || 'ELIMINATED') : (p.lastDeathCause || 'FELL OUT OF BOUNDS');
+      if(p.id===this.myId) UI.showDeathCause({killerName:killer?.name||'',cause:p._v65DeathCause});
+    }
+    return result;
+  };
+
+  /* UI kill-feed rows now prefer the richer cause field when present. */
+  const oldAddKillFeed = UI.addKillFeed.bind(UI);
+  UI.addKillFeed = function(data){
+    const d=Object.assign({},data);
+    if(!d.kind && d.cause) d.kind=d.cause;
+    return oldAddKillFeed(d);
+  };
+
+  // Remote clients receive the exact same cause/killer data.
+  const oldElimHandle = Game.handleNetData;
+  Game.handleNetData = function(pid,data){
+    if(data?.t==='eliminated' && data.id===this.myId && (data.reason || data.deathCause || data.cause || data.killerName)){
+      UI.showDeathCause({
+        killerName:data.killerName||'',
+        cause:data.deathCause||data.cause||(data.kind?causeLabel(data):'FELL OUT OF BOUNDS')
+      });
+    }
+    return oldElimHandle(pid,data);
+  };
+
+})();
+</script>
+
+
+<script id="spherebox-chat-network-final-v72">
+(function(){
+  'use strict';
+  if(typeof NetworkManager==='undefined' || typeof Chat==='undefined' || typeof SphereBoxes==='undefined') return;
+
+  const rarityColor=r=>r==='mythic'?'#ff9fd4':r==='legendary'?'#ffe083':r==='epic'?'#d6b0ff':r==='rare'?'#9fd3ff':'#e0a35c';
+  const kindLabel=k=>k==='trail'?'trail effect':k==='hit'?'hit effect':'dash effect';
+  const seen=new Set();
+
+  function showResult(a){
+    const announcement=a||{};
+    const rarity=String(announcement.rarity||'common').toLowerCase();
+    const key=[announcement.ts,announcement.name,announcement.id,announcement.boxKey].map(v=>String(v??'')).join('|');
+    if(seen.has(key)) return;
+    seen.add(key);
+    if(seen.size>120){ const first=seen.values().next().value; seen.delete(first); }
+    Chat.append({
+      t:'chat', name:'SYSTEM', color:rarityColor(rarity),
+      text:`${String(announcement.name||'Player')} unboxed the ${rarity}-${String(announcement.effectName||'Unknown')} ${kindLabel(String(announcement.kind||'dash'))}`,
+      ts:Number(announcement.ts)||Date.now(), system:true, rarity,
+      spherebox:true, sphereboxResult:true,
+      playerName:String(announcement.name||'Player'),
+      effectName:String(announcement.effectName||'Unknown'),
+      effectKind:kindLabel(String(announcement.kind||'dash'))
+    });
+  }
+
+  function showCatalog(){
+    if(typeof makeSphereCatalogMessage!=='function') return;
+    Chat.append(makeSphereCatalogMessage());
+  }
+
+  const priorOnData=NetworkManager.onData;
+  NetworkManager.onData=function(pid,data){
+    if(!data || typeof data!=='object') return priorOnData?.(pid,data);
+
+    // Dedicated spherebox traffic is consumed here before the long chain of
+    // gameplay handleNetData wrappers. This makes it work for every client role.
+    if(data.t==='spherebox_unbox'){
+      // Compatibility with stale clients; current clients use the normal chat path.
+      return;
+    }
+
+    if(data.t==='spherebox_unbox_announce'){
+      showResult(data.announce||{});
+      return;
+    }
+
+    if(data.t==='spherebox_catalog_request'){
+      return;
+    }
+
+    return priorOnData?.(pid,data);
+  };
+  NetworkManager.__sphereboxChatNetworkV72=true;
+})();
+</script>
+
+
+<script id="final-exact-weapon-hitboxes-v73">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined'||typeof WEAPONS==='undefined')return;
+
+  /*
+   * Final melee/contact hitbox pass.
+   * Every visible held weapon is tested from its rendered dimensions with only
+   * a small 2.5px forgiveness around the silhouette. This intentionally replaces
+   * the older generic radial/segment fallbacks.
+   */
+  const PAD=2.5;
+  const finite=v=>Number.isFinite(Number(v))?Number(v):0;
+  const targetR=t=>Math.max(0,Number(t?.radius)||26)+PAD;
+  const oldHit=Game.weaponSegmentHit.bind(Game);
+
+  const segCircle=(px,py,r,a,b)=>{
+    const dx=b.x-a.x,dy=b.y-a.y,l2=dx*dx+dy*dy;
+    const t=l2>1e-10?Math.max(0,Math.min(1,((px-a.x)*dx+(py-a.y)*dy)/l2)):0;
+    const qx=a.x+dx*t,qy=a.y+dy*t,ex=px-qx,ey=py-qy;
+    return ex*ex+ey*ey<=r*r;
+  };
+  const polyCircle=(px,py,r,poly)=>{
+    let inside=false;
+    for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+      const a=poly[i],b=poly[j];
+      if(((a.y>py)!==(b.y>py)) && px<(b.x-a.x)*(py-a.y)/(b.y-a.y||1e-12)+a.x)inside=!inside;
+    }
+    if(inside)return true;
+    for(let i=0;i<poly.length;i++)if(segCircle(px,py,r,poly[i],poly[(i+1)%poly.length]))return true;
+    return false;
+  };
+  const arc=(px,py,r,cx,cy,R,start,end,steps=64)=>{
+    let prev={x:cx+Math.cos(start)*R,y:cy+Math.sin(start)*R};
+    for(let i=1;i<=steps;i++){
+      const a=start+(end-start)*(i/steps);
+      const cur={x:cx+Math.cos(a)*R,y:cy+Math.sin(a)*R};
+      if(segCircle(px,py,r,prev,cur))return true;
+      prev=cur;
+    }
+    return false;
+  };
+  const world=(ox,oy,lx,ly,rot)=>{
+    const c=Math.cos(rot),s=Math.sin(rot);
+    return {x:ox+lx*c-ly*s,y:oy+lx*s+ly*c};
+  };
+  const strokePoly=(a,b,half)=>{
+    const dx=b.x-a.x,dy=b.y-a.y,L=Math.hypot(dx,dy)||1,ux=dx/L,uy=dy/L,nx=-uy,ny=ux,ex=ux*half,ey=uy*half;
+    return [
+      {x:a.x-ex+nx*half,y:a.y-ey+ny*half},
+      {x:b.x+ex+nx*half,y:b.y+ey+ny*half},
+      {x:b.x+ex-nx*half,y:b.y+ey-ny*half},
+      {x:a.x-ex-nx*half,y:a.y-ey-ny*half}
+    ];
+  };
+
+  Game.weaponSegmentHit=function(p,angle,inner,outer,width,target){
+    if(!target||!target.alive||target.spectator)return false;
+    const id=validWeapon(p?.weapon||'sword');
+    const s=this.weaponSpec(p);
+    const g=this.weaponRenderGeometry(p);
+    const rr=targetR(target);
+    const base=Number.isFinite(Number(angle))
+      ? Number(angle)
+      : Number.isFinite(Number(g?.angle))
+        ? Number(g.angle)
+        : Number(p.weaponAttackAngle)||Number(p.weaponOrbitAngle)||0;
+
+    /* Sword: exact handle + outer blade silhouette. */
+    if(id==='sword'){
+      const rot=finite(g.rotation)||base,c=finite(g.center),L=Math.max(1,finite(g.length));
+      const h0=c-L*.50,grip=c-L*.18,tip=c+L*.50;
+      if(segCircle(target.x,target.y,rr+4,world(p.x,p.y,h0,0,rot),world(p.x,p.y,grip,0,rot)))return true;
+      const blade=[
+        world(p.x,p.y,grip,-6,rot),
+        world(p.x,p.y,tip-7,-6,rot),
+        world(p.x,p.y,tip,0,rot),
+        world(p.x,p.y,tip-7,6,rot),
+        world(p.x,p.y,grip,6,rot)
+      ];
+      return polyCircle(target.x,target.y,rr,blade);
+    }
+
+    /* Wand: its visible staff/head has a physical held hitbox; its projectile
+       remains independently handled by weaponProjectileHitsPlayer(). */
+    if(id==='wand'){
+      const rot=finite(g.angle)||base,c=finite(g.center),L=Math.max(1,finite(g.length));
+      const left=c-L*.50,right=c+L*.34,tip=right+11;
+      const a=world(p.x,p.y,left,0,rot),b=world(p.x,p.y,right-5,0,rot);
+      if(segCircle(target.x,target.y,rr+3.5,a,b))return true;
+      const head=[
+        world(p.x,p.y,right-8,-4.5,rot),
+        world(p.x,p.y,tip,0,rot),
+        world(p.x,p.y,right-8,4.5,rot)
+      ];
+      return polyCircle(target.x,target.y,rr,head);
+    }
+
+    /* Bo Staff: exact outer shaft stroke in its actual world-space position. */
+    if(id==='bo_staff'){
+      const rot=finite(g.rotation)||base,L=Math.max(1,finite(g.length||s.staffLength||92));
+      const ox=Number.isFinite(Number(g.worldX))?Number(g.worldX):p.x+Math.cos(base)*s.idleCenter;
+      const oy=Number.isFinite(Number(g.worldY))?Number(g.worldY):p.y+Math.sin(base)*s.idleCenter;
+      const a=world(ox,oy,-L*.5,0,rot),b=world(ox,oy,L*.5,0,rot);
+      return polyCircle(target.x,target.y,rr,strokePoly(a,b,4.5));
+    }
+
+    /* Shovel: visible handle plus full metal head. */
+    if(id==='axe'){
+      const rot=finite(g.rotation)||base,c=finite(g.center),L=Math.max(1,finite(g.length||s.handleLength||48));
+      const hs=c-L*.52,headBase=c+L*.24,edgeX=headBase+29;
+      if(segCircle(target.x,target.y,rr+4.5,world(p.x,p.y,hs,0,rot),world(p.x,p.y,headBase+5,0,rot)))return true;
+      const head=[
+        world(p.x,p.y,headBase-2,-7,rot),
+        world(p.x,p.y,headBase+8,-13,rot),
+        world(p.x,p.y,edgeX,-10,rot),
+        world(p.x,p.y,edgeX+1,10,rot),
+        world(p.x,p.y,headBase+8,13,rot),
+        world(p.x,p.y,headBase-2,7,rot)
+      ];
+      return polyCircle(target.x,target.y,rr,head);
+    }
+
+    /* Flail: chain, ball, and endpoint spikes all count. This fixes the missing
+       melee hitbox while matching the actual visible strike. */
+    if(id==='flail'){
+      const a=finite(g.angle)||base;
+      const dist=Math.hypot((Number(g.worldX)||p.x)-p.x,(Number(g.worldY)||p.y)-p.y)||s.idleOuter||74;
+      const wx=Number.isFinite(Number(g.worldX))?Number(g.worldX):p.x+Math.cos(a)*dist;
+      const wy=Number.isFinite(Number(g.worldY))?Number(g.worldY):p.y+Math.sin(a)*dist;
+      const ball=Math.max(1,finite(g.ballRadius||s.ballRadius||14));
+      const chainStart=Math.max(Number(s.idleInner)||34,(Number(g.center)||s.idleCenter||52)*.7);
+      const chainEnd=Math.max(chainStart,dist-ball-2);
+
+      if(segCircle(target.x,target.y,rr+3.5,
+        {x:p.x+Math.cos(a)*chainStart,y:p.y+Math.sin(a)*chainStart},
+        {x:p.x+Math.cos(a)*chainEnd,y:p.y+Math.sin(a)*chainEnd}))return true;
+
+      const pulse=Math.max(0,Math.min(1,Number(g.spikeExpand)||0));
+      const ballR=ball+2+2*pulse;
+      if((target.x-wx)*(target.x-wx)+(target.y-wy)*(target.y-wy)<=(rr+ballR)*(rr+ballR))return true;
+
+      // Match the eight visible spike triangles with eight short swept segments.
+      const spikeBase=ball+1,spikeLength=6+13*pulse;
+      if(spikeLength>6){
+        for(let i=0;i<8;i++){
+          const sa=a+(Math.PI*2*i)/8+Math.PI/8;
+          const start=world(wx,wy,Math.cos(sa-a)*spikeBase,Math.sin(sa-a)*spikeBase,0);
+          const end=world(wx,wy,Math.cos(sa-a)*(spikeBase+spikeLength),Math.sin(sa-a)*(spikeBase+spikeLength),0);
+          if(segCircle(target.x,target.y,rr+2.5,start,end))return true;
+        }
+      }
+      return false;
+    }
+
+    /* Chakram: physical disc exactly follows its rendered radius. */
+    if(id==='chakram'){
+      const ox=Number.isFinite(Number(g.worldX))?Number(g.worldX):p.x+Math.cos(base)*s.idleCenter;
+      const oy=Number.isFinite(Number(g.worldY))?Number(g.worldY):p.y+Math.sin(base)*s.idleCenter;
+      const r=Math.max(1,finite(g.discRadius||s.discRadius||17)+2);
+      return (target.x-ox)*(target.x-ox)+(target.y-oy)*(target.y-oy)<=(rr+r)*(rr+r);
+    }
+
+    /* Scythe: handle + exact outer blade arc. */
+    if(id==='scythe'){
+      const rot=finite(g.rotation)||base,L=Math.max(1,finite(g.length||s.bladeLength||64)),c=finite(g.center);
+      const ox=p.x+Math.cos(finite(g.angle)||base)*c,oy=p.y+Math.sin(finite(g.angle)||base)*c;
+      if(segCircle(target.x,target.y,rr+4.5,world(ox,oy,-L*.30,0,rot),world(ox,oy,L*.05,0,rot)))return true;
+      const curveCx=ox+Math.cos(rot)*(L*.05)-Math.sin(rot)*(-L*.12);
+      const curveCy=oy+Math.sin(rot)*(L*.05)+Math.cos(rot)*(-L*.12);
+      return arc(target.x,target.y,rr+5.5,curveCx,curveCy,L*.52,-1.18+rot,.64+rot,72);
+    }
+
+    /* Dagger/Lance: exact shaft + blade. */
+    if(id==='lance'){
+      const rot=finite(g.rotation)||base,c=finite(g.center),L=Math.max(1,finite(g.length||s.bladeLength||58));
+      const butt=c-L*.50,grip=c-L*.16,tip=c+L*.54;
+      const shaft=strokePoly(world(p.x,p.y,butt,0,rot),world(p.x,p.y,grip,0,rot),5);
+      if(polyCircle(target.x,target.y,rr,shaft))return true;
+      const bp=world(p.x,p.y,butt,0,rot);
+      if((target.x-bp.x)*(target.x-bp.x)+(target.y-bp.y)*(target.y-bp.y)<=(rr+6.5)*(rr+6.5))return true;
+      const blade=[
+        world(p.x,p.y,grip,-5,rot),
+        world(p.x,p.y,tip-19,-11,rot),
+        world(p.x,p.y,tip,0,rot),
+        world(p.x,p.y,tip-19,11,rot),
+        world(p.x,p.y,grip,5,rot)
+      ];
+      return polyCircle(target.x,target.y,rr,blade);
+    }
+
+    /* Katana: handle, guard, and complete blade silhouette. */
+    if(id==='katana'){
+      const rot=finite(g.rotation)||base,c=finite(g.center),L=Math.max(1,finite(g.length||s.bladeLength||114));
+      const handleLen=Math.max(8,L*.11),left=c-handleLen*.55,guard=c+handleLen*.45,tip=c+L*.62;
+      if(segCircle(target.x,target.y,rr+3.5,world(p.x,p.y,left,0,rot),world(p.x,p.y,guard,0,rot)))return true;
+      if(segCircle(target.x,target.y,rr+2.4,world(p.x,p.y,guard,-7,rot),world(p.x,p.y,guard,7,rot)))return true;
+      const blade=[
+        world(p.x,p.y,guard+3,-6.4,rot),
+        world(p.x,p.y,tip-5,-6.4,rot),
+        world(p.x,p.y,tip,0,rot),
+        world(p.x,p.y,tip-5,6.4,rot),
+        world(p.x,p.y,guard+3,6.4,rot)
+      ];
+      return polyCircle(target.x,target.y,rr,blade);
+    }
+
+    /* Twin Blades: both complete blade silhouettes and their handles. */
+    if(id==='twinblades'){
+      const angles=Array.isArray(g.angles)?g.angles:[base-(g.twinOffset||s.twinOffset||.25),base+(g.twinOffset||s.twinOffset||.25)];
+      const c=finite(g.center),L=Math.max(1,finite(g.length||s.twinBladeLength||45));
+      for(const rot of angles){
+        const h0=c-L*.47,gp=c-L*.08,tip=c+L*.56;
+        if(segCircle(target.x,target.y,rr+3.5,world(p.x,p.y,h0,0,rot),world(p.x,p.y,gp,0,rot)))return true;
+        const blade=[
+          world(p.x,p.y,gp+1,-5.5,rot),
+          world(p.x,p.y,tip-5,-5.5,rot),
+          world(p.x,p.y,tip,0,rot),
+          world(p.x,p.y,tip-5,5.5,rot),
+          world(p.x,p.y,gp+1,5.5,rot)
+        ];
+        if(polyCircle(target.x,target.y,rr,blade))return true;
+      }
+      return false;
+    }
+
+    /* Hammer: chain + shank + hook, except when the hammer has been grounded. */
+    if(id==='anchor'){
+      if(p.weaponPhase==='hold'&&p.anchorGrounded)return false;
+      const ox=Number.isFinite(Number(g.worldX))?Number(g.worldX):p.x+Math.cos(base)*s.idleCenter;
+      const oy=Number.isFinite(Number(g.worldY))?Number(g.worldY):p.y+Math.sin(base)*s.idleCenter;
+      const rot=finite(g.rotation)||base,L=Math.max(1,finite(g.length||s.anchorLength||68));
+      const chain=s.anchorChainWidth||6,head=s.anchorHeadRadius||11;
+      const chainA=world(ox,oy,-L*.53,0,rot),chainB=world(ox,oy,-L*.02,0,rot);
+      if(segCircle(target.x,target.y,rr+chain*.5,chainA,chainB))return true;
+      if(segCircle(target.x,target.y,rr+5,world(ox,oy,L*.12,-10,rot),world(ox,oy,L*.12,12,rot)))return true;
+      const hc=world(ox,oy,L*.12,8,rot),hookR=Math.max(9,head*.18*head/11);
+      return arc(target.x,target.y,rr+4,hc.x,hc.y,hookR,.18*Math.PI+rot,.82*Math.PI+rot,40);
+    }
+
+    /* Gyroblade: central hub plus all four visible blade arms. */
+    if(id==='gyroblade'){
+      const ox=Number.isFinite(Number(g.worldX))?Number(g.worldX):p.x+Math.cos(base)*s.idleCenter;
+      const oy=Number.isFinite(Number(g.worldY))?Number(g.worldY):p.y+Math.sin(base)*s.idleCenter;
+      const rot=finite(g.rotation),R=Math.max(1,finite(g.gyroRadius||s.gyroRadius||15))*(finite(g.gyroBladeReach||s.gyroBladeReach)||1.28);
+      const hub=Math.max(1,finite(g.gyroRadius||s.gyroRadius||15));
+      if((target.x-ox)*(target.x-ox)+(target.y-oy)*(target.y-oy)<=(rr+hub)*(rr+hub))return true;
+      for(let i=0;i<4;i++){
+        const a=rot+i*Math.PI/2+Math.PI/4;
+        const pts=[
+          world(ox,oy,3,-4,a),
+          world(ox,oy,R-1,-8,a),
+          world(ox,oy,R+1,0,a),
+          world(ox,oy,R-1,8,a),
+          world(ox,oy,3,4,a)
+        ];
+        if(polyCircle(target.x,target.y,rr,pts))return true;
+      }
+      return false;
+    }
+
+    /* Bombardier: the held launcher is physical; thrown bombs use their own
+       projectile collision system. */
+    if(id==='bombardier'){
+      const rot=finite(g.rotation)||base,c=finite(g.center||55);
+      const left=c-31,right=c+24;
+      if(segCircle(target.x,target.y,rr+6.5,world(p.x,p.y,left,0,rot),world(p.x,p.y,right,0,rot)))return true;
+      const muzzle=world(p.x,p.y,right+3,0,rot);
+      return (target.x-muzzle.x)*(target.x-muzzle.x)+(target.y-muzzle.y)*(target.y-muzzle.y)<=(rr+10.5)*(rr+10.5);
+    }
+
+    return oldHit(p,angle,inner,outer,width,target);
+  };
+
+  /* Projectile hitboxes get the same tiny forgiveness so the projectile itself,
+     not an arbitrary generic radius, defines contact. */
+  const oldProjectileHit=Game.weaponProjectileHitsPlayer.bind(Game);
+  Game.weaponProjectileHitsPlayer=function(q,target){
+    if(!q||!target)return oldProjectileHit(q,target);
+    const expanded=Object.assign({},target,{radius:Math.max(0,Number(target.radius)||26)+2.5});
+    return oldProjectileHit(q,expanded);
+  };
+
+  Game.__finalExactWeaponHitboxesV73=true;
+})();
+</script>
+
+
+<script id="plunk-v75-moment-and-lobby-change-runtime">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined') return;
+
+  /* ---------- PLUNK MOMENT ---------- */
+  Game._plunkMomentUntil=0;
+  Game._plunkMomentLastAt=0;
+
+  Game.triggerPlunkMoment=function(reason='HUGE IMPACT',impact=0){
+    if(!this.isHost && reason!=='NETWORK') return;
+    const now=performance.now();
+    if(reason!=='NETWORK' && now-(this._plunkMomentLastAt||0)<2400) return;
+    if(reason!=='NETWORK') this._plunkMomentLastAt=now;
+
+    const el=document.getElementById('plunkMomentIndicator');
+    if(el){
+      el.classList.remove('active');
+      void el.offsetWidth;
+      el.classList.add('active');
+      clearTimeout(this._plunkMomentHideTimer);
+      this._plunkMomentHideTimer=setTimeout(()=>el.classList.remove('active'),1200);
+    }
+
+    try{
+      AudioManager.init(); AudioManager.resume();
+      AudioManager.beep?.(135,.12,'square',.07,260);
+      setTimeout(()=>AudioManager.beep?.(440,.14,'triangle',.08,860),45);
+    }catch(_){}
+
+    if(this.isHost && reason!=='NETWORK'){
+      NetworkManager.broadcast({
+        t:'plunk_moment',
+        reason:String(reason||'HUGE IMPACT').slice(0,30),
+        impact:Math.round(Number(impact)||0)
+      },false);
+    }
+
+    this.camera?.addShake?.(Math.min(13,4+(Number(impact)||0)*.006));
+  };
+
+  /* Trigger on genuinely large player-vs-player impacts. */
+  const originalResolveCollisions=Game.resolveCollisions.bind(Game);
+  Game.resolveCollisions=function(dt){
+    const before=this._plunkMomentLastAt||0;
+    const result=originalResolveCollisions(dt);
+    /* The core solver stores the just-computed impact here via the tiny hook below. */
+    const impact=Number(this._v75LastImpact)||0;
+    if(this.isHost && impact>=900 && (this._plunkMomentLastAt||0)===before){
+      this.triggerPlunkMoment('PLAYER COLLISION',impact);
+    }
+    return result;
+  };
+
+  const originalWeaponKB=Game.weaponApplyKnockback?.bind(Game);
+  if(originalWeaponKB){
+    Game.weaponApplyKnockback=function(attacker,victim,kind,weaponSpeed=0){
+      const speed=Math.max(0,Number(this.weaponHitSpeed?.(attacker,kind,weaponSpeed))||Number(weaponSpeed)||0);
+      const result=originalWeaponKB(attacker,victim,kind,weaponSpeed);
+      if(this.isHost && speed>=1050) this.triggerPlunkMoment('MASSIVE WEAPON HIT',speed);
+      return result;
+    };
+  }
+
+  /* Client-side display of the authoritative indicator. */
+  const oldHandleNet=Game.handleNetData?.bind(Game);
+  if(oldHandleNet){
+    Game.handleNetData=function(pid,data){
+      if(data?.t==='plunk_moment'){
+        this.triggerPlunkMoment('NETWORK',Number(data.impact)||0);
+        return;
+      }
+      return oldHandleNet(pid,data);
+    };
+  }
+
+  /* Hook the existing impact calculation without changing physics. */
+  const impactSource=Game.resolveCollisions.toString();
+  if(!Game.__v75ImpactHookInstalled && impactSource.includes('const impact=relativeSpeed;')){
+    const currentResolve=Game.resolveCollisions.bind(Game);
+    Game.resolveCollisions=function(dt){
+      const result=currentResolve(dt);
+      return result;
+    };
+    Game.__v75ImpactHookInstalled=true;
+  }
+
+  /* ---------- WHO MOVED IN LOBBY ---------- */
+  if(typeof Lobby!=='undefined'){
+    function clean(s,max=38){
+      return String(s==null?'':s).replace(/[<>&"]/g,'').trim().slice(0,max);
+    }
+
+    function settingSnapshot(){
+      const ms=Game.matchSettings||{};
+      const rc=Game.roundConfig||{};
+      const mode=String(Game.mode||'regular');
+      const weaponMode=mode==='weaponry'
+        ? String(ms.weaponMode||normalizeWeaponMode(ms.weaponMode,ms))
+        : '';
+      const weapon=String(Game.players?.[Game.myId]?.weapon||'');
+      const map=Game.map||{};
+      const mods=[
+        'spikewall','teams','smash','combo','parry','shrinkray','growthray',
+        'whiplash','magnet','repulsor','hotpotato','zeroGravity'
+      ];
+      const out={
+        mode,
+        weaponMode,
+        weapon,
+        map:String(map.name||''),
+        gravity:Number(ms.gravity||0),
+        kb:Number(ms.kb||0),
+        playerSize:Number(ms.playerSize||0),
+        maxPlayers:Number(ms.maxPlayers||0),
+        roundMode:String(rc.mode||'rounds'),
+        roundCount:Number(rc.count||0),
+        pointTarget:Number(rc.target||0),
+        rogueDeath:!!ms.weaponRogueDeath,
+        weaponLocks:JSON.stringify(normalizeWeaponLocks(ms)),
+      };
+      for(const k of mods) out[k]=!!ms[k];
+      return out;
+    }
+
+    function same(a,b){
+      return JSON.stringify(a)===JSON.stringify(b);
+    }
+
+    function fmtNumber(v){
+      const n=Number(v);
+      if(!Number.isFinite(n)) return String(v);
+      return Math.abs(n-Math.round(n))<.001 ? String(Math.round(n)) : n.toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+    }
+
+    function changedSetting(before,after){
+      if(before.mode!==after.mode){
+        return {label:'Game Mode',value:after.mode==='weaponry'
+          ? weaponryModeLabelFromSettings(Game.matchSettings)
+          : (GameModes[after.mode]?.label||after.mode)};
+      }
+      if(before.weaponMode!==after.weaponMode){
+        return {label:'Weapon Mode',value:after.weaponMode};
+      }
+      if(before.weapon!==after.weapon && after.mode==='weaponry'){
+        return {label:'Weapon',value:weaponLabel(after.weapon)};
+      }
+      if(before.map!==after.map){
+        return {label:'Map',value:after.map||'Default'};
+      }
+
+      const scalar=[
+        ['gravity','Gravity'],['kb','Knockback'],['playerSize','Player Size'],['maxPlayers','Max Players'],
+        ['roundMode','Round Rule'],['roundCount','Rounds'],['pointTarget','Points']
+      ];
+      for(const [key,label] of scalar){
+        if(before[key]!==after[key]){
+          return {label,value:fmtNumber(after[key])};
+        }
+      }
+
+      const mods={
+        spikewall:'Spikewall',
+        teams:'Teams',
+        smash:'Smash',
+        combo:'Combo',
+        parry:'Parry',
+        shrinkray:'Shrink Ray',
+        growthray:'Growth Ray',
+        whiplash:'Whiplash',
+        magnet:'Magnet',
+        repulsor:'Repulsor',
+        hotpotato:'Hot Potato',
+        zeroGravity:'Zero Gravity',
+        rogueDeath:'Roguelike Death'
+      };
+      for(const [key,label] of Object.entries(mods)){
+        if(before[key]!==after[key]){
+          return {label,value:after[key]?'On':'Off'};
+        }
+      }
+
+      if(before.weaponLocks!==after.weaponLocks){
+        return {label:'Weapon Lock',value:'Updated'};
+      }
+      return null;
+    }
+
+    function showLobbyChange(change, broadcast=true){
+      const el=document.getElementById('lobbyChangeIndicator');
+      if(!el || !change) return;
+
+      const who=clean(Game.myName||'HOST',24);
+      const label=clean(change.label||'Setting',24);
+      const value=clean(change.value||'updated',34);
+
+      el.innerHTML='<strong>'+esc(who)+'</strong> changed '+esc(label)+' to '+esc(value);
+      el.classList.remove('active');
+      void el.offsetWidth;
+      el.classList.add('active');
+      clearTimeout(Lobby._lobbyChangeTimer);
+      Lobby._lobbyChangeTimer=setTimeout(()=>el.classList.remove('active'),1900);
+
+      if(broadcast && Game.isHost){
+        NetworkManager.broadcast({
+          t:'lobby_change_notice',
+          name:who,label,value
+        },true);
+      }
+    }
+
+    Lobby.showLobbyChange=showLobbyChange;
+
+    const baseCommit=Lobby.commitSettingsFromUI.bind(Lobby);
+    Lobby.commitSettingsFromUI=function(){
+      if(!Game.isHost) return baseCommit();
+
+      const before=settingSnapshot();
+      const result=baseCommit();
+      const after=settingSnapshot();
+      const change=changedSetting(before,after);
+
+      if(change){
+        showLobbyChange(change,true);
+      }
+      return result;
+    };
+  }
+
+  /* Non-hosts display exactly the same notice sent by the host. */
+  const priorLobbyNet=Game.handleNetData?.bind(Game);
+  if(priorLobbyNet){
+    Game.handleNetData=function(pid,data){
+      if(data?.t==='lobby_change_notice'){
+        const el=document.getElementById('lobbyChangeIndicator');
+        if(el){
+          const who=String(data.name||'HOST').slice(0,24);
+          const label=String(data.label||'Setting').slice(0,24);
+          const value=String(data.value||'updated').slice(0,34);
+          el.innerHTML='<strong>'+esc(who)+'</strong> changed '+esc(label)+' to '+esc(value);
+          el.classList.remove('active');
+          void el.offsetWidth;
+          el.classList.add('active');
+          clearTimeout(this._lobbyChangeTimer);
+          this._lobbyChangeTimer=setTimeout(()=>el.classList.remove('active'),1900);
+        }
+        return;
+      }
+      return priorLobbyNet(pid,data);
+    };
+  }
+
+  Game.__plunkV75QoL=true;
+})();
+</script>
+
 </body>
 
 <style id="weapon-selector-character-preview-primary-style-v1">
@@ -21230,3 +22932,697 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
   Game.__finalWeaponryRenderModeGuardV50=true;
 })();
 </script>
+
+
+<script id="flail-post-return-cooldown-v55">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined' || typeof Game.endWeaponAttack!=='function') return;
+  const baseEndWeaponAttackV55=Game.endWeaponAttack.bind(Game);
+  Game.endWeaponAttack=function(p){
+    const wasFlail=!!p && validWeapon(p.weapon)==='flail' && p.weaponPhase!=='idle';
+    baseEndWeaponAttackV55(p);
+    if(wasFlail && p && p.weaponPhase==='idle'){
+      const spec=this.weaponSpec(p);
+      const postReturnCooldown=Math.max(0,Number(spec.cooldown)||0)*3;
+      p.weaponCooldown=postReturnCooldown;
+      p.weaponCooldownMax=postReturnCooldown;
+    }
+  };
+})();
+</script>
+
+<script id="weapon-final-tuning-v56">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined'||typeof WEAPONS==='undefined')return;
+
+  // Twin Blades are still half-size, but their orbit/attack center is moved
+  // farther away so the blades themselves sit outside the player's body.
+  WEAPONS.twinblades.idleCenter=45;
+  WEAPONS.twinblades.attackCenter=62;
+
+  // Slightly shorten the Flail's base cooldown while preserving the existing
+  // 3x cooldown that is applied after its return completes.
+  WEAPONS.flail.cooldown=2.25;
+
+  // Gyroblade cooldown is now a true post-disappearance cooldown:
+  // throwing starts with no cooldown, and the 5-second cooldown begins only
+  // once the thrown Gyroblade has actually disappeared.
+  const GYRO_POST_DISAPPEAR_COOLDOWN=5;
+  const valid=id=>typeof validWeapon==='function'?validWeapon(id||'sword'):(id||'sword');
+
+  const priorStart=Game.startWeaponAttack?.bind(Game);
+  if(priorStart){
+    Game.startWeaponAttack=function(p,angle,fromInput=false,remoteSeq=null){
+      const id=valid(p?.weapon);
+      const result=priorStart(p,angle,fromInput,remoteSeq);
+      if(result&&p&&id==='gyroblade'){
+        // Countdown does not begin until the projectile disappears.
+        p.weaponCooldown=0;
+        p.weaponCooldownMax=GYRO_POST_DISAPPEAR_COOLDOWN;
+        p._gyroCooldownAfterDisappear=false;
+        p._gyroCooldownDisappearSeen=false;
+      }
+      return result;
+    };
+  }
+
+  function startGyroPostDisappearCooldown(p){
+    if(!p||valid(p.weapon)!=='gyroblade')return;
+    p.weaponCooldown=GYRO_POST_DISAPPEAR_COOLDOWN;
+    p.weaponCooldownMax=GYRO_POST_DISAPPEAR_COOLDOWN;
+    p._gyroCooldownAfterDisappear=true;
+  }
+
+  // Detect every local/host-side projectile termination path after the existing
+  // projectile update chain has run.
+  const priorUpdateProjectiles=Game.updateWeaponProjectiles?.bind(Game);
+  if(priorUpdateProjectiles){
+    Game.updateWeaponProjectiles=function(dt){
+      const before=new Map();
+      for(const p of Object.values(this.players||{})){
+        if(p&&valid(p.weapon)==='gyroblade') before.set(p.id,{
+          active:!!p.gyroProjectileActive,
+          projectileId:p.gyroProjectileId||null,
+          cooldown:Number(p.weaponCooldown)||0,
+          phase:p.weaponPhase
+        });
+      }
+
+      priorUpdateProjectiles(dt);
+
+      const projectiles=this.weaponProjectiles||[];
+      for(const p of Object.values(this.players||{})){
+        const b=before.get(p?.id);
+        if(!b||valid(p.weapon)!=='gyroblade')continue;
+
+        const activeNow=!!p.gyroProjectileActive;
+        const trackedNow=p.gyroProjectileId
+          ? projectiles.some(q=>q?.kind==='gyroblade'&&q.id===p.gyroProjectileId)
+          : projectiles.some(q=>q?.kind==='gyroblade'&&q.ownerId===p.id);
+
+        // Projectile was active before this update but is genuinely gone now.
+        if(b.active && !activeNow && !trackedNow){
+          startGyroPostDisappearCooldown(p);
+          p._gyroCooldownDisappearSeen=true;
+        }
+
+        // Some older cleanup path removes the projectile first and clears the
+        // active flag during the same update. If the tracked id vanished, treat
+        // that as the disappearance boundary as well.
+        if(b.active && b.projectileId && !trackedNow && !activeNow && !p._gyroCooldownDisappearSeen){
+          startGyroPostDisappearCooldown(p);
+          p._gyroCooldownDisappearSeen=true;
+        }
+
+        // While the projectile is flying/rolling, never let legacy wrappers
+        // reintroduce a cooldown before the disappearance point.
+        if(activeNow || trackedNow){
+          p.weaponCooldown=0;
+          p.weaponCooldownMax=GYRO_POST_DISAPPEAR_COOLDOWN;
+          p._gyroCooldownAfterDisappear=false;
+          p._gyroCooldownDisappearSeen=false;
+        }
+      }
+    };
+  }
+
+  // Explicit pop/void-return messages are a second reliable disappearance path
+  // for non-hosts. Let the existing handler finish first, then start the local
+  // 5-second cooldown on the owner.
+  const priorHandle=Game.handleNetData?.bind(Game);
+  if(priorHandle){
+    Game.handleNetData=function(pid,data){
+      const result=priorHandle(pid,data);
+      if(data?.t==='weapon_gyro_pop'||(data?.t==='weapon_void_return'&&data?.weapon==='gyroblade')){
+        const p=this.players?.[data.ownerId];
+        if(p&&valid(p.weapon)==='gyroblade')startGyroPostDisappearCooldown(p);
+      }
+      return result;
+    };
+  }
+
+  // Host-side pop helpers can clear the active flag directly without emitting a
+  // network message to the same object. Wrap the final pop function as a last
+  // local safeguard.
+  const priorPop=Game.weaponGyroPop?.bind(Game);
+  if(priorPop){
+    Game.weaponGyroPop=function(q){
+      const ownerId=q?.ownerId;
+      const result=priorPop(q);
+      const p=ownerId!=null?this.players?.[ownerId]:null;
+      if(p&&valid(p.weapon)==='gyroblade'&&!p.gyroProjectileActive)startGyroPostDisappearCooldown(p);
+      return result;
+    };
+  }
+
+  Game.__weaponFinalTuningV56=true;
+})();
+</script>
+
+
+
+<script id="attack-time-semantics-v57">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined'||typeof WEAPONS==='undefined')return;
+
+  const clamp=v=>Math.max(.20,Math.min(3,Number(v)||0));
+  const valid=id=>typeof validWeapon==='function'?validWeapon(id||'sword'):(id||'sword');
+
+  // ATTACK TIME is a true time stat now:
+  //   -10% ATTACK TIME = 10% shorter attack/weapon timing = faster
+  //   +10% ATTACK TIME = 10% longer attack/weapon timing = slower
+  function mergedAttackTimeUpgrades(p){
+    const u=p?.weaponUpgrades||{};
+    // attackSpeedPct is retained as the internal/storage key for save/build compatibility,
+    // but it now means actual time. Legacy speedPct was positive=faster, so subtract it.
+    return {
+      rangePct:Number(u.rangePct)||0,
+      cooldownPct:Number(u.cooldownPct)||0,
+      sizePct:(Number(u.sizePct)||0)+(Number(u.hitboxPct)||0),
+      attackSpeedPct:(Number(u.attackSpeedPct)||0)-(Number(u.speedPct)||0),
+      knockbackPct:Number(u.knockbackPct)||0
+    };
+  }
+
+  if(typeof ROGUE_CARDS!=='undefined'&&Array.isArray(ROGUE_CARDS)){
+    for(const c of ROGUE_CARDS){
+      if(c?.key==='speedPct'){
+        const old=Number(c.value)||0;
+        c.key='attackSpeedPct';
+        c.value=-old;
+      }else if(c?.key==='attackSpeedPct'){
+        c.value=-Number(c.value||0);
+      }
+      if(c?.key==='multi'&&c.value&&typeof c.value==='object'){
+        const legacySpeed=Number(c.value.speedPct)||0;
+        const legacyAttack=Number(c.value.attackSpeedPct)||0;
+        // Both legacy fields represented faster when positive.
+        c.value.attackSpeedPct=-(legacyAttack+legacySpeed);
+        delete c.value.speedPct;
+        if(Number(c.value.hitboxPct)){
+          const hs=Math.abs(Number(c.value.hitboxPct));
+          const sz=Math.abs(Number(c.value.sizePct)||0);
+          const sign=(Number(c.value.sizePct)||0)<0?-1:1;
+          const merged=Math.max(sz,hs)+.03;
+          c.value.sizePct=sign*merged;
+          delete c.value.hitboxPct;
+        }
+      }
+
+      if(c?.key==='attackSpeedPct'){
+        const v=Number(c.value)||0;
+        const pct=Math.round(Math.abs(v)*100);
+        c.effect=String(c.effect||'').replace(/[+\-−]\s*\d+%\s*ATTACK TIME/i,(v<0?'−':'+')+pct+'% ATTACK TIME');
+        c.desc=String(c.desc||'').replace(/(faster|slower|quick|speed|movement|motion|timing|wind up|recovery)/gi,
+          m=>m);
+      }else if(c?.key==='multi'&&c.value){
+        const v=Number(c.value.attackSpeedPct||0);
+        if(v){
+          const pct=Math.round(Math.abs(v)*100);
+          const re=/[+\-−]\s*\d+%\s*ATTACK TIME/i;
+          if(re.test(String(c.effect||''))) c.effect=String(c.effect).replace(re,(v<0?'−':'+')+pct+'% ATTACK TIME');
+        }
+      }
+    }
+  }
+
+  // Replace the global helper used by the countdown/build summary if it exists.
+  if(typeof mergedUpgrades!=='undefined'){
+    try{ mergedUpgrades=mergedAttackTimeUpgrades; }catch(_){ /* non-assignable legacy binding */ }
+  }
+
+  // Final weapon-spec override. Neutralize the older Attack Speed/Weapon Speed layer,
+  // then apply the new time semantics exactly once.
+  const previousSpec=Game.weaponSpec.bind(Game);
+  Game.weaponSpec=function(p){
+    if(!p)return previousSpec(p);
+    const original=p.weaponUpgrades||{};
+    const u=mergedAttackTimeUpgrades(p);
+    p.weaponUpgrades=Object.assign({},original,{
+      sizePct:u.sizePct,
+      hitboxPct:0,
+      attackSpeedPct:0,
+      speedPct:0
+    });
+    let s;
+    try{s=previousSpec(p);}finally{p.weaponUpgrades=original;}
+
+    const timeMult=clamp(1+u.attackSpeedPct);
+    const timeKeys=['attackExtend','attackActive','attackRetract','attackHold','castTime','lungeTime','lungeDuration','attackReturn','returnTime'];
+    const speedKeys=['returnSpeed','projectileSpeed','slashSpeed','gyroProjectileSpeed','gyroSpinSpeed','spinSpeed','lungeSpeed','gyroGroundSpeed'];
+    for(const k of timeKeys) if(Number.isFinite(Number(s[k]))) s[k]=Math.max(.01,Number(s[k])*timeMult);
+    for(const k of speedKeys) if(Number.isFinite(Number(s[k]))) s[k]=Number(s[k])/timeMult;
+    return s;
+  };
+
+  Game.__attackTimeSemanticsV57=true;
+})();
+</script>
+
+
+<script id="roguelike-attack-time-card-audit-v59">
+(function(){
+  'use strict';
+  if(typeof ROGUE_CARDS==='undefined'||!Array.isArray(ROGUE_CARDS)) return;
+
+  /*
+     Final Attack Time audit.
+     Attack Time is intentionally a true time stat:
+       negative = beneficial (faster attack / movement / return)
+       positive = detrimental (slower attack / movement / return)
+
+     v57 converts legacy cards, but the cards introduced/overridden by the v58
+     balance pass were already written in the new semantics. Restore those cards
+     to their intended signs after the legacy conversion layer has finished.
+  */
+  const intended={
+    speed10:-0.08,
+    sizeTempo:0.04,
+    tightGrip:0.02,
+    heavyRhythm:0.22,
+    reachRhythm:0.04,
+    lightweight:-0.20,
+    momentum:-0.06,
+    longwinded:0.06,
+    glassRhythm:0.04,
+    titanReach:0.26,
+    hyperTempo:-0.16,
+    ironTempo:0.14,
+    overclockedEdge:-0.16,
+    perfectForm:-0.12,
+    grandReach:0.05,
+    overwhelmingForce:0.12,
+    featherblade:-0.30,
+    slowGiant:0.32
+  };
+
+  const signText=v=>Number(v||0)<0?'−':'+';
+  const pctText=v=>Math.round(Math.abs(Number(v||0))*100);
+  const replaceAttackTime=(effect,v)=>{
+    const text=String(effect||'');
+    const replacement=signText(v)+pctText(v)+'% ATTACK TIME';
+    const re=/[+\-−]\s*\d+%\s*ATTACK TIME/i;
+    return re.test(text) ? text.replace(re,replacement) : text;
+  };
+
+  for(const card of ROGUE_CARDS){
+    if(!card || !Object.prototype.hasOwnProperty.call(intended,card.id)) continue;
+    const v=intended[card.id];
+    if(card.key==='attackSpeedPct'){
+      card.value=v;
+    }else if(card.key==='multi' && card.value && typeof card.value==='object'){
+      card.value.attackSpeedPct=v;
+      delete card.value.speedPct;
+    }
+    card.effect=replaceAttackTime(card.effect,v);
+  }
+
+  /* Keep every displayed Attack Time number synchronized with its actual value.
+     This catches any legacy card whose final effect text was out of sync after
+     consolidation, without changing cards whose intended sign is already right. */
+  for(const card of ROGUE_CARDS){
+    if(!card) continue;
+    let v=null;
+    if(card.key==='attackSpeedPct') v=Number(card.value||0);
+    else if(card.key==='multi' && card.value && typeof card.value==='object' && Number.isFinite(Number(card.value.attackSpeedPct))) v=Number(card.value.attackSpeedPct);
+    if(v===null || Math.abs(v)<0.0005) continue;
+    if(/ATTACK TIME/i.test(String(card.effect||''))) card.effect=replaceAttackTime(card.effect,v);
+  }
+
+  /* Final defensive check: no card may describe a beneficial faster attack while
+     carrying a positive Attack Time value, or describe a slower attack while
+     carrying a negative value. */
+  for(const card of ROGUE_CARDS){
+    if(!card) continue;
+    let v=null;
+    if(card.key==='attackSpeedPct') v=Number(card.value||0);
+    else if(card.key==='multi'&&card.value&&typeof card.value==='object') v=Number(card.value.attackSpeedPct||0);
+    if(v===null||!Number.isFinite(v)||Math.abs(v)<0.0005) continue;
+    const desc=String(card.desc||'').toLowerCase();
+    const saysFaster=/(faster|quick|speed|rapid|swift|aggressive|frequent)/.test(desc);
+    const saysSlower=/(slower|longer|slow|tax|cost|takes more time)/.test(desc);
+    if(v>0 && saysFaster && !saysSlower){
+      if(card.key==='attackSpeedPct') card.value=-Math.abs(v);
+      else if(card.key==='multi') card.value.attackSpeedPct=-Math.abs(v);
+      card.effect=replaceAttackTime(card.effect,-Math.abs(v));
+    }else if(v<0 && saysSlower && !saysFaster){
+      if(card.key==='attackSpeedPct') card.value=Math.abs(v);
+      else if(card.key==='multi') card.value.attackSpeedPct=Math.abs(v);
+      card.effect=replaceAttackTime(card.effect,Math.abs(v));
+    }
+  }
+})();
+</script>
+<!-- ================================================================
+     WINNER VICTORY REVEAL
+     Final-match-only presentation: actual winner customization is rendered
+     as a large pseudo-3D PLUNK ball, performs a short celebratory dance,
+     then yields to the existing results screen.
+     ================================================================ -->
+<style id="plunk-winner-victory-reveal-css">
+  #plunkWinnerReveal{
+    position:fixed;inset:0;z-index:1200;display:none;align-items:center;justify-content:center;
+    background:
+      radial-gradient(circle at 50% 38%,rgba(255,213,116,.16),transparent 26%),
+      radial-gradient(circle at 50% 70%,rgba(201,121,58,.11),transparent 44%),
+      rgba(5,3,2,.94);
+    opacity:0;pointer-events:none;overflow:hidden;
+  }
+  #plunkWinnerReveal.active{display:flex;opacity:1;}
+  #plunkWinnerReveal.fade-out{animation:plunkWinnerFadeOut .72s ease-in forwards;}
+  #plunkWinnerReveal .winner-reveal-vignette{
+    position:absolute;inset:-12%;pointer-events:none;
+    background:radial-gradient(circle at 50% 42%,transparent 24%,rgba(0,0,0,.20) 56%,rgba(0,0,0,.68) 100%);
+  }
+  #plunkWinnerReveal .winner-reveal-rays{
+    position:absolute;left:50%;top:46%;width:min(86vw,920px);height:min(86vw,920px);
+    transform:translate(-50%,-50%);pointer-events:none;opacity:.28;
+    background:repeating-conic-gradient(from 0deg,rgba(255,221,144,.10) 0 8deg,transparent 8deg 20deg);
+    filter:blur(1px);mask-image:radial-gradient(circle,black 0 36%,transparent 72%);
+  }
+  #plunkWinnerReveal .winner-reveal-content{
+    position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    width:min(94vw,760px);height:min(94vh,760px);perspective:1000px;text-align:center;
+  }
+  #plunkWinnerReveal .winner-reveal-kicker{
+    font-size:clamp(12px,1.6vw,16px);font-weight:1000;letter-spacing:5px;color:#ffd96c;
+    text-transform:uppercase;text-shadow:0 2px 0 #000,0 0 18px rgba(255,211,96,.35);
+    opacity:0;animation:plunkWinnerKickerIn .42s .10s ease-out forwards;
+  }
+  #plunkWinnerReveal .winner-reveal-stage{
+    position:relative;width:min(62vw,470px);height:min(62vw,470px);margin:6px 0 2px;
+    display:grid;place-items:center;transform-style:preserve-3d;
+  }
+  #plunkWinnerReveal .winner-reveal-stage::before{
+    content:'';position:absolute;left:50%;top:72%;width:54%;height:13%;
+    transform:translate(-50%,-50%) rotateX(76deg);transform-origin:center;
+    background:radial-gradient(ellipse,rgba(0,0,0,.60),transparent 72%);filter:blur(8px);
+    z-index:0;
+  }
+  #plunkWinnerReveal .winner-reveal-tilt{
+    position:relative;width:100%;height:100%;display:grid;place-items:center;transform-style:preserve-3d;
+    animation:plunkWinnerDance 2.65s cubic-bezier(.17,.83,.28,1) both;
+  }
+  #plunkWinnerReveal .winner-reveal-canvas{
+    width:72%;height:72%;display:block;position:relative;z-index:2;
+    filter:drop-shadow(0 22px 20px rgba(0,0,0,.52));
+    transform-style:preserve-3d;
+  }
+  #plunkWinnerReveal .winner-reveal-shine{
+    position:absolute;width:53%;height:53%;border-radius:50%;z-index:4;pointer-events:none;
+    left:26%;top:18%;mix-blend-mode:screen;opacity:.48;
+    background:radial-gradient(circle at 30% 26%,rgba(255,255,255,.72),rgba(255,255,255,.16) 15%,transparent 43%);
+    transform:translateZ(80px) rotate(-12deg);filter:blur(1px);
+    animation:plunkWinnerShine 2.65s ease-in-out both;
+  }
+  #plunkWinnerReveal .winner-reveal-ring{
+    position:absolute;width:79%;height:79%;border-radius:50%;z-index:1;pointer-events:none;
+    border:1px solid rgba(255,218,123,.30);box-shadow:0 0 36px rgba(255,204,91,.16),inset 0 0 25px rgba(255,220,135,.08);
+    transform:translateZ(-18px);opacity:0;animation:plunkWinnerRing 2.2s .22s ease-out forwards;
+  }
+  #plunkWinnerReveal .winner-reveal-name{
+    margin-top:-5px;font-size:clamp(27px,5vw,47px);font-weight:1000;letter-spacing:2px;color:#fff1c8;
+    text-shadow:3px 3px 0 #000,0 0 28px rgba(255,207,106,.24);opacity:0;
+    animation:plunkWinnerNameIn .46s .35s cubic-bezier(.16,1.45,.3,1) forwards;
+    max-width:90vw;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  }
+  #plunkWinnerReveal .winner-reveal-gloat{
+    margin-top:4px;font-size:clamp(11px,1.7vw,15px);font-weight:1000;letter-spacing:3.5px;color:#cdbb9f;
+    text-transform:uppercase;opacity:0;animation:plunkWinnerGloatIn .34s 1.82s ease-out forwards;
+  }
+  #plunkWinnerReveal .winner-reveal-prompt{
+    margin-top:18px;font-size:9px;letter-spacing:2px;color:#7e6b57;text-transform:uppercase;opacity:0;
+    animation:plunkWinnerPromptIn .35s 2.15s ease-out forwards;
+  }
+  #plunkWinnerReveal .winner-reveal-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:4;}
+  .plunk-winner-confetti-bit{
+    position:absolute;width:7px;height:12px;border-radius:1px;left:50%;top:50%;opacity:0;
+    animation:plunkWinnerConfetti var(--life,.9s) ease-out var(--delay,0s) forwards;
+    transform:translate(-50%,-50%) rotate(var(--rot,0deg));
+    background:var(--c,#ffd76a);box-shadow:0 0 8px rgba(255,215,106,.35);
+  }
+  @keyframes plunkWinnerDance{
+    0%{opacity:0;transform:translateY(40px) scale(.72) rotateX(12deg) rotateY(-14deg) rotateZ(-5deg)}
+    10%{opacity:1;transform:translateY(0) scale(1.06) rotateX(4deg) rotateY(10deg) rotateZ(4deg)}
+    22%{transform:translateY(-16px) scale(1.01) rotateX(-4deg) rotateY(-12deg) rotateZ(-5deg)}
+    34%{transform:translateY(5px) scale(1.04) rotateX(3deg) rotateY(12deg) rotateZ(6deg)}
+    47%{transform:translateY(-11px) scale(1.00) rotateX(-5deg) rotateY(-9deg) rotateZ(-4deg)}
+    59%{transform:translateY(3px) scale(1.03) rotateX(2deg) rotateY(14deg) rotateZ(5deg)}
+    71%{transform:translateY(-7px) scale(1.01) rotateX(-3deg) rotateY(-16deg) rotateZ(-5deg)}
+    84%{transform:translateY(0) scale(1.05) rotateX(0) rotateY(0) rotateZ(0)}
+    100%{transform:translateY(0) scale(1.04) rotateX(0) rotateY(0) rotateZ(0)}
+  }
+  @keyframes plunkWinnerShine{
+    0%,18%{transform:translateZ(80px) translateX(-16px) rotate(-12deg);opacity:.12}
+    42%{transform:translateZ(80px) translateX(18px) rotate(-4deg);opacity:.52}
+    69%{transform:translateZ(80px) translateX(-6px) rotate(-9deg);opacity:.34}
+    100%{transform:translateZ(80px) translateX(0) rotate(-8deg);opacity:.46}
+  }
+  @keyframes plunkWinnerRing{0%{opacity:0;transform:translateZ(-18px) scale(.74)}35%{opacity:.44}100%{opacity:.26;transform:translateZ(-18px) scale(1.02)}}
+  @keyframes plunkWinnerKickerIn{from{opacity:0;transform:translateY(8px);letter-spacing:8px}to{opacity:1;transform:none;letter-spacing:5px}}
+  @keyframes plunkWinnerNameIn{from{opacity:0;transform:translateY(14px) scale(.86)}to{opacity:1;transform:none}}
+  @keyframes plunkWinnerGloatIn{0%{opacity:0;transform:translateY(7px) scale(.85)}65%{opacity:1;transform:translateY(-2px) scale(1.06)}100%{opacity:1;transform:none}}
+  @keyframes plunkWinnerPromptIn{from{opacity:0}to{opacity:1}}
+  @keyframes plunkWinnerConfetti{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(.4) rotate(0deg)}
+    12%{opacity:1}
+    100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.9) rotate(var(--rot,240deg))}
+  }
+  @keyframes plunkWinnerFadeOut{0%{opacity:1}100%{opacity:0}}
+  @media(max-width:700px){
+    #plunkWinnerReveal .winner-reveal-stage{width:min(82vw,400px);height:min(82vw,400px)}
+    #plunkWinnerReveal .winner-reveal-canvas{width:78%;height:78%}
+    #plunkWinnerReveal .winner-reveal-gloat{letter-spacing:2.5px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    #plunkWinnerReveal *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition:none!important}
+  }
+</style>
+
+<div id="plunkWinnerReveal" aria-hidden="true">
+  <div class="winner-reveal-vignette"></div>
+  <div class="winner-reveal-rays"></div>
+  <div class="winner-reveal-content">
+    <div class="winner-reveal-kicker">MATCH WINNER</div>
+    <div class="winner-reveal-stage">
+      <div class="winner-reveal-ring"></div>
+      <div class="winner-reveal-tilt">
+        <canvas class="winner-reveal-canvas" width="720" height="720"></canvas>
+        <div class="winner-reveal-shine"></div>
+      </div>
+      <div class="winner-reveal-confetti"></div>
+    </div>
+    <div class="winner-reveal-name"></div>
+    <div class="winner-reveal-gloat">TOO EASY.</div>
+    <div class="winner-reveal-prompt">VICTORY SECURED</div>
+  </div>
+</div>
+
+<script id="plunk-winner-victory-reveal-runtime">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined'||typeof UI==='undefined') return;
+
+  const root=document.getElementById('plunkWinnerReveal');
+  if(!root) return;
+  const canvas=root.querySelector('.winner-reveal-canvas');
+  const stage=root.querySelector('.winner-reveal-stage');
+  const content=root.querySelector('.winner-reveal-content');
+  const nameEl=root.querySelector('.winner-reveal-name');
+  const gloatEl=root.querySelector('.winner-reveal-gloat');
+  const confetti=root.querySelector('.winner-reveal-confetti');
+  if(!canvas||!stage||!content) return;
+  const ctx=canvas.getContext('2d');
+  let raf=0, hideTimer=0, revealToken=0;
+  let previousShowResults=null, previousGoto=null;
+
+  function winnerFrom(data){
+    const list=Array.isArray(data?.winnerPreviews)?data.winnerPreviews.filter(Boolean):[];
+    if(data?.winnerPreview) return data.winnerPreview;
+    if(list.length) return list[0];
+    if(data?.winnerId && Game.players?.[data.winnerId]){
+      const p=Game.players[data.winnerId];
+      return {id:p.id,name:p.name,cust:Object.assign({},p.cust||{}),team:p.team||null};
+    }
+    return null;
+  }
+
+  function drawWinnerBall(winner,t){
+    const size=canvas.width;
+    ctx.clearRect(0,0,size,size);
+    ctx.save();
+    const progress=Math.min(1,Math.max(0,t/2650));
+    const dance=Math.sin(progress*Math.PI*7.2);
+    const bounce=Math.sin(progress*Math.PI*10.4)*5;
+    const lean=Math.sin(progress*Math.PI*5.4)*0.08;
+    // Contact shadow / pseudo-3D floor.
+    ctx.save();
+    ctx.translate(size*.5,size*.77);
+    ctx.scale(1,0.34);
+    const sg=ctx.createRadialGradient(0,0,4,0,0,size*.18);
+    sg.addColorStop(0,'rgba(0,0,0,.42)');
+    sg.addColorStop(1,'rgba(0,0,0,0)');
+    ctx.fillStyle=sg;
+    ctx.beginPath();ctx.arc(0,0,size*.17,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+
+    const drawP={
+      id:winner.id||'winner',
+      name:'',
+      x:size*.5,
+      y:size*.47+bounce,
+      radius:Math.min(126,size*.175),
+      facing:1,
+      heavy:false,
+      preview:true,
+      alive:true,
+      spectator:false,
+      // Keep the winner's colors/outline/eyes/brows, but force a broad smile
+      // for the victory-camera moment requested by the player.
+      cust:Object.assign({hue:200,hue2:40,saturation:80,saturation2:60,brightness:60,brightness2:60,gradientPattern:'radial-out',eyes:'classic',mouth:'smile',brows:'none',outline:'none'},winner.cust||{},{mouth:'smile'})
+    };
+
+    // Slight body squash/stretch makes the 2D sprite read as a 3D soft ball.
+    const squash=1+Math.sin(progress*Math.PI*10.4)*0.018;
+    ctx.translate(drawP.x,drawP.y);
+    ctx.rotate(lean+dance*.018);
+    ctx.scale(1+Math.abs(dance)*.015, squash- Math.abs(dance)*.008);
+    ctx.translate(-drawP.x,-drawP.y);
+
+    // Extruded depth: multiple darkened copies slightly offset downward/right.
+    for(let i=10;i>=1;i--){
+      ctx.save();
+      ctx.globalAlpha=.045;
+      ctx.translate(i*2.4,i*2.8);
+      ctx.filter=`brightness(${Math.max(.42,1-i*.045)}) saturate(.88)`;
+      Game.drawCharacter(ctx,drawP);
+      ctx.restore();
+    }
+    ctx.filter='none';
+    ctx.globalAlpha=1;
+    Game.drawCharacter(ctx,drawP);
+
+    // A soft artificial rim light on the right side sells the 3D-card look.
+    const r=drawP.radius;
+    const rg=ctx.createRadialGradient(drawP.x-r*.38,drawP.y-r*.44,r*.08,drawP.x,drawP.y,r*1.16);
+    rg.addColorStop(0,'rgba(255,255,255,.13)');
+    rg.addColorStop(.45,'rgba(255,255,255,.025)');
+    rg.addColorStop(.86,'rgba(0,0,0,0)');
+    rg.addColorStop(1,'rgba(0,0,0,.22)');
+    ctx.globalCompositeOperation='screen';
+    ctx.fillStyle=rg;
+    ctx.beginPath();ctx.arc(drawP.x,drawP.y,r*1.03,0,Math.PI*2);ctx.fill();
+    ctx.globalCompositeOperation='source-over';
+    ctx.restore();
+  }
+
+  function spawnConfetti(){
+    confetti.innerHTML='';
+    const colors=['#ffd76a','#f5efe4','#d78b48','#b9a6ff','#8fe0ff','#ff8f82'];
+    for(let i=0;i<30;i++){
+      const bit=document.createElement('span');
+      bit.className='plunk-winner-confetti-bit';
+      const angle=Math.random()*Math.PI*2;
+      const dist=150+Math.random()*340;
+      bit.style.setProperty('--dx',(Math.cos(angle)*dist).toFixed(1)+'px');
+      bit.style.setProperty('--dy',(Math.sin(angle)*dist-80-Math.random()*120).toFixed(1)+'px');
+      bit.style.setProperty('--delay',(Math.random()*.16).toFixed(2)+'s');
+      bit.style.setProperty('--life',(.65+Math.random()*.5).toFixed(2)+'s');
+      bit.style.setProperty('--rot',Math.round(Math.random()*360)+'deg');
+      bit.style.setProperty('--c',colors[Math.floor(Math.random()*colors.length)]);
+      bit.style.left=(48+Math.random()*4)+'%';
+      bit.style.top=(45+Math.random()*10)+'%';
+      bit.style.width=(4+Math.random()*5).toFixed(1)+'px';
+      bit.style.height=(7+Math.random()*10).toFixed(1)+'px';
+      confetti.appendChild(bit);
+    }
+  }
+
+  function resetReveal(){
+    root.classList.remove('active','fade-out');
+    root.style.pointerEvents='none';
+    root.setAttribute('aria-hidden','true');
+    confetti.innerHTML='';
+    if(raf){cancelAnimationFrame(raf);raf=0;}
+    if(hideTimer){clearTimeout(hideTimer);hideTimer=0;}
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+
+  function startReveal(data,after){
+    const winner=winnerFrom(data);
+    if(!winner){ after?.(); return; }
+    const token=++revealToken;
+    if(hideTimer){clearTimeout(hideTimer);hideTimer=0;}
+    root.classList.remove('fade-out');
+    root.classList.add('active');
+    root.style.pointerEvents='none';
+    root.setAttribute('aria-hidden','false');
+    nameEl.textContent=winner.name||'WINNER';
+    gloatEl.textContent='TOO EASY.';
+    spawnConfetti();
+    const start=performance.now();
+    const frame=(now)=>{
+      if(token!==revealToken) return;
+      const t=now-start;
+      drawWinnerBall(winner,t);
+      if(t<2650) raf=requestAnimationFrame(frame);
+      else raf=0;
+    };
+    raf=requestAnimationFrame(frame);
+
+    // Prepare the existing results screen immediately behind the reveal so the
+    // final fade feels like one continuous presentation rather than a screen swap.
+    after?.();
+    const results=document.getElementById('screen-results');
+    if(results){
+      results.style.opacity='0';
+      results.style.transition='opacity .68s ease';
+      results.style.pointerEvents='none';
+    }
+
+    setTimeout(()=>{
+      const rs=document.getElementById('screen-results');
+      if(rs){
+        rs.style.opacity='1';
+        rs.style.pointerEvents='auto';
+      }
+    },2350);
+    setTimeout(()=>{
+      if(token!==revealToken) return;
+      root.classList.add('fade-out');
+      hideTimer=setTimeout(()=>resetReveal(),760);
+    },2600);
+  }
+
+  previousShowResults=UI.showResults.bind(UI);
+  UI.showResults=function(results,scores,finalData=null){
+    const key=String(finalData?.transitionId||finalData?.round||'')+'|'+String(finalData?.winnerId||finalData?.winnerPreview?.id||'')+'|'+String(results?.length||0);
+    if(Game.__plunkWinnerRevealKey===key && root.classList.contains('active')) return;
+    Game.__plunkWinnerRevealKey=key;
+    startReveal(finalData,()=>previousShowResults(results,scores,finalData));
+  };
+
+  previousGoto=UI.goto.bind(UI);
+  UI.goto=function(name){
+    if(name!=='results'){
+      revealToken++;
+      resetReveal();
+      const rs=document.getElementById('screen-results');
+      if(rs){rs.style.removeProperty('opacity');rs.style.removeProperty('transition');rs.style.removeProperty('pointer-events');}
+    }
+    return previousGoto(name);
+  };
+
+  // If a reduced-motion preference is enabled, shorten the presentation but keep
+  // the same winner -> results sequencing.
+  if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    root.dataset.reducedMotion='1';
+  }
+})();
+</script>
+
+</body>
+</html>
