@@ -1937,7 +1937,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
     <div class="spherebox-menu-hover"><button class="btn spherebox-main-button" type="button">SPHEREBOX</button><div class="spherebox-hover-actions"><button class="btn small" type="button" data-sphere-quick="dash">DASH EFFECTS</button><button class="btn small" type="button" data-sphere-quick="trail">TRAILS</button><button class="btn small" type="button" data-sphere-quick="hit">HIT EFFECTS</button></div></div>
     <button class="btn" data-go="settings">SETTINGS</button>
   </div>
-  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 2.80 | made by phwarf</div>
+  <div style="margin-top:18px;color:var(--text-dim);font-size:11px;">Version 3.00 | made by phwarf</div>
 </div>
 
 <!-- ============ CREATE GAME ============ -->
@@ -1961,7 +1961,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
             <select id="hostMode" class="hidden"><option value="regular">Regular</option><option value="grapple">Grapple</option><option value="pypg">PYPG</option><option value="grapple_hook">Grapple Hook</option><option value="arrows">Arrows</option><option value="death_arrows">Death Arrows</option><option value="bouncy_arrows">Bouncy Arrows</option><option value="mines">Mines</option><option value="large_mines">Large Mines</option><option value="death_mines">Death Mines</option><option value="weaponry">Weaponry</option></select>
           </div>
           <div class="field slider-field"><label>Max Players <output id="hostMaxPVal">8</output></label><input type="range" id="hostMaxP" min="2" max="8" step="1" value="8"></div>
-          <div class="field hidden" id="hostWeaponField"><label>Weapon</label><div class="host-weapon-choice-row"><button class="btn small weapon-catalog-trigger" id="hostWeaponPicker" type="button" aria-haspopup="dialog" aria-expanded="false"><span class="weapon-catalog-trigger-value">Sword</span><span class="weapon-catalog-trigger-caret">▾</span></button><select id="hostWeapon" class="hidden" aria-hidden="true"><option value="sword">Sword</option><option value="wand">Wand</option><option value="bo_staff">Bo Staff</option><option value="axe">Shovel</option><option value="flail">Flail</option><option value="chakram">Chakram</option><option value="scythe">Scythe</option><option value="lance">Dagger</option><option value="twinblades">Twin Blades</option><option value="anchor">Hammer</option><option value="gyroblade">Gyroblade</option><option value="bombardier">Bombardier</option><option value="katana">Katana</option></select><button class="weapon-rogue-death-toggle host-inline-rogue-death" id="hostRogueDeathToggle" type="button" aria-pressed="false"><span class="weapon-rogue-death-dot"></span><span class="weapon-rogue-death-label">DEATH</span></button></div></div>
+          <div class="field hidden" id="hostWeaponField"><label>Weapon</label><div class="host-weapon-choice-row"><button class="btn small weapon-catalog-trigger" id="hostWeaponPicker" type="button" aria-haspopup="dialog" aria-expanded="false"><span class="weapon-catalog-trigger-value">Sword</span><span class="weapon-catalog-trigger-caret">▾</span></button><select id="hostWeapon" class="hidden" aria-hidden="true"><option value="sword">Sword</option><option value="wand">Wand</option><option value="bo_staff">Bo Staff</option><option value="axe">Shovel</option><option value="flail">Flail</option><option value="chakram">Chakram</option><option value="scythe">Scythe</option><option value="lance">Dagger</option><option value="twinblades">Twin Blades</option><option value="anchor">Hammer</option><option value="gyroblade">Gyroblade</option><option value="bombardier">Bombardier</option><option value="katana">Katana</option><option value="firework_cannon">Firework Cannon</option><option value="potion">Potion</option><option value="pitchfork">Pitchfork</option></select><button class="weapon-rogue-death-toggle host-inline-rogue-death" id="hostRogueDeathToggle" type="button" aria-pressed="false"><span class="weapon-rogue-death-dot"></span><span class="weapon-rogue-death-label">DEATH</span></button></div></div>
         </div>
         <h3>PHYSICS</h3>
         <div class="setting-grid">
@@ -2056,7 +2056,7 @@ input[type=text]:hover,input[type=number]:hover,input[type=range]:hover,select:h
           <div class="field slider-field"><label>Knockback × <output id="lobbyKBVal">1.0×</output></label><input type="range" id="lobbyKB" min="0.2" max="3" step="0.1" value="1"></div>
           <div class="field slider-field"><label>Player Size <output id="lobbyPlayerSizeVal">1.0×</output></label><input type="range" id="lobbyPlayerSize" min="0.5" max="2" step="0.1" value="1"></div>
           <div class="field slider-field"><label>Max Players <output id="lobbyMaxPVal">8</output></label><input type="range" id="lobbyMaxP" min="2" max="8" step="1" value="8"></div>
-          <div class="field hidden weapon-selector-lock-field" id="lobbyWeaponField"><label>Your Weapon</label><div class="weapon-selector-lock-row"><div class="weapon-picker" id="lobbyWeaponPicker" data-weapon-picker="lobby"><button class="btn small weapon-picker-main" type="button" aria-haspopup="dialog" aria-expanded="false"><span class="weapon-picker-value">Sword</span><span class="weapon-picker-caret">▾</span></button></div><select id="lobbyWeapon" class="hidden" aria-hidden="true"><option value="sword">Sword</option><option value="wand">Wand</option><option value="bo_staff">Bo Staff</option><option value="axe">Shovel</option><option value="flail">Flail</option><option value="chakram">Chakram</option><option value="scythe">Scythe</option><option value="lance">Dagger</option><option value="twinblades">Twin Blades</option><option value="anchor">Hammer</option><option value="gyroblade">Gyroblade</option><option value="bombardier">Bombardier</option><option value="katana">Katana</option></select><button class="weapon-rogue-death-toggle lobby-inline-rogue-death" id="lobbyRogueDeathToggle" type="button" aria-pressed="false"><span class="weapon-rogue-death-dot"></span><span class="weapon-rogue-death-label">DEATH</span></button></div></div>
+          <div class="field hidden weapon-selector-lock-field" id="lobbyWeaponField"><label>Your Weapon</label><div class="weapon-selector-lock-row"><div class="weapon-picker" id="lobbyWeaponPicker" data-weapon-picker="lobby"><button class="btn small weapon-picker-main" type="button" aria-haspopup="dialog" aria-expanded="false"><span class="weapon-picker-value">Sword</span><span class="weapon-picker-caret">▾</span></button></div><select id="lobbyWeapon" class="hidden" aria-hidden="true"><option value="sword">Sword</option><option value="wand">Wand</option><option value="bo_staff">Bo Staff</option><option value="axe">Shovel</option><option value="flail">Flail</option><option value="chakram">Chakram</option><option value="scythe">Scythe</option><option value="lance">Dagger</option><option value="twinblades">Twin Blades</option><option value="anchor">Hammer</option><option value="gyroblade">Gyroblade</option><option value="bombardier">Bombardier</option><option value="katana">Katana</option><option value="firework_cannon">Firework Cannon</option><option value="potion">Potion</option><option value="pitchfork">Pitchfork</option></select><button class="weapon-rogue-death-toggle lobby-inline-rogue-death" id="lobbyRogueDeathToggle" type="button" aria-pressed="false"><span class="weapon-rogue-death-dot"></span><span class="weapon-rogue-death-label">DEATH</span></button></div></div>
           <div class="round-settings-grid lobby-round-settings">
             <div class="field"><label>Round Rule</label><select id="lobbyRoundMode"><option value="rounds">Fixed Rounds</option><option value="score">First to Points</option></select></div>
             <div class="field round-count-slot" id="lobbyRoundCountField"><label>Rounds</label><input type="number" id="lobbyRoundCount" min="1" max="99" value="3"></div>
@@ -4256,7 +4256,16 @@ const WEAPONS={
   katana:{label:'Katana',orbitSpeed:3.55,cooldown:3.55,contactCooldown:.17,
     idleInner:27,idleOuter:76,idleWidth:7,attackExtend:.025,attackActive:.10,attackRetract:.075,
     idleCenter:41,attackCenter:52,bladeLength:114,activeWidth:9,swingInner:27,swingOuter:82,
-    swingStart:-1.30,swingEnd:1.30,slashSpeed:1040,slashRange:170,slashRadius:9,slashLength:60,contactKnockback:465}
+    swingStart:-1.30,swingEnd:1.30,slashSpeed:1040,slashRange:170,slashRadius:9,slashLength:60,contactKnockback:465},
+  firework_cannon:{label:'Firework Cannon',orbitSpeed:1.85,cooldown:5.00,contactCooldown:.24,
+    idleInner:20,idleOuter:64,idleWidth:7,idleCenter:42,castTime:.13,projectileSpeed:320,projectileRange:760,projectileRadius:18,
+    fireworkAcceleration:1400,fireworkMaxSpeed:1800,fireworkLife:4.2,fireworkExplosionRadius:180,contactKnockback:780},
+  potion:{label:'Potion',orbitSpeed:2.10,cooldown:6.75,contactCooldown:.26,
+    idleInner:29,idleOuter:68,idleWidth:7,idleCenter:50,castTime:.16,projectileSpeed:590,projectileRange:560,projectileRadius:11,
+    potionGravity:2050,potionLob:345,potionGoopRadius:60,potionGoopLife:4.0,contactKnockback:360},
+  pitchfork:{label:'Pitchfork',orbitSpeed:2.75,cooldown:5.50,contactCooldown:.14,
+    idleInner:34,idleOuter:88,idleWidth:8,attackActive:1.00,idleCenter:60,attackCenter:72,
+    pitchforkLength:72,activeWidth:9.5,contactKnockback:405}
 };
 function validWeapon(id){ return Object.prototype.hasOwnProperty.call(WEAPONS,id)?id:'sword'; }
 function weaponLabel(id){ return WEAPONS[validWeapon(id)].label; }
@@ -7985,6 +7994,7 @@ const Game = {
 
   resolveCollisions(dt){
     this._v75LastImpact=0;
+    this._v75LastImpactVictimId=null;
     applyPlayerProximityModifierForces(dt);
     // First resolve player/map contact using the exact current overlap.
     for(const id in this.players) if(!this.players[id].spectator) this.collideWithMap(this.players[id], dt);
@@ -8093,6 +8103,11 @@ const Game = {
         if(relNormalSpeed<0){
           const vaN=a.vx*nx+a.vy*ny;
           const vbN=b.vx*nx+b.vy*ny;
+          // Snapshot each player's velocity before this collision's impulse so
+          // the GET PLUNK'D indicator can be assigned to the player who actually
+          // absorbs the larger total momentum change.
+          const preImpactAVx=a.vx, preImpactAVy=a.vy;
+          const preImpactBVx=b.vx, preImpactBVy=b.vy;
           const dashEnergyMultiplier=1.35;
           const effectiveVaN=aWasDashing?vaN*dashEnergyMultiplier:vaN;
           const effectiveVbN=bWasDashing?vbN*dashEnergyMultiplier:vbN;
@@ -8175,6 +8190,13 @@ const Game = {
               this.particles.burst(ixp,iyp,'#fff',Math.min(18,4+Math.floor(impact/120)),260,{gravity:40,life:.18,size:3.6,sizeEnd:.2,twinkle:true});
             }
             AudioManager.impact(Math.min(1.5,impact/200));
+
+            // Determine who tanked the most momentum from the complete velocity
+            // change caused by this collision (base impulse, density bonus, Smash,
+            // and combo knockback all included). Only that player gets GET PLUNK'D.
+            const tankedA=Math.hypot(a.vx-preImpactAVx,a.vy-preImpactAVy);
+            const tankedB=Math.hypot(b.vx-preImpactBVx,b.vy-preImpactBVy);
+            this._v75LastImpactVictimId=(tankedA>=tankedB?a.id:b.id);
           }
         }
 
@@ -15447,7 +15469,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
     if(c.key==='sizePct')return Number(c.value)>=0?`Larger weapon (${statPct('sizePct',Number(c.value))}).`:`Smaller weapon (${statPct('sizePct',Number(c.value))}).`;
     if(c.key==='hitboxPct')return Number(c.value)>=0?`Larger hitbox (${statPct('hitboxPct',Number(c.value))}).`:`Smaller hitbox (${statPct('hitboxPct',Number(c.value))}).`;
     if(c.key==='speedPct')return Number(c.value)>=0?`Faster weapon movement (${statPct('speedPct',Number(c.value))}).`:`Slower weapon movement (${statPct('speedPct',Number(c.value))}).`;
-    if(c.key==='attackSpeedPct')return Number(c.value)>=0?`Shorter wind up time (${statPct('attackSpeedPct',Number(c.value))}).`:`Longer wind up time (${statPct('attackSpeedPct',Number(c.value))}).`;
+    if(c.key==='attackSpeedPct')return Number(c.value)<=0?`Shorter wind up time (${statPct('attackSpeedPct',Number(c.value))}).`:`Longer wind up time (${statPct('attackSpeedPct',Number(c.value))}).`;
     if(c.key==='knockbackPct')return Number(c.value)>=0?`Stronger knockback (${statPct('knockbackPct',Number(c.value))}).`:`Weaker knockback (${statPct('knockbackPct',Number(c.value))}).`;
     if(c.key==='patternCone'){
       const v=c.value||{};
@@ -18485,8 +18507,7 @@ document.getElementById('btnSaveCust').addEventListener('click', ()=>{
   ];
   function statText(label,key,val){
     const n=Math.round(Math.abs(Number(val||0))*100);
-    const inverted=(key==='cooldownPct');
-    const negative=inverted ? Number(val||0)>0 : Number(val||0)<0;
+    const negative=(key==='cooldownPct') ? Number(val||0)>0 : Number(val||0)<0;
     return `${negative?'−':'+'}${n}%`;
   }
   function renderStartStats(){
@@ -18859,11 +18880,11 @@ function refreshSummary(){
   const labels=[['RANGE','rangePct'],['COOLDOWN','cooldownPct'],['SIZE','sizePct'],['ATTACK TIME','attackSpeedPct'],['KNOCKBACK','knockbackPct']],entries=labels.filter(([,k])=>Math.abs(Number(u[k]||0))>.0005);
   const weapon=(typeof weaponLabel==='function'?weaponLabel(p?.weapon):String(p?.weapon||'Sword')).toUpperCase();el.classList.remove('empty');
   if(!entries.length){el.classList.add('empty');el.innerHTML='<div>NO UPGRADES YET · THIS IS YOUR STARTING BUILD</div>';return;}
-  const chips=entries.map(([label,key])=>{const v=Number(u[key]||0),inv=key==='cooldownPct'||key==='attackSpeedPct',neg=inv?v>0:v<0;return '<span class="weapon-rogue-summary-chip '+(neg?'negative':'positive')+'">'+esc(label)+' '+(neg?'−':'+')+Math.round(Math.abs(v)*100)+'%</span>';}).join('');
+  const chips=entries.map(([label,key])=>{const v=Number(u[key]||0),neg=key==='cooldownPct'?v>0:v<0;return '<span class="weapon-rogue-summary-chip '+(neg?'negative':'positive')+'">'+esc(label)+' '+(neg?'−':'+')+Math.round(Math.abs(v)*100)+'%</span>';}).join('');
   const last=p?.weaponRogueLastCardName?'<div class="weapon-rogue-summary-last">CURRENT BUILD · LAST PICK: '+esc(p.weaponRogueLastCardName)+'</div>':'';el.innerHTML='<div class="weapon-rogue-summary-title">YOUR WEAPON BUILD · <span class="weapon-rogue-summary-weapon">'+esc(weapon)+'</span></div>'+chips+last;
 }
 const oldDraft=Game.renderWeaponRogueDraft;if(typeof oldDraft==='function')Game.renderWeaponRogueDraft=function(data){oldDraft.call(this,data);refreshSummary.call(this);};
-const oldCountdown=Game.showWeaponRogueStartCountdown;if(typeof oldCountdown==='function')Game.showWeaponRogueStartCountdown=function(startAt,round){oldCountdown.call(this,startAt,round);const list=document.getElementById('weaponRogueStartStatsList'),weaponEl=document.getElementById('weaponRogueStartStatsWeapon'),p=this.players?.[this.myId],u=mergedUpgrades(p);if(list&&weaponEl){weaponEl.textContent=(typeof weaponLabel==='function'?weaponLabel(p?.weapon):String(p?.weapon||'Sword')).toUpperCase();const labels=[['RANGE','rangePct'],['COOLDOWN','cooldownPct'],['SIZE','sizePct'],['ATTACK TIME','attackSpeedPct'],['KNOCKBACK','knockbackPct']];list.innerHTML=labels.map(([l,k])=>{const v=Number(u[k]||0),inv=k==='cooldownPct',neg=inv?v>0:v<0;return '<div class="weapon-rogue-start-stat"><span class="weapon-rogue-start-stat-label">'+l+'</span><span class="weapon-rogue-start-stat-value '+(neg?'negative':'')+'">'+(neg?'−':'+')+Math.round(Math.abs(v)*100)+'%</span></div>';}).join('');}};
+const oldCountdown=Game.showWeaponRogueStartCountdown;if(typeof oldCountdown==='function')Game.showWeaponRogueStartCountdown=function(startAt,round){oldCountdown.call(this,startAt,round);const list=document.getElementById('weaponRogueStartStatsList'),weaponEl=document.getElementById('weaponRogueStartStatsWeapon'),p=this.players?.[this.myId],u=mergedUpgrades(p);if(list&&weaponEl){weaponEl.textContent=(typeof weaponLabel==='function'?weaponLabel(p?.weapon):String(p?.weapon||'Sword')).toUpperCase();const labels=[['RANGE','rangePct'],['COOLDOWN','cooldownPct'],['SIZE','sizePct'],['ATTACK TIME','attackSpeedPct'],['KNOCKBACK','knockbackPct']];list.innerHTML=labels.map(([l,k])=>{const v=Number(u[k]||0),neg=k==='cooldownPct'?v>0:v<0;return '<div class="weapon-rogue-start-stat"><span class="weapon-rogue-start-stat-label">'+l+'</span><span class="weapon-rogue-start-stat-value '+(neg?'negative':'')+'">'+(neg?'−':'+')+Math.round(Math.abs(v)*100)+'%</span></div>';}).join('');}};
 
 const oldApply=Game.applyWeaponRogueUpgrade;if(typeof oldApply==='function')Game.applyWeaponRogueUpgrade=function(p,card){
   if(card?.key==='hitboxPct')card=Object.assign({},card,{key:'sizePct',effect:String(card.effect||'').replace(/HITBOX/gi,'SIZE')});
@@ -19266,13 +19287,15 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
     const card=document.getElementById('deathCauseCard');
     if(!card) return;
     const killer=String(data.killerName||data.killer?.name||'').slice(0,28);
-    const cause=causeLabel(data).toUpperCase();
+    const rawCause=causeLabel(data).toUpperCase();
+    const fell=!killer && /FELL(?: OUT OF BOUNDS)?/.test(rawCause);
+    const cause=fell?'YOU FELL':rawCause;
     card.innerHTML =
       '<div class="death-cause-kicker">YOU WERE ELIMINATED</div>'+
       '<div class="death-cause-main">'+
       (killer ? 'ELIMINATED BY '+esc(killer) : esc(cause))+
       '</div>'+
-      '<div class="death-cause-sub">'+esc(cause)+'</div>';
+      (fell ? '' : '<div class="death-cause-sub">'+esc(cause)+'</div>');
     card.classList.remove('active');
     void card.offsetWidth;
     card.classList.add('active');
@@ -19915,7 +19938,7 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
 </script>
 
 
-<script id="plunk-v75-moment-and-lobby-change-runtime">
+<script id="plunk-v75-moment-and-lobby-change-runtime-v76">
 (function(){
   'use strict';
   if(typeof Game==='undefined') return;
@@ -19924,13 +19947,18 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
   Game._plunkMomentUntil=0;
   Game._plunkMomentLastAt=0;
 
-  Game.triggerPlunkMoment=function(reason='HUGE IMPACT',impact=0){
+  Game.triggerPlunkMoment=function(reason='HUGE IMPACT',impact=0,targetId=null){
     if(!this.isHost && reason!=='NETWORK') return;
     const now=performance.now();
     if(reason!=='NETWORK' && now-(this._plunkMomentLastAt||0)<2400) return;
     if(reason!=='NETWORK') this._plunkMomentLastAt=now;
 
-    const el=document.getElementById('plunkMomentIndicator');
+    // On clients, the authoritative target decides who is allowed to see the
+    // indicator. The host still broadcasts the event even when it targets another player.
+    const targetMatchesMe=targetId==null || String(targetId)===String(this.myId);
+    if(reason==='NETWORK' && !targetMatchesMe) return;
+
+    const el=targetMatchesMe?document.getElementById('plunkMomentIndicator'):null;
     if(el){
       el.classList.remove('active');
       void el.offsetWidth;
@@ -19949,7 +19977,8 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
       NetworkManager.broadcast({
         t:'plunk_moment',
         reason:String(reason||'HUGE IMPACT').slice(0,30),
-        impact:Math.round(Number(impact)||0)
+        impact:Math.round(Number(impact)||0),
+        targetId:targetId==null?null:targetId
       },false);
     }
 
@@ -19963,8 +19992,9 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
     const result=originalResolveCollisions(dt);
     /* The core solver stores the just-computed impact here via the tiny hook below. */
     const impact=Number(this._v75LastImpact)||0;
-    if(this.isHost && impact>=900 && (this._plunkMomentLastAt||0)===before){
-      this.triggerPlunkMoment('PLAYER COLLISION',impact);
+    const targetId=this._v75LastImpactVictimId??null;
+    if(this.isHost && impact>=900 && targetId!=null && (this._plunkMomentLastAt||0)===before){
+      this.triggerPlunkMoment('PLAYER COLLISION',impact,targetId);
     }
     return result;
   };
@@ -19974,7 +20004,7 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
     Game.weaponApplyKnockback=function(attacker,victim,kind,weaponSpeed=0){
       const speed=Math.max(0,Number(this.weaponHitSpeed?.(attacker,kind,weaponSpeed))||Number(weaponSpeed)||0);
       const result=originalWeaponKB(attacker,victim,kind,weaponSpeed);
-      if(this.isHost && speed>=1050) this.triggerPlunkMoment('MASSIVE WEAPON HIT',speed);
+      if(this.isHost && speed>=1050) this.triggerPlunkMoment('MASSIVE WEAPON HIT',speed,victim?.id??null);
       return result;
     };
   }
@@ -19984,7 +20014,7 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
   if(oldHandleNet){
     Game.handleNetData=function(pid,data){
       if(data?.t==='plunk_moment'){
-        this.triggerPlunkMoment('NETWORK',Number(data.impact)||0);
+        this.triggerPlunkMoment('NETWORK',Number(data.impact)||0,data.targetId??null);
         return;
       }
       return oldHandleNet(pid,data);
@@ -20171,6 +20201,8 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
 })();
 </script>
 
+
+
 </body>
 
 <style id="weapon-selector-character-preview-primary-style-v1">
@@ -20194,7 +20226,7 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
        consistently the same color family throughout the preview. */
     const cust=Object.assign({},stored,{
       hue:ph,saturation:ps,brightness:pv,
-      hue2:ph,saturation2:ps,brightness2:pv
+      hue2:Number(stored?.hue2??40),saturation2:Number(stored?.saturation2??60),brightness2:Number(stored?.brightness2??60)
     });
     const angle=-Math.PI/4;
     const dummy=new Player('weapon-preview','',cust,{x:0,y:0});
@@ -20202,7 +20234,7 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
     const sprite=Game.getCharacterSprite(dummy,cust,dummy.radius);
     const g=Game.weaponRenderGeometry(Object.assign(dummy,{weapon:id,weaponOrbitAngle:angle,weaponAttackAngle:angle,weaponActiveRotation:0,weaponUpgrades:{}}));
     const primary=hsvToCss(ph,ps,pv);
-    const secondary=primary;
+    const secondary=hsvToCss(Number(stored?.hue2??40),Number(stored?.saturation2??60),Number(stored?.brightness2??60));
     const maxExtent=Math.max(120,Number(g.center||0)+Number(g.length||0),Number(g.outer||0)+26,Number(g.discRadius||0)+80,Math.abs(Number(g.worldX||0))+40);
     const scale=Math.min(1.05,Math.max(.58,145/maxExtent));
     ctx.clearRect(0,0,W,H);
@@ -22470,9 +22502,9 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
         hue:Number(cust?.hue??200),
         saturation:Number(cust?.saturation??80),
         brightness:Number(cust?.brightness??60),
-        hue2:Number(cust?.hue??200),
-        saturation2:Number(cust?.saturation??80),
-        brightness2:Number(cust?.brightness??60)
+        hue2:Number(cust?.hue2??40),
+        saturation2:Number(cust?.saturation2??60),
+        brightness2:Number(cust?.brightness2??60)
       });
       const dummy=new Player('weapon-preview','',previewCust,{x:0,y:0});
       dummy.radius=26;dummy.facing=1;dummy.alive=true;dummy.preview=true;dummy.heavy=false;
@@ -23276,6 +23308,26 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
   }
 })();
 </script>
+<script id="roguelike-attack-time-display-final-v62">
+(function(){
+  'use strict';
+  if(typeof ROGUE_CARDS==='undefined'||!Array.isArray(ROGUE_CARDS))return;
+  const sign=v=>Number(v||0)<0?'−':'+';
+  const pct=v=>Math.round(Math.abs(Number(v||0))*100);
+  const rewrite=(effect,v)=>{
+    const re=/[+\-−]\s*\d+%\s*ATTACK TIME/i;
+    return String(effect||'').replace(re,sign(v)+pct(v)+'% ATTACK TIME');
+  };
+  for(const c of ROGUE_CARDS){
+    if(!c)continue;
+    let v=null;
+    if(c.key==='attackSpeedPct')v=Number(c.value||0);
+    else if(c.key==='multi'&&c.value&&typeof c.value==='object'&&Number.isFinite(Number(c.value.attackSpeedPct)))v=Number(c.value.attackSpeedPct);
+    if(v===null||Math.abs(v)<.0005)continue;
+    c.effect=rewrite(c.effect,v);
+  }
+})();
+</script>
 <!-- ================================================================
      WINNER VICTORY REVEAL
      Final-match-only presentation: actual winner customization is rendered
@@ -23621,6 +23673,1025 @@ Game.__weaponryRoguelikeCondensedStatsV52=true;
   if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     root.dataset.reducedMotion='1';
   }
+})();
+</script>
+
+<script id="new-weapons-v60-runtime">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined'||typeof WEAPONS==='undefined')return;
+
+  const IDS=new Set(['firework_cannon','potion','pitchfork']);
+  const PROJECTILE_IDS=new Set(['firework_cannon','potion']);
+  const TAU=Math.PI*2;
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const finite=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
+  const valid=id=>typeof validWeapon==='function'?validWeapon(id||'sword'):(id||'sword');
+
+  function stats(p){
+    const u=p?.weaponUpgrades||{};
+    return {
+      range:Number(u.rangePct)||0,
+      size:Number(u.sizePct||0)+Number(u.hitboxPct||0),
+      cooldown:Number(u.cooldownPct)||0,
+      kb:Number(u.knockbackPct)||0,
+      attackTime:Number(u.attackSpeedPct||0)-Number(u.speedPct||0),
+      coneCount:Math.max(0,Math.min(8,Math.floor(Number(u.patternConeCount)||0))),
+      coneSpread:clamp(Number(u.patternConeSpread)||.24,.03,.70),
+      coneInterval:Math.max(1,Number(u.patternConeInterval)||2),
+      doubleTrouble:Number(u.doubleTrouble)||0
+    };
+  }
+
+  function customSizeMult(p){
+    const u=stats(p), playerScale=clamp(finite(p?.radius,26)/26,.25,4);
+    return playerScale*Math.max(.05,1+u.size);
+  }
+
+  function customAngles(game,p,base){
+    const u=stats(p),count=u.coneCount;
+    if(!count || (Number(p.weaponActionCount)||0)%u.coneInterval!==0)return [];
+    const a=finite(base,0),out=[];
+    for(let i=0;i<count;i++){
+      const magnitude=Math.floor(i/2)+1;
+      const off=(i%2===0?-1:1)*magnitude*u.coneSpread;
+      out.push(game.normalizeAngle(a+off));
+    }
+    return out;
+  }
+
+  function primary(p,v=94){return hsvToCss(p?.cust?.hue??200,p?.cust?.saturation??80,v);}
+  function secondary(p,v=82){return hsvToCss(p?.cust?.hue2??40,p?.cust?.saturation2??60,v);}
+
+  function broadcastAttack(game,p,a){
+    if(game.isHost){
+      NetworkManager.broadcast({t:'weapon_attack',id:p.id,serial:p.weaponActionSerial,weapon:p.weapon,angle:a,orbitAngle:p.weaponOrbitAngle,throwX:p.x,throwY:p.y},true);
+    }else{
+      p.weaponEventSeq=((p.weaponEventSeq||0)+1)&65535;
+      NetworkManager.sendToHost({t:'weapon_attack',seq:p.weaponEventSeq,weapon:p.weapon,angle:a,orbitAngle:p.weaponOrbitAngle,phase:p.weaponPhase,phaseTime:0,attackTs:performance.now()},true);
+      NetworkManager.sendToHost({t:'weapon_rotation',seq:p.weaponEventSeq,weapon:p.weapon,orbitAngle:p.weaponOrbitAngle,angle:a,phase:p.weaponPhase},true);
+    }
+  }
+
+  function fireworkOrigin(game,p,a,s){
+    const center=Number(s.idleCenter||42),barrel=Number(s.idleOuter||64)-Number(s.idleInner||20);
+    const start=Math.max(48,center+barrel*.62);
+    return {x:p.x+Math.cos(a)*start,y:p.y+Math.sin(a)*start};
+  }
+
+  function potionOrigin(game,p,a,s){
+    const start=Math.max(54,(Number(s.idleInner)+Number(s.idleOuter))*.48+13);
+    return {x:p.x+Math.cos(a)*start,y:p.y+Math.sin(a)*start};
+  }
+
+  function pushArea(game,owner,target,kind,x,y,speed){
+    if(!target||!target.alive||target.spectator)return;
+    const dx=target.x-x,dy=target.y-y,dist=Math.hypot(dx,dy)||1,nx=dx/dist,ny=dy/dist;
+    const before=Math.hypot(Number(target.vx)||0,Number(target.vy)||0);
+    const k=Math.max(0,Number(speed)||0);
+    target.vx+=nx*k;
+    target.vy+=ny*k;
+    target.hitFlash=8;
+    if(typeof game.spawnDamagePop==='function' && k>150){
+      const impact=Math.max(k,before);
+      // Keep the pop subtle; the normal weapon FX still provides the main feedback.
+      game.spawnDamagePop(target.x,target.y-(target.radius||26)-18,Math.min(999,impact*.01),false);
+    }
+    if(typeof game.weaponImpactFx==='function')game.weaponImpactFx(target.x,target.y,kind,k>=430);
+  }
+
+  function eliminateOrLaunch(game,owner,target,kind,x,y,speed){
+    if(game.weaponDeathEnabled&&game.weaponDeathEnabled()){
+      game.weaponEliminate(owner,target,kind,target.x,target.y);
+    }else{
+      pushArea(game,owner,target,kind,x,y,speed);
+    }
+  }
+
+  function fireworkFx(game,x,y,p,large=false){
+    const c=primary(p,96),sec=secondary(p,88),white='#fffdf7';
+    const sm=customSizeMult(p||{});
+    const mainCount=large?72:30;
+    // A real radial firework: clean spokes of sparks with a second, wider star
+    // ring and a compact white core. The particles are individually angled so
+    // the burst reads as a firework rather than a generic impact cloud.
+    for(let i=0;i<mainCount;i++){
+      const a=(i/mainCount)*TAU + ((i%5)-2)*.018;
+      const sp=((large?500:300) + (i%4)*78);
+      game.particles.spawn(x,y,{vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,color:i%3===0?white:(i%5===0?sec:c),
+        life:large?.74+(i%3)*.04:.52+(i%3)*.025,size:(large?6.2+(i%3)*.6:4.2)*sm,sizeEnd:.18,
+        gravity:large?105:120,drag:.965,twinkle:true,shape:i%3===0?'star':'spark',spin:(i%2?3:-3)});
+    }
+    const starCount=large?40:13;
+    for(let i=0;i<starCount;i++){
+      const a=(i/starCount)*TAU + .11;
+      const sp=(large?275:150)+(i%5)*36;
+      game.particles.spawn(x,y,{vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,color:i%2?c:white,
+        life:large?.96:.68,size:(large?4.6:3.1)*sm,sizeEnd:.08,gravity:45,drag:.972,twinkle:true,shape:'star',spin:4});
+    }
+    game.particles.burst(x,y,white,large?20:8,175,{gravity:0,life:.24,size:4.6*sm,sizeEnd:.1,twinkle:true,shape:'diamond'});
+    if(typeof AudioManager!=='undefined'){
+      AudioManager.init();
+      AudioManager.impact(large?.95:.78);
+    }
+  }
+
+  function potionSplatFx(game,x,y,p){
+    const c=secondary(p,83);
+    game.particles.burst(x,y,c,15,265,{gravity:340,life:.52,size:4.2,sizeEnd:.45,twinkle:true,shape:'blob'});
+    game.particles.burst(x,y,'#fff',5,150,{gravity:260,life:.32,size:2.4,sizeEnd:.2,shape:'spark'});
+    game.particles.burst(x,y,c,9,95,{gravity:40,life:1.0,size:4.5,sizeEnd:.5,shape:'bubble'});
+  }
+
+  // Apply the new weapon-specific range/model values after the game's existing
+  // consolidated Roguelike stat wrapper. Cooldown, size, attack time and knockback
+  // are already handled by the existing weaponSpec chain.
+  const priorSpec=Game.weaponSpec.bind(Game);
+  Game.weaponSpec=function(p){
+    const s=priorSpec(p),id=valid(p?.weapon);
+    if(!IDS.has(id))return s;
+    const u=stats(p),raw=WEAPONS[id],sm=customSizeMult(p),a=Math.max(.20,1+u.attackTime);
+    if(id==='firework_cannon'){
+      s.projectileRange=Number(raw.projectileRange||760)*Math.max(.05,1+u.range);
+      s.fireworkAcceleration=Number(raw.fireworkAcceleration||720)/a;
+      s.fireworkMaxSpeed=Number(raw.fireworkMaxSpeed||1320)/a;
+      s.fireworkLife=Math.max(.8,Number(raw.fireworkLife||4.2)*a);
+      s.fireworkExplosionRadius=Number(raw.fireworkExplosionRadius||62)*sm;
+    }else if(id==='potion'){
+      s.projectileRange=Number(raw.projectileRange||560)*Math.max(.05,1+u.range);
+      s.potionGravity=Number(raw.potionGravity||2050);
+      s.potionLob=Number(raw.potionLob||345)/a;
+      s.potionGoopRadius=Number(raw.potionGoopRadius||60)*sm;
+      s.potionGoopLife=Number(raw.potionGoopLife||2);
+    }else if(id==='pitchfork'){
+      s.pitchforkLength=Number(raw.pitchforkLength||72)*sm;
+      s.attackCenter=Number(s.attackCenter||raw.attackCenter||72)*Math.max(.05,1+u.range);
+    }
+    return s;
+  };
+
+  function spawnFirework(game,p,a,serial){
+    const s=game.weaponSpec(p),o=fireworkOrigin(game,p,a,s),id=`fw:${p.id}:${serial}`;
+    if((game.newWeaponProjectiles||[]).some(q=>q.id===id))return;
+    game.newWeaponProjectiles.push({id,kind:'firework',ownerId:p.id,x:o.x,y:o.y,prevX:o.x,prevY:o.y,
+      vx:Math.cos(a)*Number(s.projectileSpeed||220),vy:Math.sin(a)*Number(s.projectileSpeed||220),angle:a,travel:0,
+      maxRange:Number(s.projectileRange||760),life:Number(s.fireworkLife||4.2),age:0,radius:Number(s.projectileRadius||8),serial});
+  }
+
+  function spawnPotion(game,p,a,serial){
+    const s=game.weaponSpec(p),o=potionOrigin(game,p,a,s),id=`pt:${p.id}:${serial}`;
+    if((game.newWeaponProjectiles||[]).some(q=>q.id===id))return;
+    game.newWeaponProjectiles.push({id,kind:'potion',ownerId:p.id,x:o.x,y:o.y,prevX:o.x,prevY:o.y,
+      vx:Math.cos(a)*Number(s.projectileSpeed||590),vy:Math.sin(a)*Number(s.projectileSpeed||590)-Number(s.potionLob||345),angle:a,travel:0,
+      maxRange:Number(s.projectileRange||560),life:4.0,age:0,radius:Number(s.projectileRadius||11),serial});
+  }
+
+  function beginNew(game,p,angle,remoteSerial=null){
+    if(!game.isWeaponry()||!p||p.spectator||!p.alive)return false;
+    const id=valid(p.weapon),s=game.weaponSpec(p);
+    if(!IDS.has(id)||(p.weaponCooldown||0)>0||p.weaponPhase!=='idle')return false;
+    const a=game.normalizeAngle(Number.isFinite(Number(angle))?Number(angle):Number(p.weaponOrbitAngle)||0);
+    p.weaponAttackAngle=a;
+    p.weaponOrbitAngle=a;
+    p.weaponPhase=id==='pitchfork'?'active':'hold';
+    p.weaponPhaseTime=0;
+    p.weaponCooldown=Number(s.cooldown)||0;
+    p.weaponCooldownMax=p.weaponCooldown;
+    p.weaponHitIds={};
+    p.weaponContactLocks={};
+    p.weaponActionSerial=(p.weaponActionSerial||0)+1;
+    p.weaponActionCount=(p.weaponActionCount||0)+1;
+    if(remoteSerial!=null)p.netWeaponActionSerial=Number(remoteSerial)||p.netWeaponActionSerial||0;
+    p._weaponPatternAngles=customAngles(game,p,a);
+    p.weaponPatternAngles=p._weaponPatternAngles.slice();
+    p._newWeaponAttackEnded=false;
+
+    if(id==='firework_cannon'){
+      spawnFirework(game,p,a,p.weaponActionSerial);
+      p.weaponWorldX=p.x+Math.cos(a)*(s.idleCenter||61);
+      p.weaponWorldY=p.y+Math.sin(a)*(s.idleCenter||61);
+      for(let i=0;i<p._weaponPatternAngles.length;i++)spawnFirework(game,p,p._weaponPatternAngles[i],p.weaponActionSerial*100+i+1);
+    }else if(id==='potion'){
+      spawnPotion(game,p,a,p.weaponActionSerial);
+      p.weaponWorldX=p.x+Math.cos(a)*(s.idleCenter||58);
+      p.weaponWorldY=p.y+Math.sin(a)*(s.idleCenter||58);
+      for(let i=0;i<p._weaponPatternAngles.length;i++)spawnPotion(game,p,p._weaponPatternAngles[i],p.weaponActionSerial*100+i+1);
+    }else if(id==='pitchfork'){
+      p.weaponWorldX=p.x+Math.cos(a)*(s.attackCenter||72);
+      p.weaponWorldY=p.y+Math.sin(a)*(s.attackCenter||72);
+    }
+
+    if(remoteSerial==null || game.isHost) broadcastAttack(game,p,a);
+    return true;
+  }
+
+  function receiveNew(game,data){
+    if(!game.isWeaponry()||!data?.id)return false;
+    const p=game.players?.[data.id];
+    if(!p||p.id===game.myId||p.spectator||!IDS.has(valid(data.weapon))||valid(data.weapon)!==valid(p.weapon))return false;
+    const serial=Number(data.serial)||0;
+    if(serial && serial<=Number(p.netWeaponActionSerial||0))return false;
+    p.netWeaponActionSerial=serial||((p.netWeaponActionSerial||0)+1);
+    p.weaponActionSerial=Math.max(Number(p.weaponActionSerial)||0,Number(p.netWeaponActionSerial)||0);
+    p.weaponAttackAngle=game.normalizeAngle(Number.isFinite(Number(data.angle))?Number(data.angle):p.weaponOrbitAngle);
+    p.weaponOrbitAngle=game.normalizeAngle(Number.isFinite(Number(data.orbitAngle))?Number(data.orbitAngle):p.weaponAttackAngle);
+    p.weaponPhase='active'===data.phase?'active':'hold';
+    p.weaponPhaseTime=0;
+    const s=game.weaponSpec(p);
+    p.weaponCooldown=Number(s.cooldown)||0;p.weaponCooldownMax=p.weaponCooldown;
+    p.weaponHitIds={};p.weaponContactLocks={};
+    p.weaponActionCount=(p.weaponActionCount||0)+1;
+    p._weaponPatternAngles=customAngles(game,p,p.weaponAttackAngle);p.weaponPatternAngles=p._weaponPatternAngles.slice();
+    if(valid(p.weapon)==='firework_cannon'){
+      spawnFirework(game,p,p.weaponAttackAngle,p.weaponActionSerial);
+      for(let i=0;i<p._weaponPatternAngles.length;i++)spawnFirework(game,p,p._weaponPatternAngles[i],p.weaponActionSerial*100+i+1);
+    }else if(valid(p.weapon)==='potion'){
+      spawnPotion(game,p,p.weaponAttackAngle,p.weaponActionSerial);
+      for(let i=0;i<p._weaponPatternAngles.length;i++)spawnPotion(game,p,p._weaponPatternAngles[i],p.weaponActionSerial*100+i+1);
+    }
+    return true;
+  }
+
+  function endNew(game,p){
+    if(!p||!IDS.has(valid(p.weapon)))return false;
+    const id=valid(p.weapon),s=game.weaponSpec(p),a=Number(p.weaponAttackAngle)||Number(p.weaponOrbitAngle)||0;
+    p.weaponPhase='idle';p.weaponPhaseTime=0;p.weaponHitIds={};p._weaponPatternAngles=[];p.weaponPatternAngles=[];
+    p.weaponOrbitAngle=game.normalizeAngle(a);
+    p.weaponWorldX=p.x+Math.cos(a)*(s.idleCenter||60);
+    p.weaponWorldY=p.y+Math.sin(a)*(s.idleCenter||60);
+    p.weaponReturnX=p.weaponWorldX;p.weaponReturnY=p.weaponWorldY;
+    return true;
+  }
+
+  function doubleTroubleStart(game,p,a,remoteSerial){
+    const result=beginNew(game,p,a,remoteSerial);
+    if(result && stats(p).doubleTrouble && !p._doubleTroubleChainInProgress){
+      p._doubleTroublePending=1;
+      p._doubleTroubleFinalCooldownPending=false;
+    }
+    return result;
+  }
+
+  // Route the three new weapons around the old weapon state machine while retaining
+  // its input/network entry points for every existing weapon.
+  const priorStart=Game.startWeaponAttack.bind(Game);
+  Game.startWeaponAttack=function(p,angle,fromInput=false,remoteSeq=null){
+    if(IDS.has(valid(p?.weapon)))return doubleTroubleStart(this,p,angle,remoteSeq);
+    return priorStart(p,angle,fromInput,remoteSeq);
+  };
+
+  const priorReceive=Game.receiveWeaponAttack?.bind(Game);
+  if(priorReceive)Game.receiveWeaponAttack=function(data){
+    if(IDS.has(valid(data?.weapon)))return receiveNew(this,data);
+    return priorReceive(data);
+  };
+
+  const priorEnd=Game.endWeaponAttack.bind(Game);
+  Game.endWeaponAttack=function(p){
+    if(!p||!IDS.has(valid(p.weapon)))return priorEnd(p);
+    const shouldChain=stats(p).doubleTrouble>0&&p.alive&&!p.spectator&&!p._doubleTroubleChainInProgress&&Number(p._doubleTroublePending||0)>0;
+    if(shouldChain){
+      endNew(this,p);
+      p._doubleTroublePending=0;
+      p._doubleTroubleChainInProgress=true;
+      p.weaponCooldown=0;p.weaponCooldownMax=0;
+      const a=Number(p.weaponAttackAngle)||Number(p.weaponOrbitAngle)||0;
+      const chained=doubleTroubleStart(this,p,a,null);
+      p._doubleTroubleChainInProgress=false;
+      if(chained){p._doubleTroubleFinalCooldownPending=true;return;}
+      p._doubleTroubleFinalCooldownPending=false;
+      return;
+    }
+    endNew(this,p);
+    if(p._doubleTroubleFinalCooldownPending){
+      p._doubleTroubleFinalCooldownPending=false;
+      const s=this.weaponSpec(p),cd=Math.max(0,Number(s.cooldown)||0)*1.75;
+      p.weaponCooldown=cd;p.weaponCooldownMax=cd;
+    }
+  };
+
+  function areaHitTargets(game,owner,kind,x,y,radius,speed,hitKey){
+    for(const target of Object.values(game.players||{})){
+      if(!target||!target.alive||target.spectator||target.id===owner.id)continue;
+      const dx=target.x-x,dy=target.y-y,reach=radius+(target.radius||26),d2=dx*dx+dy*dy;
+      if(d2>reach*reach)continue;
+      const locks=owner.weaponContactLocks||(owner.weaponContactLocks={});
+      const key=`${hitKey}:${target.id}`;
+      const now=performance.now();
+      if(Number(locks[key]||0)>now)continue;
+      locks[key]=now+(Number(game.weaponSpec(owner).contactCooldown)||.2)*1000;
+      eliminateOrLaunch(game,owner,target,kind,x,y,speed);
+    }
+  }
+
+  function surfaceAt(game,x,y,r){
+    const mw=Number(game.map?.width)||0,mh=Number(game.map?.height)||0;
+    if(x-r<=0||x+r>=mw||y-r<=0||y+r>=mh)return {x:clamp(x,r,mw-r),y:clamp(y,r,mh-r),border:true};
+    for(const plat of game.map?.platforms||[]){
+      const cp=game.closestPointOnRect(x,y,plat);
+      if(Number(cp?.dist)<=r+1.5)return {x:cp.x,y:cp.y,platform:plat};
+    }
+    return null;
+  }
+
+  function makeGoop(game,p,x,y){
+    const s=game.weaponSpec(p),id=`goop:${p.id}:${p.weaponActionSerial}:${Math.random()}`;
+    game.potionGoops.push({id,ownerId:p.id,x,y,radius:Number(s.potionGoopRadius||60),life:Number(s.potionGoopLife||2),maxLife:Number(s.potionGoopLife||2),pulse:Math.random()*TAU});
+    potionSplatFx(game,x,y,p);
+    if(game.isHost)NetworkManager.broadcast({t:'new_weapon_potion_goop',goop:{id,ownerId:p.id,x,y,radius:Number(s.potionGoopRadius||60),life:Number(s.potionGoopLife||2),maxLife:Number(s.potionGoopLife||2)}},true);
+  }
+
+  function explodeFirework(game,q){
+    const owner=game.players?.[q.ownerId];
+    const radius=Number(game.weaponSpec(owner||{weapon:'firework_cannon'}).fireworkExplosionRadius||62);
+    fireworkFx(game,q.x,q.y,owner||null,true);
+    if(game.isHost&&owner){
+      areaHitTargets(game,owner,'firework_cannon',q.x,q.y,radius,Number(game.weaponSpec(owner).contactKnockback||390)*1.04,`fw:${q.id}`);
+      NetworkManager.broadcast({t:'new_weapon_firework_explode',id:q.id,x:q.x,y:q.y,ownerId:q.ownerId,radius},true);
+    }
+  }
+
+  function splatPotion(game,q){
+    const owner=game.players?.[q.ownerId];
+    potionSplatFx(game,q.x,q.y,owner||null);
+    if(game.isHost&&owner){
+      const s=game.weaponSpec(owner),radius=Number(s.projectileRadius||11)+3;
+      areaHitTargets(game,owner,'potion',q.x,q.y,radius,Number(s.contactKnockback||360),`pt:${q.id}:impact`);
+      makeGoop(game,owner,q.x,q.y);
+      NetworkManager.broadcast({t:'new_weapon_potion_splat',id:q.id,x:q.x,y:q.y,ownerId:q.ownerId},true);
+    }
+  }
+
+  function updateFirework(game,q,dt){
+    q.prevX=q.x;q.prevY=q.y;
+    const owner=game.players?.[q.ownerId];
+    if(!owner||!owner.alive){return 'remove';}
+    const s=game.weaponSpec(owner),acc=Number(s.fireworkAcceleration||720),maxSpeed=Number(s.fireworkMaxSpeed||1320);
+    const speed=Math.hypot(q.vx,q.vy)||1;
+    const ns=Math.min(maxSpeed,speed+acc*dt);
+    q.vx=q.vx/speed*ns;q.vy=q.vy/speed*ns;
+    q.x+=q.vx*dt;q.y+=q.vy*dt;q.travel+=Math.hypot(q.vx,q.vy)*dt;q.life-=dt;q.age+=dt;q.angle=Math.atan2(q.vy,q.vx);
+    if(game.isHost){
+      for(const target of Object.values(game.players||{})){
+        if(!target||!target.alive||target.spectator||target.id===owner.id)continue;
+        const dx=target.x-q.x,dy=target.y-q.y,r=Number(target.radius||26)+Number(q.radius||8);
+        if(dx*dx+dy*dy<=r*r){explodeFirework(game,q);return 'remove';}
+      }
+      if(surfaceAt(game,q.x,q.y,Number(q.radius||8))||q.travel>=Number(s.projectileRange||760)||q.life<=0){explodeFirework(game,q);return 'remove';}
+    }
+    return null;
+  }
+
+  function updatePotion(game,q,dt){
+    q.prevX=q.x;q.prevY=q.y;
+    const owner=game.players?.[q.ownerId];
+    if(!owner||!owner.alive)return 'remove';
+    const s=game.weaponSpec(owner);
+    q.vy+=Number(s.potionGravity||2050)*dt;
+    q.x+=q.vx*dt;q.y+=q.vy*dt;q.travel+=Math.hypot(q.vx,q.vy)*dt;q.life-=dt;q.age+=dt;q.angle=Math.atan2(q.vy,q.vx);
+    if(game.isHost){
+      for(const target of Object.values(game.players||{})){
+        if(!target||!target.alive||target.spectator||target.id===owner.id)continue;
+        const dx=target.x-q.x,dy=target.y-q.y,r=Number(target.radius||26)+Number(q.radius||11);
+        if(dx*dx+dy*dy<=r*r){splatPotion(game,q);return 'remove';}
+      }
+      if(surfaceAt(game,q.x,q.y,Number(q.radius||11))||q.travel>=Number(s.projectileRange||560)||q.life<=0){splatPotion(game,q);return 'remove';}
+    }
+    return null;
+  }
+
+  function updateGoop(game,dt){
+    const keep=[];
+    for(const g of game.potionGoops||[]){
+      g.life-=dt;g.pulse=(Number(g.pulse)||0)+dt*5.4;
+      if(g.life<=0){
+        if(game.isHost)NetworkManager.broadcast({t:'new_weapon_potion_goop_remove',id:g.id},true);
+        continue;
+      }
+      if(game.isHost){
+        const owner=game.players?.[g.ownerId];
+        if(owner&&owner.alive){
+          for(const target of Object.values(game.players||{})){
+            if(!target||!target.alive||target.spectator||target.id===owner.id)continue;
+            const dx=target.x-g.x,dy=target.y-g.y,r=g.radius+(target.radius||26);
+            if(dx*dx+dy*dy>r*r)continue;
+            const locks=owner.weaponContactLocks||(owner.weaponContactLocks={}),key=`goop:${g.id}:${target.id}`,now=performance.now();
+            if(Number(locks[key]||0)>now)continue;
+            locks[key]=now+(Number(game.weaponSpec(owner).contactCooldown)||.26)*1000;
+            eliminateOrLaunch(game,owner,target,'potion',g.x,g.y,Number(game.weaponSpec(owner).contactKnockback||360)*.88);
+          }
+        }
+      }
+      keep.push(g);
+    }
+    game.potionGoops=keep;
+  }
+
+  function pitchforkFlurryPlacement(p,s){
+    const STEP=.045;
+    const step=Math.max(0,Math.floor((Number(p.weaponPhaseTime)||0)/STEP));
+    const baseSeq=[46,53,49,60,55,67,51,63,58,71,48,57,65,52,69,54];
+    const sideSeq=[-4,3,0,5,-2,4,-5,2,1,-3,4,-1,3,-4,0,2];
+    const turnSeq=[-.026,.014,0,.020,-.016,.012,-.022,.018,0,-.012,.022,-.008,.016,-.020,.010,-.014];
+    const idx=step%baseSeq.length;
+    const base=baseSeq[idx],side=sideSeq[idx],turn=turnSeq[idx];
+    const angle=(Number(p.weaponAttackAngle)||0)+turn;
+    const x=p.x+Math.cos(angle)*base-Math.sin(angle)*side;
+    const y=p.y+Math.sin(angle)*base+Math.cos(angle)*side;
+    return {step,base,side,angle,x,y};
+  }
+
+  function updatePitchfork(p,dt){
+    p.weaponPhaseTime+=dt;
+    const s=this.weaponSpec(p),place=pitchforkFlurryPlacement(p,s);
+    p.pitchforkFlurryStep=place.step;
+    p.pitchforkFlurryBase=place.base;
+    p.pitchforkFlurrySide=place.side;
+    p.pitchforkFlurryAngle=place.angle;
+    p.weaponWorldX=place.x;
+    p.weaponWorldY=place.y;
+    // Extremely fast discrete stabs: the pitchfork teleports to a new nearby
+    // point roughly every 45ms rather than sweeping continuously.
+    this.weaponActiveContact(p,p.weaponAttackAngle,place.base,place.base+Number(s.pitchforkLength||72)*.96,Number(s.activeWidth||9.5),'pitchfork');
+    for(const a of p._weaponPatternAngles||[]){
+      this.weaponActiveContact(p,a,place.base,place.base+Number(s.pitchforkLength||72)*.96,Number(s.activeWidth||9.5),'pitchfork');
+    }
+    if(p.weaponPhaseTime>=Number(s.attackActive||1))this.endWeaponAttack(p);
+  }
+
+  const priorUpdateWeapons=Game.updateWeapons.bind(Game);
+  Game.updateWeapons=function(dt){
+    if(!this.isWeaponry())return priorUpdateWeapons(dt);
+    // Temporarily hide new weapons from the old state machine. Set alive=false too:
+    // that prevents old sword/bo/staff branches from performing contact using the
+    // newly added weapon for one frame.
+    const masked=[];
+    for(const p of Object.values(this.players||{})){
+      if(!p||!IDS.has(valid(p.weapon)))continue;
+      masked.push({p,weapon:p.weapon,phase:p.weaponPhase,phaseTime:p.weaponPhaseTime,alive:p.alive});
+      p.weapon='sword';p.weaponPhase='idle';p.weaponPhaseTime=0;p.alive=false;
+    }
+    try{priorUpdateWeapons(dt);}finally{
+      for(const m of masked){m.p.weapon=m.weapon;m.p.weaponPhase=m.phase;m.p.weaponPhaseTime=m.phaseTime;m.p.alive=m.alive;}
+    }
+    const now=performance.now();
+    for(const p of Object.values(this.players||{})){
+      if(!p||!IDS.has(valid(p.weapon)))continue;
+      if(p.spectator||!p.alive){if(p.weaponPhase!=='idle')this.endWeaponAttack(p);continue;}
+      const s=this.weaponSpec(p);
+      if(p.weaponPhase==='idle'){
+        p.weaponOrbitAngle=this.normalizeAngle((Number(p.weaponOrbitAngle)||0)+Number(s.orbitSpeed||2)*dt);
+        const a=p.weaponOrbitAngle,c=Number(s.idleCenter||((s.idleInner+s.idleOuter)*.5)||60);
+        p.weaponWorldX=p.x+Math.cos(a)*c;p.weaponWorldY=p.y+Math.sin(a)*c;
+        continue;
+      }
+      if(valid(p.weapon)==='pitchfork')updatePitchfork.call(this,p,dt);
+      else{
+        p.weaponPhaseTime+=dt;
+        const cast=Number(s.castTime||.14);
+        if(p.weaponPhaseTime>=cast)this.endWeaponAttack(p);
+      }
+    }
+  };
+
+  const priorUpdateProjectiles=Game.updateWeaponProjectiles.bind(Game);
+  Game.updateWeaponProjectiles=function(dt){
+    priorUpdateProjectiles(dt);
+    if(!this.isWeaponry())return;
+    this.newWeaponProjectiles=this.newWeaponProjectiles||[];
+    this.potionGoops=this.potionGoops||[];
+    const keep=[];
+    for(const q of this.newWeaponProjectiles){
+      let remove=null;
+      if(q.kind==='firework')remove=updateFirework(this,q,dt);
+      else if(q.kind==='potion')remove=updatePotion(this,q,dt);
+      if(!remove)keep.push(q);
+      else if(this.isHost)NetworkManager.broadcast({t:'new_weapon_projectile_remove',id:q.id,ownerId:q.ownerId,kind:q.kind},true);
+    }
+    this.newWeaponProjectiles=keep;
+    updateGoop(this,dt);
+    if(this.isHost){
+      this._newWeaponSyncAcc=(Number(this._newWeaponSyncAcc)||0)+dt;
+      if(this._newWeaponSyncAcc>=.075){
+        this._newWeaponSyncAcc=0;
+        NetworkManager.broadcast({t:'new_weapon_projectile_sync',projectiles:keep.map(q=>({id:q.id,kind:q.kind,ownerId:q.ownerId,x:q.x,y:q.y,vx:q.vx,vy:q.vy,angle:q.angle,life:q.life,travel:q.travel,age:q.age,radius:q.radius,serial:q.serial})),goops:(this.potionGoops||[]).map(g=>({id:g.id,ownerId:g.ownerId,x:g.x,y:g.y,radius:g.radius,life:g.life,maxLife:g.maxLife,pulse:g.pulse}))},true);
+      }
+    }
+  };
+
+  // Exact pitchfork hitbox: the whole handle plus all three connected tines
+  // follow the same discrete teleport position/angle used by the renderer.
+  const priorSegmentHit=Game.weaponSegmentHit.bind(Game);
+  Game.weaponSegmentHit=function(p,angle,inner,outer,width,target){
+    if(valid(p?.weapon)!=='pitchfork')return priorSegmentHit(p,angle,inner,outer,width,target);
+    const s=this.weaponSpec(p),r=Number(target?.radius||26),half=Number(width||s.activeWidth||9.5)+r*.08;
+    const place=(p.weaponPhase==='active')?pitchforkFlurryPlacement(p,s):{base:30,side:0,angle:Number(p.weaponOrbitAngle)||Number(angle)||0};
+    const a=this.normalizeAngle(Number(place.angle)||Number(angle)||0);
+    const base=Math.max(10,Number(place.base)||Number(inner)||30);
+    const cx=p.x,cy=p.y,dirx=Math.cos(a),diry=Math.sin(a),perpx=-diry,perpy=dirx;
+    const len=Math.max(20,Number(s.pitchforkLength||72));
+    const segmentHit=(x1,y1,x2,y2,w)=>this.weaponSegmentHitsTarget(x1,y1,x2,y2,w,target);
+    const handleEnd=base+len*.59;
+    if(segmentHit(cx+dirx*base+perpx*(Number(place.side)||0),cy+diry*base+perpy*(Number(place.side)||0),
+                   cx+dirx*handleEnd+perpx*(Number(place.side)||0),cy+diry*handleEnd+perpy*(Number(place.side)||0),half))return true;
+    const hub=base+len*.57;
+    const tineEnd=base+len*.97;
+    for(const off0 of [-.23,0,.23]){
+      const off=off0*len;
+      const bx=cx+dirx*hub+perpx*((Number(place.side)||0)+off),by=cy+diry*hub+perpy*((Number(place.side)||0)+off);
+      const tx=cx+dirx*tineEnd+perpx*((Number(place.side)||0)+off*.72),ty=cy+diry*tineEnd+perpy*((Number(place.side)||0)+off*.72);
+      if(segmentHit(bx,by,tx,ty,half*.9))return true;
+    }
+    return false;
+  };
+
+  function drawCannon(ctx,p,active=false){
+    const pri=primary(p,92),sec=secondary(p,84);
+    const sm=customSizeMult(p||{});
+    ctx.save();ctx.scale(.78*sm,.78*sm);ctx.lineCap='round';ctx.lineJoin='round';
+    // Compact PLUNK-style hand cannon: simple body, clear player-color bands.
+    ctx.fillStyle='#1d1712';ctx.fillRect(-12,-6,16,12);
+    ctx.fillStyle=pri;ctx.fillRect(-10,-4,4,8);
+    ctx.fillStyle=sec;ctx.fillRect(-6,-4,4,8);
+    const g=ctx.createLinearGradient(0,-7,0,7);g.addColorStop(0,'#3a3028');g.addColorStop(.5,'#6f665d');g.addColorStop(1,'#24201c');
+    ctx.fillStyle=g;ctx.beginPath();ctx.roundRect(-1,-7,38,14,4);ctx.fill();
+    ctx.save();ctx.beginPath();ctx.roundRect(1,-6,34,12,3);ctx.clip();
+    ctx.fillStyle=pri;ctx.fillRect(2,-7,7,14);ctx.fillStyle=sec;ctx.fillRect(9,-7,7,14);ctx.fillStyle=pri;ctx.fillRect(16,-7,7,14);ctx.fillStyle=sec;ctx.fillRect(23,-7,7,14);
+    ctx.restore();
+    ctx.strokeStyle='#171511';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(-1,-7,38,14,4);ctx.stroke();
+    ctx.fillStyle=sec;ctx.beginPath();ctx.arc(37,0,7.5+(active?1:0),0,TAU);ctx.fill();
+    ctx.fillStyle=pri;ctx.beginPath();ctx.arc(37,0,4.2,0,TAU);ctx.fill();
+    if(active){ctx.strokeStyle=sec;ctx.lineWidth=2;ctx.beginPath();ctx.arc(37,0,9.5,0,TAU);ctx.stroke();}
+    ctx.restore();
+  }
+
+  function drawPotion(ctx,p,active=false){
+    const pri=primary(p,90),sec=secondary(p,92);
+    const sm=customSizeMult(p||{});
+    const priDark=adjustHex(pri,.56),secDark=adjustHex(sec,.58),priHi=adjustHex(pri,1.16),secHi=adjustHex(sec,1.12);
+    ctx.save();ctx.scale(.86*sm,.86*sm);ctx.lineJoin='round';
+    // Entire bottle stays in the player's two cosmetic colors; there is no white/glass fill.
+    ctx.fillStyle=priDark;ctx.fillRect(-4,-12,8,6);
+    ctx.fillStyle=pri;ctx.fillRect(-5,-14,10,4);
+    ctx.fillStyle=secDark;ctx.beginPath();ctx.moveTo(-11,-6);ctx.lineTo(11,-6);ctx.lineTo(13,8);ctx.quadraticCurveTo(0,15,-13,8);ctx.closePath();ctx.fill();
+    ctx.fillStyle=sec;ctx.beginPath();ctx.moveTo(-9,-2);ctx.lineTo(9,-2);ctx.lineTo(11,7);ctx.quadraticCurveTo(0,12,-11,7);ctx.closePath();ctx.fill();
+    ctx.strokeStyle=priDark;ctx.lineWidth=2.2;ctx.beginPath();ctx.moveTo(-11,-6);ctx.lineTo(11,-6);ctx.lineTo(13,8);ctx.quadraticCurveTo(0,15,-13,8);ctx.closePath();ctx.stroke();
+    ctx.strokeStyle=secHi;ctx.globalAlpha=.72;ctx.lineWidth=1.25;ctx.beginPath();ctx.moveTo(-7,-3);ctx.lineTo(-6,5);ctx.stroke();ctx.globalAlpha=1;
+    ctx.fillStyle=priHi;ctx.beginPath();ctx.arc(0,2,2.2,0,TAU);ctx.fill();
+    if(active){ctx.strokeStyle=secHi;ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,3,16,0,TAU);ctx.stroke();}
+    ctx.restore();
+  }
+
+  function drawPitchforkPolished(ctx,p,active=false){
+    const pri=primary(p,92),sec=secondary(p,84),sm=customSizeMult(p||{}),len=72*sm;
+    const widthScale=Math.max(.7,Math.min(2.2,sm));
+    ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+    const wood=ctx.createLinearGradient(0,-4*widthScale,0,4*widthScale);wood.addColorStop(0,adjustHex(pri,.78));wood.addColorStop(.5,pri);wood.addColorStop(1,adjustHex(pri,.50));
+    const handleW=5*widthScale;
+    ctx.strokeStyle='#201915';ctx.lineWidth=8*widthScale;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(len*.58,0);ctx.stroke();
+    ctx.strokeStyle=wood;ctx.lineWidth=handleW;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(len*.58,0);ctx.stroke();
+    const hubX=len*.57,barY=len*.23;
+    ctx.strokeStyle=adjustHex(sec,.35);ctx.lineWidth=9*widthScale;ctx.beginPath();ctx.moveTo(hubX,-barY);ctx.lineTo(hubX,barY);ctx.stroke();
+    ctx.strokeStyle=sec;ctx.lineWidth=5.5*widthScale;ctx.beginPath();ctx.moveTo(hubX,-barY);ctx.lineTo(hubX,barY);ctx.stroke();
+    ctx.fillStyle=pri;ctx.fillRect(len*.43,-4*widthScale,len*.07,8*widthScale);
+    ctx.fillStyle=sec;ctx.fillRect(len*.50,-4*widthScale,len*.06,8*widthScale);
+    const metal=ctx.createLinearGradient(0,-8*widthScale,0,8*widthScale);metal.addColorStop(0,adjustHex(sec,.60));metal.addColorStop(.45,sec);metal.addColorStop(1,adjustHex(sec,.48));
+    const offsets=[-.23,0,.23];
+    for(const off of offsets){
+      const baseX=hubX,baseY=off*len*.88,tipX=len*.97,tipY=off*len*.72;
+      ctx.strokeStyle='#202422';ctx.lineWidth=7*widthScale;ctx.beginPath();ctx.moveTo(baseX,baseY);ctx.lineTo(tipX,tipY);ctx.stroke();
+      ctx.strokeStyle=metal;ctx.lineWidth=4.2*widthScale;ctx.beginPath();ctx.moveTo(baseX,baseY);ctx.lineTo(tipX,tipY);ctx.stroke();
+      ctx.fillStyle=sec;ctx.beginPath();ctx.moveTo(tipX,tipY);ctx.lineTo(tipX-7*widthScale,tipY-2.5*widthScale);ctx.lineTo(tipX-4*widthScale,tipY+2.5*widthScale);ctx.closePath();ctx.fill();
+    }
+    if(active){
+      ctx.strokeStyle=pri;ctx.globalAlpha=.32;ctx.lineWidth=2*widthScale;
+      ctx.beginPath();ctx.moveTo(hubX+3*widthScale,-barY);ctx.lineTo(len,0);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(hubX+3*widthScale,barY);ctx.lineTo(len,0);ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawFireworkProjectile(ctx,q,owner){
+    const pri=primary(owner,96),white='#fffdf7';
+    ctx.save();ctx.rotate(Number(q.angle)||0);
+    const s=Number(q.radius)||8;
+    ctx.strokeStyle='#242525';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(-s*2.1,0);ctx.lineTo(-s*.55,0);ctx.stroke();
+    ctx.fillStyle='#f3f5f2';ctx.beginPath();ctx.moveTo(-s*.55,-s*.62);ctx.lineTo(s*.95,0);ctx.lineTo(-s*.55,s*.62);ctx.closePath();ctx.fill();
+    ctx.save();ctx.beginPath();ctx.moveTo(-s*.42,-s*.58);ctx.lineTo(s*.55,-s*.12);ctx.lineTo(s*.20,s*.12);ctx.lineTo(-s*.42,s*.55);ctx.closePath();ctx.clip();
+    ctx.fillStyle=pri;ctx.fillRect(-s,-s, s*.75, s*2);ctx.fillStyle=white;ctx.fillRect(-s*.25,-s, s*.58, s*2);ctx.fillStyle=pri;ctx.fillRect(s*.35,-s,s*.35,s*2);ctx.restore();
+    ctx.fillStyle='#eee';ctx.beginPath();ctx.arc(s*.82,0,1.7,0,TAU);ctx.fill();
+    ctx.restore();
+  }
+
+  function drawGoop(ctx,g,p){
+    const c=secondary(p,84),alpha=clamp(Number(g.life)/Math.max(.01,Number(g.maxLife)||2),0,1),pulse=1+Math.sin(Number(g.pulse)||0)*.06;
+    ctx.save();ctx.globalAlpha=.86*alpha;ctx.translate(g.x,g.y);ctx.scale(pulse,.66+.05*Math.sin((Number(g.pulse)||0)*.7));
+    ctx.fillStyle='#171414';ctx.beginPath();ctx.ellipse(0,0,g.radius+4,g.radius*.58,0,0,TAU);ctx.fill();
+    const gr=ctx.createRadialGradient(-g.radius*.22,-g.radius*.18,2,0,0,g.radius);gr.addColorStop(0,'#f1f2ef');gr.addColorStop(.12,c);gr.addColorStop(.72,c);gr.addColorStop(1,'#201b18');ctx.fillStyle=gr;ctx.beginPath();ctx.ellipse(0,0,g.radius,g.radius*.52,0,0,TAU);ctx.fill();
+    for(let i=0;i<5;i++){const a=(i/5)*TAU+(Number(g.pulse)||0)*.08,rr=g.radius*(.42+.13*(i%2)),x=Math.cos(a)*rr,y=Math.sin(a)*rr*.43;ctx.fillStyle=i%2?'#fff':'#111';ctx.globalAlpha=.30*alpha;ctx.beginPath();ctx.arc(x,y,2+(i%3),0,TAU);ctx.fill();}
+    ctx.restore();
+  }
+
+  // Geometry used by catalog, hit testing helpers and the normal weapon motion sampler.
+  const priorGeometry=Game.weaponRenderGeometry.bind(Game);
+  Game.weaponRenderGeometry=function(p){
+    if(!IDS.has(valid(p?.weapon)))return priorGeometry(p);
+    const id=valid(p.weapon),s=this.weaponSpec(p);
+    const orbitAngle=Number(p.weaponOrbitAngle)||0;
+    if(id==='firework_cannon'){
+      const a=Number(p.weaponPhase==='idle'?p.weaponOrbitAngle:p.weaponAttackAngle)||0,c=Number(s.idleCenter||48);
+      return {angle:a,rotation:a,center:c,inner:Number(s.idleInner||24),outer:Number(s.idleOuter||72),length:Number(s.idleOuter||72)-Number(s.idleInner||24),worldX:p.x+Math.cos(a)*c,worldY:p.y+Math.sin(a)*c};
+    }
+    if(id==='potion'){
+      const c=Number(s.idleCenter||58),x=p.x+Math.cos(orbitAngle)*c,y=p.y+Math.sin(orbitAngle)*c;
+      return {angle:orbitAngle,rotation:0,center:c,inner:Number(s.idleInner||34),outer:Number(s.idleOuter||79),length:Number(s.idleOuter||79)-Number(s.idleInner||34),worldX:x,worldY:y};
+    }
+    const idle=String(p.weaponPhase||'idle')==='idle';
+    if(id==='pitchfork'){
+      const place=idle
+        ? {base:30,side:0,angle:orbitAngle,x:p.x+Math.cos(orbitAngle)*30,y:p.y+Math.sin(orbitAngle)*30,step:-1}
+        : pitchforkFlurryPlacement(p,s);
+      return {angle:place.angle,rotation:place.angle,center:place.base,inner:place.base,outer:place.base+Number(s.pitchforkLength||72)*.96,length:Number(s.pitchforkLength||72),worldX:place.x,worldY:place.y,flurryStep:place.step,side:place.side};
+    }
+    return priorGeometry(p);
+  };
+
+  const priorMotion=Game.weaponMotionSamplePoint.bind(Game);
+  Game.weaponMotionSamplePoint=function(p){
+    if(IDS.has(valid(p?.weapon))){const g=this.weaponRenderGeometry(p);return{x:Number(g.worldX)||p.x,y:Number(g.worldY)||p.y};}
+    return priorMotion(p);
+  };
+
+  const priorRenderWeapon=Game.renderWeapon.bind(Game);
+  Game.renderWeapon=function(ctx,p){
+    if(!p||!IDS.has(valid(p.weapon)))return priorRenderWeapon(ctx,p);
+    const id=valid(p.weapon),s=this.weaponSpec(p);
+    const x=(p.id!==this.myId&&Number.isFinite(p.renderX))?p.renderX:p.x;
+    const y=(p.id!==this.myId&&Number.isFinite(p.renderY))?p.renderY:p.y;
+    const active=p.weaponPhase!=='idle';
+    const angle=Number(p.weaponPhase==='idle'?p.weaponOrbitAngle:p.weaponAttackAngle)||0;
+    ctx.save();ctx.translate(x,y);
+    if(id==='firework_cannon'){
+      ctx.rotate(angle);ctx.translate(Number(s.idleCenter||48),0);drawCannon(ctx,p,active);
+    }else if(id==='potion'){
+      // The bottle orbits, but its own orientation stays vertical.
+      ctx.translate(Math.cos(angle)*Number(s.idleCenter||58),Math.sin(angle)*Number(s.idleCenter||58));
+      drawPotion(ctx,p,active);
+    }else{
+      const g=this.weaponRenderGeometry(p),hist=p._pitchforkRenderHistory||[];
+      if(active){
+        const step=Number(g.flurryStep)||0;
+        if(p._pitchforkRenderStep!==step){
+          if(Number.isFinite(Number(p._pitchforkRenderBaseX))){
+            hist.unshift({x:Number(p._pitchforkRenderBaseX),y:Number(p._pitchforkRenderBaseY),angle:Number(p._pitchforkRenderBaseA)||angle});
+            if(hist.length>4)hist.length=4;
+          }
+          p._pitchforkRenderStep=step;
+          p._pitchforkRenderBaseX=g.worldX;p._pitchforkRenderBaseY=g.worldY;p._pitchforkRenderBaseA=g.rotation;
+        }
+        for(let i=hist.length-1;i>=0;i--){
+          const h=hist[i],fade=.10+(3-i)*.045;
+          ctx.save();ctx.globalAlpha=Math.max(.04,fade);ctx.translate(h.x-x,h.y-y);ctx.rotate(h.angle||0);drawPitchforkPolished(ctx,p,false);ctx.restore();
+        }
+      }
+      ctx.save();ctx.globalAlpha=1;ctx.translate(g.worldX-x,g.worldY-y);ctx.rotate(g.rotation||angle);drawPitchforkPolished(ctx,p,active);ctx.restore();
+    }
+    ctx.restore();
+  };
+
+  const priorRenderProjectiles=Game.renderWeaponProjectiles.bind(Game);
+  Game.renderWeaponProjectiles=function(ctx){
+    priorRenderProjectiles(ctx);
+    if(!this.isWeaponry())return;
+    const cam=this.camera,z=cam.zoom||1;
+    ctx.save();ctx.scale(z,z);ctx.translate(-cam.x,-cam.y);
+    for(const g of this.potionGoops||[]){const owner=this.players?.[g.ownerId];if(owner)drawGoop(ctx,g,owner);}
+    for(const q of this.newWeaponProjectiles||[]){
+      const owner=this.players?.[q.ownerId];if(!owner)continue;
+      ctx.save();ctx.translate(q.x,q.y);
+      if(q.kind==='firework')drawFireworkProjectile(ctx,q,owner);
+      else if(q.kind==='potion'){ctx.scale(.72,.72);drawPotion(ctx,owner,false);}
+      ctx.restore();
+    }
+    ctx.restore();
+  };
+
+  const priorHud=Game.weaponHudUpdate?.bind(Game);
+  if(priorHud)Game.weaponHudUpdate=function(){
+    priorHud();
+    const p=this.players?.[this.myId];if(!p||!IDS.has(valid(p.weapon)))return;
+    const el=document.getElementById('weaponHudState');
+    if(!el)return;
+    if(p.weaponPhase==='active')el.textContent='FLURRY';
+    else if(p.weaponPhase==='hold')el.textContent='FIRING';
+  };
+
+  const priorResetPlayers=Game.resetPlayers?.bind(Game);
+  if(priorResetPlayers)Game.resetPlayers=function(){
+    const r=priorResetPlayers();this.newWeaponProjectiles=[];this.potionGoops=[];return r;
+  };
+
+  // Final network layer. Existing weapon packets stay untouched; these branches only
+  // consume packets carrying one of the new IDs or one of the new FX message types.
+  const priorHandle=Game.handleNetData.bind(Game);
+  Game.handleNetData=function(pid,data){
+    if(data?.t==='weapon_attack'&&IDS.has(valid(data.weapon))){
+      if(this.isHost){
+        const p=this.players?.[pid];if(!p||p.spectator||!this.isWeaponry()||valid(p.weapon)!==valid(data.weapon))return;
+        const seq=(data.seq||0)&65535,prev=p.lastWeaponEventSeq,newer=prev==null||(((seq-(prev||0)+65536)&65535)<32768&&seq!==prev);if(!newer)return;
+        p.lastWeaponEventSeq=seq;
+        this.startWeaponAttack(p,Number(data.angle),false,seq);
+      }else if(data.id){this.receiveWeaponAttack(data);}
+      return;
+    }
+    if(data?.t==='new_weapon_projectile_remove'){
+      this.newWeaponProjectiles=(this.newWeaponProjectiles||[]).filter(q=>q.id!==data.id);return;
+    }
+    if(data?.t==='new_weapon_projectile_sync'&&!this.isHost){
+      const incoming=new Map((data.projectiles||[]).map(q=>[q.id,q]));
+      const current=this.newWeaponProjectiles||[];
+      this.newWeaponProjectiles=current.filter(q=>incoming.has(q.id));
+      for(const q0 of data.projectiles||[]){
+        const q=this.newWeaponProjectiles.find(x=>x.id===q0.id);
+        if(q){Object.assign(q,q0);}else this.newWeaponProjectiles.push(Object.assign({},q0));
+      }
+      const gs=new Map((data.goops||[]).map(g=>[g.id,g]));
+      this.potionGoops=(this.potionGoops||[]).filter(g=>gs.has(g.id));
+      for(const g0 of data.goops||[]){const g=this.potionGoops.find(x=>x.id===g0.id);if(g)Object.assign(g,g0);else this.potionGoops.push(Object.assign({},g0));}
+      return;
+    }
+    if(data?.t==='new_weapon_potion_goop'&&!this.isHost){
+      this.potionGoops=this.potionGoops||[];if(!this.potionGoops.some(g=>g.id===data.goop?.id))this.potionGoops.push(Object.assign({},data.goop));return;
+    }
+    if(data?.t==='new_weapon_potion_goop_remove'&&!this.isHost){
+      this.potionGoops=(this.potionGoops||[]).filter(g=>g.id!==data.id);return;
+    }
+    if(data?.t==='new_weapon_firework_explode'&&!this.isHost){
+      const idx=(this.newWeaponProjectiles||[]).findIndex(q=>q.id===data.id);if(idx>=0)this.newWeaponProjectiles.splice(idx,1);
+      const owner=this.players?.[data.ownerId];fireworkFx(this,Number(data.x)||0,Number(data.y)||0,owner||null,true);return;
+    }
+    if(data?.t==='new_weapon_potion_splat'&&!this.isHost){
+      const idx=(this.newWeaponProjectiles||[]).findIndex(q=>q.id===data.id);if(idx>=0)this.newWeaponProjectiles.splice(idx,1);
+      const owner=this.players?.[data.ownerId];potionSplatFx(this,Number(data.x)||0,Number(data.y)||0,owner||null);return;
+    }
+    return priorHandle(pid,data);
+  };
+
+  // Catalog preview: use the same live weapon drawings rather than a generic icon.
+  const priorCatalog=(typeof drawWeaponCatalogPreview==='function')?drawWeaponCatalogPreview:null;
+  if(priorCatalog){
+    drawWeaponCatalogPreview=function(canvasEl,weaponId){
+      const id=valid(weaponId);
+      if(!IDS.has(id))return priorCatalog(canvasEl,weaponId);
+      const ctx=canvasEl.getContext('2d');if(!ctx)return;
+      const W=canvasEl.width,H=canvasEl.height;
+      const cust=Storage.get('customization',{hue:200,saturation:80,hue2:40,saturation2:60,brightness:60,brightness2:60,gradientPattern:'radial-out',eyes:'classic',mouth:'smile',brows:'none',outline:'none'});
+      const fake=new Player('weapon-preview','',cust,{x:0,y:0});
+      fake.radius=26;fake.facing=1;fake.alive=true;fake.preview=true;fake.heavy=false;
+      fake.weapon=id;fake.weaponPhase='idle';fake.weaponOrbitAngle=-Math.PI/4;fake.weaponAttackAngle=-Math.PI/4;fake.weaponPhaseTime=0;fake.weaponUpgrades={};
+      const sprite=Game.getCharacterSprite(fake,cust,fake.radius);
+      const g=Game.weaponRenderGeometry(fake);
+      const maxExtent=id==='pitchfork'?Math.max(125,(Number(g.center)||30)+(Number(g.length)||72)):Math.max(118,(Number(g.center)||58)+48);
+      const scale=Math.min(1.08,Math.max(.72,150/maxExtent));
+      ctx.clearRect(0,0,W,H);ctx.fillStyle='#080604';ctx.fillRect(0,0,W,H);
+      const bg=ctx.createRadialGradient(W*.5,H*.5,10,W*.5,H*.5,Math.max(W,H)*.55);bg.addColorStop(0,'#21170f');bg.addColorStop(1,'#090705');ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+      ctx.save();ctx.translate(W*.5,H*.5+4);ctx.scale(scale,scale);ctx.imageSmoothingEnabled=true;
+      ctx.drawImage(sprite.canvas,-sprite.size/2,-sprite.size/2);
+      const a=-Math.PI/4;
+      if(id==='firework_cannon'){
+        ctx.save();ctx.rotate(a);ctx.translate(Number(g.center||48),0);drawCannon(ctx,fake,false);ctx.restore();
+      }else if(id==='potion'){
+        ctx.save();ctx.translate(Math.cos(a)*Number(g.center||58),Math.sin(a)*Number(g.center||58));drawPotion(ctx,fake,false);ctx.restore();
+      }else{
+        ctx.save();ctx.translate(Math.cos(a)*30,Math.sin(a)*30);ctx.rotate(a);drawPitchforkPolished(ctx,fake,false);ctx.restore();
+      }
+      ctx.restore();
+    };
+  }
+
+  Game.newWeaponProjectiles=Game.newWeaponProjectiles||[];
+  Game.potionGoops=Game.potionGoops||[];
+  Game.__newWeaponsV60=true;
+})();
+</script>
+
+
+
+
+<script id="new-weapons-roguelike-audit-v61">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined'||typeof WEAPONS==='undefined')return;
+  const IDS=new Set(['firework_cannon','potion','pitchfork']);
+  const priorSpec=Game.weaponSpec.bind(Game);
+  const upgradeSummary=p=>{
+    const u=(typeof mergedUpgrades==='function')?mergedUpgrades(p):(p?.weaponUpgrades||{});
+    return {
+      range:Number(u.rangePct)||0,
+      cooldown:Number(u.cooldownPct)||0,
+      size:Number(u.sizePct)||0,
+      attackTime:Number(u.attackSpeedPct)||0,
+      knockback:Number(u.knockbackPct)||0,
+      patternCount:Math.max(0,Math.min(8,Math.floor(Number(p?.weaponUpgrades?.patternConeCount)||0))),
+      patternSpread:Math.max(.03,Math.min(.70,Number(p?.weaponUpgrades?.patternConeSpread)||.24)),
+      patternInterval:Math.max(1,Number(p?.weaponUpgrades?.patternConeInterval)||2),
+      doubleTrouble:Number(p?.weaponUpgrades?.doubleTrouble)||0
+    };
+  };
+  Game.weaponSpec=function(p){
+    const s=priorSpec(p),id=p?.weapon;
+    if(!IDS.has(id))return s;
+    const u=upgradeSummary(p);
+    s.rogueRangePct=u.range;
+    s.rogueCooldownPct=u.cooldown;
+    s.rogueSizePct=u.size;
+    s.rogueAttackTimePct=u.attackTime;
+    s.rogueKnockbackPct=u.knockback;
+    s.patternConeCount=u.patternCount;
+    s.patternConeSpread=u.patternSpread;
+    s.patternConeInterval=u.patternInterval;
+    s.doubleTrouble=u.doubleTrouble;
+    if(id==='firework_cannon'){
+      s.projectileRange=Math.max(40,Number(s.projectileRange||760));
+      s.projectileRadius=Math.max(2,Number(s.projectileRadius||9));
+      s.fireworkExplosionRadius=Math.max(20,Number(s.fireworkExplosionRadius||86));
+    }else if(id==='potion'){
+      s.projectileRange=Math.max(40,Number(s.projectileRange||560));
+      s.projectileRadius=Math.max(2,Number(s.projectileRadius||11));
+      s.potionGoopRadius=Math.max(20,Number(s.potionGoopRadius||60));
+      s.potionGoopLife=Math.max(.25,Number(s.potionGoopLife||2));
+    }else if(id==='pitchfork'){
+      s.pitchforkLength=Math.max(20,Number(s.pitchforkLength||72));
+      s.attackCenter=Math.max(20,Number(s.attackCenter||72));
+    }
+    return s;
+  };
+  Game.__newWeaponsRoguelikeAuditV61=true;
+})();
+</script>
+<script id="roguelike-pure-attack-time-benefit-final-v62">
+(function(){
+  'use strict';
+  if(typeof ROGUE_CARDS==='undefined'||!Array.isArray(ROGUE_CARDS)) return;
+  const onlyAttackTime=/^\s*[+\-−]\s*(\d+(?:\.\d+)?)%\s*ATTACK TIME\s*$/i;
+  const numberFromEffect=(text)=>{
+    const m=String(text||'').match(onlyAttackTime);
+    return m?Number(m[1]):null;
+  };
+  for(const card of ROGUE_CARDS){
+    if(!card) continue;
+    let v=null;
+    if(card.key==='attackSpeedPct') v=Math.abs(Number(card.value)||0);
+    else if(card.key==='multi' && card.value && typeof card.value==='object'){
+      const effectNumber=numberFromEffect(card.effect);
+      const entries=Object.entries(card.value).filter(([k,n])=>k==='attackSpeedPct' && Math.abs(Number(n)||0)>.0005);
+      const otherStats=Object.entries(card.value).some(([k,n])=>k!=='attackSpeedPct' && Math.abs(Number(n)||0)>.0005);
+      if(effectNumber!==null && !otherStats && entries.length===1) v=Math.abs(Number(entries[0][1])||effectNumber/100);
+    }
+    if(v===null || !Number.isFinite(v) || v<=.0005) continue;
+    if(card.key==='attackSpeedPct') card.value=-v;
+    else if(card.key==='multi' && card.value && typeof card.value==='object') card.value.attackSpeedPct=-v;
+    card.effect=`−${Math.round(v*100)}% ATTACK TIME`;
+  }
+})();
+</script>
+
+<script id="roguelike-pure-attack-time-final-fix-v62">
+(function(){
+  'use strict';
+  if(typeof ROGUE_CARDS==='undefined'||!Array.isArray(ROGUE_CARDS))return;
+  const setEffect=(card,v)=>{
+    const n=Math.round(Math.abs(Number(v||0))*100);
+    card.effect='−'+n+'% ATTACK TIME';
+    card.desc='Your weapon attacks, wind-ups, and movement happen faster.';
+  };
+  for(const card of ROGUE_CARDS){
+    if(!card)continue;
+    if(card.key==='attackSpeedPct'){
+      const v=Number(card.value)||0;
+      if(Number.isFinite(v)&&Math.abs(v)>0.0005){
+        card.value=-Math.abs(v);
+        setEffect(card,card.value);
+      }
+      continue;
+    }
+    if(card.key==='multi'&&card.value&&typeof card.value==='object'){
+      const entries=Object.entries(card.value).filter(([k,v])=>
+        ['rangePct','cooldownPct','sizePct','hitboxPct','attackSpeedPct','speedPct','knockbackPct'].includes(k) && Math.abs(Number(v)||0)>0.0005
+      );
+      if(entries.length===1 && (entries[0][0]==='attackSpeedPct'||entries[0][0]==='speedPct')){
+        const raw=Number(entries[0][1])||0;
+        card.value.attackSpeedPct=-Math.abs(raw);
+        delete card.value.speedPct;
+        setEffect(card,card.value.attackSpeedPct);
+      }
+    }
+  }
+})();
+</script>
+<script id="new-weapons-idle-orbit-melee-v63">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined'||typeof WEAPONS==='undefined')return;
+  const IDS=new Set(['firework_cannon','potion','pitchfork']);
+  const valid=id=>typeof validWeapon==='function'?validWeapon(id||'sword'):(id||'sword');
+
+  // These three weapons are physically present while circling the player.
+  // Add an authoritative idle/orbit contact check without altering their
+  // projectile or active-attack hitboxes.
+  function orbitHit(game,p,t,s){
+    const id=valid(p.weapon);
+    if(id==='pitchfork'){
+      // The existing exact pitchfork weaponSegmentHit override already describes
+      // the handle plus all three tines, including its idle orbit placement.
+      return game.weaponSegmentHit(p,p.weaponOrbitAngle,30,30+Number(s.pitchforkLength||72)*.96,Number(s.activeWidth||9.5),t);
+    }
+    if(id==='firework_cannon'){
+      const a=Number(p.weaponOrbitAngle)||0;
+      const inner=Number(s.idleCenter||42)-12;
+      const outer=Number(s.idleCenter||42)+38;
+      const width=Math.max(8,Number(s.idleWidth||7)+1.5);
+      const ax=p.x+Math.cos(a)*inner,ay=p.y+Math.sin(a)*inner;
+      const bx=p.x+Math.cos(a)*outer,by=p.y+Math.sin(a)*outer;
+      return game.weaponSegmentHitsTarget(ax,ay,bx,by,width,t);
+    }
+    // Potion is compact and round-ish; use its actual orbit center with a
+    // circle hitbox instead of making its bottle artificially long.
+    const c=Number(s.idleCenter||50),a=Number(p.weaponOrbitAngle)||0;
+    const wx=p.x+Math.cos(a)*c,wy=p.y+Math.sin(a)*c;
+    const playerScale=Math.max(.25,Math.min(4,(Number(p.radius)||26)/26));
+    const sizeScale=Math.max(.25,1+(Number(s.rogueSizePct)||0));
+    const wr=15*playerScale*sizeScale;
+    const dx=t.x-wx,dy=t.y-wy,reach=(Number(t.radius)||26)+wr;
+    return dx*dx+dy*dy<=reach*reach;
+  }
+
+  function contact(game,p,t,now){
+    if(!game.isHost||!p||!t||p.id===t.id||!p.alive||p.spectator||!t.alive||t.spectator)return;
+    const locks=p.weaponContactLocks||(p.weaponContactLocks={});
+    const key='orbit:'+String(t.id),until=Number(locks[key]||0);
+    if(until>now||!orbitHit(game,p,t,game.weaponSpec(p)))return;
+    const s=game.weaponSpec(p);
+    locks[key]=now+Math.max(.05,Number(s.contactCooldown)||.20)*1000;
+    const id=valid(p.weapon);
+    // Idle/orbit contact is a melee bump, not a kill. This remains true in
+    // Death Weapons: the weapon can knock the player around while orbiting,
+    // and elimination is reserved for the active attack contact path.
+    game.weaponApplyKnockback(p,t,id,typeof game.weaponHitSpeed==='function'?game.weaponHitSpeed(p,id):Number(s.contactKnockback)||320);
+  }
+
+  const priorStepHost=Game.stepHost.bind(Game);
+  Game.stepHost=function(dt){
+    priorStepHost(dt);
+    if(!this.isHost||!this.isWeaponry())return;
+    const now=performance.now(),players=Object.values(this.players||{});
+    for(const p of players){
+      if(!p||p.spectator||!p.alive||!IDS.has(valid(p.weapon))||p.weaponPhase!=='idle')continue;
+      for(const t of players)contact(this,p,t,now);
+    }
+  };
+
+  Game.__newWeaponsIdleOrbitMeleeV63=true;
+})();
+</script>
+
+<script id="final-weapon-render-mode-guard-v65">
+(function(){
+  'use strict';
+  if(typeof Game==='undefined')return;
+
+  // Final render barrier: weapon visuals must only exist during the actual
+  // Weaponry gamemode. This is intentionally placed after every later
+  // weapon-specific render override so none of those wrappers can bypass it.
+  const weaponryActive=game=>{
+    try{return typeof game.isWeaponry==='function'?!!game.isWeaponry():game.mode==='weaponry';}
+    catch(_){return game.mode==='weaponry';}
+  };
+
+  const finalRenderWeapon=Game.renderWeapon;
+  if(typeof finalRenderWeapon==='function'){
+    Game.renderWeapon=function(ctx,p){
+      if(!weaponryActive(this))return;
+      return finalRenderWeapon.call(this,ctx,p);
+    };
+  }
+
+  const finalRenderProjectiles=Game.renderWeaponProjectiles;
+  if(typeof finalRenderProjectiles==='function'){
+    Game.renderWeaponProjectiles=function(ctx){
+      if(!weaponryActive(this)){
+        // Remove transient weapon visuals while outside Weaponry so a mode
+        // transition cannot leave a weapon/projectile visible for a frame.
+        if(Array.isArray(this.weaponProjectiles))this.weaponProjectiles.length=0;
+        if(Array.isArray(this.newWeaponProjectiles))this.newWeaponProjectiles.length=0;
+        if(Array.isArray(this.potionGoops))this.potionGoops.length=0;
+        return;
+      }
+      return finalRenderProjectiles.call(this,ctx);
+    };
+  }
+
+  Game.__finalWeaponRenderModeGuardV65=true;
 })();
 </script>
 
