@@ -8187,7 +8187,11 @@ const Game = {
             this.spawnFx(a,'impact',false,{impact,nx,ny}); this.spawnFx(b,'impact',false,{impact,nx:-nx,ny:-ny});
             if(impact>=330){
               const ixp=(a.x+b.x)*0.5, iyp=(a.y+b.y)*0.5;
-              this.particles.burst(ixp,iyp,'#fff',Math.min(18,4+Math.floor(impact/120)),260,{gravity:40,life:.18,size:3.6,sizeEnd:.2,twinkle:true});
+              const burstCount=Math.min(18,4+Math.floor(impact/120));
+              this.particles.burst(ixp,iyp,'#fff',burstCount,260,{gravity:40,life:.18,size:3.6,sizeEnd:.2,twinkle:true});
+              if(this.isHost){
+                NetworkManager.broadcast({t:'collision_burst',x:ixp,y:iyp,count:burstCount},false);
+              }
             }
             AudioManager.impact(Math.min(1.5,impact/200));
 
@@ -8940,7 +8944,7 @@ const Game = {
       case 'turn': this.particles.burst(x-p.facing*10,y,color,5,110,{gravity:40,life:.2,size:2.5,sizeEnd:.2}); break;
     }
 
-    if(this.isHost && !fromNetwork && type!=='impact'){
+    if(this.isHost && !fromNetwork){
       NetworkManager.broadcast({t:'fx', fx:{type,x,y,ownerId:p.id,followOwner:(type==='dash'),facing:p.facing||1,hue:cust.hue??200,charge,effectId:p.cust?.dashEffect||'basic',hitEffectId:p.cust?.hitEffect||'impactSpark',perfectRelease:!!extra.perfectRelease,tier:Number(extra.tier)||0,apex:!!extra.apex,nx:Number(extra.nx)||0,ny:Number(extra.ny)||0,impactSpeed:Number(extra.impactSpeed)||0,impact:Number(extra.impact)||0}}, false);
     }
   },
@@ -9556,6 +9560,13 @@ const Game = {
           p.weapon=locks[requested]&&pid!==this.myId?hostCurrentWeapon():requested; p.weaponPhase='idle'; p.weaponCooldown=0;
           enforceWeaponLocks();
           NetworkManager.broadcast({t:'lobby_update',players:Lobby.serializePlayers(),mutedPlayers:Chat.mutedPlayerIds(),title:Lobby.title,index:Lobby.index,hostName:Game.myName,spectatorStates:Lobby.getSpectatorStates()},true); Lobby.render();
+        }
+        break;
+      case 'collision_burst':
+        if(!this.isHost){
+          const x=Number(data.x)||0,y=Number(data.y)||0;
+          const count=Math.max(1,Math.min(18,Number(data.count)||4));
+          this.particles.burst(x,y,'#fff',count,260,{gravity:40,life:.18,size:3.6,sizeEnd:.2,twinkle:true});
         }
         break;
       case 'weapon_hit_fx':
@@ -10496,8 +10507,9 @@ const Game = {
         // Add a sample every render frame, including when the player is still.
         // This gives stationary remote trails fresh geometry so animated trail
         // styles keep updating instead of freezing on their final movement point.
+        // Non-host remote trails are intentionally about 50% longer than before.
         hist.push({x:headX,y:headY});
-        if(hist.length>4) hist.splice(0,hist.length-4);
+        if(hist.length>6) hist.splice(0,hist.length-6);
         visualTrail=hist;
       }
       const trailPlayer=isRemote
